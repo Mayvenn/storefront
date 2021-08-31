@@ -9,14 +9,12 @@
 (def detailed-product-picker-options (conj detailed-product :picker-options))
 (def detailed-product-id (conj detailed-product :id))
 (def detailed-product-selections (conj detailed-product :selections))
-(def detailed-product-auxiliary-selections (conj detailed-product :auxiliary-selections)) ;; TODO better name?
-(def detailed-product-auxiliary-index (conj detailed-product :auxiliary-index))
-(def detailed-product-auxiliary-selected-skus (conj detailed-product :auxiliary-selected-skus))
-(def detailed-product-auxiliary-picker-options (conj detailed-product :auxiliary-picker-options))
+(def detailed-product-lengths-index (conj detailed-product :lengths-index))
 (def detailed-product-selected-sku (conj detailed-product :selected-sku))
 (def detailed-product-selected-sku-id (conj detailed-product-selected-sku :catalog/sku-id))
 (def detailed-product-selected-picker (conj detailed-product :selected-picker))
 (def detailed-product-picker-visible? (conj detailed-product :picker-visible?))
+(def detailed-product-multiple-lengths-selections (conj detailed-product :multiple-lengths-selections))
 
 ;; TODO: re-address
 (def detailed-look (conj ui :detailed-look))

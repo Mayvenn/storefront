@@ -19,11 +19,6 @@
    [:div.flex.items-center.justify-end.pr4.col-12
     checkmark-circle]])
 
-(defn ^:private simple-sold-out-layer [text]
-  [:div.bg-darken-1.absolute.overlay.flex.justify-end
-   [:div.self-center.flex.items-center.mr4
-    text]])
-
 (defn ^:private simple-content-layer [content]
   [:div.flex.items-center.p4.absolute.overlay.bg-white
    [:div.ml1 content]])
@@ -207,19 +202,6 @@
       (v1-picker-face face-data)]
      (v1-invisible-select picker face-data)]))
 
-(component/defcomponent picker-one-combo-face
-  [{:keys [color-picker
-           length-pickers
-           quantity-picker]
-    :as   pickers}
-   _ _]
-  (when (and color-picker length-pickers quantity-picker)
-    [:div.border-top.border-cool-gray.border-width-2
-     (color-picker-v1 color-picker)
-     [:div.flex.items-center.border-top.border-cool-gray.border-width-2
-      (length-picker-v1 (first length-pickers))
-      vertical-border
-      (quantity-picker-v1 quantity-picker)]]))
 ;; END V1
 
 (defn ^:private length-option
@@ -380,7 +362,6 @@
                       :wrap?             false
                       :close-target      close-target}
        {:opts {:cell-component-fn color-option}})
-
 
       :hair/length
       (component/build

@@ -293,7 +293,7 @@
         quadpay-loaded?                    (get-in app-state keypaths/loaded-quadpay)
         sku-family                         (-> selected-sku :hair/family first)
         mayvenn-install-incentive-families #{"bundles" "closures" "frontals" "360-frontals"}
-        selected-skus                      (->> (get-in app-state catalog.keypaths/detailed-product-auxiliary-selections)
+        selected-skus                      (->> (get-in app-state catalog.keypaths/detailed-product-multiple-lengths-selections)
                                                 (filterv not-empty)
                                                 (mapv
                                                  #(determine-sku-from-selections app-state (merge selections %)))
@@ -355,7 +355,6 @@
                                    (images/for-skuer images-catalog)
                                    (select {:use-case #{"length-guide"}})
                                    first)
-        picker-options       (get-in data catalog.keypaths/detailed-product-picker-options)
         product-options      (get-in data catalog.keypaths/detailed-product-options)
         ugc                  (ugc-query product selected-sku data)
         sku-price            (or (:product/essential-price selected-sku)
@@ -574,18 +573,24 @@
                                              :hair/length
                                              spice/parse-int
                                              (< 16)))
-        selected-sku (->> (if switching-to-short-hd-lace?
-                            {selection #{value} :hair/length #{"16"}}
-                            {selection #{value}})
-                          (determine-sku-from-selections app-state))
-        options      (generate-product-options (get-in app-state catalog.keypaths/detailed-product-id)
-                      app-state)]
+        selected-sku                (->> (if switching-to-short-hd-lace?
+                                           {selection #{value} :hair/length #{"16"}}
+                                           {selection #{value}})
+                                         (determine-sku-from-selections app-state))
+        options                     (generate-product-options (get-in app-state catalog.keypaths/detailed-product-id)
+                                                              app-state)
+        new-multiple-lengths        (mapv (fn[length-selection]
+                                            (if (= selection :hair/color)
+                                              (merge length-selection {:hair/color value})
+                                              length-selection))
+                                          (get-in app-state catalog.keypaths/detailed-product-multiple-lengths-selections))]
     (-> app-state
         (assoc-in catalog.keypaths/detailed-product-picker-visible? false)
         (assoc-in catalog.keypaths/detailed-product-selected-sku selected-sku)
         (update-in catalog.keypaths/detailed-product-selections merge (if switching-to-short-hd-lace?
                                                                         {selection value :hair/length "16"}
                                                                         {selection value}))
+        (assoc-in catalog.keypaths/detailed-product-multiple-lengths-selections new-multiple-lengths)
         (assoc-in catalog.keypaths/detailed-product-options options))))
 
 (defmethod effects/perform-effects events/control-product-detail-picker-option-select
@@ -601,11 +606,11 @@
     #?(:cljs (scroll/enable-body-scrolling))))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-open
-  [_ event {:keys [facet-slug auxiliary-index]} app-state]
+  [_ event {:keys [facet-slug length-index]} app-state]
   (-> app-state
       (assoc-in catalog.keypaths/detailed-product-selected-picker facet-slug)
       (assoc-in catalog.keypaths/detailed-product-picker-visible? true)
-      (assoc-in catalog.keypaths/detailed-product-auxiliary-index auxiliary-index)))
+      (assoc-in catalog.keypaths/detailed-product-lengths-index length-index)))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-option-quantity-select
   [_ event {:keys [value]} app-state]
@@ -617,7 +622,7 @@
   [_ event _ app-state]
   (-> app-state
       (assoc-in catalog.keypaths/detailed-product-picker-visible? false)
-      (assoc-in catalog.keypaths/detailed-product-auxiliary-index nil)
+      (assoc-in catalog.keypaths/detailed-product-lengths-index nil)
       (assoc-in catalog.keypaths/detailed-product-selected-picker nil)))
 
 #?(:cljs
@@ -658,101 +663,26 @@
      [_ event _ _ app-state]
      (messages/handle-message events/initialize-product-details (get-in app-state keypaths/navigation-args))))
 
-(defn ^:private color-option<
-  [selection-event
-   selections
-   {:option/keys [slug] :as option}]
-  (merge
-   #:product{:option option}
-   #:option{:id               (str "picker-color-" (facets/hacky-fix-of-bad-slugs-on-facets slug))
-            :selection-target [selection-event
-                               (merge {:selection        :hair/color
-                                       :value            slug
-                                       :navigation-event events/navigate-product-details})]
-            :checked?         (= (:hair/color selections) slug)
-            :label            (:option/name option)
-            :value            slug
-            :bg-image-src     (:option/rectangle-swatch option)
-            :available?       true
-            :image-src        (:option/sku-swatch option)}))
-
-(defn ^:private length-option<
-  [selection-event
-   {selected-hair-color :hair/color :as selection}
-   availability
-   {:option/keys [slug name] :as option}]
-  (let [available? (boolean (get-in availability [selected-hair-color slug]))
-        sold-out?  (not (boolean
-                         (get-in availability [selected-hair-color
-                                               slug
-                                               :inventory/in-stock?])))]
-    (merge
-     #:product{:option option}
-     #:option{:id               (str "picker-length-" slug)
-              :selection-target [selection-event
-                                 {:selection :hair/length
-                                  :value     slug}]
-              :checked?         (= (:hair/length selection) slug)
-              :label            name
-              :value            slug
-              :available?       available?}
-     (when sold-out?
-       #:option{:label-attrs      {:class "dark-gray"}
-                :label            (str name " - Sold Out")
-                :selection-target nil})
-     (when-not available?
-       #:option{:label-attrs      {:class "dark-gray"}
-                :label            (str name " - Unavailable")
-                :selection-target nil}))))
-
-(defn ^:private initialize-picker-options
-  [selection-event
-   selections
-   availability
-   product-options]
-  {:hair/color  (->> product-options
-                    :hair/color
-                    (map #(dissoc % :price :stocked?))
-                    (sort-by :filter/order)
-                    (mapv (partial color-option<
-                                   selection-event
-                                   selections)))
-   :hair/length (->> product-options
-                       :hair/length
-                       (sort-by :filter/order)
-                       (mapv (partial length-option<
-                                      selection-event
-                                      selections
-                                      availability)))})
-
 (defmethod transitions/transition-state events/initialize-product-details
   [_ event {:as args :keys [catalog/product-id query-params]} app-state]
-  (let [ugc-offset               (:offset query-params)
-        product-options          (generate-product-options product-id app-state)
-        product                  (products/product-by-id app-state product-id)
-        product-skus             (products/extract-product-skus app-state product)
-        sku                      (or (->> (:SKU query-params)
-                                          (conj keypaths/v2-skus)
-                                          (get-in app-state))
-                                     (get-in app-state catalog.keypaths/detailed-product-selected-sku)
-                                     (first product-skus))
-        picker-options           (initialize-picker-options
-                                  events/control-product-detail-picker-option-select
-                                  {:hair/color  (first (:hair/color sku))
-                                   :hair/length (first (:hair/length sku))}
-                                  (catalog.products/index-by-selectors
-                                   [:hair/color :hair/length]
-                                   product-skus)
-                                  product-options)]
+  (let [ugc-offset        (:offset query-params)
+        product-options   (generate-product-options product-id app-state)
+        product           (products/product-by-id app-state product-id)
+        product-skus      (products/extract-product-skus app-state product)
+        sku               (or (->> (:SKU query-params)
+                                   (conj keypaths/v2-skus)
+                                   (get-in app-state))
+                              (get-in app-state catalog.keypaths/detailed-product-selected-sku)
+                              (first product-skus))]
     (-> app-state
         (assoc-in catalog.keypaths/detailed-product-id product-id)
         (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
-        (assoc-in catalog.keypaths/detailed-product-auxiliary-selections [{} {}])
-        (assoc-in catalog.keypaths/detailed-product-picker-options picker-options)
         (assoc-in keypaths/ui-ugc-category-popup-offset ugc-offset)
         (assoc-in keypaths/browse-sku-quantity 1)
         (assoc-in catalog.keypaths/detailed-product-selected-picker nil)
         (assoc-in catalog.keypaths/detailed-product-picker-visible? nil)
+        (assoc-in catalog.keypaths/detailed-product-multiple-lengths-selections [{:hair/color  (first (:hair/color sku))
+                                                                                  :hair/length (first (:hair/length sku))} {} {}])
         (assoc-selections sku)
         (assoc-in catalog.keypaths/detailed-product-options product-options))))
 
@@ -861,18 +791,3 @@
 (defmethod transitions/transition-state events/api-success-add-sku-to-bag
   [_ event {:keys [quantity sku]} app-state]
   (assoc-in app-state keypaths/browse-sku-quantity 1))
-
-(defmethod transitions/transition-state events/control-product-detail-picker-option-auxiliary-select
-  [_ event {:keys [selection value auxiliary-index]} app-state]
-  (if (empty? value)
-    (-> app-state
-        (assoc-in catalog.keypaths/detailed-product-picker-visible? false)
-        (update-in  (conj catalog.keypaths/detailed-product-auxiliary-selections auxiliary-index) empty))
-    (-> app-state
-        (assoc-in catalog.keypaths/detailed-product-picker-visible? false)
-        (update-in (conj catalog.keypaths/detailed-product-auxiliary-selections auxiliary-index) merge {selection value}))))
-
-(defmethod transitions/transition-state events/control-product-detail-picker-add
-  [_ _ {} state]
-  (-> state
-      (update-in catalog.keypaths/detailed-product-auxiliary-selections conj {})))

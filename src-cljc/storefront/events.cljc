@@ -254,8 +254,8 @@
 (defpath control-product-detail-picker-open)
 (defpath control-product-detail-picker-close)
 (defpath control-product-detail-picker-option-select)
-(defpath control-product-detail-picker-option-auxiliary-select)
-(defpath control-product-detail-picker-add)
+(defpath control-product-detail-picker-option-length-select)
+(defpath control-product-detail-picker-add-length)
 (defpath control-product-detail-picker-option-quantity-select)
 
 (defpath control-look-detail-picker-option-select)
