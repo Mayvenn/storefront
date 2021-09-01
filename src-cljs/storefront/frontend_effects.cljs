@@ -87,7 +87,7 @@
   (convert/insert-tracking)
   (riskified/insert-tracking (get-in app-state keypaths/session-id))
   (stringer/fetch-browser-id)
-  (messages/handle-message events/biz|email-capture|reset "first-pageview-email-capture")
+  (messages/handle-message events/biz|email-capture|reset)
   (refresh-account app-state)
 
   (when (= :shop (sites/determine-site app-state))

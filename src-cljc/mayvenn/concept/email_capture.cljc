@@ -35,33 +35,40 @@
 
 (def email-capture-configs
   {"first-pageview-email-capture" {:nav-events-forbid (set/union never-show-on-these-pages adventure-and-quiz-pages)}
-   "example-email-capture" {:nav-events-allow adventure-and-quiz-pages}})
+   "adv-quiz-email-capture" {:nav-events-allow adventure-and-quiz-pages}})
 
 (def model-keypath [:models :email-capture])
 (def textfield-keypath (conj model-keypath :textfield))
 (def capture-observed-at-keypath (conj model-keypath :capture-observed-at))
 (def dismissal-observed-ats-keypath (conj model-keypath :dismissal-observed-ats))
 
-(defn <-trigger [id app-state]
-  (let [{:keys [nav-events-forbid nav-events-allow]} (get email-capture-configs id)
-        {:keys [capture-observed-at
+(defn location-approved? [nav-event email-capture-id]
+  (let [{:keys [nav-events-forbid nav-events-allow]} (get email-capture-configs email-capture-id)]
+    (if nav-events-allow
+      (some #(routes/sub-page? [nav-event {}] [% {}])
+            nav-events-allow)
+      (not-any? #(routes/sub-page? [nav-event {}] [% {}])
+                nav-events-forbid))))
+
+;; TODO refactor to not refer to email-capture-configs twice
+(defn location->email-capture-id
+  [nav-event]
+  (->> email-capture-configs
+       keys
+       (filter (partial location-approved? nav-event))
+       first))
+
+(defn <-trigger [email-capture-id app-state]
+  (let [{:keys [capture-observed-at
                 dismissal-observed-ats]} (get-in app-state model-keypath)
-        captured?              (boolean capture-observed-at)
-        dismissed?             (boolean (get dismissal-observed-ats id))
-        nav-event              (get-in app-state k/navigation-event)
-        location-approved?     (if nav-events-allow
-                                 (some #(routes/sub-page? [nav-event {}] [% {}])
-                                       nav-events-allow)
-                                 (not-any? #(routes/sub-page? [nav-event {}] [% {}])
-                                           nav-events-forbid))]
-    {:id                 id
-     :captured?          captured?
-     :dismissed?         dismissed?
-     :location-approved? location-approved?
-     :displayable?       (and (not captured?)
-                              (not dismissed?)
-                              location-approved?
-                              (experiments/in-house-email-capture? app-state))}))
+        captured?                        (boolean capture-observed-at)
+        dismissed?                       (boolean (get dismissal-observed-ats email-capture-id))]
+    {:email-capture-id email-capture-id
+     :captured?        captured?
+     :dismissed?       dismissed?
+     :displayable?     (and (not captured?)
+                            (not dismissed?)
+                            (experiments/in-house-email-capture? app-state))}))
 
 (defn refresh-dismissed-ats [cookie]
   #?(:clj nil

@@ -169,8 +169,12 @@
         :value     title
         :disabled  (boolean disabled?)}]))))
 
+(defn submit-button-medium [title attrs]
+  (submit-button title (assoc attrs :enabled-classes "btn-medium btn-p-color button-font-1 shout")))
+
 (defn submit-button-medium-black [title attrs]
   (submit-button title (assoc attrs :enabled-classes "btn-medium btn-black button-font-1 shout")))
+
 
 (def hyphen "‐") ; &hyphen;
 (def nb-hyphen "‑") ; nonbreaking!

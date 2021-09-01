@@ -48,8 +48,73 @@
                    :class     "col-12 center bg-white title-3 proxima"
                    :data-test id})])
 
-(defn cta [{:email-capture.cta/keys [value id]}]
-      [:div.mb5 (ui/submit-button-medium-black value {:data-test id})])
+(def fine-print-1
+  [:div.proxima.content-4.px2.pt4
+   {:style {:font "10px/16px 'Proxima Nova', Arial, sans-serif"}}
+   "*$35 Off offer is for first-time subscribers only. $200 minimum purchase required. "
+   "Mayvenn may choose to modify the promotion at any time. "
+   "*I consent to receive Mayvenn marketing content via email. "
+   "For further information, please read our "
+   [:a.s-color (utils/route-to e/navigate-content-tos) "Terms"]
+   " and "
+   [:a.s-color (utils/route-to e/navigate-content-privacy) "Privacy Policy"]
+   ". Unsubscribe anytime."])
+
+(defn cta-1 [{:email-capture.cta/keys [value id]}]
+  [:div.mb5 (ui/submit-button-medium-black value {:data-test id})])
+
+;; TODO consider using c/build and c/html and stuff
+(defn design-1 [{:keys [id]
+                 :as   data}]
+  [:div.flex.flex-column
+   {:data-test (str id "-modal")}
+   (m-header id (apply utils/fake-href (:email-capture.dismiss/target data)))
+   (bg-image data)
+   [:div.p4.white.bg-p-color
+    [:form.col-12.center.px4
+     {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
+     (title data)
+     (text-field data)
+     (cta-1 data)]
+    hr-divider
+    fine-print-1]])
+
+(defn cta-2 [{:email-capture.cta/keys [value id]}]
+  [:div.mb5 (ui/submit-button-medium value {:data-test id})])
+
+(def fine-print-2
+  [:div.proxima.content-4.px2.pt4.pb6
+   {:style {:font "12px/17px 'Proxima Nova', Arial, sans-serif"}}
+   "*$35 Off offer is for first-time subscribers only. $200 minimum purchase required. "
+   "Mayvenn may choose to modify the promotion at any time. "
+   "*I consent to receive Mayvenn marketing content via email. "
+   "For further information, please read our "
+   [:a.p-color (utils/route-to e/navigate-content-tos) "Terms"]
+   " and "
+   [:a.p-color (utils/route-to e/navigate-content-privacy) "Privacy Policy"]
+   ". Unsubscribe anytime."])
+
+(defn design-2 [{:keys [id] :as   data}]
+  [:div.bg-cool-gray.p4
+   [:div.flex.justify-end
+    (ui/modal-close {:data-test   (str id "-dismiss")
+                     :class       "fill-black stroke-black"
+                     :close-attrs (apply utils/fake-href (:email-capture.dismiss/target data))})]
+   [:div.flex.justify-center.my10
+    ^:inline (svg/mayvenn-logo {:width "83px" :height "48px"})]
+   [:div.center.canela.title-1.mb6 "Looking For A Stylist?"]
+   [:div.center.mb6
+    {:style {:font "32px/37px 'Proxima Nova'"
+             :letter-spacing "0.33px"}}
+    "Sign up to receive top-rated stylists near you, promotional offers, and for a limited time, get "
+    [:span.p-color "$35 OFF"]
+    " for joining."]
+   [:form.col-12.center.px4
+    {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
+    (text-field data)
+    (cta-2 data)]
+   hr-divider
+   fine-print-2])
 
 (c/defdynamic-component template
   (did-mount
@@ -62,67 +127,49 @@
    (scroll/enable-body-scrolling))
   (render
    [this]
-   (let [props             (c/get-props this)
-         {:keys [id]
-          :as   data}      props
-         close-dialog-href (apply utils/fake-href
-                                  (:email-capture.dismiss/target data))]
+   (let [{:keys [capture-modal-id]
+          :as   data} (c/get-props this)]
      (ui/modal
-      {:close-attrs close-dialog-href
+      {:close-attrs (apply utils/fake-href (:email-capture.dismiss/target data))
        :col-class   "col-12 col-5-on-tb col-4-on-dt flex justify-center"
        :bg-class    "bg-darken-4"}
-      [:div.flex.flex-column
-       {:data-test (str id "-modal")}
-       (m-header id close-dialog-href)
-       (bg-image data)
-       [:div.p4.white.bg-p-color
-        [:form.col-12.center.px4
-         {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
-         (title data)
-         (text-field data)
-         (cta data)]
-        hr-divider
-        [:div.proxima.content-4.px2.pt4
-         {:style {:font "10px/16px 'Proxima Nova', Arial, sans-serif"}}
-         "*$35 Off offer is for first-time subscribers only. $200 minimum purchase required. "
-         "Mayvenn may choose to modify the promotion at any time. "
-         "*I consent to receive Mayvenn marketing content via email. "
-         "For further information, please read our "
-         [:a.s-color (utils/route-to e/navigate-content-tos) "Terms"]
-         " and "
-         [:a.s-color (utils/route-to e/navigate-content-privacy) "Privacy Policy"]
-         ". Unsubscribe anytime."]]]))))
+      ((case capture-modal-id
+         "first-pageview-email-capture" design-1
+         "adv-quiz-email-capture"       design-2) data)))))
 
 (defn query [app-state]
-  (let [capture-modal-id       "first-pageview-email-capture"
+  (let [nav-event              (get-in app-state k/navigation-event)
+        capture-modal-id       (concept/location->email-capture-id nav-event)
         {:keys [displayable?]} (concept/<-trigger capture-modal-id app-state)
         errors                 (get-in app-state (conj k/field-errors ["email"]))
         focused                (get-in app-state k/ui-focus)
         textfield-keypath      concept/textfield-keypath
-        email                  (get-in app-state textfield-keypath)
-        id                     "email-capture" ]
+        email                  (get-in app-state textfield-keypath)]
     (when displayable?
-      {:id                                   id
-       :capture-modal-id                     capture-modal-id
-       :email-capture.dismiss/target         [e/biz|email-capture|dismissed {:id capture-modal-id}]
-       :email-capture.submit/target          [e/biz|email-capture|captured {:id    capture-modal-id
-                                                                            :email email}]
-       :email-capture.photo/uuid             "1ba0870d-dad8-466a-adc9-0d5ec77c9944"
-       :email-capture.title/primary          [:span "Join our email list and get "
-                                              [:span
-                                               {:style {:color "#97D5CA"}}
-                                               "$35 OFF"]
-                                              " your first order"]
-       :email-capture.text-field/id          (str id "-input")
-       :email-capture.text-field/placeholder "ENTER EMAIL ADDRESS"
-       :email-capture.text-field/focused     focused
-       :email-capture.text-field/keypath     textfield-keypath
-       :email-capture.text-field/errors      errors
-       :email-capture.text-field/email       email
-       :email-capture.cta/id                 (str id "-submit")
-       :email-capture.cta/value              "Save me $35 Now"})))
+      (merge {:id                                  "email-capture"
+              :capture-modal-id                     capture-modal-id
+              :email-capture.dismiss/target         [e/biz|email-capture|dismissed {:id capture-modal-id}]
+              :email-capture.submit/target          [e/biz|email-capture|captured {:id    capture-modal-id
+                                                                                   :email email}]
+              :email-capture.text-field/id          "email-capture-input"
+              :email-capture.text-field/placeholder "ENTER EMAIL ADDRESS"
+              :email-capture.text-field/focused     focused
+              :email-capture.text-field/keypath     textfield-keypath
+              :email-capture.text-field/errors      errors
+              :email-capture.text-field/email       email}
+             (case capture-modal-id
+
+               "first-pageview-email-capture"
+               {:email-capture.photo/uuid             "1ba0870d-dad8-466a-adc9-0d5ec77c9944"
+                :email-capture.title/primary          [:span "Join our email list and get "
+                                                       [:span
+                                                        {:style {:color "#97D5CA"}}
+                                                        "$35 OFF"]
+                                                       " your first order"]
+                :email-capture.cta/value              "Save me $35 Now"}
+               "adv-quiz-email-capture"
+               {:email-capture.cta/value              "Get top looks + $35 off"})))))
 
 (defn ^:export built-component [app-state opts]
-  (let [{:as data :keys [id]} (query app-state)]
-    (when id
-      (c/build template data opts))))
+  (when-let [data (query app-state)]
+    (c/build template data opts)))
