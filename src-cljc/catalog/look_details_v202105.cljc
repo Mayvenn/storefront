@@ -37,6 +37,7 @@
             [storefront.ugc :as ugc]
             [catalog.keypaths :as catalog.keypaths]
             [spice.selector :as selector]
+            [spice.core :as spice]
             [ui.molecules]))
 
 ;; A customizable look is a product merging all of the products that the base
