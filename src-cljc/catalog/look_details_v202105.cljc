@@ -37,8 +37,7 @@
             [storefront.ugc :as ugc]
             [catalog.keypaths :as catalog.keypaths]
             [spice.selector :as selector]
-            [ui.molecules]
-            [spice.core :as spice]))
+            [ui.molecules]))
 
 ;; A customizable look is a product merging all of the products that the base
 ;; look's skus come from It has two levels of selectors, those that affect all
@@ -225,10 +224,11 @@
                                      ;; TODO make this more tolerable
                                      {:hair/texture (first texture)
                                       :hair/color   (first color)
-                                      :per-item     (->> physical-line-items
-                                                         (map #(select-keys % [:hair/origin :hair/family :hair/length]))
-                                                         (map (partial maps/map-values first))
-                                                         vec)})
+                                      :per-item     (into []
+                                                      (comp
+                                                       (map #(select-keys % [:hair/origin :hair/family :hair/length]))
+                                                       (map (partial maps/map-values first)))
+                                                      physical-line-items)})
         sliced-sku-db              (slice-sku-db (get-in app-state keypaths/v2-skus) services initial-selections)
         availability               (catalog.products/index-by-selectors
                                     [:hair/family :hair/color :hair/length]
