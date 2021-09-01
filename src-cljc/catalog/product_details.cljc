@@ -579,11 +579,13 @@
                                          (determine-sku-from-selections app-state))
         options                     (generate-product-options (get-in app-state catalog.keypaths/detailed-product-id)
                                                               app-state)
-        new-multiple-lengths        (mapv (fn[length-selection]
-                                            (if (= selection :hair/color)
-                                              (merge length-selection {:hair/color value})
-                                              length-selection))
-                                          (get-in app-state catalog.keypaths/detailed-product-multiple-lengths-selections))]
+        new-multiple-lengths        (when (and (-> (products/current-product app-state) :hair/family first (= "bundles"))
+                                               (experiments/multiple-lengths-pdp? app-state))
+                                      (mapv (fn[length-selection]
+                                              (if (= selection :hair/color)
+                                                (merge length-selection {:hair/color value})
+                                                length-selection))
+                                            (get-in app-state catalog.keypaths/detailed-product-multiple-lengths-selections)))]
     (-> app-state
         (assoc-in catalog.keypaths/detailed-product-picker-visible? false)
         (assoc-in catalog.keypaths/detailed-product-selected-sku selected-sku)
