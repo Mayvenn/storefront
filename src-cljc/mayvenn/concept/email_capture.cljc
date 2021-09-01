@@ -21,10 +21,7 @@
 
 (def never-show-on-these-pages
   #{e/navigate-cart
-
-    e/navigate-checkout-address
-    e/navigate-checkout-payment
-    e/navigate-checkout-confirmation
+    e/navigate-checkout
 
     e/navigate-sign
 
