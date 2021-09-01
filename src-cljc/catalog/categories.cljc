@@ -781,7 +781,8 @@
            :page/slug  "virgin-headband-wigs"
            :seo/title  "Virgin Headband Wigs"
 
-           :category/description (copy "") ;;TODO get copy
+           :category/description (copy "Our 100% virgin hair Headband Wigs rank low on effort, but high on impact."
+                                       "This quick protective style option is perfect for when you’re on the go.")
            :subcategory/image-id "fe34e6e9-8927-4b62-94ac-91b37f0a137f" ;;TODO Fill with cart 0
 
            :contentful/faq-id     :category-headband-wigs
