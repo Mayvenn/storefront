@@ -155,17 +155,22 @@
 
 (defn submit-button
   ([title] (submit-button title {}))
-  ([title {:keys [spinning? disabled? data-test]
-           :as   attrs}]
+  ([title {:keys [spinning? disabled? data-test enabled-classes disabled-classes]
+           :as   attrs
+           :or {enabled-classes  button-large-primary-classes
+                disabled-classes disabled-button-large-primary-classes}}]
    (component/html
     (if spinning?
       (button-large-primary attrs)
       [:input.col-12.bg-clear
        {:type      "submit"
-        :class     (if disabled? disabled-button-large-primary-classes button-large-primary-classes)
+        :class     (if disabled? disabled-classes enabled-classes)
         :data-test data-test
         :value     title
         :disabled  (boolean disabled?)}]))))
+
+(defn submit-button-medium-black [title attrs]
+  (submit-button title (assoc attrs :enabled-classes "btn-medium btn-black button-font-1 shout")))
 
 (def hyphen "‐") ; &hyphen;
 (def nb-hyphen "‑") ; nonbreaking!

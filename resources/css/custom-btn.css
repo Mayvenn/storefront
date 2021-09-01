@@ -105,6 +105,11 @@
 .btn-red.btn-medium { border-image-source: svg-load(var(--oct-button-medium-svg), fill=var(--red), stroke=none); }
 .btn-red span       { background-color: var(--red); }
 
+.btn-black            { color: var(--white); }
+.btn-black.btn-large  { border-image-source: svg-load(var(--oct-button-large-svg), fill=var(--black), stroke=none); }
+.btn-black.btn-medium { border-image-source: svg-load(var(--oct-button-medium-svg), fill=var(--black), stroke=none); }
+.btn-black span       { background-color: var(--black); }
+
 .btn-ghost            { color: var(--s-color); text-decoration: underline }
 
 .btn-s-color { color: var(--white); background-color: var(--s-color); }
@@ -147,4 +152,5 @@
   --red:           #F94941;
   --gray:          #cccccc;
   --white:         #ffffff;
+  --black:         #000000;
 }

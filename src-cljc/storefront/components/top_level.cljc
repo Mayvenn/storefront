@@ -1,6 +1,7 @@
 (ns storefront.components.top-level
   (:require [storefront.component :as component :refer [defcomponent]]
             #?@(:cljs [[storefront.components.account :as account]
+                       [storefront.components.email-capture :as email-capture]
                        [storefront.components.force-set-password :as force-set-password]
                        [storefront.components.popup :as popup]
                        [storefront.components.reset-password :as reset-password]
@@ -261,7 +262,9 @@
 
 (defcomponent top-level-component
   [data owner opts]
-  (if (or (= "shop" (get-in data keypaths/store-slug))
-          (= "retail-location" (get-in data keypaths/store-experience)))
-    (shop-site data owner opts)
-    (classic-site data owner opts)))
+  [:div
+   #?(:cljs (email-capture/built-component data nil))
+   (if (or (= "shop" (get-in data keypaths/store-slug))
+           (= "retail-location" (get-in data keypaths/store-experience)))
+     (shop-site data owner opts)
+     (classic-site data owner opts))])

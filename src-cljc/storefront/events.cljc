@@ -717,6 +717,14 @@
 (defpath biz|progression|reset)
 (defpath biz|progression|progressed)
 
+;; Email Capture
+(defpath biz|email-capture|reset)
+(defpath biz|email-capture|deployed)
+(defpath biz|email-capture|capture-observed)
+(defpath biz|email-capture|captured)
+(defpath biz|email-capture|dismissed)
+(defpath biz|email-capture|dismissal-observed)
+
 ;; Shopping Quiz iterations
 (defpath navigate-shopping-quiz)
 (defpath navigate-shopping-quiz-unified-freeinstall)
@@ -783,3 +791,5 @@
 (defpath post-stylist-matched-navigation-decided)
 
 (defpath navigate-adventure-appointment-booking)
+
+(defpath user-identified)

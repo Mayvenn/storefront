@@ -127,3 +127,7 @@
 (defn headband-wigs?
   [data]
   (display-feature? data "headband-wigs"))
+
+(defn in-house-email-capture?
+  [data]
+  (display-feature? data "in-house-email-capture"))

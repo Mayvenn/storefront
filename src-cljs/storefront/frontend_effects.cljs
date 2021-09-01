@@ -3,6 +3,7 @@
             api.orders
             [storefront.accessors.contentful :as contentful]
             [clojure.set :as set]
+            [mayvenn.concept.email-capture :as email-capture]
             [spice.maps :as maps]
             [lambdaisland.uri :as uri]
             [storefront.accessors.auth :as auth]
@@ -86,6 +87,7 @@
   (convert/insert-tracking)
   (riskified/insert-tracking (get-in app-state keypaths/session-id))
   (stringer/fetch-browser-id)
+  (messages/handle-message events/biz|email-capture|reset "first-pageview-email-capture")
   (refresh-account app-state)
 
   (when (= :shop (sites/determine-site app-state))
@@ -99,7 +101,9 @@
   (lucky-orange/track-store-experience (get-in app-state keypaths/store-experience))
   (doseq [feature (get-in app-state keypaths/features)]
     ;; trigger GA analytics, even though feature is already enabled
-    (messages/handle-message events/enable-feature {:feature feature})))
+    (messages/handle-message events/enable-feature {:feature feature}))
+  (when (get-in app-state keypaths/user-id)
+    (messages/handle-message events/user-identified {:user (get-in app-state keypaths/user)})))
 
 (defmethod effects/perform-effects events/app-stop [_ event args _ app-state]
   (convert/remove-tracking)
@@ -204,7 +208,8 @@
         landing-on-same-page? (and (= previous-nav-event current-nav-event)
                                    (= (dissoc previous-nav-args :query-params)
                                       (dissoc current-nav-args  :query-params)))
-        module-load?          (= caused-by :module-load)]
+        module-load?          (= caused-by :module-load)
+        cookie                (get-in app-state keypaths/cookie)]
     (tags/remove-classname ".kustomer-app-icon" "hide")
     (when (get-in app-state promotion-helper.keypaths/ui-promotion-helper-opened)
       (messages/handle-message promotion-helper/closed {:event/source event}))
@@ -212,9 +217,10 @@
     (messages/handle-message events/control-menu-collapse-all)
     (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)})
 
-    (cookie-jar/save-user (get-in app-state keypaths/cookie)
-                          (get-in app-state keypaths/user))
+    (cookie-jar/save-user cookie (get-in app-state keypaths/user))
     (refresh-account app-state)
+
+    (email-capture/refresh-dismissed-ats cookie)
 
     (when-not (or module-load? (#{:first-nav} caused-by))
       (api/get-promotions (get-in app-state keypaths/api-cache)
@@ -237,13 +243,13 @@
           (messages/handle-later events/snap {:top restore-scroll-top} 1000))))
 
     (when-let [pending-promo-code (:sha query-params)]
-      (cookie-jar/save-pending-promo-code
-       (get-in app-state keypaths/cookie)
-       pending-promo-code))
+      (cookie-jar/save-pending-promo-code cookie pending-promo-code))
 
     (when-let [affiliate-stylist-id (:affiliate_stylist_id query-params)]
-      (cookie-jar/save-affiliate-stylist-id (get-in app-state keypaths/cookie)
-                                            {:affiliate-stylist-id affiliate-stylist-id}))
+      (cookie-jar/save-affiliate-stylist-id cookie {:affiliate-stylist-id affiliate-stylist-id}))
+
+    (when (:em_hash query-params)
+      (messages/handle-message events/biz|email-capture|capture-observed {:reason "em_hash"}))
 
     (when-not module-load?
       (when (get-in app-state keypaths/popup)
@@ -259,9 +265,7 @@
                                                :utm_term     :storefront/utm-term})
                              (maps/deep-remove-nils))]
       (when (seq utm-params)
-        (cookie-jar/save-utm-params
-         (get-in app-state keypaths/cookie)
-         utm-params)))
+        (cookie-jar/save-utm-params cookie utm-params)))
 
     (when (and (get-in app-state keypaths/user-must-set-password)
                (not= event events/navigate-force-set-password))
@@ -746,6 +750,7 @@
 
 (defmethod effects/perform-effects events/api-success-auth [_ _ {:keys [order]} _ app-state]
   (messages/handle-message events/save-order {:order order})
+  (messages/handle-message events/user-identified {:user (get-in app-state keypaths/user)})
   (cookie-jar/save-user (get-in app-state keypaths/cookie)
                         (get-in app-state keypaths/user))
   (redirect-to-return-navigation app-state))
@@ -989,3 +994,16 @@
 (defmethod effects/perform-effects events/browser-back
   [_ _ _ _ _ _]
   (js/history.back))
+
+(defmethod effects/perform-effects events/order-placed
+  [_ _ order _ _]
+  (messages/handle-message events/user-identified {:user {:id    (-> order :user :id)
+                                                          :email (-> order :user :email)}}))
+
+(defmethod effects/perform-effects events/api-success-update-order-update-guest-address
+  [_ _ {:keys [order]} _ _]
+  (messages/handle-message events/user-identified {:user (:user order)}))
+
+(defmethod effects/perform-effects events/user-identified
+  [_ _ _ _ _]
+  (messages/handle-message events/biz|email-capture|capture-observed))

@@ -172,3 +172,31 @@
                  cookie
                  (update adventure-attrs
                          :choices json-serialize))))
+
+(defn save-email-capture-dismissed-at
+  [capture-modal-id cookie value]
+  (.set cookie
+        (str "email-capture-dismissed-at-" capture-modal-id)
+        value
+        thirty-minutes
+        "/"
+        nil
+        config/secure?))
+
+(defn retrieve-email-capture-dismissed-at
+  [capture-modal-id cookie]
+  (.get cookie (str "email-capture-dismissed-at-" capture-modal-id)))
+
+(defn save-email-captured-at
+  [cookie value]
+  (.set cookie
+        "email-captured-at"
+        value
+        four-weeks
+        "/"
+        nil
+        config/secure?))
+
+(defn retrieve-email-captured-at
+  [cookie]
+  (.get cookie "email-captured-at"))
