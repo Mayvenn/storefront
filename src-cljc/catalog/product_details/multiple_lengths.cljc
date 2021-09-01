@@ -302,13 +302,9 @@
 
 (defn add-to-cart-query
   [app-state]
-  (let [shop?                              (or (= "shop" (get-in app-state keypaths/store-slug))
-                                               (= "retail-location" (get-in app-state keypaths/store-experience)))
-        selected-sku                       (get-in app-state catalog.keypaths/detailed-product-selected-sku)
+  (let [selected-sku                       (get-in app-state catalog.keypaths/detailed-product-selected-sku)
         selections                         (get-in app-state catalog.keypaths/detailed-product-selections)
         quadpay-loaded?                    (get-in app-state keypaths/loaded-quadpay)
-        sku-family                         (-> selected-sku :hair/family first)
-        mayvenn-install-incentive-families #{"bundles" "closures" "frontals" "360-frontals"}
         selected-skus                      (->> (get-in app-state catalog.keypaths/detailed-product-multiple-lengths-selections)
                                                 (filterv not-empty)
                                                 (mapv
@@ -338,17 +334,7 @@
                                        (utils/requesting? app-state (conj request-keys/add-to-bag (set (keys sku-id->quantity)))))
       :cta/disabled?               (some #(not (:inventory/in-stock? %)) selected-skus)
       :add-to-cart.quadpay/price   sku-price
-      :add-to-cart.quadpay/loaded? quadpay-loaded?}
-     (when (and shop?
-                (mayvenn-install-incentive-families sku-family))
-       {:add-to-cart.incentive-block/id          "add-to-cart-incentive-block"
-        :add-to-cart.incentive-block/footnote    "*Mayvenn Services cannot be combined with other promotions"
-        :add-to-cart.incentive-block/link-id     "learn-more-mayvenn-install"
-        :add-to-cart.incentive-block/link-label  "Learn more"
-        :add-to-cart.incentive-block/link-target [events/popup-show-consolidated-cart-free-install]
-        :add-to-cart.incentive-block/callout     "✋Don't miss out on free Mayvenn Service"
-        :add-to-cart.incentive-block/message     (str "Get a free Mayvenn Service by a licensed "
-                                                      "stylist with qualifying purchases.* ")}))))
+      :add-to-cart.quadpay/loaded? quadpay-loaded?})))
 
 (defn ^:private tab-section<
   [product
@@ -497,9 +483,12 @@
      :picker-modal/close-target [events/control-product-detail-picker-close]}))
 
 (defn ^:private total-query
-  [multi-length-total]
-  #:total{:primary   "Add for Free Install"
-          :secondary (mf/as-money multi-length-total)})
+  [multi-length-total item-count]
+  (let [still-to-go (- 3 item-count)]
+    #:total{:primary   (if (> still-to-go 0)
+                         (str "Add " still-to-go " more for Free Install")
+                         "Hair + Free Install")
+            :secondary (mf/as-money multi-length-total)}))
 
 (defn query [data]
   (let [selections              (get-in data catalog.keypaths/detailed-product-selections)
@@ -532,12 +521,14 @@
         sku-availability        (catalog.products/index-by-selectors
                                  [:hair/color :hair/length]
                                  product-skus)
+        chosen-skus             (->> (get-in data catalog.keypaths/detailed-product-multiple-lengths-selections)
+                                     (filterv not-empty)
+                                     (mapv
+                                      #(determine-sku-from-selections data (merge selections %))))
         multi-length-total      (reduce +
-                                        (->> (get-in data catalog.keypaths/detailed-product-multiple-lengths-selections)
-                                             (filterv not-empty)
-                                             (mapv
-                                              #(determine-sku-from-selections data (merge selections %)))
-                                             (mapv #(:sku/price %))))]
+                                        (->>
+                                         chosen-skus
+                                         (mapv #(:sku/price %))))]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
@@ -575,7 +566,7 @@
                     :selections        selections
                     :options           product-options
                     :length-selections multi-length-selections})
-     (total-query multi-length-total)
+     (total-query multi-length-total (count chosen-skus))
      (when (-> (get-in data catalog.keypaths/detailed-product-multiple-lengths-selections) count (< 5))
        #:add-length{:id    "add-length"
                     :event events/control-product-detail-picker-add-length})
