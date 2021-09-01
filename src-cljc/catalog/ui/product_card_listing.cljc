@@ -73,14 +73,13 @@
   [{:keys [id subsections loading-products?]} _ _]
   (when id
     [:div.px2.pb4.pt6
-     (if
-         loading-products? [:div.col-12.center (ui/large-spinner {:style {:height "4em"}})]
-
-         (mapv (fn build [{:as subsection :keys [subsection-key]}]
-                 (c/build product-list-subsection-component
-                          subsection
-                          (c/component-id (str "subsection-" subsection-key))))
-               subsections))]))
+     (if loading-products?
+       [:div.col-12.center (ui/large-spinner {:style {:height "4em"}})]
+       (mapv (fn build [{:as subsection :keys [subsection-key]}]
+               (c/build product-list-subsection-component
+                        subsection
+                        (c/component-id (str "subsection-" subsection-key))))
+             subsections))]))
 
 (defn query
   [app-state category products-matching-filter-selections]
