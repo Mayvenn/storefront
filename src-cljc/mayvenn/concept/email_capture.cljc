@@ -26,6 +26,8 @@
     e/navigate-checkout-payment
     e/navigate-checkout-confirmation
 
+    e/navigate-sign
+
     ;; The modal links to these, so we don't show on these pages (instead of dismissing the modal).
     e/navigate-content-tos
     e/navigate-content-privacy})

@@ -39,6 +39,7 @@
 (defpath navigate-legacy-named-search)
 (defpath navigate-legacy-ugc-named-search)
 (defpath navigate-product-details)
+(defpath navigate-sign)
 (defpath navigate-sign-in)
 (defpath navigate-sign-out)
 (defpath navigate-sign-up)
