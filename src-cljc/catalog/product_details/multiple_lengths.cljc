@@ -410,7 +410,8 @@
                                                                                (:hair/length options)))
                                                              :selected-value   (:hair/length selection)
                                                              :selection-target [events/control-product-detail-picker-option-length-select {:index     idx
-                                                                                                                                           :selection :hair/length}]
+                                                                                                                                           :selection :hair/length
+                                                                                                                                           :navigation-event events/navigate-product-details}]
                                                              :open-target      [events/control-product-detail-picker-open {:facet-slug   [:hair/length]
                                                                                                                            :length-index idx}]})
                                                           selected-lengths)}))))
@@ -433,7 +434,7 @@
 
 (defn ^:private length-product-options->length-picker-modal-options
   [options selections length-index availability]
-  (let [selected-hair-color (:hair/color (first selections))
+  (let [selected-hair-color  (:hair/color (first selections))
         selected-hair-length (:hair/length (get selections length-index))]
     (when length-index
       (concat
@@ -441,9 +442,10 @@
          [{:option/value            ""
            :option/label            "Remove Length"
            :option/available?       true
-           :option/selection-target [events/control-product-detail-picker-option-length-select {:index     length-index
-                                                                                                :selection :hair/length
-                                                                                                :value     ""}]}])
+           :option/selection-target [events/control-product-detail-picker-option-length-select {:index            length-index
+                                                                                                :selection        :hair/length
+                                                                                                :navigation-event events/navigate-product-details
+                                                                                                :value            ""}]}])
        (map (fn[{:option/keys [slug sku-swatch rectangle-swatch name] :as option}]
               (let [available? (boolean (get-in availability [selected-hair-color slug]))
                     sold-out?  (not (boolean (get-in availability [selected-hair-color
@@ -453,9 +455,10 @@
                   #:product{:option option}
                   #:option{:id               (str "picker-length-" slug)
                            :selection-target [events/control-product-detail-picker-option-length-select
-                                              {:selection :hair/length
-                                               :value     slug
-                                               :index     length-index}]
+                                              {:selection        :hair/length
+                                               :value            slug
+                                               :navigation-event events/navigate-product-details
+                                               :index            length-index}]
                            :checked?         (= selected-hair-length slug)
                            :label            name
                            :value            slug
@@ -675,18 +678,35 @@
 
 (defmethod transitions/transition-state events/control-product-detail-picker-option-length-select
   [_ event {:keys [selection value index]} app-state]
-  (let [color (-> app-state
-                  (get-in catalog.keypaths/detailed-product-multiple-lengths-selections)
-                  first
-                  :hair/color)]
+  (let [color        (-> app-state
+                         (get-in catalog.keypaths/detailed-product-multiple-lengths-selections)
+                         first
+                         :hair/color)
+        selected-sku (if (= 0 index)
+                       (determine-sku-from-selections app-state {selection #{value}})
+                       (get-in app-state catalog.keypaths/detailed-product-selected-sku))]
     (if (empty? value)
       (-> app-state
+          (assoc-in catalog.keypaths/detailed-product-selected-sku selected-sku)
           (assoc-in catalog.keypaths/detailed-product-picker-visible? false)
           (update-in  (conj catalog.keypaths/detailed-product-multiple-lengths-selections index) empty))
       (-> app-state
+          (assoc-in catalog.keypaths/detailed-product-selected-sku selected-sku)
           (assoc-in catalog.keypaths/detailed-product-picker-visible? false)
           (update-in (conj catalog.keypaths/detailed-product-multiple-lengths-selections index) merge {selection   value
                                                                                                        :hair/color color})))))
+
+(defmethod effects/perform-effects events/control-product-detail-picker-option-length-select
+  [_ event {:keys [navigation-event]} _ app-state]
+  (let [sku-id-for-selection (-> app-state
+                                 (get-in catalog.keypaths/detailed-product-selected-sku)
+                                 :catalog/sku-id)
+        params-with-sku-id   (cond-> (select-keys (products/current-product app-state)
+                                                  [:catalog/product-id :page/slug])
+                               (some? sku-id-for-selection)
+                               (assoc :query-params {:SKU sku-id-for-selection}))]
+    (effects/redirect navigation-event params-with-sku-id :sku-option-select)
+    #?(:cljs (scroll/enable-body-scrolling))))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-add-length
   [_ _ {} state]
