@@ -783,18 +783,18 @@
 
            :category/description (copy "Our 100% virgin hair Headband Wigs rank low on effort, but high on impact."
                                        "This quick protective style option is perfect for when you’re on the go.")
-           :subcategory/image-id "fe34e6e9-8927-4b62-94ac-91b37f0a137f" ;;TODO Fill with some carousel 0 image
+           :subcategory/image-id "fe34e6e9-8927-4b62-94ac-91b37f0a137f" ;;TODO(heather) Fill with some carousel 0 image
 
            :contentful/faq-id     :category-headband-wigs
            :catalog/department    #{"hair"}
            :hair/family           #{"headband-wigs"}
            :selector/essentials   [:hair/family :catalog/department]
            :selector/electives    [:hair/texture :hair/origin]}
-          (category->seo "Headband Wigs: Virgin Headband Wigs"
-                         (copy "") ;;TODO get copy
-                         "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/") ;;TODO get image?
-          wig-templates)
-   ])
+          (category->seo "100% Virgin Hair Headband Wigs | Mayvenn"
+                         (copy "Mayvenn’s Headband Wigs come in Straight, Body Wave, Loose Wave, and Deep Wave."
+                               "Crafted with high-quality 100% virgin human hair.")
+                         "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/") ;;TODO(heather) get image?
+          wig-templates)])
 
 (def mayvenn-install-eligible
   [{:catalog/category-id              "23"
