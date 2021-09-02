@@ -49,7 +49,7 @@
                    :data-test id})])
 
 (def fine-print-1
-  [:div.proxima.content-4.px2.pt4
+  [:div.px2.pt4
    {:style {:font "10px/16px 'Proxima Nova', Arial, sans-serif"}}
    "*$35 Off offer is for first-time subscribers only. $200 minimum purchase required. "
    "Mayvenn may choose to modify the promotion at any time. "
@@ -72,7 +72,8 @@
    (bg-image data)
    [:div.p4.white.bg-p-color
     [:form.col-12.center.px4
-     {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
+     {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))
+      :data-test (:email-capture.submit/id data)}
      (title data)
      (text-field data)
      (cta-1 data)]
@@ -83,7 +84,7 @@
   [:div.mb5 (ui/submit-button-medium value {:data-test id})])
 
 (def fine-print-2
-  [:div.proxima.content-4.px2.pt4.pb6
+  [:div.px2.pt4.pb6
    {:style {:font "12px/17px 'Proxima Nova', Arial, sans-serif"}}
    "*$35 Off offer is for first-time subscribers only. $200 minimum purchase required. "
    "Mayvenn may choose to modify the promotion at any time. "
@@ -95,7 +96,7 @@
    ". Unsubscribe anytime."])
 
 (defn design-2 [{:keys [id] :as   data}]
-  [:div.bg-cool-gray.p4
+  [:div.bg-pale-purple.p4
    [:div.flex.justify-end
     (ui/modal-close {:data-test   (str id "-dismiss")
                      :class       "fill-black stroke-black"
@@ -110,7 +111,8 @@
     [:span.p-color "$35 OFF"]
     " for joining."]
    [:form.col-12.center.px4
-    {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
+    {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))
+     :data-test (:email-capture.submit/id data)}
     (text-field data)
     (cta-2 data)]
    hr-divider
@@ -145,12 +147,13 @@
         focused                (get-in app-state k/ui-focus)
         textfield-keypath      concept/textfield-keypath
         email                  (get-in app-state textfield-keypath)]
-    (when (and capture-modal-id displayable?)
-      (merge {:id                                  "email-capture"
+    (when displayable?
+      (merge {:id                                   "email-capture"
               :capture-modal-id                     capture-modal-id
               :email-capture.dismiss/target         [e/biz|email-capture|dismissed {:id capture-modal-id}]
               :email-capture.submit/target          [e/biz|email-capture|captured {:id    capture-modal-id
                                                                                    :email email}]
+              :email-capture.submit/id              "email-capture-submit"
               :email-capture.text-field/id          "email-capture-input"
               :email-capture.text-field/placeholder "ENTER EMAIL ADDRESS"
               :email-capture.text-field/focused     focused

@@ -64,7 +64,8 @@
     {:email-capture-id     email-capture-id
      :long-timer-started?  long-timer-started?
      :short-timer-started? short-timer-started?
-     :displayable?         (and (not long-timer-started?)
+     :displayable?         (and email-capture-id
+                                (not long-timer-started?)
                                 (not short-timer-started?)
                                 (experiments/in-house-email-capture? app-state))}))
 
