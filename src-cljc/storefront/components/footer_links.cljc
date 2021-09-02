@@ -11,6 +11,7 @@
             [storefront.effects :as effects]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
+            [storefront.platform.messages :as messages]
             [storefront.routes :as routes]
             [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]))
@@ -156,6 +157,8 @@
       (assoc-in keypaths/footer-email-submitted true)))
 
 (defmethod effects/perform-effects events/control-footer-email-submit
-  [_ event args app-state]
-  #?(:cljs (scroll/scroll-selector-to-top "[data-ref=sign-up-on-mb]")
+  [_ event {:keys [email]} app-state]
+  #?(:cljs (do
+             (messages/handle-message events/user-identified)
+             (scroll/scroll-selector-to-top "[data-ref=sign-up-on-mb]"))
       :clj nil))
