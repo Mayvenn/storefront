@@ -180,7 +180,7 @@
         1
         thirty-minutes
         "/"
-        nil
+        (root-domain)
         config/secure?))
 
 (defn retrieve-email-capture-short-timer-started?
@@ -196,7 +196,7 @@
         1
         four-weeks
         "/"
-        nil
+        (root-domain)
         config/secure?))
 
 (defn retrieve-email-capture-long-timer-started?
