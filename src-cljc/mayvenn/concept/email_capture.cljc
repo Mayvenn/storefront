@@ -22,6 +22,10 @@
   #{e/navigate-cart
     e/navigate-checkout
 
+    ;; Auth pages
+    e/navigate-reset-password
+    e/navigate-force-set-password
+    e/navigate-forgot-password
     e/navigate-sign
 
     ;; The modal links to these, so we don't show on these pages (instead of dismissing the modal).
