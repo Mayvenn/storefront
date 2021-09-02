@@ -735,11 +735,11 @@
                                        "convenient way to change up your look instantly.")
            :subcategory/image-id "a4f7ad94-3c2c-41aa-be4d-94d9d83b1602"
 
-           :contentful/faq-id              :category-ready-wear-wigs
-           :catalog/department             #{"hair"}
-           :hair/family                    #{"ready-wigs"}
-           :selector/essentials            [:hair/family :catalog/department]
-           :selector/electives             [:hair/texture :wig/trait]
+           :contentful/faq-id   :category-ready-wear-wigs
+           :catalog/department  #{"hair"}
+           :hair/family         #{"ready-wigs"}
+           :selector/essentials [:hair/family :catalog/department]
+           :selector/electives  [:hair/texture :wig/trait]
 
            :page/title-template            [:computed/selected-facet-string " Wigs: " :computed/selected-facet-string " " :seo/title " | Mayvenn"]
            :page.meta/description-template ["Mayvenn’s "
@@ -763,37 +763,38 @@
                                        "360 wigs have lace around the entire crown of your head with a cap in the middle.")
            :subcategory/image-id "fe34e6e9-8927-4b62-94ac-91b37f0a137f"
 
-           :contentful/faq-id     :category-virgin-360-wigs
-           :catalog/department    #{"hair"}
-           :hair/family           #{"360-wigs"}
-           :selector/essentials   [:hair/family :catalog/department]
-           :selector/electives    [:hair/texture :hair/origin]}
+           :contentful/faq-id   :category-virgin-360-wigs
+           :catalog/department  #{"hair"}
+           :hair/family         #{"360-wigs"}
+           :selector/essentials [:hair/family :catalog/department]
+           :selector/electives  [:hair/texture :hair/origin]}
           (category->seo "360 Lace Wigs: Virgin 360 Lace Frontal Wigs"
                          (copy "Mayvenn’s human hair 360 lace wigs give you all around protection and"
                                "come in different variations such as Brazilian, Malaysian, straight,"
                                "and deep wave.")
                          "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/")
           wig-templates)
-   (merge {:catalog/category-id "40"
-           :category/new?       true
-
-           :copy/title "Virgin Headband Wigs"
-           :page/slug  "virgin-headband-wigs"
-           :seo/title  "Virgin Headband Wigs"
-
-           :category/description (copy "Our 100% virgin hair Headband Wigs rank low on effort, but high on impact."
-                                       "This quick protective style option is perfect for when you’re on the go.")
-           :subcategory/image-id "fe34e6e9-8927-4b62-94ac-91b37f0a137f" ;;TODO(heather) Fill with some carousel 0 image
-
+   (merge {:catalog/category-id   "40"
+           :category/new?         true
+           :copy/title            "Virgin Headband Wigs"
+           :page/slug             "virgin-headband-wigs"
+           :seo/title             "Virgin Headband Wigs"
+           :category/description  (copy "Our 100% virgin hair Headband Wigs rank low on effort, but high on impact."
+                                        "This quick protective style option is perfect for when you’re on the go.")
+           :subcategory/image-id  "fe34e6e9-8927-4b62-94ac-91b37f0a137f" ;;TODO(heather) Fill with some carousel 0 image
            :contentful/faq-id     :category-headband-wigs
            :catalog/department    #{"hair"}
            :hair/family           #{"headband-wigs"}
            :selector/essentials   [:hair/family :catalog/department]
-           :selector/electives    [:hair/texture :hair/origin]}
-          (category->seo "100% Virgin Hair Headband Wigs | Mayvenn"
-                         (copy "Mayvenn’s Headband Wigs come in Straight, Body Wave, Loose Wave, and Deep Wave."
-                               "Crafted with high-quality 100% virgin human hair.")
-                         "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/") ;;TODO(heather) get image?
+           :selector/electives    [:hair/texture :hair/origin]
+           :page/title            "100% Virgin Hair Headband Wigs | Mayvenn"
+           :opengraph/title       "Mayvenn Headband Wigs - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
+           :page.meta/description "Mayvenn’s Headband Wigs come in Straight, Body Wave, Loose Wave, and Deep Wave."
+           :opengraph/description (copy "Quick, high-quality, convenient: our versatile 100% virgin human hair"
+                                        "Headband Wigs are sure to be a favorite. Easily customizable with built-in"
+                                        "combs and an adjustable strap and headband.")
+           :category/image-url    "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/" ;;TODO(heather) get image?
+           :seo/sitemap           true}
           wig-templates)])
 
 (def mayvenn-install-eligible
