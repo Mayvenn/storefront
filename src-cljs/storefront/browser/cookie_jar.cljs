@@ -175,9 +175,9 @@
 
 ;; TODO: make these cookie names shorter
 (defn save-email-capture-short-timer-started
-  [capture-modal-id cookie]
+  [capture-modal-short-id cookie]
   (.set cookie
-        (str "ec-stimer_" capture-modal-id)
+        (str "ec-stimer_" capture-modal-short-id)
         1
         thirty-minutes
         "/"
@@ -185,8 +185,8 @@
         config/secure?))
 
 (defn retrieve-email-capture-short-timer-started?
-  [capture-modal-id cookie]
-  (->> (str "ec-stimer_" capture-modal-id)
+  [capture-modal-short-id cookie]
+  (->> (str "ec-stimer_" capture-modal-short-id)
        (.get cookie)
        boolean))
 

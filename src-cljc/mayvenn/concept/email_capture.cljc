@@ -37,8 +37,10 @@
     e/navigate-shopping-quiz})
 
 (def email-capture-configs
-  {"first-pageview-email-capture" {:nav-events-forbid (set/union never-show-on-these-pages adventure-and-quiz-pages)}
-   "adv-quiz-email-capture"       {:nav-events-allow adventure-and-quiz-pages}})
+  {"first-pageview-email-capture" {:cookie-id "1pv"
+                                   :nav-events-forbid (set/union never-show-on-these-pages adventure-and-quiz-pages)}
+   "adv-quiz-email-capture"       {:cookie-id "adv"
+                                   :nav-events-allow adventure-and-quiz-pages}})
 
 (def model-keypath [:models :email-capture])
 (def textfield-keypath (conj model-keypath :textfield))
@@ -76,11 +78,11 @@
 (defn refresh-short-timers [cookie]
   #?(:clj nil
      :cljs
-     (doseq [capture-modal-id (keys email-capture-configs)]
+     (doseq [[_ {:keys [cookie-id]}] email-capture-configs]
        ;; These cookies get refreshed on every navigate so that they expire only
        ;; after 30 minutes of inactivity
-       (when (cookie-jar/retrieve-email-capture-short-timer-started? capture-modal-id cookie)
-         (cookie-jar/save-email-capture-short-timer-started capture-modal-id cookie)))))
+       (when (cookie-jar/retrieve-email-capture-short-timer-started? cookie-id cookie)
+         (cookie-jar/save-email-capture-short-timer-started cookie-id cookie)))))
 
 (defn start-long-timer-if-unstarted [cookie]
   #?(:cljs
@@ -97,9 +99,9 @@
      (let [cookie (get-in app-state k/cookie)]
        (-> app-state
            (assoc-in long-timer-started-keypath (cookie-jar/retrieve-email-capture-long-timer-started? cookie))
-           (assoc-in short-timer-starteds-keypath (->> (keys email-capture-configs)
-                                                       (map (fn [email-capture-id]
-                                                              [email-capture-id (cookie-jar/retrieve-email-capture-short-timer-started? email-capture-id cookie)]))
+           (assoc-in short-timer-starteds-keypath (->> email-capture-configs
+                                                       (map (fn [[email-capture-id {:keys [cookie-id]}]]
+                                                              [email-capture-id (cookie-jar/retrieve-email-capture-short-timer-started? cookie-id cookie)]))
                                                        (into {})))))))
 
 (defmethod fx/perform-effects e/biz|email-capture|captured
@@ -111,7 +113,7 @@
 (defmethod fx/perform-effects e/biz|email-capture|dismissed
   [_ _ {:keys [id]} state _]
   #?(:cljs
-     (cookie-jar/save-email-capture-short-timer-started id (get-in state k/cookie)))
+     (cookie-jar/save-email-capture-short-timer-started (get-in email-capture-configs [id :cookie-id]) (get-in state k/cookie)))
   (publish e/biz|email-capture|timer-state-observed))
 
 ;;; TRACKING
