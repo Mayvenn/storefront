@@ -145,7 +145,7 @@
         focused                (get-in app-state k/ui-focus)
         textfield-keypath      concept/textfield-keypath
         email                  (get-in app-state textfield-keypath)]
-    (when displayable?
+    (when (and capture-modal-id displayable?)
       (merge {:id                                  "email-capture"
               :capture-modal-id                     capture-modal-id
               :email-capture.dismiss/target         [e/biz|email-capture|dismissed {:id capture-modal-id}]
@@ -168,7 +168,10 @@
                                                        " your first order"]
                 :email-capture.cta/value              "Save me $35 Now"}
                "adv-quiz-email-capture"
-               {:email-capture.cta/value              "Get top looks + $35 off"})))))
+               {:email-capture.cta/value              "Get top looks + $35 off"}
+
+               ;; ELSE
+               nil)))))
 
 (defn ^:export built-component [app-state opts]
   (when-let [data (query app-state)]

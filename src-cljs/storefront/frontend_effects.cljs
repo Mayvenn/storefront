@@ -220,7 +220,10 @@
     (cookie-jar/save-user cookie (get-in app-state keypaths/user))
     (refresh-account app-state)
 
-    (email-capture/refresh-dismissed-ats cookie)
+    (email-capture/refresh-short-timers cookie)
+    (when (:em_hash query-params)
+      (email-capture/start-long-timer-if-unstarted cookie))
+    (messages/handle-message events/biz|email-capture|timer-state-observed)
 
     (when-not (or module-load? (#{:first-nav} caused-by))
       (api/get-promotions (get-in app-state keypaths/api-cache)
@@ -247,9 +250,6 @@
 
     (when-let [affiliate-stylist-id (:affiliate_stylist_id query-params)]
       (cookie-jar/save-affiliate-stylist-id cookie {:affiliate-stylist-id affiliate-stylist-id}))
-
-    (when (:em_hash query-params)
-      (messages/handle-message events/biz|email-capture|capture-observed {:reason "em_hash"}))
 
     (when-not module-load?
       (when (get-in app-state keypaths/popup)
@@ -962,6 +962,7 @@
   (messages/handle-message events/clear-order)
   (cookie-jar/clear-account (get-in app-state keypaths/cookie))
   (messages/handle-message events/control-menu-collapse-all)
+  (email-capture/start-long-timer-if-unstarted (get-in app-state keypaths/cookie))
   (abort-pending-requests (get-in app-state keypaths/api-requests))
   (if (= events/navigate-home (get-in app-state keypaths/navigation-event))
     (messages/handle-message events/flash-show-success {:message "Logged out successfully"})
@@ -1005,5 +1006,5 @@
   (messages/handle-message events/user-identified {:user (:user order)}))
 
 (defmethod effects/perform-effects events/user-identified
-  [_ _ _ _ _]
-  (messages/handle-message events/biz|email-capture|capture-observed))
+  [_ _ _ _ app-state]
+  (email-capture/start-long-timer-if-unstarted (get-in app-state keypaths/cookie)))

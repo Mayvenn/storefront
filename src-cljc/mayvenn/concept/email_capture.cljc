@@ -4,7 +4,6 @@
                  [storefront.hooks.facebook-analytics :as facebook-analytics]
                  [storefront.hooks.google-tag-manager :as google-tag-manager]
                  [storefront.hooks.stringer :as stringer]])
-            [clojure.string :as string]
             [clojure.set :as set]
             [spice.date]
             [storefront.events :as e]
@@ -35,12 +34,12 @@
 
 (def email-capture-configs
   {"first-pageview-email-capture" {:nav-events-forbid (set/union never-show-on-these-pages adventure-and-quiz-pages)}
-   "adv-quiz-email-capture" {:nav-events-allow adventure-and-quiz-pages}})
+   "adv-quiz-email-capture"       {:nav-events-allow adventure-and-quiz-pages}})
 
 (def model-keypath [:models :email-capture])
 (def textfield-keypath (conj model-keypath :textfield))
-(def capture-observed-at-keypath (conj model-keypath :capture-observed-at))
-(def dismissal-observed-ats-keypath (conj model-keypath :dismissal-observed-ats))
+(def long-timer-started-keypath (conj model-keypath :long-timer-started?))
+(def short-timer-starteds-keypath (conj model-keypath :short-timer-starteds?))
 
 (defn location-approved? [nav-event email-capture-id]
   (let [{:keys [nav-events-forbid nav-events-allow]} (get email-capture-configs email-capture-id)]
@@ -59,68 +58,58 @@
        first))
 
 (defn <-trigger [email-capture-id app-state]
-  (let [{:keys [capture-observed-at
-                dismissal-observed-ats]} (get-in app-state model-keypath)
-        captured?                        (boolean capture-observed-at)
-        dismissed?                       (boolean (get dismissal-observed-ats email-capture-id))]
-    {:email-capture-id email-capture-id
-     :captured?        captured?
-     :dismissed?       dismissed?
-     :displayable?     (and (not captured?)
-                            (not dismissed?)
-                            (experiments/in-house-email-capture? app-state))}))
+  (let [{:keys [long-timer-started?
+                short-timer-starteds?]} (get-in app-state model-keypath)
+        short-timer-started?            (boolean (get short-timer-starteds? email-capture-id))]
+    {:email-capture-id     email-capture-id
+     :long-timer-started?  long-timer-started?
+     :short-timer-started? short-timer-started?
+     :displayable?         (and (not long-timer-started?)
+                                (not short-timer-started?)
+                                (experiments/in-house-email-capture? app-state))}))
 
-(defn refresh-dismissed-ats [cookie]
+(defn refresh-short-timers [cookie]
   #?(:clj nil
      :cljs
      (doseq [capture-modal-id (keys email-capture-configs)]
        ;; These cookies get refreshed on every navigate so that they expire only
        ;; after 30 minutes of inactivity
-       (when-let [dismissed-at (cookie-jar/retrieve-email-capture-dismissed-at capture-modal-id cookie)]
-         (cookie-jar/save-email-capture-dismissed-at capture-modal-id cookie dismissed-at)))))
+       (when (cookie-jar/retrieve-email-capture-short-timer-started? capture-modal-id cookie)
+         (cookie-jar/save-email-capture-short-timer-started capture-modal-id cookie)))))
+
+(defn start-long-timer-if-unstarted [cookie]
+  #?(:cljs
+     (when-not (cookie-jar/retrieve-email-capture-long-timer-started? cookie)
+       (cookie-jar/save-email-capture-long-timer-started cookie))))
 
 (defmethod t/transition-state e/biz|email-capture|reset
   [_ _ _ state]
   (assoc-in state model-keypath {}))
 
-(defmethod fx/perform-effects e/biz|email-capture|reset
-  [_ _ _ state _]
+(defmethod t/transition-state e/biz|email-capture|timer-state-observed
+  [_ _ _ app-state]
   #?(:cljs
-     (when-let [cookie (get-in state k/cookie)]
-       (doseq [id (keys email-capture-configs)]
-         (when (cookie-jar/retrieve-email-capture-dismissed-at id cookie)
-           (publish e/biz|email-capture|dismissal-observed {:id     id
-                                                            :reason "cookie"})))
-       (when (cookie-jar/retrieve-email-captured-at cookie)
-         (publish e/biz|email-capture|capture-observed {:reason "cookie"})))))
-
-(defn now-iso []
-  (spice.date/to-iso (spice.date/now)))
+     (let [cookie (get-in app-state k/cookie)]
+       (-> app-state
+           (assoc-in long-timer-started-keypath (cookie-jar/retrieve-email-capture-long-timer-started? cookie))
+           (assoc-in short-timer-starteds-keypath (->> (keys email-capture-configs)
+                                                       (map (fn [email-capture-id]
+                                                              [email-capture-id (cookie-jar/retrieve-email-capture-short-timer-started? email-capture-id cookie)]))
+                                                       (into {})))))))
 
 (defmethod fx/perform-effects e/biz|email-capture|captured
   [_ _ _ state _]
   #?(:cljs
-     (cookie-jar/save-email-captured-at (get-in state k/cookie) (now-iso)))
-  (publish e/biz|email-capture|capture-observed {:reason "capture"}))
-
-;; capture-observed = know the email address has been captured, i.e.
-;; * an email address has been entered in the modal (see also "captured", below)
-;; * em_hash query param has been consumed
-;; * user is logged in
-(defmethod t/transition-state e/biz|email-capture|capture-observed
-  [_ _ _ state]
-  (assoc-in state capture-observed-at-keypath (now-iso)))
+     (cookie-jar/save-email-capture-long-timer-started (get-in state k/cookie)))
+  (publish e/biz|email-capture|timer-state-observed))
 
 (defmethod fx/perform-effects e/biz|email-capture|dismissed
   [_ _ {:keys [id]} state _]
   #?(:cljs
-     (cookie-jar/save-email-capture-dismissed-at id (get-in state k/cookie) (now-iso)))
-  (publish e/biz|email-capture|dismissal-observed {:id id}))
+     (cookie-jar/save-email-capture-short-timer-started id (get-in state k/cookie)))
+  (publish e/biz|email-capture|timer-state-observed))
 
-;; dismissal-observed = know the modal has been seen and dismissed
-(defmethod t/transition-state e/biz|email-capture|dismissal-observed
-  [_ _ {:keys [id]} state]
-  (assoc-in state (conj dismissal-observed-ats-keypath id) (now-iso)))
+;;; TRACKING
 
 (defmethod trk/perform-track e/biz|email-capture|deployed ; TODO fire
   [_ events {:keys [id]} app-state]

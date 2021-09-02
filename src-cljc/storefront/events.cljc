@@ -721,10 +721,9 @@
 ;; Email Capture
 (defpath biz|email-capture|reset)
 (defpath biz|email-capture|deployed)
-(defpath biz|email-capture|capture-observed)
 (defpath biz|email-capture|captured)
 (defpath biz|email-capture|dismissed)
-(defpath biz|email-capture|dismissal-observed)
+(defpath biz|email-capture|timer-state-observed)
 
 ;; Shopping Quiz iterations
 (defpath navigate-shopping-quiz)

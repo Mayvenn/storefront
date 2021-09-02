@@ -173,30 +173,34 @@
                  (update adventure-attrs
                          :choices json-serialize))))
 
-(defn save-email-capture-dismissed-at
-  [capture-modal-id cookie value]
+(defn save-email-capture-short-timer-started
+  [capture-modal-id cookie]
   (.set cookie
-        (str "email-capture-dismissed-at-" capture-modal-id)
-        value
+        (str "email-capture-short-timer-started?_" capture-modal-id)
+        1
         thirty-minutes
         "/"
         nil
         config/secure?))
 
-(defn retrieve-email-capture-dismissed-at
+(defn retrieve-email-capture-short-timer-started?
   [capture-modal-id cookie]
-  (.get cookie (str "email-capture-dismissed-at-" capture-modal-id)))
+  (->> (str "email-capture-short-timer-started?_" capture-modal-id)
+       (.get cookie)
+       boolean))
 
-(defn save-email-captured-at
-  [cookie value]
+(defn save-email-capture-long-timer-started
+  [cookie]
   (.set cookie
-        "email-captured-at"
-        value
+        "email-capture-long-timer-started?"
+        1
         four-weeks
         "/"
         nil
         config/secure?))
 
-(defn retrieve-email-captured-at
+(defn retrieve-email-capture-long-timer-started?
   [cookie]
-  (.get cookie "email-captured-at"))
+  (->> "email-capture-long-timer-started?"
+       (.get cookie)
+       boolean))
