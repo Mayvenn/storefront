@@ -173,10 +173,11 @@
                  (update adventure-attrs
                          :choices json-serialize))))
 
+;; TODO: make these cookie names shorter
 (defn save-email-capture-short-timer-started
   [capture-modal-id cookie]
   (.set cookie
-        (str "email-capture-short-timer-started?_" capture-modal-id)
+        (str "ec-stimer_" capture-modal-id)
         1
         thirty-minutes
         "/"
@@ -185,14 +186,14 @@
 
 (defn retrieve-email-capture-short-timer-started?
   [capture-modal-id cookie]
-  (->> (str "email-capture-short-timer-started?_" capture-modal-id)
+  (->> (str "ec-stimer_" capture-modal-id)
        (.get cookie)
        boolean))
 
 (defn save-email-capture-long-timer-started
   [cookie]
   (.set cookie
-        "email-capture-long-timer-started?"
+        "ec-ltimer"
         1
         four-weeks
         "/"
@@ -201,6 +202,6 @@
 
 (defn retrieve-email-capture-long-timer-started?
   [cookie]
-  (->> "email-capture-long-timer-started?"
+  (->> "ec-ltimer"
        (.get cookie)
        boolean))
