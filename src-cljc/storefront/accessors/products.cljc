@@ -44,4 +44,5 @@
     #{"frontals"}          :pdp-lace-frontals
     #{"seamless-clip-ins"} :pdp-seamless-clip-ins
     #{"tape-ins"}          :pdp-straight-tape-ins
+    #{"headband-wigs"}     :pdp-headband-wigs
     nil))

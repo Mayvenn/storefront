@@ -712,11 +712,11 @@
                                        "Ours are made with virgin lace & real human hair.")
            :subcategory/image-id "71dcdd17-f9cc-456f-b763-2c1c047c30b4"
 
-           :catalog/department    #{"hair"}
-           :hair/family           #{"lace-front-wigs"}
-           :selector/essentials   [:hair/family :catalog/department]
-           :selector/electives    [:hair/texture :hair/origin :hair/base-material]
-           :contentful/faq-id     :category-virgin-lace-front-wigs}
+           :catalog/department  #{"hair"}
+           :hair/family         #{"lace-front-wigs"}
+           :selector/essentials [:hair/family :catalog/department]
+           :selector/electives  [:hair/texture :hair/origin :hair/base-material]
+           :contentful/faq-id   :category-virgin-lace-front-wigs}
           (category->seo "Lace Front Wigs: Virgin Lace Front Wigs"
                          (copy "Mayvenn’s human hair lace front wigs mimic a natural hairline"
                                "and come in different variations such as Brazilian, Malaysian,"
