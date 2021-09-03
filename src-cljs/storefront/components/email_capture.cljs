@@ -12,7 +12,7 @@
             [storefront.platform.component-utils :as utils]))
 
 (defn m-header [id close-dialog-href]
-  [:div.flex.justify-between.items-center.p3.bg-white
+  [:div.flex.justify-between.items-center.p2.bg-white
    [:div]
    [:div.flex.justify-center.pt1
     ^:inline (svg/mayvenn-logo {:width "52px" :height "30px"})]
@@ -165,7 +165,7 @@
              (case capture-modal-id
 
                "first-pageview-email-capture"
-               {:email-capture.photo/uuid             "1ba0870d-dad8-466a-adc9-0d5ec77c9944"
+               {:email-capture.photo/uuid             "ef2a5a8b-6da2-4abd-af99-c33d485ac275"
                 :email-capture.title/primary          [:span "Join our email list and get "
                                                        [:span.p-color "$35 OFF"]
                                                        " your first order"]
