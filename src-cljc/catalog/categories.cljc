@@ -781,7 +781,7 @@
            :seo/title             "Virgin Headband Wigs"
            :category/description  (copy "Our 100% virgin hair Headband Wigs rank low on effort, but high on impact."
                                         "This quick protective style option is perfect for when you’re on the go.")
-           :subcategory/image-id  "fe34e6e9-8927-4b62-94ac-91b37f0a137f" ;;TODO(heather) Fill with some carousel 0 image
+           :subcategory/image-id  "4208daf0-824d-4a4e-97be-40001b1635f5"
            :contentful/faq-id     :category-headband-wigs
            :catalog/department    #{"hair"}
            :hair/family           #{"headband-wigs"}
@@ -793,7 +793,7 @@
            :opengraph/description (copy "Quick, high-quality, convenient: our versatile 100% virgin human hair"
                                         "Headband Wigs are sure to be a favorite. Easily customizable with built-in"
                                         "combs and an adjustable strap and headband.")
-           :category/image-url    "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/" ;;TODO(heather) get image?
+           :category/image-url    "//ucarecdn.com/4208daf0-824d-4a4e-97be-40001b1635f5/"
            :seo/sitemap           true}
           wig-templates)])
 
