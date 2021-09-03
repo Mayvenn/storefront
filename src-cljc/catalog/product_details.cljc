@@ -340,32 +340,32 @@
      (select-keys section [:link/content :link/target :link/id]))))
 
 (defn query [data]
-  (let [selections           (get-in data catalog.keypaths/detailed-product-selections)
-        product              (products/current-product data)
-        product-skus         (products/extract-product-skus data product)
-        images-catalog       (get-in data keypaths/v2-images)
-        facets               (facets/by-slug data)
-        selected-sku         (get-in data catalog.keypaths/detailed-product-selected-sku)
-        carousel-images      (find-carousel-images product product-skus images-catalog
-                                                    ;;TODO These selection election keys should not be hard coded
-                                                    (select-keys selections [:hair/color
-                                                                             :hair/base-material])
-                                                    selected-sku)
-        length-guide-image   (->> product
-                                   (images/for-skuer images-catalog)
-                                   (select {:use-case #{"length-guide"}})
-                                   first)
-        product-options      (get-in data catalog.keypaths/detailed-product-options)
-        ugc                  (ugc-query product selected-sku data)
-        sku-price            (or (:product/essential-price selected-sku)
-                                  (:sku/price selected-sku))
-        review-data          (review-component/query data)
-        shop?                (or (= "shop" (get-in data keypaths/store-slug))
-                                  (= "retail-location" (get-in data keypaths/store-experience)))
-        hair?                (accessors.products/hair? product)
-        faq                  (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
-                                (get-in data (conj keypaths/cms-faq pdp-faq-id)))
-        selected-picker      (get-in data catalog.keypaths/detailed-product-selected-picker)]
+  (let [selections         (get-in data catalog.keypaths/detailed-product-selections)
+        product            (products/current-product data)
+        product-skus       (products/extract-product-skus data product)
+        images-catalog     (get-in data keypaths/v2-images)
+        facets             (facets/by-slug data)
+        selected-sku       (get-in data catalog.keypaths/detailed-product-selected-sku)
+        carousel-images    (find-carousel-images product product-skus images-catalog
+                                                   ;;TODO These selection election keys should not be hard coded
+                                                   (select-keys selections [:hair/color
+                                                                            :hair/base-material])
+                                                   selected-sku)
+        length-guide-image (->> product
+                                  (images/for-skuer images-catalog)
+                                  (select {:use-case #{"length-guide"}})
+                                  first)
+        product-options    (get-in data catalog.keypaths/detailed-product-options)
+        ugc                (ugc-query product selected-sku data)
+        sku-price          (or (:product/essential-price selected-sku)
+                                 (:sku/price selected-sku))
+        review-data        (review-component/query data)
+        shop?              (or (= "shop" (get-in data keypaths/store-slug))
+                                 (= "retail-location" (get-in data keypaths/store-experience)))
+        hair?              (accessors.products/hair? product)
+        faq                (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
+                               (get-in data (conj keypaths/cms-faq pdp-faq-id)))
+        selected-picker    (get-in data catalog.keypaths/detailed-product-selected-picker)]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
@@ -409,8 +409,9 @@
                                                     :id   "info-color-circle"}
                                          :sections (keep (partial tab-section< product)
                                                          [(merge
-                                                           {:heading     "Model Wearing"
-                                                            :content-key :copy/model-wearing}
+                                                           (when (seq (:copy/model-wearing product))
+                                                             {:heading     "Model Wearing"
+                                                              :content-key :copy/model-wearing})
                                                            (when length-guide-image
                                                              {:link/content "Length Guide"
                                                               :link/target  [events/popup-show-length-guide
