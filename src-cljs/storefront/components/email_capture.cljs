@@ -20,15 +20,19 @@
                     :class       "fill-black stroke-black"
                     :close-attrs close-dialog-href})])
 
-(defn bg-image [{:email-capture.photo/keys [uuid]}]
-  (ui/img {:max-size "500px"
-           :class    "col-12"
-           :src      uuid}))
+(defn bg-image [{:email-capture.photo/keys [uuid-mob uuid-dsk]}]
+  [:div.p0
+   (ui/img {:max-size "500px"
+            :class    "col-12 hide-on-mb"
+            :style    {:vertical-align "bottom"}
+            :src      uuid-dsk})
+   (ui/img {:max-size "500px"
+            :class    "col-12 hide-on-tb-dt"
+            :style    {:vertical-align "bottom"}
+            :src      uuid-mob})])
 
 (defn title [{:email-capture.title/keys [primary]}]
-  [:div.proxima.mb3
-   {:style {:font "900 30px/32px 'Proxima Nova', Arial, sans-serif"
-            :letter-spacing "letter-spacing: 0.5px"}}
+  [:div.proxima.title-1.mb3
    primary])
 
 (def hr-divider
@@ -72,12 +76,13 @@
    (m-header id (apply utils/fake-href (:email-capture.dismiss/target data)))
    (bg-image data)
    [:div.p4.black.bg-white
-    [:form.col-12.center.px4
+    [:form.col-12.center.px1
      {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))
       :data-test (:email-capture.submit/id data)}
      (title data)
-     (text-field data)
-     (cta-1 data)]
+     [:div.px3
+      (text-field data)
+      (cta-1 data)]]
     hr-divider
     fine-print-1]])
 
@@ -165,11 +170,12 @@
              (case capture-modal-id
 
                "first-pageview-email-capture"
-               {:email-capture.photo/uuid             "ef2a5a8b-6da2-4abd-af99-c33d485ac275"
-                :email-capture.title/primary          [:span "Join our email list and get "
+               {:email-capture.photo/uuid-mob "ef2a5a8b-6da2-4abd-af99-c33d485ac275"
+                :email-capture.photo/uuid-dsk "1ba0870d-dad8-466a-adc9-0d5ec77c9944"
+                :email-capture.title/primary  [:span "Join our email list and get "
                                                        [:span.p-color "$35 OFF"]
                                                        " your first order"]
-                :email-capture.cta/value              "Sign Up"}
+                :email-capture.cta/value      "Sign Up"}
                "adv-quiz-email-capture"
                {:email-capture.cta/value              "Sign Up"}
 
