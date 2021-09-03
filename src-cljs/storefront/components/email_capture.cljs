@@ -21,15 +21,19 @@
                     :close-attrs close-dialog-href})])
 
 (defn bg-image [{:email-capture.photo/keys [uuid-mob uuid-dsk]}]
-  [:div.p0
-   (ui/img {:max-size "500px"
-            :class    "col-12 hide-on-mb"
-            :style    {:vertical-align "bottom"}
-            :src      uuid-dsk})
-   (ui/img {:max-size "500px"
-            :class    "col-12 hide-on-tb-dt"
-            :style    {:vertical-align "bottom"}
-            :src      uuid-mob})])
+  [:div
+   [:div.hide-on-mb
+    (ui/aspect-ratio 1 1
+                     (ui/img {:max-size "500px"
+                              :class    "col-12"
+                              :style    {:vertical-align "bottom"}
+                              :src      uuid-dsk}))]
+   [:div.hide-on-tb-dt
+    (ui/aspect-ratio 4 3
+                     (ui/img {:max-size "500px"
+                              :class    "col-12"
+                              :style    {:vertical-align "bottom"}
+                              :src      uuid-mob}))]])
 
 (defn title [{:email-capture.title/keys [primary]}]
   [:div.proxima.title-1.mb3
