@@ -81,8 +81,7 @@
    (bg-image data)
    [:div.p4.black.bg-white
     [:form.col-12.center.px1
-     {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))
-      :data-test (:email-capture.submit/id data)}
+     {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
      (title data)
      [:div.px3
       (text-field data)
@@ -122,8 +121,7 @@
     [:span.p-color "$35 OFF"]
     " for joining."]
    [:form.col-12.center.px4
-    {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))
-     :data-test (:email-capture.submit/id data)}
+    {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
     (text-field data)
     (cta-2 data)]
    hr-divider
@@ -164,7 +162,7 @@
               :email-capture.dismiss/target         [e/biz|email-capture|dismissed {:id capture-modal-id}]
               :email-capture.submit/target          [e/biz|email-capture|captured {:id    capture-modal-id
                                                                                    :email email}]
-              :email-capture.submit/id              "email-capture-submit"
+              :email-capture.cta/id                 "email-capture-submit"
               :email-capture.text-field/id          "email-capture-input"
               :email-capture.text-field/placeholder "Enter Email Address"
               :email-capture.text-field/focused     focused
