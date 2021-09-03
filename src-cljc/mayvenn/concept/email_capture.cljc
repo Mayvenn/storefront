@@ -72,8 +72,7 @@
      :short-timer-started? short-timer-started?
      :displayable?         (and email-capture-id
                                 (not long-timer-started?)
-                                (not short-timer-started?)
-                                (experiments/in-house-email-capture? app-state))}))
+                                (not short-timer-started?))}))
 
 (defn refresh-short-timers [cookie]
   #?(:clj nil
