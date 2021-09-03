@@ -45,7 +45,7 @@
                    :required  true
                    :type      "email"
                    :value     email
-                   :class     "col-12 center bg-white title-3 proxima"
+                   :class     "col-12 bg-white"
                    :data-test id})])
 
 (def fine-print-1
@@ -157,7 +157,7 @@
                                                                                    :email email}]
               :email-capture.submit/id              "email-capture-submit"
               :email-capture.text-field/id          "email-capture-input"
-              :email-capture.text-field/placeholder "ENTER EMAIL ADDRESS"
+              :email-capture.text-field/placeholder "Enter Email Address"
               :email-capture.text-field/focused     focused
               :email-capture.text-field/keypath     textfield-keypath
               :email-capture.text-field/errors      errors
