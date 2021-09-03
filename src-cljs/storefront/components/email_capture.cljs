@@ -50,18 +50,19 @@
 
 (def fine-print-1
   [:div.px2.pt4
-   {:style {:font "10px/16px 'Proxima Nova', Arial, sans-serif"}}
+   {:style {:color "#767676"
+            :font  "10px/16px 'Proxima Nova', Arial, sans-serif"}}
    "*$35 Off offer is for first-time subscribers only. $200 minimum purchase required. "
    "Mayvenn may choose to modify the promotion at any time. "
    "*I consent to receive Mayvenn marketing content via email. "
    "For further information, please read our "
-   [:a.s-color (utils/route-to e/navigate-content-tos) "Terms"]
+   [:a.p-color (utils/route-to e/navigate-content-tos) "Terms"]
    " and "
-   [:a.s-color (utils/route-to e/navigate-content-privacy) "Privacy Policy"]
+   [:a.p-color (utils/route-to e/navigate-content-privacy) "Privacy Policy"]
    ". Unsubscribe anytime."])
 
 (defn cta-1 [{:email-capture.cta/keys [value id]}]
-  [:div.mb5 (ui/submit-button-medium-black value {:data-test id})])
+  [:div.mb5 (ui/submit-button-medium value {:data-test id})])
 
 ;; TODO consider using c/build and c/html and stuff
 (defn design-1 [{:keys [id]
@@ -70,7 +71,7 @@
    {:data-test (str id "-modal")}
    (m-header id (apply utils/fake-href (:email-capture.dismiss/target data)))
    (bg-image data)
-   [:div.p4.white.bg-p-color
+   [:div.p4.black.bg-white
     [:form.col-12.center.px4
      {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))
       :data-test (:email-capture.submit/id data)}
@@ -85,7 +86,8 @@
 
 (def fine-print-2
   [:div.px2.pt4.pb6
-   {:style {:font "12px/17px 'Proxima Nova', Arial, sans-serif"}}
+   {:style {:color "#6b6b6b"
+            :font "12px/17px 'Proxima Nova', Arial, sans-serif"}}
    "*$35 Off offer is for first-time subscribers only. $200 minimum purchase required. "
    "Mayvenn may choose to modify the promotion at any time. "
    "*I consent to receive Mayvenn marketing content via email. "
@@ -165,13 +167,11 @@
                "first-pageview-email-capture"
                {:email-capture.photo/uuid             "1ba0870d-dad8-466a-adc9-0d5ec77c9944"
                 :email-capture.title/primary          [:span "Join our email list and get "
-                                                       [:span
-                                                        {:style {:color "#97D5CA"}}
-                                                        "$35 OFF"]
+                                                       [:span.p-color "$35 OFF"]
                                                        " your first order"]
-                :email-capture.cta/value              "Save me $35 Now"}
+                :email-capture.cta/value              "Sign Up"}
                "adv-quiz-email-capture"
-               {:email-capture.cta/value              "Get top looks + $35 off"}
+               {:email-capture.cta/value              "Sign Up"}
 
                ;; ELSE
                nil)))))

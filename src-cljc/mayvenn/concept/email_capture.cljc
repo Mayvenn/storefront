@@ -118,7 +118,7 @@
 
 ;;; TRACKING
 
-(defmethod trk/perform-track e/biz|email-capture|deployed ; TODO fire
+(defmethod trk/perform-track e/biz|email-capture|deployed
   [_ events {:keys [id]} app-state]
   #?(:cljs
      (stringer/track-event "email_capture-deploy" {:email-capture-id id})))
