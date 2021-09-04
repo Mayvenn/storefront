@@ -123,7 +123,3 @@
 (defn multiple-lengths-pdp?
   [data]
   (display-feature? data "multiple-lengths-pdp"))
-
-(defn headband-wigs?
-  [data]
-  (display-feature? data "headband-wigs"))

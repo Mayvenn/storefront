@@ -668,7 +668,7 @@
                                                    "30 Day Quality Guarantee, our Wigs can be customized to fit"
                                                    "your unique look using the built-in combs and adjustable strap.")
            :product-list/title               "Shop All Wigs"
-           :subcategories/ids                ["24" "26" "25"]
+           :subcategories/ids                ["24" "26" "25" "40"]
            :subcategories/layout             :list
            :subsections/subsection-selectors [{:subsection/title    "Lace Front Wigs"
                                                :subsection/selector {:hair/family #{"lace-front-wigs"}}}

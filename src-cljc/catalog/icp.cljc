@@ -223,9 +223,7 @@
 
 (defn page
   [state _]
-  (let [interstitial-category               (cond-> (accessors.categories/current-category state)
-                                              (experiments/headband-wigs? state)
-                                              (update :subcategories/ids conj "40"))
+  (let [interstitial-category               (accessors.categories/current-category state)
         facet-filtering-state               (assoc (get-in state catalog.keypaths/k-models-facet-filtering)
                                                    :facet-filtering/item-label "item")
         selections                          (:facet-filtering/filters facet-filtering-state)
