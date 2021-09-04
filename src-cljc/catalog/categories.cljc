@@ -789,7 +789,7 @@
            :selector/electives    [:hair/texture :hair/origin]
            :page/title            "100% Virgin Hair Headband Wigs | Mayvenn"
            :opengraph/title       "Mayvenn Headband Wigs - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
-           :page.meta/description "Mayvenn’s Headband Wigs come in Straight, Body Wave, Loose Wave, and Deep Wave."
+           :page.meta/description "Mayvenn’s Headband Wigs come in Straight, Body Wave, Loose Wave, and Deep Wave. Crafted with high-quality 100% virgin human hair."
            :opengraph/description (copy "Quick, high-quality, convenient: our versatile 100% virgin human hair"
                                         "Headband Wigs are sure to be a favorite. Easily customizable with built-in"
                                         "combs and an adjustable strap and headband.")
