@@ -181,6 +181,9 @@
                "adv-quiz-email-capture"
                {:email-capture.cta/value              "Sign Up"}
 
+               ;; ENGINEER: Are you adding or altering an email capture modal design? Be sure to let Roman
+               ;; know, as he'd like to mirror design changes on OptinMonster (which still show on the Instapages)
+
                ;; ELSE
                nil)))))
 
