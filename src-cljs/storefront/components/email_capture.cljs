@@ -105,8 +105,9 @@
    [:a.p-color (utils/route-to e/navigate-content-privacy) "Privacy Policy"]
    ". Unsubscribe anytime."])
 
-(defn design-2 [{:keys [id] :as   data}]
+(defn design-2 [{:keys [id] :as data}]
   [:div.bg-pale-purple.p4
+   {:data-test (str id "-modal")}
    [:div.flex.justify-end
     (ui/modal-close {:data-test   (str id "-dismiss")
                      :class       "fill-black stroke-black"
