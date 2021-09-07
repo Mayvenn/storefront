@@ -183,5 +183,4 @@
   (storefront.safe-hiccup/html5
    (storefront.component/normalize-element
     (:contents (fetch (:contentful (:static-pages-repo dev-system/the-system)) "/policy/privacy" {:preview?          false
-                                                                                                  :exception-handler println}))))
-  )
+                                                                                                  :exception-handler println})))))

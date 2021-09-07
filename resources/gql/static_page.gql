@@ -11,7 +11,7 @@ fragment Subcontent on Entry {
     html
   }
   ...on Paragraph {
-		title
+    title
     textAlignment
     text {
       json
@@ -59,7 +59,7 @@ fragment Content on Entry {
     html
   }
   ...on Paragraph {
-		title
+    title
     textAlignment
     text {
       json
