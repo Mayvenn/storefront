@@ -795,6 +795,29 @@
                                         "combs and an adjustable strap and headband.")
            :category/image-url    "//ucarecdn.com/4208daf0-824d-4a4e-97be-40001b1635f5/"
            :seo/sitemap           true}
+          wig-templates)
+   (merge {:catalog/category-id "41"
+           :category/new?       true
+
+           :copy/title "Virgin Closure Wigs"
+           :page/slug  "virgin-closure-wigs"
+           :seo/title  "Virgin Closure Wigs"
+
+           :category/description             (copy "")                              ;; TODO Fill with "category hero copy"
+           :subcategory/image-id             "fe34e6e9-8927-4b62-94ac-91b37f0a137f" ;;TODO Fill with some carousel 0 image
+           :subsections/subsection-selectors [{:subsection/title    "4 x 4 Closure Wigs"
+                                               :subsection/selector {:hair.closure/area #{"4x4"}}}
+                                              {:subsection/title    "5 x 5 Closure Wigs"
+                                               :subsection/selector {:hair.closure/area #{"5x5"}}}]
+
+           :contentful/faq-id   :category-closure-wigs
+           :catalog/department  #{"hair"}
+           :hair/family         #{"closure-wigs"}
+           :selector/essentials [:hair/family :catalog/department]
+           :selector/electives  [:hair/texture :hair/origin :hair.closure/area]}
+          (category->seo "Closure Wigs: Virgin Closure Wigs"
+                         (copy "") ;;TODO get copy
+                         "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/") ;;TODO Fill with some carousel 0 image
           wig-templates)])
 
 (def mayvenn-install-eligible

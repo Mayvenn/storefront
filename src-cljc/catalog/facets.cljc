@@ -17,7 +17,8 @@
    :color         :hair/color
    :length        :hair/length
    :color.process :hair/color.process
-   :style         :wig/trait})
+   :style         :wig/trait
+   :lace-size     :hair.closure/area})
 
 (def slug>query-param
   (set/map-invert query-param>slug))
