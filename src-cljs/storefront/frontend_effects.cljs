@@ -305,12 +305,6 @@
                (get-in app-state keypaths/static-id))
     (api/get-static-content event)))
 
-(defmethod effects/perform-effects events/navigate-static-page
-  [_ _ _ _ app-state]
-  (when-not (= static-content-id
-               (get-in app-state keypaths/static-id))
-    (api/get-static-content event)))
-
 (defmethod effects/perform-effects events/navigate-content-about-us [_ _ _ _ app-state]
   (wistia/load))
 
