@@ -803,7 +803,9 @@
            :page/slug  "virgin-closure-wigs"
            :seo/title  "Virgin Closure Wigs"
 
-           :category/description             (copy "")                              ;; TODO Fill with "category hero copy"
+           :category/description             (copy "Available with 5x5 or 4x4 inches of parting space,"
+                                                   "our virgin hair Lace Closure Wigs are ​​crafted to provide more coverage and less stress."
+                                                   "Take your pick of Standard or HD Lace and 4 classic textures.")
            :subcategory/image-id             "fe34e6e9-8927-4b62-94ac-91b37f0a137f" ;;TODO Fill with some carousel 0 image
            :subsections/subsection-selectors [{:subsection/title    "4 x 4 Closure Wigs"
                                                :subsection/selector {:hair.closure/area #{"4x4"}}}
