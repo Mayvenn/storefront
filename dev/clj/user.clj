@@ -17,12 +17,13 @@
   (alter-var-root #'the-system
                   (constantly (system/create-system))))
 
-(defn start [] (alter-var-root #'the-system component/start))
+(defn start [] (alter-var-root #'the-system component/start) :start)
 
 (defn stop
   []
   (alter-var-root #'the-system
-                  (fn [s] (when s (component/stop s)))))
+                  (fn [s] (when s (component/stop s))))
+  :stop)
 
 (defn go
   []
