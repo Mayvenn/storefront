@@ -119,7 +119,7 @@
    [:div.flex.items-center.justify-between
     [:div.flex-auto
      (titles/proxima-left (with :title data))]
-    [:div.col-2
+    [:div.col-3
      (catalog.M/price-block data)]]
    (catalog.M/yotpo-reviews-summary data)])
 
@@ -571,7 +571,7 @@
        #:add-length{:id    "add-length"
                     :event events/control-product-detail-picker-add-length})
      (when sku-price
-       {:price-block/primary   "starting at"
+       {:price-block/primary   "Starting at"
         :price-block/secondary (mf/as-money sku-price)})
 
      (if hair?
