@@ -1,0 +1,58 @@
+@import 'basscss-typography';
+@import 'custom-typography.css';
+@import 'basscss-margin';
+@import 'custom-margin.css';
+@import 'basscss-padding';
+@import 'custom-padding.css';
+@import 'basscss-border';
+@import 'custom-border.css';
+@import 'basscss-addons/modules/colors';
+@import 'custom-colors.css';
+@import 'basscss-addons/modules/border-colors';
+@import 'custom-border-colors.css';
+
+.content-markdown a:link {
+	@inherit: .p-color, .button-font-2, .border-bottom, .border-width-2, .border-p-color;
+}
+.content-markdown {
+    font: 13px/18px var(--font-family-proxima);
+    line-height: 26px;
+}
+.content-markdown ul, .content-markdown ol { @inherit: .mb2, .content-2; }
+.content-markdown p { @inherit: .content-2, .mb2; }
+.content-markdown li { @inherit: .content-2, .my1; }
+.content-markdown h1 { @inherit: .title-2.canela, .my3; }
+.content-markdown h2 { @inherit: .title-2.canela, .my3; }
+.content-markdown h3 { @inherit: .title-3.canela, .my3; }
+.content-markdown b { @inherit: .bold; }
+.content-markdown table {
+	border-collapse: collapse;
+	table-layout: fixed;
+	margin: 10px 0;
+	width: 100%;
+	border: 2px solid var(--gray-mask);
+}
+.content-markdown table tr {
+	border-bottom: 1px solid var(--cool-gray);
+}
+.content-markdown table th {
+	@inherit: .content-3, .p1, .bold;
+	background: var(--cool-gray);
+}
+.content-markdown table td:first-child {
+	border-left: 0;
+}
+.content-markdown table td {
+	@inherit: .p1;
+	border-left: 1px solid var(--cool-gray);
+	margin: 0;
+	vertical-align: top;
+}
+
+:root {
+    --gray-mask: rgba(204, 204, 204, 0.1);
+    --cool-gray: #eeefef;
+    --medium-font-weight: 400;
+    --font-weight: var(--medium-font-weight);
+    --font-family-proxima: 'Proxima Nova', Arial, sans-serif;
+}

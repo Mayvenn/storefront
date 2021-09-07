@@ -1,0 +1,122 @@
+fragment Subcontent on Entry {
+  sys {
+    id
+  }
+  __typename
+  ...on Markdown {
+    title
+    content
+  }
+  ...on Html {
+    html
+  }
+  ...on Paragraph {
+		title
+    textAlignment
+    text {
+      json
+      links {
+        entries {
+          inline {
+            sys {
+              id
+            }
+            # graphql does not allow recursive queries
+            # ...Content
+          }
+          block {
+            sys {
+              id
+            }
+            # graphql does not allow recursive queries
+            # ...Content
+          }
+        }
+        assets {
+          # hyperlink {}
+          block {
+            sys { id }
+            title
+            url
+            width
+            height
+          }
+        }
+      }
+    }
+  }
+}
+fragment Content on Entry {
+  sys {
+    id
+  }
+  __typename
+  ...on Markdown {
+    title
+    content
+  }
+  ...on Html {
+    html
+  }
+  ...on Paragraph {
+		title
+    textAlignment
+    text {
+      json
+      links {
+        entries {
+          inline {
+            # graphql does not allow recursive queries - so we can step one down
+            ...Subcontent
+          }
+          block {
+            # graphql does not allow recursive queries - so we can step one down
+            ...Subcontent
+          }
+        }
+        assets {
+          # hyperlink {}
+          block {
+            sys { id }
+            title
+            url
+            width
+            height
+          }
+        }
+      }
+    }
+  }
+}
+
+query($preview: Boolean, $path: String) {
+  staticPageCollection(preview: $preview, limit: 1, where: {path: $path}) {
+    items {
+      path
+      title
+      content {
+        json
+        links {
+          entries {
+            inline {
+              ...Content
+            }
+            block {
+              ...Content
+            }
+          }
+          assets {
+            # hyperlink {}
+            block {
+              sys { id }
+              url
+              title
+              width
+              height
+            }
+          }
+        }
+      }
+    }
+  }
+}

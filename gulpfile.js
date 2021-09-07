@@ -108,6 +108,7 @@ function css() {
       require('postcss-calc')(),
       require('postcss-color-function')(),
       require('postcss-discard-comments')(),
+      require('postcss-inherit'),
       require('postcss-inline-svg')(),
       require('autoprefixer')({browsers: ['last 3 versions']}),
       /* require('postcss-reporter')(), */

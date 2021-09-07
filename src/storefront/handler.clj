@@ -28,6 +28,7 @@
             [spice.selector :as selector]
             storefront.ugc
             stylist-directory.keypaths
+            [storefront.safe-hiccup :refer [html5]]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.categories :as accessors.categories]
             [storefront.accessors.experiments :as experiments]
@@ -44,6 +45,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.system.contentful :as contentful]
+            [storefront.system.contentful.static-page :as static-pages]
             [storefront.transitions :as transitions]
             [storefront.views :as views]
             storefront.accessors.contentful
@@ -70,19 +72,19 @@
     (catch NumberFormatException _
       nil)))
 
-(defn render-static-page [template]
-  (template/eval template {:url assets/path}))
-
-(defn static-page [[navigate-kw content-kw & static-content-id]]
-  (when (= [navigate-kw content-kw] events/navigate-content)
+(defn static-page [[navigate-kw content-kw & static-content-id] static-pages-repo req]
+  ;; TODO(jeff): use an env var for preview parameter value & use constant-time= instead of =
+  (if-let [src (static-pages/content-for static-pages-repo (:uri req) (= "N60sUd" (get (:query-params req) "preview")))]
     {:id      static-content-id
-     :content (->> static-content-id
-                   (map name)
-                   (string/join "-")
-                   (format "public/content/%s.html")
-                   io/resource
-                   slurp
-                   render-static-page)}))
+     :content src}
+    (when (= [navigate-kw content-kw] events/navigate-content)
+      (when-let [local-file (->> static-content-id
+                                 (map name)
+                                 (string/join "-")
+                                 (format "public/content/%s.html")
+                                 io/resource)]
+        {:id      static-content-id
+         :content (-> local-file slurp (template/eval {:uri assets/path}))}))))
 
 (defn storefront-site-defaults
   [environment]
@@ -274,7 +276,7 @@
   ([req keypath default-value]
    (get-in req (concat [:state] keypath) default-value)))
 
-(defn wrap-set-initial-state [h environment]
+(defn wrap-set-initial-state [h environment static-pages-repo]
   (fn [req]
     (let [nav-message        (:nav-message req)
           [nav-event _params] nav-message
@@ -285,7 +287,7 @@
              (assoc-in-req-state keypaths/scheme (name (:scheme req)))
              (assoc-in-req-state keypaths/navigation-message nav-message)
              (assoc-in-req-state keypaths/navigation-uri nav-uri)
-             (assoc-in-req-state keypaths/static (static-page nav-event))
+             (assoc-in-req-state keypaths/static (static-page nav-event static-pages-repo req))
              (assoc-in-req-state keypaths/environment environment)
              (update-in-req-state [] experiments/determine-features))))))
 
@@ -493,7 +495,7 @@
          (assoc-in-req-state keypaths/features ["stylist-results-test"])))))
 
 ;;TODO Have all of these middleswarez perform event transitions, just like the frontend
-(defn wrap-state [routes {:keys [storeback-config welcome-config contentful launchdarkly environment]}]
+(defn wrap-state [routes {:keys [storeback-config welcome-config contentful static-pages-repo launchdarkly environment]}]
   (-> routes
       (wrap-add-feature-flags launchdarkly)
       (wrap-set-cms-cache contentful)
@@ -502,7 +504,7 @@
       (wrap-set-user)
       (wrap-set-welcome-url welcome-config)
       wrap-affiliate-initial-login-landing-navigation-message
-      (wrap-set-initial-state environment)))
+      (wrap-set-initial-state environment static-pages-repo)))
 
 (defn wrap-redirect-aladdin
   [h environment]
@@ -966,12 +968,12 @@
         (util.response/redirect "/checkout/payment?error=quadpay-invalid-state")
         (util.response/redirect "/checkout/processing")))))
 
-(defn static-routes [_]
-  (fn [{:keys [uri] :as _req}]
+(defn static-routes [{:keys [static-pages-repo]}]
+  (fn [{:keys [uri] :as req}]
     ;; can't use (:nav-message req) because routes/static-api-routes are not
     ;; included in routes/app-routes
     (let [{nav-event :handler} (bidi/match-route routes/static-api-routes uri)]
-      (some-> nav-event routes/bidi->edn static-page :content ->html-resp))))
+      (some-> nav-event routes/bidi->edn (static-page static-pages-repo req) :content ->html-resp))))
 
 (defn wrap-filter-params
   "Technically an invalid value, but query-params could generate this value

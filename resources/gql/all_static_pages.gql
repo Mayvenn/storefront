@@ -1,0 +1,9 @@
+query($preview: Boolean) {
+  staticPageCollection(preview: $preview) {
+    items {
+      sys { id }
+      path
+      title
+    }
+  }
+}

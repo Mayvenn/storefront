@@ -83,18 +83,32 @@
     (catch java.lang.IllegalArgumentException e
       "unknown")))
 
+;; Macro?
+(defn- if-dev-else
+  "Use dev-value if in env, otherwise use prod-value"
+  [env dev-value prod-value]
+  (if (#{"production" "acceptance"} (env :environment))
+    prod-value
+    dev-value))
+
+(def ^:private minute (* 60 1000))
+
 (def default-config {:server-opts       {:port 3006}
                      :client-version    client-version
-                     :contentful-config {:cache-timeout 120000
-                                         :endpoint      "https://cdn.contentful.com"}
+                     :contentful-config {:endpoint                   "https://cdn.contentful.com"
+                                         :graphql-endpoint           "https://graphql.contentful.com"
+                                         :env-id                     "master"}
                      :logging           {:system-name "storefront.system"}})
 
 (defn env-config []
   {:environment         (env :environment)
    :bugsnag-token       (env :bugsnag-token)
    :welcome-config      {:url (env :welcome-url)}
-   :contentful-config   {:api-key  (env :contentful-content-delivery-api-key)
-                         :space-id (env :contentful-space-id)}
+   :contentful-config   {:cache-timeout              (* (if-dev-else env 4 15) minute)
+                         :static-page-fetch-interval (* (if-dev-else env 5 30) minute)
+                         :api-key                    (env :contentful-content-delivery-api-key)
+                         :preview-api-key            (env :contentful-content-delivery-preview-api-key)
+                         :space-id                   (env :contentful-space-id)}
    :launchdarkly-config {:sdk-key (env :launchdarkly-sdk-key)}
    :storeback-config    {:endpoint          (env :storeback-endpoint)
                          :internal-endpoint (or

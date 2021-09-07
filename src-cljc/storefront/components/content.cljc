@@ -2,8 +2,10 @@
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.keypaths :as keypaths]))
 
-(defcomponent component [{:keys [content]} owner opts]
-  [:div {:dangerouslySetInnerHTML {:__html content}}])
+(defcomponent component [{:keys [content static-content-id]} owner opts]
+  [:div.mx-960.mx-auto
+   {:id                      (str "content-" static-content-id)
+    :dangerouslySetInnerHTML {:__html content}}])
 
 (defn query [data]
   (let [sms-number (get-in data keypaths/sms-number)]

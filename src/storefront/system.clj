@@ -7,14 +7,16 @@
             [storefront.handler :refer [create-handler]]
             [storefront.jetty :as jetty]
             [storefront.system.contentful :as contentful]
+            [storefront.system.scheduler :as scheduler]
+            [storefront.system.contentful.static-page :as static-page]
             [spice.logger.core :as logger]
             [tocsin.core :as tocsin]))
 
-(defrecord AppHandler [logger exception-handler storeback-config welcome-config environment client-version]
+(defrecord AppHandler [logger exception-handler storeback-config welcome-config environment client-version static-pages-repo]
   component/Lifecycle
   (start [c]
     (assoc c :handler (create-handler (dissoc c :handler))))
-  (stop [c] c))
+  (stop [c] (dissoc c :handler)))
 
 (defn exception-handler [bugsnag-token environment]
   (fn [e]
@@ -30,6 +32,11 @@
 (defn system-map [config]
   (component/system-map
    :logger (logger/create-logger (config :logging))
+   :scheduler (scheduler/->Scheduler nil nil nil)
+   :static-pages-repo (static-page/->Repository
+                       (merge (:contentful-config config)
+                              (select-keys config [:environment]))
+                       nil nil)
    :contentful  (contentful/map->ContentfulContext (merge (:contentful-config config)
                                                           (select-keys config [:environment])))
    :launchdarkly (feature-flags/map->LaunchDarkly (select-keys config [:launchdarkly-config]))
@@ -43,9 +50,11 @@
    :exception-handler (exception-handler (config :bugsnag-token) (config :environment))))
 
 (def dependency-map
-  {:app-handler     [:logger :exception-handler :contentful :launchdarkly :sitemap-cache]
-   :contentful      [:logger :exception-handler]
-   :embedded-server {:app :app-handler}})
+  {:app-handler       [:logger :exception-handler :contentful :launchdarkly :sitemap-cache :static-pages-repo]
+   :contentful        [:logger :exception-handler :scheduler]
+   :static-pages-repo [:scheduler]
+   :scheduler         [:logger :exception-handler]
+   :embedded-server   {:app :app-handler}})
 
 (defn create-system
   ([] (create-system {}))
