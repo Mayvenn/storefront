@@ -9,7 +9,18 @@
             [clojure.string :as string]
             [com.stuartsierra.component :refer [Lifecycle]]))
 
-(defn- content-map [c]
+(defn- content-map
+  "Takes a contentful tree of data and returns a map containing sys.id -> entry that exist.
+
+  A bit more formally:
+    content-map = map of ?id -> ?entry
+    where ?entry = has a contentful id (a map containing the form {:sys {:id ?id}})
+    and   ?entry != link to an entry (a map not containing {:sys {:type ?anything}})
+
+  (Entry maps in Contentful do not contain types, so this search heuristic is used)
+
+  This is useful to correlate any link / reference nodes to its corresponding entry."
+  [c]
   (apply maps/deep-merge
          (m/search c (m/and (m/$ {:sys {:id ?id} :as ?m})
                             (m/guard (not (:type (:sys ?m)))))
@@ -55,12 +66,6 @@
                                                                                     :alt    (str (:title asset))
                                                                                     :width  (:width asset)
                                                                                     :height (:height asset)}])
-     {:nodeType "embedded-asset-inline" :data {:target {:sys {:id ?id}}}}        (let [asset (id->entry ?id)]
-                                                                                  [:img
-                                                                                   {:src    (:url asset)
-                                                                                    :alt    (str (:title asset))
-                                                                                    :width  (:width asset)
-                                                                                    :height (:height asset)}])
      {:nodeType "embedded-entry-block" :data {:target {:sys {:id ?id}}}}        [:div.block (content-html (id->entry ?id) c)]
      {:nodeType "embedded-entry-inline" :data {:target {:sys {:id ?id}}}}       (content-html (id->entry ?id) c)
      {:nodeType "hyperlink" :content [(m/cata !content) ...] :data {:uri ?uri}} (m/subst [:a {:href ?uri} . !content ...])
@@ -76,7 +81,7 @@
                                                                                                    (m "italic") (str " italic")
                                                                                                    (m "underline") (str " underline"))}
                                                                                    ?text])
-     {:json (m/cata ?json)} ?json
+     {:json (m/cata ?json)}                                                        ?json
 
      ;; error handling
      ?x (do
@@ -84,25 +89,17 @@
           (exception-handler (IllegalArgumentException. (format "Missing clause in `content-html` for" (pr-str ?x))))
           [:div.bg-red.white "Unrecognized content type: " (pr-str ?x)]))))
 
-(defn- fetch-raw [contentful path {:keys [preview? exception-handler]}]
-  (let [pg (-> (gql/query contentful "static_page.gql" {"preview" (boolean preview?)
-                                                        "path"    (str path)})
-               :body
-               :data
-               :staticPageCollection
-               :items
-               first)]
-    (when pg
-      (:content pg))))
+(defn- fetch-raw [contentful path {:keys [preview?]}]
+  (-> (gql/query contentful "static_page.gql" {"preview" (boolean preview?)
+                                               "path"    (str path)})
+      :body
+      :data
+      :staticPageCollection
+      :items
+      first))
 
-(defn- fetch [contentful path {:keys [preview? exception-handler]}]
-  (let [pg (-> (gql/query contentful "static_page.gql" {"preview" (boolean preview?)
-                                                        "path"    (str path)})
-               :body
-               :data
-               :staticPageCollection
-               :items
-               first)]
+(defn- fetch [contentful path {:keys [preview? exception-handler] :as options}]
+  (when-let [pg (fetch-raw contentful path options)]
     (when pg
       {:title    (:title pg)
        :path     (:path pg)
