@@ -71,6 +71,7 @@
      :long-timer-started?  long-timer-started?
      :short-timer-started? short-timer-started?
      :displayable?         (and email-capture-id
+                                #?(:cljs (. js/navigator -cookieEnabled)) ; Never show if cookies disabled
                                 (not long-timer-started?)
                                 (not short-timer-started?))}))
 
