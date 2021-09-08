@@ -18,18 +18,19 @@
   (prn (at-at/show-schedule (:pool (:scheduler dev-system/the-system)))))
 
 (defmethod print-method Scheduler [v ^java.io.Writer w]
-  (.write w (format "<Scheduler %s>" (if (:pool v)
-                                       (at-at/show-schedule (:pool v))
+  (.write w (format "#:scheduler [%s]" (if (:pool v)
+                                       (with-out-str (at-at/show-schedule (:pool v)))
                                        "(No Scheduled Tasks)"))))
 
 (defn- safe-task [t {:keys [exception-handler logger]}]
-  (try
-    (t)
-    (catch Throwable t
+  (fn []
+    (try
+      (t)
+      (catch Throwable t
       ;; Ideally, we should never get here, but at-at halts all polls that throw exceptions silently.
       ;; This simply reports it and lets the polling continue
-      (exception-handler t)
-      (when logger (logger :error t)))))
+        (when exception-handler (exception-handler t))
+        (when logger (logger :error t))))))
 
 (defn every
   "Schedules task-f to be called every interval-ms in milliseconds. The next invocation is interval-ms after task-f completes."

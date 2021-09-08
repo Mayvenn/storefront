@@ -30,6 +30,23 @@
   "Converts contentful linked structure into a hiccup-like format for page rendering"
   ([c exception-handler] (content-html c (content-map c) exception-handler))
   ([c id->entry exception-handler]
+   ;; Meander crash course:
+   ;;  1. Meader is a pattern-matching library with a cond-like form (match input condition1 output1 condition2 output2 ...)
+   ;;  2. Rules for conditions (pattern matching)
+   ;;    a. Symbols with ? prefixed are variables to match against (variable)
+   ;;    b. Symbols with ! prefixed are variables that contain every match that has been made (memory variables)
+   ;;    c. Values must match for the output to be chosen
+   ;;    d. '...' indicates repeatedly match everything to the left of the elipsis. Typically paired with memory variables.
+   ;;         Example: [!a ...] -> all elements are stored in !a
+   ;;       Conceptually, think of this as repeating the previous forms as much as possible
+   ;;    e. '.' indicates a partition for pattern matching rules
+   ;;         Example: [:foo . !bar ...] -> !bar contains all elements after :foo
+   ;;    d. 'cata' recurses the pattern match, the result is exchanged with the variable given
+   ;;  3. Rules for outputting
+   ;;    a. By default, the output is just code to run
+   ;;    b. 'subst' allows pattern matching like behavior, but for outputting.
+   ;;       - Basically, allows '.' and '...' to be utilized to splat values out
+   ;;    c. Variables (? & ! prefixed symbols) can be used
    (m/match c
      ;; content types
      {:__typename "Markdown" :title ?title :content ?content}
@@ -114,9 +131,7 @@
                 :items
                 not-empty)]
     (when pgs
-      (into {}
-            (map (fn [page] [(:path page) page]))
-            pgs))))
+      (into #{} (map :path) pgs))))
 
 
 (defrecord Repository [contentful routes scheduler]
