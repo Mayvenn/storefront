@@ -104,8 +104,8 @@
   {:environment         (env :environment)
    :bugsnag-token       (env :bugsnag-token)
    :welcome-config      {:url (env :welcome-url)}
-   :contentful-config   {:cache-timeout              (* (if-dev-else env 4 15) minute)
-                         :static-page-fetch-interval (* (if-dev-else env 5 30) minute)
+   :contentful-config   {:cache-timeout              (* (if-dev-else env 4 60) minute)
+                         :static-page-fetch-interval (* (if-dev-else env 5 60) minute)
                          :api-key                    (env :contentful-content-delivery-api-key)
                          :preview-api-key            (env :contentful-content-delivery-preview-api-key)
                          :space-id                   (env :contentful-space-id)}
