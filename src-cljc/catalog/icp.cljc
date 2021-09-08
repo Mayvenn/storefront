@@ -45,51 +45,37 @@
    [:img ^:attrs {:src (str "//ucarecdn.com/" image-id "/-/format/auto/-/scale_crop/62x62/center/")}]])
 
 (defcomponent ^:private drill-category-list-entry-organism
-  [{:drill-category/keys [id title description image-id target action-id action-label use-three-column-layout?]} _ _]
+  [{:drill-category/keys [id title description image-id target action-id action-label showing-3-or-more?]} _ _]
   (when id
-    (if use-three-column-layout?
-      [:div.p3.flex.flex-wrap.col-12.content-start
-       {:key       id
-        :data-test id
-        :class     "col-3-on-tb-dt"}
-       [:div.col-12-on-tb-dt.col-3
-        [:div.hide-on-tb-dt.flex.justify-end.mr4.mt1
-         (when image-id
-           (drill-category-image image-id))]
-        [:div.hide-on-mb
-         (when image-id
-           (drill-category-image image-id))]]
-       [:div.col-12-on-tb-dt.col-9
-        [:div.title-2.proxima.shout title]
-        [:div.content-2.proxima.py1 description]
-        (when action-id
-          (ui/button-small-underline-primary
-           (assoc (apply utils/route-to target)
-                  :data-test  action-id)
-           action-label))]]
-      [:div.p3.flex.flex-wrap.col-12.content-start
-       {:key       id
-        :data-test id
-        :class     "col-6-on-tb-dt"}
-       [:div.col-3
-        [:div.flex.justify-end.mr4.mt1
-         (when image-id
-           (drill-category-image image-id))]]
-       [:div.col-9
-        [:div.title-2.proxima.shout title]
-        [:div.content-2.proxima.py1 description]
-        (when action-id
-          (ui/button-small-underline-primary
-           (assoc (apply utils/route-to target)
-                  :data-test  action-id)
-           action-label))]])))
+    [:div.flex-auto.p3.content-start
+     {:key       id
+      :data-test id}
+     [:div.flex
+      (when showing-3-or-more?
+        {:class "flex-column-on-tb-dt"})
+      [:div.hide-on-tb-dt.mr4
+       (when image-id
+         (drill-category-image image-id))]
+      [:div.hide-on-mb.mr4
+       (when image-id
+         (drill-category-image image-id))]
+      [:div
+       [:div.title-2.proxima.shout title]
+       [:div.content-2.proxima.py1 description]
+       (when action-id
+         (ui/button-small-underline-primary
+          (assoc (apply utils/route-to target)
+                 :data-test  action-id)
+          action-label))]]]))
 
 (defcomponent ^:private drill-category-list-organism
-  [{:drill-category-list/keys [values use-three-column-layout?]} _ _]
+  [{:drill-category-list/keys [values showing-3-or-more?]} _ _]
   (when (seq values)
-    [:div.py8.flex.flex-wrap.justify-center
+    [:div.py8.flex.justify-center.flex-column-on-mb
+     (when-not showing-3-or-more?
+       {:class "max-960 mx-auto"})
      (mapv #(component/build drill-category-list-entry-organism
-                             (assoc % :drill-category/use-three-column-layout? use-three-column-layout?)
+                             (assoc % :drill-category/showing-3-or-more? showing-3-or-more?)
                              {:key (:drill-category/id %)})
            values)]))
 
@@ -195,7 +181,7 @@
   [:div
    (component/build category-hero/organism category-hero)
    (vertical-squiggle-atom "-36px")
-   [:div.max-960.mx-auto
+   [:div.mx-auto
     (component/build drill-category-list-organism drill-category-list)
     (component/build drill-category-grid-organism drill-category-grid)]
 
@@ -296,7 +282,7 @@
                                                :drill-category-grid/title  (:subcategories/title interstitial-category)}}
                         :list
                         (let [values (mapv category->drill-category-list-entry subcategories)]
-                          {:drill-category-list {:drill-category-list/values                   values
-                                                 :drill-category-list/use-three-column-layout? (>= (count values) 3)
-                                                 :drill-category-list/tablet-desktop-columns   (max 1 (min 3 (count values)))}})
+                          {:drill-category-list {:drill-category-list/values                 values
+                                                 :drill-category-list/showing-3-or-more?     (>= (count values) 3)
+                                                 :drill-category-list/tablet-desktop-columns (max 1 (min 3 (count values)))}})
                         nil)))))
