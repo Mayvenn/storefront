@@ -426,6 +426,7 @@
       (concat
        (when (> length-index 0)
          [{:option/value            ""
+           :option/id               "picker-length-remove"
            :option/label            "Remove Length"
            :option/available?       true
            :option/selection-target [events/control-product-detail-picker-option-length-select {:index            length-index
