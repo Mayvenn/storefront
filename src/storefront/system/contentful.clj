@@ -2,7 +2,7 @@
   (:require [clojure.walk :as walk]
             [com.stuartsierra.component :as component]
             [lambdaisland.uri :as uri]
-            [overtone.at-at :as at-at]
+            [storefront.system.scheduler :as scheduler]
             [storefront.utils :as utils]
             [ring.util.response :as util.response]
             [spice.date :as date]
@@ -157,88 +157,81 @@
      :or   {item-tx-fn       identity
             collection-tx-fn identity}
      :as   content-params} attempt-number]
-   (try
-     (when (<= attempt-number 2)
-       (let [{:keys [status body]} (contentful-request
-                                    contentful
-                                    (merge
-                                     {"content_type" (name content-type)}
-                                     (when exists
-                                       (reduce
-                                        (fn [m field]
-                                          (assoc m (str field "[exists]") true))
-                                        {}
-                                        exists))
-                                     (when select
-                                       {"select" (string/join "," select)})
-                                     (when latest?
-                                       {"limit"                           1
-                                        :order                            (str "-fields." env-param)
-                                        (str "fields." env-param "[lte]") (date/to-iso (date/now))})))]
-         (if (and status (<= 200 status 299))
-           (swap! cache merge
-                  (cond
-                    (contains? #{:mayvennMadePage :advertisedPromo} content-type)
-                    (some-> body extract resolve-all walk/keywordize-keys (select-keys [content-type]))
+   (when (<= attempt-number 2)
+     (let [{:keys [status body]} (contentful-request
+                                  contentful
+                                  (merge
+                                   {"content_type" (name content-type)}
+                                   (when exists
+                                     (reduce
+                                      (fn [m field]
+                                        (assoc m (str field "[exists]") true))
+                                      {}
+                                      exists))
+                                   (when select
+                                     {"select" (string/join "," select)})
+                                   (when latest?
+                                     {"limit"                           1
+                                      :order                            (str "-fields." env-param)
+                                      (str "fields." env-param "[lte]") (date/to-iso (date/now))})))]
+       (if (and status (<= 200 status 299))
+         (swap! cache merge
+                (cond
+                  (contains? #{:mayvennMadePage :advertisedPromo} content-type)
+                  (some-> body extract resolve-all walk/keywordize-keys (select-keys [content-type]))
 
-                    (= :homepage content-type)
-                    (some->> body
-                             condense-items-with-includes
-                             walk/keywordize-keys
-                             (maps/index-by primary-key-fn)
-                             (assoc {} content-type))
+                  (= :homepage content-type)
+                  (some->> body
+                           condense-items-with-includes
+                           walk/keywordize-keys
+                           (maps/index-by primary-key-fn)
+                           (assoc {} content-type))
 
-                    (= :ugc-collection content-type)
-                    (some->> body
-                             resolve-all-collection
-                             (mapv extract-fields)
-                             walk/keywordize-keys
-                             (mapv item-tx-fn)
-                             (maps/index-by primary-key-fn)
-                             collection-tx-fn
-                             (assoc {} content-type))
+                  (= :ugc-collection content-type)
+                  (some->> body
+                           resolve-all-collection
+                           (mapv extract-fields)
+                           walk/keywordize-keys
+                           (mapv item-tx-fn)
+                           (maps/index-by primary-key-fn)
+                           collection-tx-fn
+                           (assoc {} content-type))
 
-                    (= :faq content-type)
-                    (some->> body
-                             resolve-all-collection
-                             (mapv extract-fields)
-                             walk/keywordize-keys
-                             (mapv (juxt :faq-section :questions-answers))
-                             (map (fn [[faq-section questions-answers]]
-                                    {:slug             faq-section
-                                     :question-answers (map
-                                                        (fn [{:keys [question answer]}]
-                                                          {:question {:text question}
-                                                           :answer   (format-answer answer)})
-                                                        questions-answers)}))
-                             (maps/index-by primary-key-fn)
-                             (assoc {} content-type))
+                  (= :faq content-type)
+                  (some->> body
+                           resolve-all-collection
+                           (mapv extract-fields)
+                           walk/keywordize-keys
+                           (mapv (juxt :faq-section :questions-answers))
+                           (map (fn [[faq-section questions-answers]]
+                                  {:slug             faq-section
+                                   :question-answers (map
+                                                      (fn [{:keys [question answer]}]
+                                                        {:question {:text question}
+                                                         :answer   (format-answer answer)})
+                                                      questions-answers)}))
+                           (maps/index-by primary-key-fn)
+                           (assoc {} content-type))
 
-                    :else
-                    (some->> body
-                             resolve-all-collection
-                             (mapv extract-fields)
-                             walk/keywordize-keys
-                             (mapv item-tx-fn)
-                             (maps/index-by primary-key-fn)
-                             collection-tx-fn
-                             (assoc {} content-type))))
+                  :else
+                  (some->> body
+                           resolve-all-collection
+                           (mapv extract-fields)
+                           walk/keywordize-keys
+                           (mapv item-tx-fn)
+                           (maps/index-by primary-key-fn)
+                           collection-tx-fn
+                           (assoc {} content-type))))
 
-           (do-fetch-entries contentful content-params (inc attempt-number)))))
-     (catch Throwable t
-       ;; Ideally, we should never get here, but at-at halts all polls that throw exceptions silently.
-       ;; This simply reports it and lets the polling continue
-       (exception-handler t)
-       (logger :error t)))))
+         (do-fetch-entries contentful content-params (inc attempt-number)))))))
 
 (defprotocol CMSCache
   (read-cache [_] "Returns a map representing the CMS cache"))
 
-(defrecord ContentfulContext [logger exception-handler environment cache-timeout api-key space-id endpoint]
+(defrecord ContentfulContext [logger exception-handler environment cache-timeout api-key space-id endpoint scheduler]
   component/Lifecycle
   (start [c]
-    (let [pool                    (at-at/mk-pool)
-          production?             (= environment "production")
+    (let [production?             (= environment "production")
           cache                   (atom {})
           env-param               (if production?
                                     "production"
@@ -281,17 +274,12 @@
                                            (assoc m :all-looks)))
                                     :latest?          false}]]
       (doseq [content-params content-type-parameters]
-        (at-at/interspaced cache-timeout
-                           #(do-fetch-entries (assoc c :cache cache :env-param env-param) content-params)
-                           pool
-                           :desc (str "poller for " (:content-type content-params))))
-      (println "Pool polling status at start: " (at-at/show-schedule pool))
-      (assoc c
-             :pool  pool
-             :cache cache)))
+        (scheduler/every scheduler cache-timeout
+                         (str "poller for " (:content-type content-params))
+                         #(do-fetch-entries (assoc c :cache cache :env-param env-param) content-params)))
+      (assoc c :cache cache)))
   (stop [c]
-    (when (:pool c) (at-at/stop-and-reset-pool! (:pool c)))
-    (dissoc c :cache :pool))
+    (dissoc c :cache))
   CMSCache
   (read-cache [c] (deref (:cache c))))
 

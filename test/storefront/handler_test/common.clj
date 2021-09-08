@@ -14,9 +14,11 @@
 (def test-overrides {:environment       "test"
                      :server-opts       {:port 2390}
                      :logging           {:system-name "storefront.tests"}
-                     :contentful-config {:endpoint (str "http://localhost:" contentful-port)
-                                         :space-id "fake-space-id"
-                                         :api-key  "fake-api-key"}
+                     :contentful-config {:endpoint         (str "http://localhost:" contentful-port)
+                                         :graphql-endpoint (str "http://localhost:" contentful-port "/_graphql")
+                                         :space-id         "fake-space-id"
+                                         :api-key          "fake-api-key"
+                                         :preview-api-key  "fake-preview-api-key"}
                      :storeback-config  {:endpoint          "http://localhost:4334/"
                                          :internal-endpoint "http://localhost:4334/"}})
 
@@ -997,11 +999,18 @@
    (GET "/v2/skus"     req {:status 200 :body "{}"})
    (GET "/v2/facets"   req {:status 200 :body (generate-string facets-body)})))
 
+(def default-contentful-graphql-handler
+  (routes
+   (POST "/_graphql/content/v1/spaces/fake-space-id/environments/master" req
+     {:status 200
+      :body   (generate-string {})})))
+
 (def default-contentful-handler
   (routes
    (GET "/spaces/fake-space-id/entries" req
      {:status 200
-      :body   (generate-string (:body contentful-response))})))
+      :body   (generate-string (:body contentful-response))})
+   default-contentful-graphql-handler))
 
 (defmacro with-resource
   [bindings close-fn & body]

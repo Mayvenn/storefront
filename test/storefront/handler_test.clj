@@ -3,17 +3,14 @@
             [clojure.edn :as edn]
             [clojure.string :as string]
             [clojure.test :refer [are deftest is testing]]
-            [compojure.core :refer [GET routes]]
+            [clojure.java.io :as io]
+            [compojure.core :refer [GET POST routes]]
             [lambdaisland.uri :as uri]
             [ring.mock.request :as mock]
-            [standalone-test-server.core
-             :refer
-             [txfm-request txfm-requests with-requests-chan]]
-            [storefront.handler-test.common
-             :as
-             common
-             :refer
-             [with-handler with-services]]
+            [standalone-test-server.core :refer [txfm-request txfm-requests with-requests-chan]]
+            [storefront.handler-test.common :as common :refer [with-handler with-services
+                                                               default-contentful-graphql-handler
+                                                               default-contentful-handler]]
             [clojure.xml :as xml]
             [storefront.config :as config])
   (:import java.io.ByteArrayInputStream))
@@ -392,15 +389,54 @@
         (is (= 200 status))
         (is (not-any? #{"Disallow: /"} (string/split-lines body)) body)))))
 
+(deftest fetches-static-pages-from-contentful
+  (let [value (atom {:status 200
+                     :body (generate-string {:data {:staticPageCollection {:items [{:sys {:id "1"}
+                                                                                    :path "/policy/privacy"}]}}})})]
+    (testing "on startup"
+      (testing "valid paths are fetched"
+        (let [[contentful-requests graphql-handler] (with-requests-chan (POST "/_graphql/content/v1/spaces/fake-space-id/environments/master" req @value))]
+          (with-services {:contentful-handler (routes graphql-handler default-contentful-handler)}
+            (with-handler handler
+              (let [requests (filter #(string/starts-with? (:uri %) "/_graphql/")
+                                     (txfm-requests contentful-requests identity))
+                    actual (mapv (juxt :request-method :uri (comp #(parse-string % true) :body)) requests)]
+                (is (= [[:post "/_graphql/content/v1/spaces/fake-space-id/environments/master"
+                         {:query     (slurp (io/resource "gql/all_static_pages.gql"))
+                          :variables {:preview false}}]]
+                       actual)
+                    "Makes a query for all static pages"))))))
+
+      (testing "allows static page fetches"
+        (let [[contentful-requests graphql-handler] (with-requests-chan (POST "/_graphql/content/v1/spaces/fake-space-id/environments/master" req @value))]
+          (with-services {:contentful-handler (routes graphql-handler default-contentful-handler)}
+            (with-handler handler
+              (reset! value {:status 200
+                             :body   (generate-string
+                                      {:data
+                                       {:staticPageCollection {:items [{:sys     {:id "1"}
+                                                                        :path    "/policy/privacy"
+                                                                        :title   "Privacy Policy"
+                                                                        :content {:json {:nodeType "document"
+                                                                                         :content [{:nodeType "text"
+                                                                                                    :value    "Something nice here"
+                                                                                                    :marks    []}]}}}]}}})})
+              (let [response (handler (mock/request :get "https://shop.mayvenn.com/policy/privacy"))
+                    requests (filter #(string/starts-with? (:uri %) "/_graphql/")
+                                     (txfm-requests contentful-requests identity))]
+                (is (= 2 (count requests)))
+                (is (string/includes? (:body response) "Something nice here"))))))))))
+
 (deftest fetches-data-from-contentful
   (testing "transforming content"
     (testing "transforming 'homepage' content"
       (let [[_contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" _req
-                                                                              {:status 200
-                                                                               :body   (generate-string (:body common/contentful-response))}))]
-        (with-services {:contentful-handler contentful-handler}
+                                                                            {:status 200
+                                                                             :body   (generate-string (:body common/contentful-response))}))]
+        (with-services {:contentful-handler (routes default-contentful-graphql-handler
+                                                    contentful-handler)}
           (with-handler handler
-            (let [responses                          (doall (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/"))))
+            (let [responses                                                                    (doall (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/"))))
                   {:keys [hero feature-1
                           feature-2 feature-3]
                    :as   _classic-homepage-response} (-> (mock/request :get "https://bob.mayvenn.com/cms/homepage")
@@ -419,69 +455,66 @@
 
     (testing "transforming ugc-collections"
       (let [[_contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" _req
-                                                                              {:status 200
-                                                                               :body   (generate-string (:body common/contentful-ugc-collection-response))}))]
-        (with-services {:contentful-handler contentful-handler}
+                                                                            {:status 200
+                                                                             :body   (generate-string (:body common/contentful-ugc-collection-response))}))]
+        (with-services {:contentful-handler (routes default-contentful-graphql-handler
+                                                    contentful-handler)}
           (with-handler handler
             (do
               (doall (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/"))))
-              (let [look-1    {:content/type          "look"
-                               :content/id            "2zSbLYFcRYjVoEMMlsWLsJ"
-                               :content/updated-at    1558565998189
-                               :title                 "Acceptance Virgin Peruvian Deep Wave 16 18 20 "
-                               :texture               "Deep Wave"
-                               :color                 "Natural Black"
-                               :description           "16\" + 18\" + 20\" "
-                               :shared-cart-url       "https://shop.mayvenn.com/c/XFoCrXR7Yx"
-                               :photo-url             "https://static.pixlee.com/photos/235267317/original/bundle-deal-template-f-r1-01-lm.jpg"
-                               :social-media-handle   "@mayvennhair"
-                               :social-media-platform "instagram"}
-                    look-2    {:content/type          "look"
-                               :content/id            "48c3sCi06BHRRMKJxmM4u3"
-                               :content/updated-at    1558571902078
-                               :title                 "BDW 12\" 12\" 12\""
-                               :texture               "Deep Wave"
-                               :color                 "Natural Black"
-                               :description           "12\" 12\" 12\""
-                               :shared-cart-url       "https://shop.mayvenn.com/c/nAOHqCV5Es"
-                               :photo-url             "https://static.pixlee.com/photos/270470339/original/Screen_Shot_2019-03-08_at_9.44.00_AM.png"
-                               :social-media-handle   "@enevicky"
-                               :social-media-platform "instagram"}]
-                (is (= {:all-looks {(keyword "2zSbLYFcRYjVoEMMlsWLsJ") look-1
-                                    (keyword "48c3sCi06BHRRMKJxmM4u3") look-2}
-                        :deals     {:content/id         "2dZTVOLLqkNS9EoUJ1t6qn"
-                                    :content/type       "ugc-collection"
-                                    :content/updated-at 1558631120329
-                                    :slug               "deals"
-                                    :name               "Mayvenn Classic - Deals Page"
-                                    :looks              [look-1 look-2]}
-                        :acceptance-deals
-                        {:slug               "acceptance-deals"
-                         :name               "[ACCEPTANCE] Mayvenn Classic - Deals Page"
-                         :content/updated-at 1558472526413
-                         :content/type       "ugc-collection"
-                         :content/id         "6Za8EE8Kpn8NeoJciqN3uA"}
-                        :shop-by-look-straight
-                        {:slug               "shop-by-look-straight",
-                         :name               "Adventure Shop By Look Straight",
-                         :content/updated-at 1558567963380,
-                         :content/type       "ugc-collection",
-                         :content/id         "4NNviXNUw1odQtzXOdHaNY",
-                         :looks              [look-1]}
-                        :bundle-sets-straight
-                        {:slug               "bundle-sets-straight",
-                         :name               "Adventure  Bundle Sets Straight",
-                         :content/updated-at 1558568668793,
-                         :content/type       "ugc-collection",
-                         :content/id         "4GfFV6dC7KjLhUxNDKvguP",
-                         :looks              [look-1]}
-                        :look
-                        {:slug               "look"
-                         :name               "Mayvenn Classic - Shop By Look "
-                         :content/updated-at 1558567374792
-                         :content/type       "ugc-collection"
-                         :content/id         "5vqi7q9EeO1ULNjQ1Q4DEp"
-                         :looks              [look-1]}}
+              (let [look-1 {:content/type          "look"
+                            :content/id            "2zSbLYFcRYjVoEMMlsWLsJ"
+                            :content/updated-at    1558565998189
+                            :title                 "Acceptance Virgin Peruvian Deep Wave 16 18 20 "
+                            :texture               "Deep Wave"
+                            :color                 "Natural Black"
+                            :description           "16\" + 18\" + 20\" "
+                            :shared-cart-url       "https://shop.mayvenn.com/c/XFoCrXR7Yx"
+                            :photo-url             "https://static.pixlee.com/photos/235267317/original/bundle-deal-template-f-r1-01-lm.jpg"
+                            :social-media-handle   "@mayvennhair"
+                            :social-media-platform "instagram"}
+                    look-2 {:content/type          "look"
+                            :content/id            "48c3sCi06BHRRMKJxmM4u3"
+                            :content/updated-at    1558571902078
+                            :title                 "BDW 12\" 12\" 12\""
+                            :texture               "Deep Wave"
+                            :color                 "Natural Black"
+                            :description           "12\" 12\" 12\""
+                            :shared-cart-url       "https://shop.mayvenn.com/c/nAOHqCV5Es"
+                            :photo-url             "https://static.pixlee.com/photos/270470339/original/Screen_Shot_2019-03-08_at_9.44.00_AM.png"
+                            :social-media-handle   "@enevicky"
+                            :social-media-platform "instagram"}]
+                (is (= {:all-looks             {(keyword "2zSbLYFcRYjVoEMMlsWLsJ") look-1
+                                                (keyword "48c3sCi06BHRRMKJxmM4u3") look-2}
+                        :deals                 {:content/id         "2dZTVOLLqkNS9EoUJ1t6qn"
+                                                :content/type       "ugc-collection"
+                                                :content/updated-at 1558631120329
+                                                :slug               "deals"
+                                                :name               "Mayvenn Classic - Deals Page"
+                                                :looks              [look-1 look-2]}
+                        :acceptance-deals      {:slug               "acceptance-deals"
+                                                :name               "[ACCEPTANCE] Mayvenn Classic - Deals Page"
+                                                :content/updated-at 1558472526413
+                                                :content/type       "ugc-collection"
+                                                :content/id         "6Za8EE8Kpn8NeoJciqN3uA"}
+                        :shop-by-look-straight {:slug               "shop-by-look-straight",
+                                                :name               "Adventure Shop By Look Straight",
+                                                :content/updated-at 1558567963380,
+                                                :content/type       "ugc-collection",
+                                                :content/id         "4NNviXNUw1odQtzXOdHaNY",
+                                                :looks              [look-1]}
+                        :bundle-sets-straight  {:slug               "bundle-sets-straight",
+                                                :name               "Adventure  Bundle Sets Straight",
+                                                :content/updated-at 1558568668793,
+                                                :content/type       "ugc-collection",
+                                                :content/id         "4GfFV6dC7KjLhUxNDKvguP",
+                                                :looks              [look-1]}
+                        :look                  {:slug               "look"
+                                                :name               "Mayvenn Classic - Shop By Look "
+                                                :content/updated-at 1558567374792
+                                                :content/type       "ugc-collection"
+                                                :content/id         "5vqi7q9EeO1ULNjQ1Q4DEp"
+                                                :looks              [look-1]}}
                        (-> (mock/request :get "https://bob.mayvenn.com/cms/ugc-collection")
                            handler
                            :body
@@ -490,65 +523,61 @@
 
     (testing "transforming faqs"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" _req
-                                                                              {:status 200
-                                                                               :body   (generate-string (:body common/contentful-faq-response))}))]
+                                                                           {:status 200
+                                                                            :body   (generate-string (:body common/contentful-faq-response))}))]
 
-        (with-services {:contentful-handler contentful-handler}
+        (with-services {:contentful-handler (routes default-contentful-graphql-handler
+                                                    contentful-handler)}
           (with-handler handler
             (let [_responses (repeatedly 3 (partial handler (mock/request :get "https://shop.mayvenn.com/categories/13-wigs")))
                   _requests  (txfm-requests contentful-requests identity)]
-              (is (=  {:icp-virgin-lace-front-wigs
-                       {:slug "icp-virgin-lace-front-wigs", :question-answers []},
-                       :icp-wigs
-                       {:slug "icp-wigs",
-                        :question-answers
-                        [{:question {:text "Can I wear a wig even if I have long hair?"},
-                          :answer
-                          [{:paragraph
-                            [{:text
-                              "Of course! Yes, wigs are for everyone, for all hair lengths. As a protective style, a wig is actually a great way to give your natural hair a break. Wigs are a low-commitment way to try out a new look without a drastic cut or color switch-up."}]}]}
-                         {:question {:text "How do you measure your head for a wig?"},
-                          :answer
-                          [{:paragraph
-                            [{:text "Don’t worry, "}
-                             {:text "measuring your head for a wig",
-                              :url
-                              "https://shop.mayvenn.com/blog/hair/how-to-measure-head-for-wig-size/"}
-                             {:text
-                              " isn’t as complicated as it seems. Check out our easy to follow instructions here."}]}
-                           {:paragraph [{:text "Paragraph 2"}]}]}]}}
+              (is (=  {:icp-virgin-lace-front-wigs {:slug             "icp-virgin-lace-front-wigs"
+                                                    :question-answers []},
+                       :icp-wigs                   {:slug             "icp-wigs",
+                                                    :question-answers [{:question {:text "Can I wear a wig even if I have long hair?"},
+                                                                        :answer   [{:paragraph [{:text "Of course! Yes, wigs are for everyone, for all hair lengths. As a protective style, a wig is actually a great way to give your natural hair a break. Wigs are a low-commitment way to try out a new look without a drastic cut or color switch-up."}]}]}
+                                                                       {:question {:text "How do you measure your head for a wig?"},
+                                                                        :answer   [{:paragraph [{:text "Don’t worry, "}
+                                                                                                {:text "measuring your head for a wig",
+                                                                                                 :url  "https://shop.mayvenn.com/blog/hair/how-to-measure-head-for-wig-size/"}
+                                                                                                {:text " isn’t as complicated as it seems. Check out our easy to follow instructions here."}]}
+                                                                                   {:paragraph [{:text "Paragraph 2"}]}]}]}}
 
-                     (-> (mock/request :get "https://shop.mayvenn.com/cms/faq")
-                         handler
-                         :body
-                         (parse-string true)
-                         :faq)))))))))
+                      (-> (mock/request :get "https://shop.mayvenn.com/cms/faq")
+                          handler
+                          :body
+                          (parse-string true)
+                          :faq)))))))))
 
   (let [number-of-contentful-entities-to-fetch 4]
     (testing "caching content"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" _req
-                                                                              {:status 200
-                                                                               :body   (generate-string (:body common/contentful-response))}))]
-        (with-services {:contentful-handler contentful-handler}
+                                                                           {:status 200
+                                                                            :body   (generate-string (:body common/contentful-response))}))]
+        (with-services {:contentful-handler (routes default-contentful-graphql-handler
+                                                    contentful-handler)}
           (with-handler handler
             (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
                   requests  (txfm-requests contentful-requests identity)]
+              (prn (map :uri requests))
               (is (every? #(= 200 (:status %)) responses))
               (is (= number-of-contentful-entities-to-fetch (count requests))))))))
 
     (testing "fetches data on system start"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" _req
-                                                                              {:status 200
-                                                                               :body   (generate-string (:body common/contentful-response))}))]
-        (with-services {:contentful-handler contentful-handler}
+                                                                           {:status 200
+                                                                            :body   (generate-string (:body common/contentful-response))}))]
+        (with-services {:contentful-handler (routes default-contentful-graphql-handler
+                                                    contentful-handler)}
           (with-handler _handler ;; just here to start the system, evidently...
             (is (= number-of-contentful-entities-to-fetch (count (txfm-requests contentful-requests identity))))))))
 
     (testing "attempts-to-retry-fetch-from-contentful"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" _req
-                                                                              {:status 500
-                                                                               :body   "{}"}))]
-        (with-services {:contentful-handler contentful-handler}
+                                                                           {:status 500
+                                                                            :body   "{}"}))]
+        (with-services {:contentful-handler (routes default-contentful-graphql-handler
+                                                    contentful-handler)}
           (with-handler handler
             (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
                   requests  (txfm-requests contentful-requests identity)]

@@ -14,15 +14,16 @@
   (read-string (name value)))
 
 (def static-page-routes
-  {"/guarantee"       (edn->bidi events/navigate-content-guarantee)
-   "/help"            (edn->bidi events/navigate-content-help)
-   "/about-us"        (edn->bidi events/navigate-content-about-us)
-   "/policy/privacy"  (edn->bidi events/navigate-content-privacy)
-   "/policy/tos"      (edn->bidi events/navigate-content-tos)
-   "/ugc-usage-terms" (edn->bidi events/navigate-content-ugc-usage-terms)
-   "/voucher-terms"   (edn->bidi events/navigate-content-voucher-terms)
-   "/program-terms"   (edn->bidi events/navigate-content-program-terms)
-   "/our-hair"        (edn->bidi events/navigate-content-our-hair)})
+  {"/guarantee"         (edn->bidi events/navigate-content-guarantee)
+   "/help"              (edn->bidi events/navigate-content-help)
+   "/about-us"          (edn->bidi events/navigate-content-about-us)
+   "/policy/privacy"    (edn->bidi events/navigate-content-privacy)
+   "/policy/privacy/v1" (edn->bidi events/navigate-content-privacy)
+   "/policy/tos"        (edn->bidi events/navigate-content-tos)
+   "/ugc-usage-terms"   (edn->bidi events/navigate-content-ugc-usage-terms)
+   "/voucher-terms"     (edn->bidi events/navigate-content-voucher-terms)
+   "/program-terms"     (edn->bidi events/navigate-content-program-terms)
+   "/our-hair"          (edn->bidi events/navigate-content-our-hair)})
 
 (def static-api-routes
   ["/static" static-page-routes])
