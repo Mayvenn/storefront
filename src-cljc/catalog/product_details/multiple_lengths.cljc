@@ -404,7 +404,7 @@
 
 (defn ^:private color-product-options->color-picker-modal-options
   [options selections]
-  (mapv (fn[{:option/keys [slug sku-swatch rectangle-swatch name] :as option}]
+  (mapv (fn [{:option/keys [slug sku-swatch rectangle-swatch name] :as option}]
           #:option{:id               (str "picker-color-" (facets/hacky-fix-of-bad-slugs-on-facets slug))
                    :selection-target [events/control-product-detail-picker-option-select
                                       (merge {:selection        :hair/color
@@ -424,7 +424,8 @@
         selected-hair-length (:hair/length (get selections length-index))]
     (when length-index
       (concat
-       (when (> length-index 0)
+       (when (and (> length-index 0)
+                  (not-empty (nth selections length-index)))
          [{:option/value            ""
            :option/id               "picker-length-remove"
            :option/label            "Remove Length"
@@ -433,32 +434,32 @@
                                                                                                 :selection        :hair/length
                                                                                                 :navigation-event events/navigate-product-details
                                                                                                 :value            ""}]}])
-       (map (fn[{:option/keys [slug sku-swatch rectangle-swatch name] :as option}]
+       (map (fn [{:option/keys [slug sku-swatch rectangle-swatch name] :as option}]
               (let [available? (boolean (get-in availability [selected-hair-color slug]))
                     sold-out?  (not (boolean (get-in availability [selected-hair-color
                                                                    slug
                                                                    :inventory/in-stock?])))]
-                 (merge
-                  #:product{:option option}
-                  #:option{:id               (str "picker-length-" slug)
-                           :selection-target [events/control-product-detail-picker-option-length-select
-                                              {:selection        :hair/length
-                                               :value            slug
-                                               :navigation-event events/navigate-product-details
-                                               :index            length-index}]
-                           :checked?         (= selected-hair-length slug)
-                           :label            name
-                           :value            slug
-                           :available?       available?}
-                  (when sold-out?
-                    #:option{:label-attrs      {:class "dark-gray"}
-                             :label            (str name " - Sold Out")
-                             :selection-target nil})
-                  (when-not available?
-                    #:option{:label-attrs      {:class "dark-gray"}
-                             :label            (str name " - Unavailable")
-                             :selection-target nil}))))
-             options)))))
+                (merge
+                 #:product{:option option}
+                 #:option{:id               (str "picker-length-" slug)
+                          :selection-target [events/control-product-detail-picker-option-length-select
+                                             {:selection        :hair/length
+                                              :value            slug
+                                              :navigation-event events/navigate-product-details
+                                              :index            length-index}]
+                          :checked?         (= selected-hair-length slug)
+                          :label            name
+                          :value            slug
+                          :available?       available?}
+                 (when sold-out?
+                   #:option{:label-attrs      {:class "dark-gray"}
+                            :label            (str name " - Sold Out")
+                            :selection-target nil})
+                 (when-not available?
+                   #:option{:label-attrs      {:class "dark-gray"}
+                            :label            (str name " - Unavailable")
+                            :selection-target nil}))))
+            options)))))
 
 (defn ^:private picker-modal<
   [product-options picker-visible? selected-picker length-index multi-length-selections availability]
