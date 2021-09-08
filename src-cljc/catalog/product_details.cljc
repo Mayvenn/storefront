@@ -583,7 +583,7 @@
         new-multiple-lengths        (when (and (-> (products/current-product app-state) :hair/family first (= "bundles"))
                                                (experiments/multiple-lengths-pdp? app-state))
                                       (mapv (fn[length-selection]
-                                              (if (= selection :hair/color)
+                                              (if (and (= selection :hair/color) (not-empty length-selection))
                                                 (merge length-selection {:hair/color value})
                                                 length-selection))
                                             (get-in app-state catalog.keypaths/detailed-product-multiple-lengths-selections)))]
