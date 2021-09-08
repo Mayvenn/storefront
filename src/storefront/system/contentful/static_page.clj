@@ -85,7 +85,8 @@
                                                                                     :height (:height asset)}])
      {:nodeType "embedded-entry-block" :data {:target {:sys {:id ?id}}}}        [:div.block (content-html (id->entry ?id) c)]
      {:nodeType "embedded-entry-inline" :data {:target {:sys {:id ?id}}}}       (content-html (id->entry ?id) c)
-     {:nodeType "hyperlink" :content [(m/cata !content) ...] :data {:uri ?uri}} (m/subst [:a {:href ?uri} . !content ...])
+     {:nodeType "hyperlink" :content [(m/cata !content) ...] :data {:uri ?uri}} (m/subst [:a.p-color.button-font-2.border-bottom.border-width-2.border-p-color
+                                                                                          {:href ?uri} . !content ...])
      {:nodeType "hyperlink" :content [(m/cata !content) ...]}                   (m/subst [:a . !content ...])
      {:nodeType "unordered-list" :content [(m/cata !content) ...]}              (m/subst [:ul . !content ...])
      {:nodeType "ordered-list" :content [(m/cata !content) ...]}                (m/subst [:ol . !content ...])
@@ -98,7 +99,7 @@
                                                                                                    (m "italic") (str " italic")
                                                                                                    (m "underline") (str " underline"))}
                                                                                    ?text])
-     {:json (m/cata ?json)}                                                        ?json
+     {:json (m/cata ?json)}                                                     ?json
 
      ;; error handling
      ?x (do
