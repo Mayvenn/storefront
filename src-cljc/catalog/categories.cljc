@@ -655,7 +655,7 @@
            :seo/sitemap          true
 
            :catalog/department               #{"hair"}
-           :hair/family                      #{"360-wigs" "lace-front-wigs" "ready-wigs" "headband-wigs"}
+           :hair/family                      #{"360-wigs" "lace-front-wigs" "ready-wigs" "headband-wigs" "closure-wigs"}
            :selector/essentials              [:hair/family :catalog/department]
            :selector/electives               [:hair/family :hair/texture :hair/origin :hair/base-material :hair/color]
            :page/title                       "Human Hair Wigs: 100% Human Hair Wigs | Mayvenn"
@@ -668,7 +668,7 @@
                                                    "30 Day Quality Guarantee, our Wigs can be customized to fit"
                                                    "your unique look using the built-in combs and adjustable strap.")
            :product-list/title               "Shop All Wigs"
-           :subcategories/ids                ["24" "26" "25" "40"]
+           :subcategories/ids                ["24" "26" "25" "40" "41"]
            :subcategories/layout             :list
            :subsections/subsection-selectors [{:subsection/title    "Lace Front Wigs"
                                                :subsection/selector {:hair/family #{"lace-front-wigs"}}}
@@ -677,7 +677,13 @@
                                               {:subsection/title    "Ready-to-Wear Wigs"
                                                :subsection/selector {:hair/family #{"ready-wigs"}}}
                                               {:subsection/title    "Headband Wigs"
-                                               :subsection/selector {:hair/family #{"headband-wigs"}}}]
+                                               :subsection/selector {:hair/family #{"headband-wigs"}}}
+                                              {:subsection/title    "4 x 4 Closure Wigs"
+                                               :subsection/selector {:hair/family       #{"closure-wigs"}
+                                                                     :hair.closure/area #{"4x4"}}}
+                                              {:subsection/title    "5 x 5 Closure Wigs"
+                                               :subsection/selector {:hair/family       #{"closure-wigs"}
+                                                                     :hair.closure/area #{"5x5"}}}]
            :contentful/faq-id                :icp-wigs
            :content-block/type               :about-attributes
            :content-block/title              "Wigs 101:"
@@ -806,20 +812,25 @@
            :category/description             (copy "Available with 5x5 or 4x4 inches of parting space,"
                                                    "our virgin hair Lace Closure Wigs are ​​crafted to provide more coverage and less stress."
                                                    "Take your pick of Standard or HD Lace and 4 classic textures.")
-           :subcategory/image-id             "fe34e6e9-8927-4b62-94ac-91b37f0a137f" ;;TODO Fill with some carousel 0 image
+           :subcategory/image-id             "f48ead11-9482-43f4-ae9a-2f7715a9243e"
            :subsections/subsection-selectors [{:subsection/title    "4 x 4 Closure Wigs"
                                                :subsection/selector {:hair.closure/area #{"4x4"}}}
                                               {:subsection/title    "5 x 5 Closure Wigs"
                                                :subsection/selector {:hair.closure/area #{"5x5"}}}]
 
-           :contentful/faq-id   :category-closure-wigs
-           :catalog/department  #{"hair"}
-           :hair/family         #{"closure-wigs"}
-           :selector/essentials [:hair/family :catalog/department]
-           :selector/electives  [:hair/texture :hair/origin :hair.closure/area]}
-          (category->seo "Closure Wigs: Virgin Closure Wigs"
-                         (copy "") ;;TODO get copy
-                         "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/") ;;TODO Fill with some carousel 0 image
+           :contentful/faq-id     :category-closure-wigs
+           :catalog/department    #{"hair"}
+           :hair/family           #{"closure-wigs"}
+           :selector/essentials   [:hair/family :catalog/department]
+           :selector/electives    [:hair/texture :hair/origin :hair.closure/area]
+           :page/title            "100% Virgin Hair Lace Closure Wig | Mayvenn"
+           :page.meta/description (copy "Mayvenn’s Lace Closure Wigs come complete with 4x4 or 5x5 inches of parting space."
+                                        "Crafted with HD Lace or Standard Lace and high-quality 100% virgin human hair.")
+           :opengraph/title       "Mayvenn Lace Closure Wig - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
+           :opengraph/description (copy "Our Lace Closure Wigs are sure to be a favorite. Take your pick of Standard or HD Lace and 4 classic textures."
+                                        "Easily customizable with built-in combs and an adjustable strap.")
+           :category/image-url    "//ucarecdn.com/f48ead11-9482-43f4-ae9a-2f7715a9243e/"
+           :seo/sitemap           true}
           wig-templates)])
 
 (def mayvenn-install-eligible
