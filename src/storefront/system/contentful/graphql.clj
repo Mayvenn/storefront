@@ -1,6 +1,7 @@
 (ns storefront.system.contentful.graphql
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
+            [mayvenn.tracer :as tracer]
             [tugboat.core :as tugboat]
             [cheshire.core :as json]))
 
@@ -23,7 +24,10 @@
       nil)))
 
 (defn query [contentful-ctx file variables]
-  (request contentful-ctx (slurp (io/resource (str "gql/" file))) variables))
+  (tracer/trace
+   "query"
+   ^{::tracer/metadata {:file file :variables variables}}
+   (request contentful-ctx (slurp (io/resource (str "gql/" file))) variables)))
 
 
 (comment
