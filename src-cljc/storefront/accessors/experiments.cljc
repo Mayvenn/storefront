@@ -123,3 +123,7 @@
 (defn multiple-lengths-pdp?
   [data]
   (display-feature? data "multiple-lengths-pdp"))
+
+(defn closure-wigs?
+  [data]
+  (display-feature? data "closure-wigs"))
