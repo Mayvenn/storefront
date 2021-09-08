@@ -347,9 +347,10 @@
      (select-keys section [:link/content :link/target :link/id]))))
 
 (defn ^:private picker-query
-  [{:keys [facets selections options length-selections]}]
+  [{:keys [facets selections options length-selections sku-availability]}]
   (let [selected-color   (get-in facets [:hair/color :facet/options (:hair/color selections)])
         selected-lengths (map #(get-in facets [:hair/length :facet/options (:hair/length %)]) length-selections)
+        availability     (get sku-availability (:option/slug selected-color))
         image-src        (->> options
                               :hair/color
                               (filter #(= (:option/slug selected-color) (:option/slug %)) )
@@ -374,32 +375,51 @@
                                                                                                      :navigation-event events/navigate-product-details}]
                               :open-target      [events/control-product-detail-picker-open {:facet-slug [:hair/color]}]}))
      (within :multi-lengths.picker {:queries (map-indexed (fn [idx selection]
-                                                            {:id        (str "picker-length-" idx)
-                                                             :value-id  (str "picker-length-" (:hair/length selection) "-" idx)
-                                                             :image-src image-src
-                                                             :primary   (if-let [picker-label (:option/name selection)]
-                                                                          (str picker-label " Bundle")
-                                                                          "Choose Length (optional)")
-                                                             :options   (concat
-                                                                         (if selection
-                                                                           [{:option/value      ""
-                                                                             :option/label      "Remove Length"
-                                                                             :option/available? true}]
-                                                                           [{:option/value      nil
-                                                                             :option/label      nil
-                                                                             :option/available? true}])
+                                                            (let [picker-base {:id        (str "picker-length-" idx)
+                                                                               :value-id  (str "picker-length-" (:hair/length selection) "-" idx)
+                                                                               :image-src image-src
+                                                                               :primary   (if-let [picker-label (:option/name selection)]
+                                                                                            (str picker-label " Bundle")
+                                                                                            "Choose Length (optional)")
+                                                                               :options   (concat
+                                                                                           (if (and selection (not= idx 0))
+                                                                                             [{:option/value      ""
+                                                                                               :option/label      "Remove Length"
+                                                                                               :option/available? true}]
+                                                                                             [{:option/value      nil
+                                                                                               :option/label      nil
+                                                                                               :option/available? true}])
 
-                                                                         (mapv (fn[option]
-                                                                                 {:option/value      (:option/slug option)
-                                                                                  :option/label      (:option/name option)
-                                                                                  :option/available? (:stocked? option)})
-                                                                               (:hair/length options)))
-                                                             :selected-value   (:hair/length selection)
-                                                             :selection-target [events/control-product-detail-picker-option-length-select {:index     idx
-                                                                                                                                           :selection :hair/length
-                                                                                                                                           :navigation-event events/navigate-product-details}]
-                                                             :open-target      [events/control-product-detail-picker-open {:facet-slug   [:hair/length]
-                                                                                                                           :length-index idx}]})
+                                                                                           (mapv (fn[option]
+                                                                                                   {:option/value      (:option/slug option)
+                                                                                                    :option/label      (:option/name option)
+                                                                                                    :option/available? (:stocked? option)})
+                                                                                                 (:hair/length options)))
+                                                                               :selected-value   (:hair/length selection)
+                                                                               :selection-target [events/control-product-detail-picker-option-length-select {:index            idx
+                                                                                                                                                             :selection        :hair/length
+                                                                                                                                                             :navigation-event events/navigate-product-details}]
+                                                                               :open-target      [events/control-product-detail-picker-open {:facet-slug   [:hair/length]
+                                                                                                                                             :length-index idx}]}]
+                                                              (cond
+                                                                (and selection
+                                                                     (not (boolean
+                                                                           (get availability (:option/slug selection)))))
+                                                                (-> picker-base
+                                                                    (update :primary str " - Unavailable")
+                                                                    (assoc :primary-attrs {:class "red"}  ;; TODO: too low contrast
+                                                                           :image-attrs {:style {:opacity "50%"}}))
+
+                                                                (and selection
+                                                                     (not (boolean
+                                                                           (get-in availability [(:option/slug selection)
+                                                                                                 :inventory/in-stock?]))))
+                                                                (-> picker-base
+                                                                    (update :primary str " - Sold Out")
+                                                                    (assoc :primary-attrs {:class "red"}  ;; TODO: too low contrast
+                                                                           :image-attrs {:style {:opacity "50%"}}))
+
+                                                                :else picker-base)))
                                                           selected-lengths)}))))
 
 (defn ^:private color-product-options->color-picker-modal-options
@@ -490,7 +510,7 @@
     #:total{:primary   (if (> still-to-go 0)
                          (str "Add " still-to-go " more for Free Install")
                          "Hair + Free Install")
-            :secondary (mf/as-money multi-length-total)}))
+            :secondary (mf/as-money-or-dashes multi-length-total)}))
 
 (defn query [data]
   (let [selections              (get-in data catalog.keypaths/detailed-product-selections)
@@ -567,7 +587,8 @@
      (picker-query {:facets            facets
                     :selections        selections
                     :options           product-options
-                    :length-selections multi-length-selections})
+                    :length-selections multi-length-selections
+                    :sku-availability  sku-availability})
      (total-query multi-length-total (count chosen-skus))
      (when (-> (get-in data catalog.keypaths/detailed-product-multiple-lengths-selections) count (< 5))
        #:add-length{:id    "add-length"
