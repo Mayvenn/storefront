@@ -364,7 +364,7 @@
                                  (= "retail-location" (get-in data keypaths/store-experience)))
         hair?              (accessors.products/hair? product)
         faq                (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
-                               (get-in data (conj keypaths/cms-faq pdp-faq-id)))
+                             (get-in data (conj keypaths/cms-faq pdp-faq-id)))
         selected-picker    (get-in data catalog.keypaths/detailed-product-selected-picker)]
     (merge
      {:reviews                            review-data

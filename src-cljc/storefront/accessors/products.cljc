@@ -33,7 +33,8 @@
   (contains? (set (:catalog/department product))
              "hair"))
 
-(defn product->faq-id [product]
+;; TODO Move these mappings into cellar.
+(defn ^:private infer-faq-id [product]
   (case (:hair/family product)
     #{"ready-wigs"}        :pdp-ready-wear-wigs
     #{"lace-front-wigs"}   :pdp-virgin-lace-front-wigs
@@ -46,3 +47,8 @@
     #{"tape-ins"}          :pdp-straight-tape-ins
     #{"headband-wigs"}     :pdp-headband-wigs
     nil))
+
+(defn product->faq-id [product]
+  (if-let [faq-id (:contentful/faq-id product)]
+    (keyword faq-id)
+    (infer-faq-id product)))
