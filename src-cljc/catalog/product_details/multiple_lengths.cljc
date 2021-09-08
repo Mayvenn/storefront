@@ -375,45 +375,59 @@
                                                                                                      :navigation-event events/navigate-product-details}]
                               :open-target      [events/control-product-detail-picker-open {:facet-slug [:hair/color]}]}))
      (within :multi-lengths.picker {:queries (map-indexed (fn [idx selection]
-                                                            (let [picker-base {:id        (str "picker-length-" idx)
-                                                                               :value-id  (str "picker-length-" (:hair/length selection) "-" idx)
-                                                                               :image-src image-src
-                                                                               :primary   (if-let [picker-label (:option/name selection)]
-                                                                                            (str picker-label " Bundle")
-                                                                                            "Choose Length (optional)")
-                                                                               :options   (concat
-                                                                                           (if (and selection (not= idx 0))
-                                                                                             [{:option/value      ""
-                                                                                               :option/label      "Remove Length"
-                                                                                               :option/available? true}]
-                                                                                             [{:option/value      nil
-                                                                                               :option/label      nil
-                                                                                               :option/available? true}])
+                                                            (let [unavailable? (not (boolean
+                                                                                     (get availability (:option/slug selection))))
+                                                                  sold-out?    (not (boolean
+                                                                                     (get-in availability [(:option/slug selection)
+                                                                                                           :inventory/in-stock?])))
+                                                                  picker-base  {:id        (str "picker-length-" idx)
+                                                                                :value-id  (str "picker-length-" (:hair/length selection) "-" idx)
+                                                                                :image-src image-src
+                                                                                :primary   (if-let [picker-label (:option/name selection)]
+                                                                                             (str picker-label " Bundle")
+                                                                                             "Choose Length (optional)")
+                                                                                :options   (concat
+                                                                                            (if (and selection (not= idx 0))
+                                                                                              [{:option/value      ""
+                                                                                                :option/label      "Remove Length"
+                                                                                                :option/available? true}]
+                                                                                              [{:option/value      nil
+                                                                                                :option/label      nil
+                                                                                                :option/available? true}])
 
-                                                                                           (mapv (fn[option]
-                                                                                                   {:option/value      (:option/slug option)
-                                                                                                    :option/label      (:option/name option)
-                                                                                                    :option/available? (:stocked? option)})
-                                                                                                 (:hair/length options)))
-                                                                               :selected-value   (:hair/length selection)
-                                                                               :selection-target [events/control-product-detail-picker-option-length-select {:index            idx
-                                                                                                                                                             :selection        :hair/length
-                                                                                                                                                             :navigation-event events/navigate-product-details}]
-                                                                               :open-target      [events/control-product-detail-picker-open {:facet-slug   [:hair/length]
-                                                                                                                                             :length-index idx}]}]
+                                                                                            (mapv (fn[option]
+
+                                                                                                    (let [unavailable? (not (boolean
+                                                                                                                             (get availability (:option/slug option))))
+                                                                                                          sold-out?    (not (boolean
+                                                                                                                             (get-in availability [(:option/slug option)
+                                                                                                                                                   :inventory/in-stock?])))]
+                                                                                                      (merge
+                                                                                                      {:option/value      (:option/slug option)
+                                                                                                       :option/label      (:option/name option)
+                                                                                                       :option/available? (not (or sold-out? unavailable?))}
+                                                                                                      (cond
+                                                                                                        unavailable?
+                                                                                                        {:option/label-attrs {:class "dark-gray"}
+                                                                                                         :option/label       (str (:option/name option) "- Unavailable")}
+                                                                                                        sold-out?
+                                                                                                        {:option/label-attrs {:class "dark-gray"}
+                                                                                                         :option/label       (str (:option/name option) "- Sold Out")}))))
+                                                                                                  (:hair/length options)))
+                                                                                :selected-value   (:hair/length selection)
+                                                                                :selection-target [events/control-product-detail-picker-option-length-select {:index            idx
+                                                                                                                                                              :selection        :hair/length
+                                                                                                                                                              :navigation-event events/navigate-product-details}]
+                                                                                :open-target      [events/control-product-detail-picker-open {:facet-slug   [:hair/length]
+                                                                                                                                              :length-index idx}]}]
                                                               (cond
-                                                                (and selection
-                                                                     (not (boolean
-                                                                           (get availability (:option/slug selection)))))
+                                                                (and selection unavailable?)
                                                                 (-> picker-base
                                                                     (update :primary str " - Unavailable")
                                                                     (assoc :primary-attrs {:class "red"}  ;; TODO: too low contrast
                                                                            :image-attrs {:style {:opacity "50%"}}))
 
-                                                                (and selection
-                                                                     (not (boolean
-                                                                           (get-in availability [(:option/slug selection)
-                                                                                                 :inventory/in-stock?]))))
+                                                                (and selection sold-out?)
                                                                 (-> picker-base
                                                                     (update :primary str " - Sold Out")
                                                                     (assoc :primary-attrs {:class "red"}  ;; TODO: too low contrast
