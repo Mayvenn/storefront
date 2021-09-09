@@ -70,28 +70,21 @@
    :return-link/event-message [events/navigate-category
                                mayvenn-install-category]})
 
-(defn empty-cart<-
-  [app-state]
-  (merge
-   {:empty-cart-body/id        "empty-cart-body"
-    :empty-cart-body/primary   "Your Bag is Empty"
-    :empty-cart-body/secondary (str "Did you know that free Mayvenn Services"
-                                    " are included with qualifying purchases?")
-    :empty-cart-body/image-id  "6146f2fe-27ed-4278-87b0-7dc46f344c8c"}
-   (if (experiments/shopping-quiz-unified-fi? app-state)
-     {:cta/label  "Start Hair Quiz"
-      :cta/id     "homepage-take-hair-quiz"
-      :cta/target [events/navigate-shopping-quiz-unified-freeinstall-intro {:query-params {:location "empty_cart"}}]}
-     {:cta/label  "Browse Stylists"
-      :cta/id     "browse-stylists"
-      :cta/target [events/navigate-adventure-find-your-stylist]})))
-
+(def empty-cart<-
+  {:empty-cart-body/id        "empty-cart-body"
+   :empty-cart-body/primary   "Your Bag is Empty"
+   :empty-cart-body/secondary (str "Did you know that free Mayvenn Services"
+                                   " are included with qualifying purchases?")
+   :empty-cart-body/image-id  "6146f2fe-27ed-4278-87b0-7dc46f344c8c"
+   :cta/label                 "Start Hair Quiz"
+   :cta/id                    "homepage-take-hair-quiz"
+   :cta/target                [events/navigate-shopping-quiz-unified-freeinstall-intro {:query-params {:location "empty_cart"}}]})
 
 (defn ^:export page
   [app-state nav-event]
   (component/build template
                    {:promo-banner app-state
-                    :cart         (empty-cart<- app-state)
+                    :cart         empty-cart<-
                     :return-link  return-link<-
                     :header       app-state
                     :footer       app-state

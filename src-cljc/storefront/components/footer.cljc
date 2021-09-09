@@ -168,19 +168,12 @@
                                       (comp (filter not-services-icp?)
                                             (filter sort-key)
                                             (filter (partial auth/permitted-category? data)))))
-        unified-fi?        (experiments/shopping-quiz-unified-fi? data)
         non-category-links (concat (when shop?
-                                     (if unified-fi?
-                                       [{:title       "Start Hair Quiz"
-                                         :sort-order  1
-                                         :id          "quiz-unified-fi"
-                                         :new-link?   true
-                                         :nav-message [events/navigate-shopping-quiz-unified-freeinstall-intro {:query-params {:location "footer"}}]}]
-                                       [{:title       "Find a Stylist"
-                                         :sort-order  1
-                                         :id          "find-a-stylist"
-                                         :new-link?   false
-                                         :nav-message [events/navigate-adventure-find-your-stylist]}]))
+                                     [{:title       "Start Hair Quiz"
+                                       :sort-order  1
+                                       :id          "quiz-unified-fi"
+                                       :new-link?   true
+                                       :nav-message [events/navigate-shopping-quiz-unified-freeinstall-intro {:query-params {:location "footer"}}]}])
                                    (when (not classic?)
                                      [{:title       "Shop By Look"
                                        :sort-order  3

@@ -127,13 +127,9 @@
             (within :top-stylist.footer
                     {:id      "view-all-stylists"
                      :primary "View All Stylists"
-                     :target  (if (experiments/shopping-quiz-unified-fi? app-state)
-                                [e/navigate-shopping-quiz-unified-freeinstall-stylist-results {:query-params (->> app-state
-                                                                                                                  stylist-matching.core/stylist-matching<-
-                                                                                                                  (stylist-matching.core/query-params<- {}))}]
-                                [e/navigate-adventure-stylist-results {:query-params (->> app-state
-                                                                                          stylist-matching.core/stylist-matching<-
-                                                                                          (stylist-matching.core/query-params<- {}))}])})
+                     :target  [e/navigate-shopping-quiz-unified-freeinstall-stylist-results {:query-params (->> app-state
+                                                                                                                stylist-matching.core/stylist-matching<-
+                                                                                                                (stylist-matching.core/query-params<- {}))}]})
             (within :top-stylist.title
                     {:id        "top-match-copy-header"
                      :primary   "You're in luck..."

@@ -112,10 +112,6 @@
   [data]
   (display-feature? data "top-stylist"))
 
-(defn shopping-quiz-unified-fi?
-  [data]
-  (display-feature? data "shopping-quiz-unified-fi"))
-
 (defn easy-booking?
   [data]
   (display-feature? data "easy-booking"))

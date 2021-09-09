@@ -276,9 +276,7 @@
 (defmethod effects/perform-effects events/navigate-home
   [_ _ _ _ app-state]
   (let [homepage-version (if (= :shop (sites/determine-site app-state))
-                           (if (experiments/shopping-quiz-unified-fi? app-state)
-                             :unified-fi
-                             :shop)
+                           :unified-fi
                            :unified)]
     (doseq [keypath [[:advertisedPromo]
                      [:homepage homepage-version]

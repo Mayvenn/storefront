@@ -391,8 +391,7 @@
         site        (sites/determine-site data)
         shop?       (= :shop site)
         classic?    (= :classic site)
-        signed-in   (auth/signed-in data)
-        unified-fi? (experiments/shopping-quiz-unified-fi? data)]
+        signed-in   (auth/signed-in data)]
     {:signed-in                   signed-in
      :on-taxon?                   (get-in data keypaths/current-traverse-nav)
      :promo-banner                (promo-banner/query data)
@@ -432,24 +431,15 @@
                                     :slide-out-nav-content-item/primary "Contact Us"}]
 
      :slide-out-nav/menu-items (cond-> []
-                                 (and shop? (not unified-fi?))
-                                 (concat
-                                  [{:slide-out-nav-menu-item/target      [events/navigate-adventure-find-your-stylist]
-                                    :slide-out-nav-menu-item/id          "menu-shop-find-stylist"
-                                    :slide-out-nav-menu-item/new-primary "NEW"
-                                    :slide-out-nav-menu-item/primary     "Get a Mayvenn Install"}])
 
-                                 (and shop? unified-fi?)
+                                 shop?
                                  (concat
                                   [{:slide-out-nav-menu-item/target      [events/navigate-shopping-quiz-unified-freeinstall-intro
                                                                           {:query-params {:location "hamburger"}}]
                                     :slide-out-nav-menu-item/id          "menu-shop-quiz-unified-fi"
                                     :slide-out-nav-menu-item/new-primary "NEW"
-                                    :slide-out-nav-menu-item/primary     "Start Hair Quiz"}])
-
-                                 shop?
-                                 (concat
-                                  [{:slide-out-nav-menu-item/target  [events/navigate-shop-by-look {:album-keyword :look}]
+                                    :slide-out-nav-menu-item/primary     "Start Hair Quiz"}
+                                   {:slide-out-nav-menu-item/target  [events/navigate-shop-by-look {:album-keyword :look}]
                                     :slide-out-nav-menu-item/nested? false
                                     :slide-out-nav-menu-item/id      "menu-shop-by-look"
                                     :slide-out-nav-menu-item/primary "Shop By Look"}
@@ -500,24 +490,14 @@
                                     :slide-out-nav-menu-item/primary "Stylist Exclusives"}]))
      :desktop-menu/items (cond-> []
 
-                           (and shop? (not unified-fi?))
-                           (concat
-                            [{:header-menu-item/navigation-target [events/navigate-adventure-find-your-stylist]
-                              :header-menu-item/id                "desktop-shop-find-stylist"
-                              :header-menu-item/new-label?        true
-                              :header-menu-item/content           "Get a Mayvenn Install"}])
-
-                           (and shop? unified-fi?)
+                           shop?
                            (concat
                             [{:header-menu-item/navigation-target [events/navigate-shopping-quiz-unified-freeinstall-intro
                                                                    {:query-params {:location "desktop_heade"}}]
                               :header-menu-item/id                "desktop-shop-quiz-unified-fi"
                               :header-menu-item/new-label?        true
-                              :header-menu-item/content           "Start Hair Quiz"}])
-
-                           shop?
-                           (concat
-                            [(shop-looks-query data)
+                              :header-menu-item/content           "Start Hair Quiz"}
+                             (shop-looks-query data)
                              (shop-bundle-sets-query data)])
 
                            classic?
