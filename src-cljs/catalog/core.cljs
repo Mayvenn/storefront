@@ -20,11 +20,8 @@
 
             ;; Stylist matching/profile
             appointment-booking.core ; TODO is this right?
-            stylist-matching.find-your-stylist
-            stylist-matching.stylist-results
             stylist-profile.core
             stylist-matching.core
-            stylist-matching.match-success
             adventure.stylist-matching.stylist-gallery
             [storefront.loader :as loader]))
 

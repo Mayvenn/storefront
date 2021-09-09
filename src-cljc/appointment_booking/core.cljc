@@ -22,16 +22,6 @@
              :refer [handle-message] :rename {handle-message publish}]
             ui.molecules))
 
-(defmethod fx/perform-effects e/navigate-adventure-appointment-booking
-  [_ _event _ _ _state]
- (publish e/biz|follow|defined
-           {:follow/start    [e/biz|appointment-booking|initialized]
-            :follow/after-id e/biz|appointment-booking|done
-            :follow/then     [e/biz|appointment-booking|navigation-decided
-                              {:choices {:cart    e/navigate-cart
-                                         :success e/navigate-adventure-match-success}}]}))
-
-
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-appointment-booking
   [_ _event _ _ _state]
   (publish e/biz|follow|defined
@@ -263,7 +253,7 @@
              {:header.title/id               "adventure-title"
               :header.title/primary          "Appointment Booking"
               :header.back-navigation/id     "adventure-back"
-              :header.back-navigation/target [e/navigate-adventure-find-your-stylist]
+              :header.back-navigation/target [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]
               :header.back-navigation/back   (first nav-undo-stack)
               :header.cart/id                "mobile-cart"
               :header.cart/value             (or (:order.items/quantity current-order) 0)

@@ -21,7 +21,6 @@
             mayvenn-install.about
 
             [appointment-booking.core :as booking.core]
-            mayvenn.shopping-quiz.unnamed-v1
             mayvenn.shopping-quiz.unified-freeinstall
 
             [storefront.components.ui :as ui]
@@ -111,18 +110,6 @@
    events/navigate-info-certified-stylists (constantly adventure.informational.certified-stylists/built-component)
    events/navigate-info-about-our-hair     (constantly adventure.informational.about-our-hair/built-component)
 
-   events/navigate-adventure-find-your-stylist #(ui/lazy-load-component :catalog
-                                                                        'stylist-matching.find-your-stylist/page
-                                                                        events/navigate-adventure-find-your-stylist)
-   events/navigate-adventure-top-stylist       #(ui/lazy-load-component :catalog
-                                                                        'stylist-matching.top-stylist/page
-                                                                        events/navigate-adventure-top-stylist)
-   events/navigate-adventure-stylist-results   #(ui/lazy-load-component :catalog
-                                                                        'stylist-matching.stylist-results/page
-                                                                        events/navigate-adventure-stylist-results)
-   events/navigate-adventure-match-success     #(ui/lazy-load-component :catalog
-                                                                        'stylist-matching.match-success/page
-                                                                        events/navigate-adventure-match-success)
    events/navigate-adventure-stylist-profile   #(ui/lazy-load-component :catalog
                                                                         'stylist-profile.stylist-details/page
                                                                         events/navigate-adventure-stylist-profile)
@@ -130,8 +117,6 @@
                                                                         'adventure.stylist-matching.stylist-gallery/built-component
                                                                         events/navigate-adventure-stylist-gallery)
 
-   events/navigate-adventure-quiz                                        (constantly mayvenn.shopping-quiz.unnamed-v1/page)
-   events/navigate-adventure-appointment-booking                         (constantly booking.core/adv-flow-page)
    events/navigate-shopping-quiz-unified-freeinstall-intro               #(ui/lazy-load-component
                                                                            :catalog
                                                                            'mayvenn.shopping-quiz.unified-freeinstall/page
@@ -245,8 +230,7 @@
        ;; TODO this should be moved into the UI domain of stylist-matching
        (or
         (routes/sub-page? [nav-event] [events/navigate-adventure])
-        (routes/sub-page? [nav-event] [events/navigate-shopping-quiz])
-        (routes/sub-page? [nav-event] [events/navigate-adventure-appointment-booking]))
+        (routes/sub-page? [nav-event] [events/navigate-shopping-quiz]))
        [:div {:data-test (keypaths/->component-str nav-event)}
         [:div {:key "popup"}
          #?(:cljs (popup/built-component data nil))]

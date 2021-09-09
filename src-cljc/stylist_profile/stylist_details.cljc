@@ -70,7 +70,7 @@
                                                                {:message
                                                                 (str "The stylist you are looking for is not available. "
                                                                      "Please search for another stylist in your area below. ")})
-                                          (fx/redirect e/navigate-adventure-find-your-stylist))}))
+                                          (fx/redirect e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist))}))
         #?(:cljs
            (api/fetch-stylist-reviews cache
                                       {:stylist-id stylist-id
@@ -159,7 +159,7 @@
    :header.title/primary          "Meet Your Stylist"
    :header.back-navigation/id     "adventure-back"
    :header.back-navigation/back   (not-empty (first undo-history))
-   :header.back-navigation/target [e/navigate-adventure-find-your-stylist]
+   :header.back-navigation/target [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]
    :header.cart/id                "mobile-cart"
    :header.cart/value             (or quantity 0)
    :header.cart/color             "white"})
@@ -167,7 +167,7 @@
 (def ^:private footer<-
   {:footer.cta/id     "browse-stylists"
    :footer.cta/label  "Browse Stylists"
-   :footer.cta/target [e/navigate-adventure-find-your-stylist]
+   :footer.cta/target [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]
    :footer.body/copy  "Meet more stylists in your area"
    :footer.body/id    "meet-more-stylists"})
 

@@ -208,9 +208,9 @@
                   (not= prev-query-params query-params))
          (history/enqueue-navigate e/navigate-shopping-quiz-unified-freeinstall-stylist-results
                                    {:query-params query-params}))
-       (when (and (= nav-event e/navigate-adventure-stylist-results)
+       (when (and (= nav-event e/navigate-shopping-quiz-unified-freeinstall-stylist-results)
                   (not= prev-query-params query-params))
-         (history/enqueue-navigate e/navigate-adventure-stylist-results {:query-params query-params})))))
+         (history/enqueue-navigate e/navigate-shopping-quiz-unified-freeinstall-stylist-results {:query-params query-params})))))
 
 ;; Searched
 ;; -> screen: results
@@ -253,12 +253,12 @@
   #?(:cljs
      (let [nav-event      (first (get-in state' storefront.keypaths/navigation-message))
            service-params (-> state' stylist-matching<- :param/services)]
-       (if (and (= e/navigate-adventure-find-your-stylist nav-event)
+       (if (and (= e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist nav-event)
                 (experiments/top-stylist? state')
                 (contains-top-stylist? service-params results))
-         (history/enqueue-navigate e/navigate-adventure-top-stylist)
-         (when (= e/navigate-adventure-find-your-stylist nav-event)
-           (history/enqueue-navigate e/navigate-adventure-stylist-results
+         (history/enqueue-navigate e/navigate-shopping-quiz-unified-freeinstall-top-stylist)
+         (when (= e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist nav-event)
+           (history/enqueue-navigate e/navigate-shopping-quiz-unified-freeinstall-stylist-results
                                      {:query-params (->> (stylist-matching<- state')
                                                          (query-params<- {}))}))))))
 

@@ -201,7 +201,7 @@
   (when id
     [:a.block.gray.medium.p1.flex.justify-center.items-baseline
      (merge {:data-test id
-             :href      (routes/path-for events/navigate-adventure-find-your-stylist)
+             :href      (routes/path-for events/navigate-shopping-quiz-unified-freeinstall-find-your-stylist)
              :on-click  (apply utils/send-event-callback target)})
      (svg/swap-arrows {:width  "18px"
                        :height "22px"

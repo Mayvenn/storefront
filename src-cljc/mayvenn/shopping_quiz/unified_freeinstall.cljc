@@ -805,7 +805,7 @@
                                 :success e/navigate-shopping-quiz-unified-freeinstall-match-success}}]})
   #?(:cljs
      (if-not (:unified-fi-quiz (cookie-jar/retrieve-unified-fi-quiz-entered (get-in state k/cookie)))
-       (publish e/redirect {:nav-message [e/navigate-adventure-stylist-results args]})
+       (publish e/redirect {:nav-message [e/navigate-shopping-quiz-unified-freeinstall-stylist-results args]})
        (do
          (google-maps/insert)
          (publish e/biz|progression|progressed

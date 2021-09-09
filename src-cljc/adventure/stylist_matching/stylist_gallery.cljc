@@ -112,7 +112,7 @@
                                                {:message
                                                 (str "The stylist you are looking for is not available. "
                                                      "Please search for another stylist in your area below. ")})
-                          (fx/redirect e/navigate-adventure-find-your-stylist))}))))
+                          (fx/redirect e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist))}))))
 
 (defn ^:export built-component
   [data _]

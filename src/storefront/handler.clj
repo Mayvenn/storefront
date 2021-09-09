@@ -645,7 +645,7 @@
 
 (defn service-category-ids->redirect [category-id]
   (when (contains? service-category-ids category-id)
-    [events/navigate-adventure-find-your-stylist]))
+    [events/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]))
 
 (defn render-category
   [{:keys [environment] :as render-ctx} data req {:keys [catalog/category-id page/slug]}]
@@ -714,7 +714,7 @@
 
 (defn service-product-id->redirect [catalog-product-id]
   (when (contains? service-product-ids catalog-product-id)
-    [events/navigate-adventure-find-your-stylist {}]))
+    [events/navigate-shopping-quiz-unified-freeinstall-find-your-stylist {}]))
 
 (defn render-product-details [{:keys [environment] :as render-ctx}
                               data
@@ -1033,7 +1033,7 @@
                      (assoc-in-req-state keypaths/v2-skus service-skus)
                      (assoc-in-req-state keypaths/v2-images service-images)))))
           (-> req ; redirect to find your stylist
-              (path-for events/navigate-adventure-find-your-stylist {:query-params {:error "stylist-not-found"}})
+              (path-for events/navigate-shopping-quiz-unified-freeinstall-find-your-stylist {:query-params {:error "stylist-not-found"}})
               util.response/redirect))
         (h req))))) ; not on the stylist profile or gallery page
 

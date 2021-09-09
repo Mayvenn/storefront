@@ -523,11 +523,7 @@
 
 ;; ADVENTURE
 (defpath navigate-adventure)
-(defpath navigate-adventure-find-your-stylist)
-(defpath navigate-adventure-top-stylist)
-(defpath navigate-adventure-stylist-results)
 (defpath navigate-adventure-stylist-gallery)
-(defpath navigate-adventure-match-success)
 (defpath navigate-adventure-stylist-profile)
 
 (defpath adventure-address-component-mounted)
@@ -695,7 +691,6 @@
 (defpath cart-cleared)
 
 ;; Adventure Quiz
-(defpath navigate-adventure-quiz)
 
 (defpath biz|questioning|reset)
 (defpath biz|questioning|answered)
@@ -790,7 +785,5 @@
 (defpath control-dismiss-edit-appointment-menu)
 
 (defpath post-stylist-matched-navigation-decided)
-
-(defpath navigate-adventure-appointment-booking)
 
 (defpath user-identified)

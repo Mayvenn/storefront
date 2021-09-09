@@ -121,7 +121,7 @@
                      :stylist-results-returned? (contains? (:status matching) :results/stylists)})
 
             (within :header
-                    (stylist-results/header<- current-order [e/navigate-adventure-find-your-stylist] (->> (get-in app-state storefront.keypaths/navigation-undo-stack)
+                    (stylist-results/header<- current-order [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist] (->> (get-in app-state storefront.keypaths/navigation-undo-stack)
                                                                                                           first
                                                                                                           not-empty)))
             (within :top-stylist.footer
@@ -139,16 +139,3 @@
                                      "stylist who is rated highly for their skill, professionalism, and "
                                      "cleanliness.")})))))
 
-(defmethod fx/perform-effects e/navigate-adventure-top-stylist
-  [_ _ _ _ state]
-  (publish e/biz|follow|defined
-           {:follow/after-id e/flow|stylist-matching|matched
-            :follow/then     [e/post-stylist-matched-navigation-decided
-                              {:decision
-                               {:booking e/navigate-adventure-appointment-booking
-                                :cart    e/navigate-cart
-                                :success e/navigate-adventure-match-success}}]})
-
-  #?(:cljs
-     (when (empty? (get-in state k/stylist-results))
-       (history/enqueue-navigate e/navigate-adventure-find-your-stylist))))

@@ -25,7 +25,7 @@
        :cta/value    "Browse Stylists"
        :cta/button?  true
        :cta/id       "browse-stylist"
-       :cta/target   [events/navigate-adventure-find-your-stylist]}
+       :cta/target   [events/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}
       {:layer/type   :shop-framed-checklist
        :header/value "What's included?"
        :bullets      ["Shampoo"

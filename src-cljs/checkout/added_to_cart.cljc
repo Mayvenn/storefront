@@ -92,7 +92,7 @@
 
 (defmethod storefront.effects/perform-effects e/control-cart-interstitial-browse-stylist-cta
   [_ _ _ _ _]
-  #?(:cljs (history/enqueue-navigate e/navigate-adventure-find-your-stylist)))
+  #?(:cljs (history/enqueue-navigate e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist)))
 
 (defmethod storefront.trackings/perform-track e/control-cart-interstitial-browse-stylist-cta
   [_ _ _ _]

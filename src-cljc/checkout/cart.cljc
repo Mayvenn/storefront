@@ -10,11 +10,11 @@
 
 (defmethod effects/perform-effects events/control-pick-stylist-button
   [_ _ _ _ _]
-  #?(:cljs (history/enqueue-navigate events/navigate-adventure-find-your-stylist)))
+  #?(:cljs (history/enqueue-navigate events/navigate-shopping-quiz-unified-freeinstall-find-your-stylist)))
 
 (defmethod effects/perform-effects events/control-change-stylist
   [_ _ _ _ _]
-  #?(:cljs (history/enqueue-navigate events/navigate-adventure-find-your-stylist)))
+  #?(:cljs (history/enqueue-navigate events/navigate-shopping-quiz-unified-freeinstall-find-your-stylist)))
 
 (defmethod effects/perform-effects events/control-remove-stylist
   [_ _ {:keys [stylist-id]} _ app-state]

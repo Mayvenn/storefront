@@ -589,7 +589,7 @@
    (defmethod effects/perform-effects events/control-shared-cart-pick-your-stylist-clicked
      [_ _ args _ state]
      (control-fx state args (partial history/enqueue-navigate
-                                     events/navigate-adventure-find-your-stylist))))
+                                     events/navigate-shopping-quiz-unified-freeinstall-find-your-stylist))))
 
 #?(:cljs
    (defmethod transitions/transition-state events/clear-shared-cart-redirect

@@ -1,29 +1,23 @@
 (ns stylist-matching.stylist-results
   (:require #?@(:cljs [[storefront.hooks.google-maps :as google-maps]
                        [storefront.hooks.stringer :as stringer]
-                       [storefront.history :as history]
-                       [stylist-matching.search.filters-modal :as filter-menu]])
+                       [storefront.history :as history]])
             adventure.keypaths
             [stylist-matching.core :as core
-             :refer [stylist-matching<- service-delimiter]]
-            [stylist-matching.keypaths :as k]
+             :refer [stylist-matching<-]]
             api.orders
             clojure.set
             [clojure.string :as string]
-            [storefront.accessors.sites :as sites]
-            [storefront.accessors.experiments :as experiments]
+            [spice.core :as spice]
+            [spice.date :as date]
             [storefront.accessors.stylists :as stylists]
             [storefront.accessors.categories :as categories]
             [storefront.component :as component :refer [defdynamic-component defcomponent]]
-            [storefront.components.header :as components.header]
             [storefront.components.svg :as svg]
             [storefront.events :as e]
-            [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]
-            [stylist-matching.ui.stylist-cards :as stylist-cards]
-            [stylist-matching.ui.gallery-modal :as gallery-modal]
             [storefront.components.ui :as ui]
-            [spice.core :as spice]
             [storefront.effects :as effects]
+            storefront.keypaths
             [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
             [storefront.platform.messages :as messages
@@ -31,75 +25,10 @@
              :rename {handle-message publish}]
             [storefront.platform.component-utils :as utils]
             [storefront.utils :as general-utils]
-            [storefront.request-keys :as request-keys]
-            [spice.date :as date]
-            storefront.keypaths
+            [stylist-matching.keypaths :as k]
+            [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]
+            [stylist-matching.ui.stylist-cards :as stylist-cards]
             [mayvenn.live-help.core :as live-help]))
-
-;;  Navigating to the results page causes the effect of searching for stylists
-;;
-;;  This allows:
-;;  - Cold loads of the page, both with lat+long and stylist ids
-;;  - Refining of search results
-;;
-
-(defmethod effects/perform-effects e/navigate-adventure-stylist-results
-  [_ _ {{preferred-services :preferred-services
-         moniker            :name
-         stylist-ids        :s
-         latitude           :lat
-         longitude          :long
-         address            :address} :query-params} prev-state state]
-  (if (not= :shop (sites/determine-site state))
-    (effects/redirect e/navigate-home)
-    (do
-      #?(:cljs (google-maps/insert))
-
-      (publish e/biz|follow|defined
-               {:follow/after-id e/flow|stylist-matching|matched
-                :follow/then     [e/post-stylist-matched-navigation-decided
-                                  {:decision
-                                   {:booking e/navigate-adventure-appointment-booking
-                                    :cart    e/navigate-cart
-                                    :success e/navigate-adventure-match-success}}]})
-
-      ;; Init the model if there isn't one, e.g. Direct load
-      (when-not (stylist-matching<- state)
-        (publish e/flow|stylist-matching|initialized))
-
-      ;; Pull stylist-ids (s) from URI; predetermined search results
-      (when (seq stylist-ids)
-        (publish e/flow|stylist-matching|param-ids-constrained
-                                 {:ids stylist-ids}))
-      ;; Pull name search from URI
-      (publish e/flow|stylist-matching|set-presearch-field
-                               {:name moniker})
-      (publish e/flow|stylist-matching|param-name-constrained
-                               {:name moniker})
-
-      ;; Address from URI
-      (publish e/flow|stylist-matching|set-address-field
-                               {:address address})
-
-      ;; Pull preferred services from URI; filters for service types
-      (when-let [services (some-> preferred-services
-                                  not-empty
-                                  (string/split (re-pattern service-delimiter))
-                                  set)]
-        (publish e/flow|stylist-matching|param-services-constrained
-                                 {:services services}))
-      ;; Pull lat/long from URI; search by proximity
-      (when (and (not-empty latitude)
-                 (not-empty longitude))
-        (publish e/flow|stylist-matching|param-location-constrained
-                                 {:latitude  (spice/parse-double latitude)
-                                  :longitude (spice/parse-double longitude)}))
-      ;; FIXME(matching)
-      (when-not (= (get-in prev-state storefront.keypaths/navigation-event)
-                   (get-in state storefront.keypaths/navigation-event))
-        (publish e/initialize-stylist-search-filters))
-
-      (publish e/flow|stylist-matching|searched))))
 
 ;; --------------- gallery modal
 
@@ -180,10 +109,10 @@
   [stylist]
   (let [{:analytics/keys [stylist-id lat long top-stylist rating just-added? years-of-experience]} stylist]
     {:stylist_id                 stylist-id
-     :latitude                   (spice.core/parse-double lat)
-     :longitude                  (spice.core/parse-double long)
+     :latitude                   (spice/parse-double lat)
+     :longitude                  (spice/parse-double long)
      :top_stylist                top-stylist
-     :displayed_rating           (spice.core/parse-double rating)
+     :displayed_rating           (spice/parse-double rating)
      :just_added                 just-added?
      :displayed_years_experience years-of-experience}))
 
@@ -635,23 +564,6 @@
     (stylist-results-empty-name-presearch-results-molecule data)
     (stylist-results-service-filters-molecule data)]])
 
-(def scrim-atom
-  [:div.absolute.overlay.bg-darken-4])
-
-(defcomponent template
-  [{:keys [spinning? gallery-modal header stylist-search-inputs scrim? results] :as data} _ _]
-  [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
-   ;; TODO(corey) is this used?
-   (component/build gallery-modal/organism gallery-modal)
-   (components.header/adventure-header header)
-   (component/build search-inputs-organism stylist-search-inputs)
-   (if spinning?
-     [:div.mt6 ui/spinner]
-     [:div.relative.stretch
-      (component/build results-template results)
-      (when scrim?
-        scrim-atom)])])
-
 (def shopping-method-choice-query
   {:shopping-method-choice.error-title/id        "stylist-matching-shopping-method-choice"
    :shopping-method-choice.error-title/primary   "We need some time to find you the perfect stylist!"
@@ -791,65 +703,3 @@
      :list.non-matching/cards      non-matching-stylist-cards
      :stylist.analytics/cards      (into matching-stylist-cards non-matching-stylist-cards)
      :shopping-method-choice       shopping-method-choice-query}))
-
-(defn ^:export page
-  [app-state _]
-  ;; 2 modes: filters or results
-  (or #?(:clj nil :cljs (some->> (filter-menu/query app-state)
-                        (component/build filter-menu/component)))
-      (let [;; Models
-            current-order (api.orders/current app-state)
-            matching      (stylist-matching.core/stylist-matching<- app-state)
-            skus-db       (get-in app-state storefront.keypaths/v2-skus)
-
-            ;; Experiments
-            just-added-only?       (experiments/just-added-only? app-state)
-            just-added-experience? (experiments/just-added-experience? app-state)
-            just-added-control?    (experiments/just-added-control? app-state)
-            stylist-results-test?  (experiments/stylist-results-test? app-state)
-
-            ;; Externals
-            kustomer-started? (live-help/kustomer-started? app-state)
-            google-loaded?    (get-in app-state storefront.keypaths/loaded-google-maps)
-
-            address-field-errors   (get-in app-state k/address-field-errors)
-            back-button-target     [(if (and (experiments/top-stylist? app-state)
-                                             (->> (:results/stylists matching)
-                                                  (filter :top-stylist)
-                                                  (filter (partial stylist-matching.core/matches-preferences?
-                                                                   (:param/services matching)))
-                                                  seq))
-                                      e/navigate-adventure-top-stylist
-                                      e/navigate-adventure-find-your-stylist)]]
-        (component/build template
-                         {:gallery-modal         (gallery-modal-query app-state)
-                          :spinning?             (or (empty? (:status matching))
-                                                     (utils/requesting? app-state request-keys/fetch-matched-stylists)
-                                                     (utils/requesting? app-state request-keys/fetch-stylists-matching-filters)
-                                                     (utils/requesting? app-state request-keys/get-products)
-                                                     (and (not (get-in app-state storefront.keypaths/loaded-convert))
-                                                          stylist-results-test?
-                                                          (or (not just-added-control?)
-                                                              (not just-added-only?)
-                                                              (not just-added-experience?))))
-                          :scrim?                (contains? (:status matching)
-                                                            :results.presearch/name)
-                          :stylist-search-inputs (stylist-search-inputs<- matching
-                                                                          google-loaded?
-                                                                          skus-db
-                                                                          address-field-errors)
-                          :header                (header<- current-order
-                                                           back-button-target
-                                                           (->> (get-in app-state storefront.keypaths/navigation-undo-stack)
-                                                                first
-                                                                not-empty))
-                          :results               (results< matching
-                                                           kustomer-started?
-                                                           just-added-only?
-                                                           just-added-experience?
-                                                           stylist-results-test?)}
-
-                         {:key (str "stylist-results-"
-                                    (hash (:results/stylists matching))
-                                    "-"
-                                    [just-added-only? just-added-experience? stylist-results-test?])}))))

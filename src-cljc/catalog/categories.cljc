@@ -147,7 +147,7 @@
                                                                                                                                :page/slug          "closure-install"
                                                                                                                                :query-params       {:SKU "SRV-CBI-000"}}]}
                                                        {:text "for free with one of Mayvenn’s certified stylists! Simply purchase a closure and 2 or more bundles and we’ll match you with a"}
-                                                       {:text "stylist near you." :nav-message [events/navigate-adventure-find-your-stylist]}]}
+                                                       {:text "stylist near you." :nav-message [events/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]}
                                               {:title "Want More Info on Silk and Lace Closures?"
                                                :body  [{:text "Closure or frontal? Silk or lace? Brazilian or Peruvian? So many choices. Thankfully, Customer Service is here to help. Our team is ready to answer all your questions about closures so connect with us today for more information!"}]}]
 

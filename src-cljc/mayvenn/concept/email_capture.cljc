@@ -3,20 +3,19 @@
                 [[storefront.browser.cookie-jar :as cookie-jar]
                  [storefront.hooks.facebook-analytics :as facebook-analytics]
                  [storefront.hooks.google-tag-manager :as google-tag-manager]
-                 [storefront.hooks.stringer :as stringer]])
+                 [storefront.hooks.stringer :as stringer]
+                 [storefront.keypaths :as k]])
             [clojure.set :as set]
             [spice.date]
             [storefront.events :as e]
             [storefront.effects :as fx]
-            [storefront.keypaths :as k]
             [storefront.platform.messages
              :as messages
              :refer [handle-message]
              :rename {handle-message publish}]
             [storefront.routes :as routes]
             [storefront.transitions :as t]
-            [storefront.trackings :as trk]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.trackings :as trk]))
 
 (def never-show-on-these-pages
   #{e/navigate-cart
