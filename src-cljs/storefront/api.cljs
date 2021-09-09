@@ -925,7 +925,8 @@
                                       "promotion-not-found"
                                       "stylist-signed-in-promotion"
                                       "stylist-wrong-store-promotion"
-                                      "stylist-only-promotion"} error-code))
+                                      "stylist-only-promotion"
+                                      "ineligible-for-promotion"} error-code))
                           (messages/handle-message events/api-failure-errors-invalid-promo-code
                                                    (assoc (waiter-style->std-error response-body) :promo-code promo-code)))))}))
 
