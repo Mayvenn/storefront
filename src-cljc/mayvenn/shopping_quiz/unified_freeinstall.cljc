@@ -868,6 +868,4 @@
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall
   [_ _ _ state _]
   (when-not (= :shop (accessors.sites/determine-site state))
-    (publish e/go-to-navigate {:target [e/navigate-home]}))
-  (when-not (experiments/shopping-quiz-unified-fi? state)
-    (publish e/enable-feature {:feature "shopping-quiz-unified-fi"})))
+    (publish e/go-to-navigate {:target [e/navigate-home]})))

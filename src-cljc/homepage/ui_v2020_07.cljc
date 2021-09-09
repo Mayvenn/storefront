@@ -168,16 +168,12 @@
      :contact-us.contact-method/copy       "help@mayvenn.com"}]})
 
 (defn install-specific-query [app-state]
-  {:buy-three-bundles     (merge {:layer/type   :shop-text-block
-                                  :header/value "Buy 3 bundles and we’ll pay for your install"
-                                  :cta/button?  true}
-                                 (if (experiments/shopping-quiz-unified-fi? app-state)
-                                   {:cta/value  "Start Hair Quiz"
-                                    :cta/id     "homepage-take-hair-quiz"
-                                    :cta/target [e/navigate-shopping-quiz-unified-freeinstall-intro {:query-params {:location "homepage_cta"}}]}
-                                   {:cta/value  "Browse Stylists"
-                                    :cta/id     "browse-stylist"
-                                    :cta/target [e/navigate-adventure-find-your-stylist]}))
+  {:buy-three-bundles     {:layer/type   :shop-text-block
+                           :header/value "Buy 3 bundles and we’ll pay for your install"
+                           :cta/button?  true
+                           :cta/value  "Start Hair Quiz"
+                           :cta/id     "homepage-take-hair-quiz"
+                           :cta/target [e/navigate-shopping-quiz-unified-freeinstall-intro {:query-params {:location "homepage_cta"}}]}
    :shop-framed-checklist {:layer/type   :shop-framed-checklist
                            :header/value "What's included?"
                            :bullets      ["Shampoo"
