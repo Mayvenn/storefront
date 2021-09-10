@@ -781,8 +781,10 @@
 
 #?(:cljs
    (defmethod storefront.trackings/perform-track events/control-product-detail-picker-open
-     [_ _ {:keys [facet-slug length-index] :as args} _]
-     (let [picker-name (last facet-slug)]
-       (stringer/track-event "look_facet-clicked" (merge {:facet-selected picker-name}
-                                                         (when (= "length" picker-name)
-                                                           {:position length-index}))))))
+     [_ _ {:keys [facet-slug length-index] :as args} state]
+     (when (and (-> (products/current-product state) :hair/family first (= "bundles"))
+                (experiments/multiple-lengths-pdp? state))
+       (let [picker-name (last facet-slug)]
+         (stringer/track-event "look_facet-clicked" (merge {:facet-selected picker-name}
+                                                           (when (= "length" picker-name)
+                                                             {:position length-index})))))))
