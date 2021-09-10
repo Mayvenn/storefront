@@ -19,7 +19,8 @@
 
 (defn -main [& args]
   (try
-    (tracer/configure-xray!)
+    (when-not (= (env :environment) "development")
+      (tracer/configure-xray!))
     (alter-var-root #'the-system (constantly (system/create-system)))
     (alter-var-root #'the-system component/start)
     (catch Exception e
