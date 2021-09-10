@@ -1,9 +1,12 @@
 (ns storefront.frontend-trackings
   (:require [api.orders :as api.orders]
+            [catalog.keypaths]
+            [catalog.products :as products]
             [clojure.string :as string]
             [clojure.set :as set]
             [spice.maps :as maps]
             [storefront.accessors.line-items :as line-items]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.videos :as videos]
             [storefront.accessors.stylist-urls :as stylist-urls]
@@ -98,9 +101,47 @@
   (stringer/track-event "select_bundle_option" {:option_name  (name selection)
                                                 :option_value value}))
 
+(defn ^:private sku->data-sku-reference
+  [s]
+  (select-keys s [:catalog/sku-id :legacy/variant-id]) )
+
+(defn ^:private selections->product-selections
+  [selections]
+  (mapv
+   #(merge (select-keys selections [:hair/color :hair/length])
+           (select-keys % [:hair/color :hair/length]))
+   selections))
+
+(defn ^:private product-selections->skus
+  [availability product-selections]
+  (mapv
+   (fn [{:hair/keys [color length]}]
+     (get-in availability [color length]))
+   product-selections))
+
+(defn ^:private ->data-event-format
+  [selections availability]
+  (let [product-selections (selections->product-selections selections)]
+    {:products           (->> product-selections
+                              (product-selections->skus availability)
+                              (mapv sku->data-sku-reference)
+                              (map #(when (seq %) %)))
+     :product-selections product-selections}))
+
 (defmethod perform-track events/control-product-detail-picker-option-select
-  [_ event {:keys [selection value]} app-state]
-  (track-select-bundle-option selection value))
+  [_ event {:keys [selection value] :as options} app-state]
+  (if (and (-> (products/current-product app-state)
+               :hair/family
+               first
+               (= "bundles"))
+           (experiments/multiple-lengths-pdp? app-state))
+    (stringer/track-event "look_facet-changed"
+                          (merge {:selected-color value
+                                  :facet-selected selection}
+                               (->data-event-format
+                                  (get-in app-state catalog.keypaths/detailed-product-multiple-lengths-selections)
+                                  (get-in app-state catalog.keypaths/detailed-product-availability))))
+    (track-select-bundle-option selection value)))
 
 (defmethod perform-track events/api-success-suggested-add-to-bag [_ event {:keys [order sku-id->quantity initial-sku]} app-state]
   (let [line-item-skuers (sku-id->quantity-to-line-item-skuer (get-in app-state keypaths/v2-skus) sku-id->quantity)

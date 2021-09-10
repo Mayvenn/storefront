@@ -676,7 +676,10 @@
                                    (conj keypaths/v2-skus)
                                    (get-in app-state))
                               (get-in app-state catalog.keypaths/detailed-product-selected-sku)
-                              (first product-skus))]
+                              (first product-skus))
+        availability      (catalog.products/index-by-selectors
+                           [:hair/color :hair/length]
+                           product-skus)]
     (-> app-state
         (assoc-in catalog.keypaths/detailed-product-id product-id)
         (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
@@ -684,6 +687,7 @@
         (assoc-in keypaths/browse-sku-quantity 1)
         (assoc-in catalog.keypaths/detailed-product-selected-picker nil)
         (assoc-in catalog.keypaths/detailed-product-picker-visible? nil)
+        (assoc-in catalog.keypaths/detailed-product-availability availability)
         (assoc-in catalog.keypaths/detailed-product-multiple-lengths-selections [{:hair/color  (first (:hair/color sku))
                                                                                   :hair/length (first (:hair/length sku))} {} {}])
         (assoc-selections sku)

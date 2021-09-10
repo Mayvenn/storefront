@@ -736,7 +736,53 @@
     (effects/redirect navigation-event params-with-sku-id :sku-option-select)
     #?(:cljs (scroll/enable-body-scrolling))))
 
+(defn ^:private sku->data-sku-reference
+  [s]
+  (select-keys s [:catalog/sku-id :legacy/variant-id]) )
+
+(defn ^:private selections->product-selections
+  [selections]
+  (mapv
+   #(merge (select-keys selections [:hair/color :hair/length])
+           (select-keys % [:hair/color :hair/length]))
+   selections))
+
+(defn ^:private product-selections->skus
+  [availability product-selections]
+  (mapv
+   (fn [{:hair/keys [color length]}]
+     (get-in availability [color length]))
+   product-selections))
+
+(defn ^:private ->data-event-format
+  [selections availability]
+  (let [product-selections (selections->product-selections selections)]
+    {:products           (->> product-selections
+                              (product-selections->skus availability)
+                              (mapv sku->data-sku-reference)
+                              (map #(when (seq %) %)))
+     :product-selections product-selections}))
+
+#?(:cljs
+   (defmethod trackings/perform-track events/control-product-detail-picker-option-length-select
+     [_ event {:keys [selection value index] :as options} app-state]
+     (stringer/track-event "look_facet-changed"
+                           (merge {:position        index
+                                   :selected-length value
+                                   :facet-selected  selection}
+                                  (->data-event-format
+                                   (get-in app-state catalog.keypaths/detailed-product-multiple-lengths-selections)
+                                   (get-in app-state catalog.keypaths/detailed-product-availability))))))
+
 (defmethod transitions/transition-state events/control-product-detail-picker-add-length
   [_ _ {} state]
   (-> state
       (update-in catalog.keypaths/detailed-product-multiple-lengths-selections conj {})))
+
+#?(:cljs
+   (defmethod storefront.trackings/perform-track events/control-product-detail-picker-open
+     [_ _ {:keys [facet-slug length-index] :as args} _]
+     (let [picker-name (last facet-slug)]
+       (stringer/track-event "look_facet-clicked" (merge {:facet-selected picker-name}
+                                                         (when (= "length" picker-name)
+                                                           {:position length-index}))))))
