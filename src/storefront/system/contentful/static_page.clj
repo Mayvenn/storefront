@@ -3,6 +3,7 @@
             [storefront.system.scheduler :as scheduler]
             [storefront.component :refer [normalize-element]]
             [mayvenn.tracer :as tracer]
+            [environ.core :refer [env]]
             [hiccup.core :refer [html]]
             [spice.maps :as maps]
             [meander.epsilon :as m]
@@ -10,7 +11,8 @@
             [clojure.string :as string]
             [com.stuartsierra.component :refer [Lifecycle]]))
 
-(tracer/instrument! markdown/md-to-html-string)
+(when-not (= (env :environment) "development")
+  (tracer/instrument! markdown/md-to-html-string))
 
 (defn- content-map
   "Takes a contentful tree of data and returns a map containing sys.id -> entry that exist.
@@ -28,7 +30,8 @@
          (m/search c (m/and (m/$ {:sys {:id ?id} :as ?m})
                             (m/guard (not (:type (:sys ?m)))))
                    {?id ?m})))
-(tracer/instrument! content-map)
+(when-not (= (env :environment) "development")
+  (tracer/instrument! content-map))
 
 (defn- content-html
   "Converts contentful linked structure into a hiccup-like format for page rendering"
@@ -110,7 +113,8 @@
           (println "Missing clause in `content-html` for" (pr-str ?x))
           (exception-handler (IllegalArgumentException. (format "Missing clause in `content-html` for" (pr-str ?x))))
           [:div.bg-red.white "Unrecognized content type: " (pr-str ?x)]))))
-(tracer/instrument! content-html)
+(when-not (= (env :environment) "development")
+  (tracer/instrument! content-html))
 
 (defn- fetch-raw [contentful path {:keys [preview?]}]
   (-> (gql/query contentful "static_page.gql" {"preview" (boolean preview?)

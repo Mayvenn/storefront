@@ -14,6 +14,7 @@
             [comb.template :as template]
             [compojure.core :refer [routes GET]]
             [compojure.route :as route]
+            [environ.core :refer [env]]
             [lambdaisland.uri :as uri]
             [noir-exception.core :refer [wrap-exceptions wrap-internal-error]]
             [ring-logging.core :as ring-logging]
@@ -1110,8 +1111,8 @@
                (GET "/sitemap.xml" req (sitemap-index req))
                (GET "/sitemap-pages.xml" req (sitemap-pages ctx req))
                (GET "/googlee2783b8646cb0bdd.html" _req
-                    (-> "google-site-verification: googlee2783b8646cb0bdd.html"
-                        (util.response/response) (util.response/content-type "text/html")))
+                 (-> "google-site-verification: googlee2783b8646cb0bdd.html"
+                     (util.response/response) (util.response/content-type "text/html")))
                (GET "/blog" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/blog/"))))
                (GET "/blog/" req (util.response/redirect (store-url "shop" environment req)))
                (GET "/info" req (util.response/redirect (store-url "shop" environment req)))
@@ -1138,15 +1139,15 @@
                (GET "/stylist/referrals" req (redirect-to-home environment req :found))
                (GET "/adv/match-stylist" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/adv/find-your-stylist")) :moved-permanently))
                (GET "/cms/*" {uri :uri}
-                    (let [keypath (->> #"/" (clojure.string/split uri) (drop 2) (map keyword))]
-                      (-> (contentful/read-cache contentful)
-                          (get-in keypath)
-                          ((partial assoc-in {} keypath))
-                          json/generate-string
-                          util.response/response
-                          (util.response/content-type "application/json"))))
+                 (let [keypath (->> #"/" (clojure.string/split uri) (drop 2) (map keyword))]
+                   (-> (contentful/read-cache contentful)
+                       (get-in keypath)
+                       ((partial assoc-in {} keypath))
+                       json/generate-string
+                       util.response/response
+                       (util.response/content-type "application/json"))))
                (GET "/marketing-site" req
-                    (contentful/marketing-site-redirect req))
+                 (contentful/marketing-site-redirect req))
                (-> (routes (static-routes ctx)
                            (routes-with-orders ctx)
                            (route/not-found views/not-found))
@@ -1159,10 +1160,12 @@
        (wrap-filter-params)
        (wrap-params)
        (wrap-no-cache)
-       (tracer/wrap-http-segment {::tracer/segment-name        "storefront"
-                                  ::tracer/record-headers?     true
-                                  ::tracer/include-subsegment? false
-                                  ::tracer/annotations         {"environment" environment}})
+       (#(if-not (#{"development"} environment)
+           (tracer/wrap-http-segment % {::tracer/segment-name        "storefront"
+                                        ::tracer/record-headers?     true
+                                        ::tracer/include-subsegment? false
+                                        ::tracer/annotations         {"environment" environment}})
+           %))
        (#(if (#{"development" "test"} environment)
            (wrap-exceptions %)
            (wrap-internal-error %
