@@ -175,7 +175,12 @@
                                          :sort-order  1
                                          :id          "quiz-unified-fi"
                                          :new-link?   true
-                                         :nav-message [events/navigate-shopping-quiz-unified-freeinstall-intro {:query-params {:location "footer"}}]}]
+                                         :nav-message [events/navigate-shopping-quiz-unified-freeinstall-intro {:query-params {:location "footer"}}]}
+                                        {:title       "Browse Stylists"
+                                         :sort-order  1
+                                         :id          "browse-stylist"
+                                         :new-link?   false
+                                         :nav-message [events/navigate-adventure-find-your-stylist]}]
                                        [{:title       "Find a Stylist"
                                          :sort-order  1
                                          :id          "find-a-stylist"

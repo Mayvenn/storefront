@@ -445,7 +445,10 @@
                                                                           {:query-params {:location "hamburger"}}]
                                     :slide-out-nav-menu-item/id          "menu-shop-quiz-unified-fi"
                                     :slide-out-nav-menu-item/new-primary "NEW"
-                                    :slide-out-nav-menu-item/primary     "Start Hair Quiz"}])
+                                    :slide-out-nav-menu-item/primary     "Start Hair Quiz"}
+                                   {:slide-out-nav-menu-item/target      [events/navigate-adventure-find-your-stylist]
+                                    :slide-out-nav-menu-item/id          "menu-shop-find-stylist"
+                                    :slide-out-nav-menu-item/primary     "Browse Stylists"}])
 
                                  shop?
                                  (concat
@@ -513,7 +516,10 @@
                                                                    {:query-params {:location "desktop_heade"}}]
                               :header-menu-item/id                "desktop-shop-quiz-unified-fi"
                               :header-menu-item/new-label?        true
-                              :header-menu-item/content           "Start Hair Quiz"}])
+                              :header-menu-item/content           "Start Hair Quiz"}
+                             {:header-menu-item/navigation-target [events/navigate-adventure-find-your-stylist]
+                              :header-menu-item/id                "desktop-shop-find-stylist"
+                              :header-menu-item/content           "Browse Stylists"}])
 
                            shop?
                            (concat
