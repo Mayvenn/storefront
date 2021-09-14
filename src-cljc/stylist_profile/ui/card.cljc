@@ -1,5 +1,6 @@
 (ns stylist-profile.ui.card
   (:require [storefront.component :as c]
+            [storefront.components.marquee :as marquee]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
             [storefront.components.svg :as svg]))
@@ -55,6 +56,17 @@
                          :class "mr1"})
              phone-number)))
 
+(defn card-instagram-molecule
+  [{:card.instagram/keys [id target]}]
+  (when id
+    [:a.proxima.button-font-2.inherit-color.shout.ml3.flex.items-center
+     {:data-test id
+      :href (marquee/instagram-url target)}
+     (svg/instagram {:style {:width  "25px"
+                             :height "25px"}
+                     :class "mr3"})
+     target]))
+
 (defn share-icon-molecule
   [share-icon-data]
   [:div.flex.items-top.justify-center.mr2.col-1
@@ -62,11 +74,13 @@
 
 (c/defcomponent organism
   [data _ _]
-  [:div.flex.bg-white.rounded.p2
-   (card-circle-portrait-molecule data)
-   [:div.left-align.ml2
-    (card-transposed-title-molecule data)
-    (card-star-rating-molecule data)
-    (card-just-added-molecule data)
-    (card-phone-link-molecule data)]
-   (share-icon-molecule data)])
+  [:div.mb3
+   [:div.flex.bg-white.rounded.p2
+    (card-circle-portrait-molecule data)
+    [:div.left-align.ml2
+     (card-transposed-title-molecule data)
+     (card-star-rating-molecule data)
+     (card-just-added-molecule data)
+     (card-phone-link-molecule data)]
+    (share-icon-molecule data)]
+   (card-instagram-molecule data)])

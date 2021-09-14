@@ -225,7 +225,8 @@
    newly-added-stylist-ui?
    {:stylist/keys         [id name portrait salon slug phone-number]
     :stylist.address/keys [city]
-    :stylist.rating/keys  [cardinality publishable? score]}]
+    :stylist.rating/keys  [cardinality publishable? score]
+    :as                   stylist}]
   (merge {:card.circle-portrait/portrait   portrait
           :card.transposed-title/id        "stylist-name"
           :card.transposed-title/primary   name
@@ -241,6 +242,12 @@
                                                         (not hide-star-distribution?))
                                                "star-distribution-table")
             :card.star-rating/rating-content (str "(" score ")")})
+         (when-let [instagram (-> stylist
+                                  :diva/stylist
+                                  :social-media
+                                  :instagram)]
+           {:card.instagram/id     "instagram"
+            :card.instagram/target instagram})
          {:card.phone-link/target       [;; this event is unused, removed: 09126dbb16385f72045f99836b42ce7b781a5d56
                                          e/control-adventure-stylist-phone-clicked
                                          {:stylist-id   id

@@ -8,7 +8,7 @@
             [storefront.platform.component-utils :as utils]))
 
 (defn instagram-url [instagram-account]
-  (str "http://instagram.com/" instagram-account))
+  (str "https://instagram.com/" instagram-account))
 
 (defn styleseat-url [styleseat-account]
   (str "https://www.styleseat.com/v/" styleseat-account))
