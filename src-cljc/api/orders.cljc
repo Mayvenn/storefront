@@ -354,6 +354,7 @@
   (case promotion-code
     "flash15"  (* 0.15 line-item-price)
     "welcome5" (* 0.05 line-item-price)
+    "special"  (* 0.35 line-item-price)
     0))
 
 (defn order-promo-discount
