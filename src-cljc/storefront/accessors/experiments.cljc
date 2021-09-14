@@ -127,3 +127,8 @@
 (defn instagram-stylist-profile?
   [data]
   (display-feature? data "instagram-stylist-profile"))
+
+(defn shopping-quiz-v2?
+  [data]
+  true
+  #_(display-feature? data "shopping-quiz-v2"))

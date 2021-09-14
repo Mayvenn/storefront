@@ -11,6 +11,7 @@
             [mayvenn.visual.tools :refer [with]]
             [mayvenn.visual.ui.actions :as actions]
             [mayvenn.visual.ui.dividers :as dividers]
+            [storefront.accessors.experiments :as experiments]
             [storefront.component :as c]
             [storefront.components.header :as header]
             [storefront.components.money-formatters :as mf]
@@ -61,6 +62,20 @@
      (->> (with :action see-results)
           actions/large-primary)]]])
 
+(c/defcomponent quiz-results-shopping-quiz-v2-organism ; Using "Look" style result card
+  [{:quiz.result/keys [id index-label ucare-id primary secondary tertiary tertiary-note cta-label cta-target]} _ _]
+  [:div.bg-white
+   [:div.left-align.px3.mt5.mb3
+    [:div "Images go here"]
+    [:div.shout.proxima.title-2.mb1 primary]
+    [:div
+     [:div "stars go here"]
+     [:div.content-1 tertiary [:span.ml2.s-color.content-2 tertiary-note]]
+     (ui/button-medium-primary (merge {:data-test id
+                                      :class     "mt2 col-8"}
+                                     (apply utils/fake-href cta-target)) cta-label)]]]
+)
+
 (c/defcomponent quiz-results-organism
   [{:quiz.result/keys [id index-label ucare-id primary secondary tertiary tertiary-note cta-label cta-target]} _ _]
   [:div.left-align.px3.mt5.mb3
@@ -78,7 +93,7 @@
                                       (apply utils/fake-href cta-target)) cta-label)]]]])
 
 (c/defcomponent results-template
-  [{:keys [header quiz-results]} _ _]
+  [{:keys [header quiz-results shopping-quiz-v2?]} _ _]
   [:div.bg-cool-gray
    [:div.max-580.col-12.bg-white
     (c/build header/mobile-nav-header-component header)]
@@ -87,7 +102,9 @@
     [:div.flex.flex-column.px2
      [:div.shout.proxima.title-2 (:quiz.results/primary quiz-results)]
      [:div.m3.canela.title-1 (:quiz.results/secondary quiz-results)]]
-    (c/elements quiz-results-organism quiz-results :quiz.results/options)]
+    (if shopping-quiz-v2?
+      (c/elements quiz-results-shopping-quiz-v2-organism quiz-results :quiz.results/options)
+      (c/elements quiz-results-organism quiz-results :quiz.results/options))]
    [:div.absolute.bottom-0.left-0.right-0
     dividers/green
     (let [{:quiz.alternative/keys [primary cta-label cta-target id]} quiz-results]
@@ -200,12 +217,13 @@
 
 (defn ^:export page
   [state]
-  (let [{:order.items/keys [quantity]}          (api.orders/current state)
+  (let [{:order.items/keys [quantity]} (api.orders/current state)
         {:keys [questions answers progression]
-         :as questioning} (questioning/<- state id)
-        looks-suggestions                       (looks-suggestions/<- state id)
-        header-data                             {:forced-mobile-layout? true
-                                                 :quantity              (or quantity 0)}]
+         :as   questioning}            (questioning/<- state id)
+        looks-suggestions              (looks-suggestions/<- state id)
+        header-data                    {:forced-mobile-layout? true
+                                        :quantity              (or quantity 0)}
+        shopping-quiz-v2?              (experiments/shopping-quiz-v2? state)]
 
     (cond
       (utils/requesting? state request-keys/new-order-from-sku-ids)
@@ -216,8 +234,9 @@
       (c/build waiting-template)
 
       (seq looks-suggestions)
-      (->> {:quiz-results (quiz-results< answers looks-suggestions)
-            :header       header-data}
+      (->> {:quiz-results      (quiz-results< answers looks-suggestions)
+            :header            header-data
+            :shopping-quiz-v2? shopping-quiz-v2?}
            (c/build results-template))
 
       :else
