@@ -226,7 +226,8 @@
    {:stylist/keys         [id name portrait salon slug phone-number]
     :stylist.address/keys [city]
     :stylist.rating/keys  [cardinality publishable? score]
-    :as                   stylist}]
+    :as                   stylist}
+   instagram-stylist-profile?]
   (merge {:card.circle-portrait/portrait   portrait
           :card.transposed-title/id        "stylist-name"
           :card.transposed-title/primary   name
@@ -242,10 +243,11 @@
                                                         (not hide-star-distribution?))
                                                "star-distribution-table")
             :card.star-rating/rating-content (str "(" score ")")})
-         (when-let [instagram (-> stylist
-                                  :diva/stylist
-                                  :social-media
-                                  :instagram)]
+         (when-let [instagram (and instagram-stylist-profile?
+                                   (-> stylist
+                                       :diva/stylist
+                                       :social-media
+                                       :instagram))]
            {:card.instagram/id     "instagram"
             :card.instagram/target instagram})
          {:card.phone-link/target       [;; this event is unused, removed: 09126dbb16385f72045f99836b42ce7b781a5d56
@@ -341,9 +343,9 @@
         newly-added-stylist-ui-experiment? (and (experiments/stylist-results-test? state)
                                                 (or (experiments/just-added-only? state)
                                                     (experiments/just-added-experience? state)))
-
+        instagram-stylist-profile?         (experiments/instagram-stylist-profile? state)
         ;; Requestings
-        fetching-reviews? (utils/requesting? state request-keys/fetch-stylist-reviews)]
+        fetching-reviews?                  (utils/requesting? state request-keys/fetch-stylist-reviews)]
     (c/build template
              (merge {:footer footer<-}
                     (if from-cart-or-direct-load?
@@ -358,7 +360,8 @@
                        :card                     (card<- host-name
                                                          hide-star-distribution?
                                                          newly-added-stylist-ui-experiment?
-                                                         detailed-stylist)
+                                                         detailed-stylist
+                                                         instagram-stylist-profile?)
                        :live-help                (live-help/kustomer-started? state)
                        :ratings-bar-chart        (ratings-bar-chart<- hide-star-distribution?
                                                                       detailed-stylist)
