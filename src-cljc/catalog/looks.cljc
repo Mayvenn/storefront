@@ -65,7 +65,7 @@
    (merge {:data-test id}
           (apply utils/route-to target))
    [:div.border.border-cool-gray.p2
-    (component/build image-grids/hero-with-little-column-molecule
+    (component/build image-grids/hero-with-little-hair-column-molecule
                      (with :looks-card.image-grid data))
     (looks-card-title-molecule data)]])
 
@@ -110,36 +110,24 @@
                                                     (repeat (:item/quantity s) s)))
                                           (take 4))]
     (merge
-     {:looks-card.title/primary  title
-      :looks-card.action/target  target
-      :looks-card/id             (str "look-" id)}
+     {:looks-card.title/primary title
+      :looks-card.action/target target
+      :looks-card/id            (str "look-" id)}
      (within :looks-card.image-grid
-             {:id             (str "look-" id)
-              :height-px      height-px})
+             {:id               (str "look-" id)
+              :height-in-num-px height-px
+              :gap-in-num-px gap-px})
 
      (within :looks-card.image-grid.hero
              {:image-url (:url (first hero-imgs))
-              :badge-url (:platform-source (first hero-imgs))})
-     (within :looks-card.image-grid.column
+              :badge-url (:platform-source (first hero-imgs))
+              :gap-in-num-px gap-px})
+     (within :looks-card.image-grid.hair-column
              {:images (->> fanned-out-by-quantity-items
                            (sort-by :sku/price)
                            (map (fn [sku]
-                                  (let [img-count (count fanned-out-by-quantity-items)
-                                        gap-count (dec img-count)
-                                        img-px    (-> height-px
-                                                      ;; remove total gap space
-                                                      (- (* gap-px gap-count))
-                                                      ;; divided among images
-                                                      (/ img-count)
-                                                      ;; rounded up
-                                                      #?(:clj  identity
-                                                         :cljs Math/ceil))
-                                        ucare-id  (:ucare/id (catalog-images/image images-db "cart" sku))]
-                                    {:length (str (first (:hair/length sku)) "\"")
-                                     :image-url (str "https://ucarecdn.com/"
-                                                     ucare-id
-                                                     "/-/format/auto/-/scale_crop/"
-                                                     img-px "x" img-px "/center/")}))))})
+                                  {:length    (str (first (:hair/length sku)) "\"")
+                                   :image-url (:ucare/id (catalog-images/image images-db "cart" sku))})))})
      (if discounted-price
        {:looks-card.title/secondary discounted-price
         :looks-card.title/struck    total-price}

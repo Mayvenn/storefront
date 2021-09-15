@@ -29,6 +29,17 @@
               (apply utils/fake-href target))
        label)])))
 
+(defn wide-medium-primary
+  [{:keys [id disabled? label target]}]
+  (when id
+    (c/html
+     [:div.col-12
+      (ui/button-medium-primary
+       (merge {:data-test id
+               :disabled? disabled?}
+              (apply utils/fake-href target))
+       label)])))
+
 (defn large-primary
   [{:keys [id disabled? label target]}]
   (when id
