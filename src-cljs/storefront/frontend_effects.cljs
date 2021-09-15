@@ -40,8 +40,6 @@
             [storefront.hooks.wistia :as wistia]
             [storefront.keypaths :as keypaths]
             [adventure.keypaths :as adv-keypaths]
-            [promotion-helper.behavior :as promotion-helper]
-            promotion-helper.keypaths
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
             [storefront.routes :as routes]
@@ -211,8 +209,6 @@
         module-load?          (= caused-by :module-load)
         cookie                (get-in app-state keypaths/cookie)]
     (tags/remove-classname ".kustomer-app-icon" "hide")
-    (when (get-in app-state promotion-helper.keypaths/ui-promotion-helper-opened)
-      (messages/handle-message promotion-helper/closed {:event/source event}))
 
     (messages/handle-message events/control-menu-collapse-all)
     (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)})

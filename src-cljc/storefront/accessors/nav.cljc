@@ -99,22 +99,6 @@
 (def adventures-quiz-events
   #{events/navigate-adventure-quiz})
 
-(defn promotion-helper-can-exist-on-page? [event]
-  (->> event
-       (contains? (set/union account-events
-                             auth-events
-                             checkout-events
-                             order-complete-events
-                             payout-events
-                             sharing-store-events
-                             share-cart-events
-                             stylist-dashboard-events
-                             gallery-page-events
-                             voucher-events
-                             adventures-quiz-events
-                             interstitial-page-events))
-       not))
-
 (defn hide-footer? [event]
   (contains? (set/union gallery-page-events
                         interstitial-page-events

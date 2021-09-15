@@ -72,22 +72,3 @@
    [:div.col-2
     (drawer-contents-condition-action-molecule data)
     (drawer-contents-condition-secondary-action-molecule data)]])
-
-(defn drawer-contents-footer
-  [{:promotion-helper.ui.drawer-contents.footer/keys [id primary cta-label cta-target]}]
-  (c/html
-   [:div
-    (when id
-      [:div.flex.items-center.mt3.justify-between
-       [:div.content-3 primary]
-       (ui/button-small-primary (assoc (apply utils/route-to cta-target)
-                                       :data-test id)  cta-label)])]))
-
-(defcomponent organism
-  [data _ _]
-  (when (seq data)
-    [:div.bg-refresh-gray.p3.z3
-     {:data-test (:promotion-helper.ui.drawer-contents/id data)}
-     (c/elements drawer-contents-condition-organism data
-                 :promotion-helper.ui.drawer-contents/conditions)
-     (drawer-contents-footer data)]))

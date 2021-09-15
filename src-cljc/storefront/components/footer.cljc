@@ -1,6 +1,5 @@
 (ns storefront.components.footer
   (:require [api.catalog :refer [select ?discountable]]
-            promotion-helper.ui
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.nav :as nav]
@@ -126,7 +125,7 @@
          ^:inline (dtc-link link))])]])
 
 (defcomponent dtc-full-component
-  [{:keys [additional-margin contacts link-columns footer-links]} _ opts]
+  [{:keys [contacts link-columns footer-links]} _ opts]
   [:div.bg-cool-gray
    [:div.bg-p-color.pt1]
    [:div.container
@@ -139,8 +138,6 @@
       (social-links)]]]
 
    [:div.hide-on-dt
-    (when additional-margin
-      {:style {:margin-bottom additional-margin}})
     (footer-links/built-component footer-links opts)]
    [:div.hide-on-mb-tb
     (footer-links/built-component footer-links opts)]])
@@ -198,14 +195,6 @@
     {:contacts          (contacts-query data)
      :link-columns      (split-evenly links)
      ;; NOTE: necessary only when promo helper exists. Can remove if it goes away.
-     :additional-margin (when (:promotion-helper/exists?
-                               (promotion-helper.ui/promotion-helper-model<-
-                                data
-                                (->> (api.orders/current data)
-                                     :order/items
-                                     (select ?discountable)
-                                     first)))
-                          "79px")
      :footer-links      {:minimal-footer?                (nav/show-minimal-footer? (get-in data keypaths/navigation-event))
                          :footer-email-input-value       (get-in data keypaths/footer-email-value)
                          :footer-email-submitted?        (get-in data keypaths/footer-email-submitted)
@@ -214,17 +203,15 @@
 (defn built-component
   [data _]
   (let [nav-event (get-in data keypaths/navigation-event)]
-    [:div
-     (cond
-       (nav/hide-footer? nav-event)
-       nil
+    (cond
+      (nav/hide-footer? nav-event)
+      nil
 
-       (nav/show-minimal-footer? nav-event)
-       (footer-minimal/built-component data nil)
+      (nav/show-minimal-footer? nav-event)
+      (footer-minimal/built-component data nil)
 
-       (= :shop (sites/determine-site data))
-       (component/build dtc-full-component (query data) {:key "dtc-full-footer"})
+      (= :shop (sites/determine-site data))
+      (component/build dtc-full-component (query data) {:key "dtc-full-footer"})
 
-       :else
-       (component/build full-component (query data) nil))
-     (promotion-helper.ui/promotion-helper data)]))
+      :else
+      (component/build full-component (query data) nil))))

@@ -4,7 +4,6 @@
             catalog.categories
             [cemerick.url :as url]
             [clojure.string :as string]
-            promotion-helper.keypaths
             [spice.core :as spice]
             [spice.maps :as maps]
             [storefront.accessors.nav :as nav]
