@@ -61,10 +61,13 @@
   (when id
     [:a.proxima.button-font-2.inherit-color.shout.ml3.flex.items-center
      {:data-test id
-      :href (marquee/instagram-url target)}
-     (svg/instagram {:style {:width  "25px"
-                             :height "25px"}
-                     :class "mr3"})
+      :href      (marquee/instagram-url target)}
+     [:img
+      {:src    "//ucarecdn.com/df7cc161-057f-46f4-94a7-d5638c91755c/-/format/auto/-/resize/25x25/"
+       :width  "25"
+       :height "25"
+       :alt    "instagram logo"
+       :class "mr3"}]
      target]))
 
 (defn share-icon-molecule
