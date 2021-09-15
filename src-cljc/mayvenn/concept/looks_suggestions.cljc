@@ -31,6 +31,7 @@
              :rename {handle-message publish}]))
 
 (def BNS-short {:img/id          "16029dd0-285c-4bc6-803c-0c201c3d402c"
+                :img.v2/id       "ec4c6d2c-7bbe-4ecc-8d7c-e9d38f62cf70"
                 :hair/origin     "Brazilian"
                 :hair/texture    "Straight"
                 :service/sku-id  "SV2-LBI-X"
@@ -41,6 +42,7 @@
       (assoc :service/sku-id  "SV2-CBI-X")))
 
 (def BNS-medium {:img/id          "16029dd0-285c-4bc6-803c-0c201c3d402c"
+                 :img.v2/id       "a8635154-d6c5-4620-b87e-6f7a923c30e4"
                  :hair/origin     "Brazilian"
                  :hair/texture    "Straight"
                  :service/sku-id  "SV2-LBI-X"
@@ -48,9 +50,11 @@
 (def BNS-medium-closure
   (-> BNS-medium
       (update :product/sku-ids conj "BNSLC14")
-      (assoc :service/sku-id  "SV2-CBI-X")))
+      (assoc :service/sku-id  "SV2-CBI-X")
+      (assoc :img.v2/id  "10bb8fad-24c5-42db-bb08-14d96aa079e7")))
 
 (def BNS-long {:img/id          "16029dd0-285c-4bc6-803c-0c201c3d402c"
+               :img.v2/id       "cffb217b-2702-418a-905f-90a224913cc0"
                :hair/origin     "Brazilian"
                :hair/texture    "Straight"
                :service/sku-id  "SV2-LBI-X"
@@ -58,9 +62,11 @@
 (def BNS-long-closure
   (-> BNS-long
       (assoc :service/sku-id  "SV2-CBI-X")
-      (update :product/sku-ids conj "BNSLC18")))
+      (update :product/sku-ids conj "BNSLC18")
+      (assoc :img.v2/id  "9281dff6-5f2c-4b8d-bbe2-ffe8108411e1")))
 
 (def BNS-extra-long {:img/id          "16029dd0-285c-4bc6-803c-0c201c3d402c"
+                     :img.v2/id       "3c3efe6e-52f5-445c-b10c-efb12c34b844"
                      :hair/origin     "Brazilian"
                      :hair/texture    "Straight"
                      :service/sku-id  "SV2-LBI-X"
@@ -68,9 +74,11 @@
 (def BNS-extra-long-closure
   (-> BNS-extra-long
       (assoc :service/sku-id  "SV2-CBI-X")
-      (update :product/sku-ids conj "BNSLC18")))
+      (update :product/sku-ids conj "BNSLC18")
+      (assoc :img.v2/id  "4fed4a71-25b4-4068-bb3c-c756cccc0e7b")))
 
 (def BLW-short {:img/id          "f7568a58-d240-4856-9d7d-21096bafda1c"
+                :img.v2/id       "dca63c93-6395-4243-b803-e926219bf6cc"
                 :hair/origin     "Brazilian"
                 :hair/texture    "Loose Wave"
                 :service/sku-id  "SV2-LBI-X"
@@ -81,37 +89,44 @@
       (update :product/sku-ids conj "BLWLC10")))
 
 (def BLW-medium {:img/id          "f7568a58-d240-4856-9d7d-21096bafda1c"
+                 :img.v2/id       "7e0b869b-e581-4f25-afa7-5a41822c69bb"
                  :hair/origin     "Brazilian"
                  :hair/texture    "Loose Wave"
                  :service/sku-id  "SV2-LBI-X"
                  :product/sku-ids ["BLW14","BLW16","BLW18"]})
 (def BLW-medium-closure
   (-> BLW-medium
+      (assoc :img.v2/id "f8a5a7ed-8bc4-4070-b6ce-165d6bdbcd84")
       (assoc :service/sku-id  "SV2-CBI-X")
       (update :product/sku-ids conj "BLWLC14")))
 
 (def BLW-long {:img/id          "f7568a58-d240-4856-9d7d-21096bafda1c"
+               :img.v2/id       "0ca0d1c3-7890-4a7d-8196-4bfe1c146052"
                :hair/origin     "Brazilian"
                :hair/texture    "Loose Wave"
                :service/sku-id  "SV2-LBI-X"
                :product/sku-ids ["BLW18","BLW20","BLW22"]})
 (def BLW-long-closure
   (-> BLW-long
+      (assoc :img.v2/id "3758e72e-def4-48e3-8cce-21502bfa2042")
       (assoc :service/sku-id  "SV2-CBI-X")
       (update :product/sku-ids conj "BLWLC18")))
 
 (def BLW-extra-long
   {:img/id          "f7568a58-d240-4856-9d7d-21096bafda1c"
+   :img.v2/id       "ca057c39-8f8e-40d0-b56a-cb61da778433"
    :hair/origin     "Brazilian"
    :hair/texture    "Loose Wave"
    :service/sku-id  "SV2-LBI-X"
    :product/sku-ids ["BLW22","BLW24","BLW26"]})
 (def BLW-extra-long-closure
   (-> BLW-extra-long
+      (assoc :img.v2/id "13ab394f-50a6-42c4-bd42-c6eac4b214af")
       (assoc :service/sku-id  "SV2-CBI-X")
       (update :product/sku-ids conj "BLWLC18")))
 
 (def MBW-short {:img/id          "888b9c79-265d-4547-b8ce-0c7ce56c8741"
+                :img.v2/id       "56ddd200-987c-40aa-88d7-0fee810531bf"
                 :hair/origin     "Malaysian"
                 :hair/texture    "Body Wave"
                 :service/sku-id  "SV2-LBI-X"
@@ -122,32 +137,38 @@
       (update :product/sku-ids conj "MBWLC10")))
 
 (def MBW-medium {:img/id          "888b9c79-265d-4547-b8ce-0c7ce56c8741"
+                 :img.v2/id       "3e827c3e-4188-4a87-ba53-7fe2eb4df7db"
                  :hair/origin     "Malaysian"
                  :hair/texture    "Body Wave"
                  :service/sku-id  "SV2-LBI-X"
                  :product/sku-ids ["MBW14","MBW16","MBW18"]})
 (def MBW-medium-closure
   (-> MBW-medium
+      (assoc :img.v2/id "d0320ddd-d5cf-4cea-88c7-0e1697aafc03")
       (assoc :service/sku-id "SV2-CBI-X")
       (update :product/sku-ids conj "MBWLC14")))
 
 (def MBW-long {:img/id          "888b9c79-265d-4547-b8ce-0c7ce56c8741"
+               :img.v2/id       "1ff91ee2-4185-40b6-991c-f373602dcdfa"
                :hair/origin     "Malaysian"
                :hair/texture    "Body Wave"
                :service/sku-id  "SV2-LBI-X"
                :product/sku-ids ["MBW18","MBW20","MBW22"]})
 (def MBW-long-closure
   (-> MBW-long
+      (assoc :img.v2/id "29ad2f3b-6619-45b0-beb7-7f403313f9fb")
       (assoc :service/sku-id "SV2-CBI-X")
       (update :product/sku-ids conj "MBWLC18")))
 
 (def MBW-extra-long {:img/id          "888b9c79-265d-4547-b8ce-0c7ce56c8741"
+                     :img.v2/id       "d95e6b87-0a32-4879-ab87-7f59f0303e2d"
                      :hair/origin     "Malaysian"
                      :hair/texture    "Body Wave"
                      :service/sku-id  "SV2-LBI-X"
                      :product/sku-ids ["MBW22","MBW24","MBW26"]})
 (def MBW-extra-long-closure
   (-> MBW-extra-long
+      (assoc :img.v2/id "b5bca431-4884-4753-bd79-666befb323af")
       (assoc :service/sku-id "SV2-CBI-X")
       (update :product/sku-ids conj "MBWLC18")))
 

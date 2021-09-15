@@ -13,6 +13,8 @@
             [mayvenn.visual.ui.image-grids :as image-grids]
             [mayvenn.visual.ui.titles :as titles]
             [mayvenn.visual.ui.dividers :as dividers]
+            [catalog.images :as catalog-images]
+            [storefront.keypaths :as keypaths]
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as c]
             [storefront.components.header :as header]
@@ -30,7 +32,7 @@
             [ui.molecules]
             [clojure.set :as set]))
 
-(def ^:private id :unnamed-v1)
+(def ^:private quiz-id :unnamed-v1)
 
 ;; Visual
 
@@ -154,13 +156,22 @@
            (concat [" + " (-> closures first :hair/length) "” Closure"]))))
 
 (defn quiz-result-option<
-  [idx {:as           looks-suggestion
-        :product/keys [sku-ids]
-        :hair/keys    [origin texture]
-        img-id        :img/id}]
-  (let [skus                  (mapv looks-suggestions/mini-cellar sku-ids)
+  [skus-db images-db idx
+   {:as           looks-suggestion
+    :product/keys [sku-ids]
+    :hair/keys    [origin texture]
+    img-id        :img/id
+    v2-img-id     :img.v2/id}]
+  (let [skus                  (mapv skus-db sku-ids)
+        service-sku           (get skus-db (:service/sku-id looks-suggestion))
         {bundles  "bundles"
-         closures "closures"} (group-by :hair/family skus)]
+         closures "closures"} (group-by :hair/family skus)
+        discounted-price (->> skus
+                              (remove #(= "service" (first (:catalog/department %))))
+                              (map :sku/price)
+                              (apply +))
+        retail-price (+ discounted-price
+                        (:sku/price service-sku))]
     (merge
      {:quiz.result/id            (str "result-option-" idx)
       :quiz.result/index-label   (str "Option " (inc idx))
@@ -170,44 +181,43 @@
       :quiz.result/tertiary      (->> skus (mapv :sku/price) (reduce + 0) mf/as-money)
       :quiz.result/cta-label     "Add To Bag"
       :quiz.result/cta-target    [e/biz|looks-suggestions|selected
-                                  {:id            id
+                                  {:id            quiz-id
                                    :selected-look looks-suggestion}]
       :quiz.result/tertiary-note "Install Included"}
 
-     (within :quiz.result-v2.images {:primary     img-id
-                                     :secondaries [""]})
-
      (within :quiz.result-v2.image-grid {:height-in-num-px 240
-                                         :gap-in-num-px 3})
-     (within :quiz.result-v2.image-grid.hero {:image-url img-id
-                                              :badge-url nil
+                                         :gap-in-num-px    3})
+
+     (within :quiz.result-v2.image-grid.hero {:image-url     v2-img-id
+                                              :badge-url     nil
                                               :gap-in-num-px 3})
-     (within :quiz.result-v2.image-grid.hair-column {:images (map (fn [sku-id]
-                                                                    {:image-url "http://placekitten.com/200/200"
-                                                                     :length sku-id})
-                                                                     sku-ids)})
+     (within :quiz.result-v2.image-grid.hair-column {:images (map (fn [sku]
+                                                                    (let [image (catalog-images/image images-db "cart" sku)]
+                                                                      {:image-url (:ucare/id image)
+                                                                       :length    (str (first (:hair/length sku)) "\"")}))
+                                                                  skus)})
      (within :quiz.result-v2.title {:primary (str origin " " texture " hair + free install service")})
-     (within :quiz.result-v2.rating {:id           (str "adv-quiz-result-option-rating-" id)
+     (within :quiz.result-v2.rating {:id           (str "adv-quiz-result-option-rating-" quiz-id)
                                      :star-count   4
                                      :review-count 32}) ;; TODO Use proper value
-     (within :quiz.result-v2.price {:discounted-price 342.38
-                                    :retail-price     462.38})
+     (within :quiz.result-v2.price {:discounted-price discounted-price
+                                    :retail-price     retail-price})
      (within :quiz.result-v2.line-item-summary {:primary (str (count sku-ids) " products in this look")}) ;; TODO Use proper value
-     (within :quiz.result-v2.action {:id     (str "adv-quiz-choose-look-" id)
+     (within :quiz.result-v2.action {:id     (str "adv-quiz-choose-look-" quiz-id)
                                      :label  "Choose this look"
                                      :target [e/biz|looks-suggestions|selected
-                                              {:id            id
+                                              {:id            quiz-id
                                                :selected-look looks-suggestion}]}))))
 
 (defn quiz-results<
-  [answers look-suggestions]
+  [skus-db images-db answers look-suggestions]
   (merge
    (if (every? #{:unsure} (vals answers))
      {:quiz.results/primary   "Still Undecided?"
       :quiz.results/secondary "These are our most popular styles."}
      {:quiz.results/primary   "Hair & Services"
       :quiz.results/secondary "We think these styles will look great on you."})
-   {:quiz.results/options        (map-indexed quiz-result-option<
+   {:quiz.results/options        (map-indexed (partial quiz-result-option< skus-db images-db)
                                               look-suggestions)
     :quiz.alternative/primary    "Wanna explore more options?"
     :quiz.alternative/id         "quiz-result-alternative"
@@ -223,7 +233,7 @@
     {:action/id        "quiz-see-results"
      :action/disabled? (not (zero? unanswered))
      :action/target    [e/biz|questioning|submitted
-                        {:questioning/id id
+                        {:questioning/id quiz-id
                          :answers        answers
                          :on/success     [e/biz|looks-suggestions|queried]}]
      :action/label     "See Results"}))
@@ -251,7 +261,7 @@
          :primary   answer
          :id        (str (name question-id) "-" (name choice-id))
          :target    [e/biz|questioning|answered
-                     {:questioning/id id
+                     {:questioning/id quiz-id
                       :question/idx   question-idx
                       :question/id    question-id
                       :choice/idx     choice-idx
@@ -262,8 +272,10 @@
   [state]
   (let [{:order.items/keys [quantity]} (api.orders/current state)
         {:keys [questions answers progression]
-         :as   questioning}            (questioning/<- state id)
-        looks-suggestions              (looks-suggestions/<- state id)
+         :as   questioning}            (questioning/<- state quiz-id)
+        skus-db                        (get-in state keypaths/v2-skus)
+        images-db                      (get-in state keypaths/v2-images)
+        looks-suggestions              (looks-suggestions/<- state quiz-id)
         header-data                    {:forced-mobile-layout? true
                                         :quantity              (or quantity 0)}
         shopping-quiz-v2?              (experiments/shopping-quiz-v2? state)]
@@ -272,12 +284,12 @@
       (utils/requesting? state request-keys/new-order-from-sku-ids)
       (c/build loading-template)
 
-      (or (wait/<- state id)
+      (or (wait/<- state quiz-id)
           (utils/requesting? state request-keys/get-products))
       (c/build waiting-template)
 
       (seq looks-suggestions)
-      (->> {:quiz-results      (quiz-results< answers looks-suggestions)
+      (->> {:quiz-results      (quiz-results< skus-db images-db answers looks-suggestions)
             :header            header-data
             :shopping-quiz-v2? shopping-quiz-v2?}
            (c/build results-template))
@@ -294,6 +306,6 @@
 (defmethod fx/perform-effects e/navigate-adventure-quiz
   [_ _ _ _ _]
   (publish e/biz|looks-suggestions|reset
-           {:id id})
+           {:id quiz-id})
   (publish e/biz|questioning|reset
-           {:questioning/id id}))
+           {:questioning/id quiz-id}))
