@@ -11,8 +11,9 @@
             clojure.string
             [storefront.effects :as effects]
             [spice.maps :as maps]
+            [mayvenn.visual.tools :refer [with within]]
+            [mayvenn.visual.ui.image-grids :as image-grids]
             [storefront.accessors.contentful :as contentful]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.sites :as sites]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
@@ -41,27 +42,13 @@
 
 ;; Visual: Looks (new version under experiment)
 
-(defcomponent looks-hero-organism
+(defcomponent looks-hero-title-organism
   [{:looks.hero.title/keys [primary secondary]} _ _]
   [:div.center.py6.bg-warm-gray
    [:h1.title-1.canela.py3
     primary]
    (into [:p.col-10.col-6-on-tb-dt.mx-auto.proxima.content-2]
          (interpose [:br] secondary))])
-
-(defn looks-card-hero-molecule
-  [{:looks-card.hero/keys [image-url badge-url]}]
-  [:div.relative
-   {:style {:padding-right "3px"}}
-   (ui/img {:class    "container-size"
-            :style    {:object-position "50% 25%"
-                       :object-fit      "cover"}
-            :src      image-url
-            :max-size 749})
-   [:div.absolute.bottom-0.m1.justify-start
-    {:style {:height "22px"
-             :width  "22px"}}
-    badge-url]])
 
 (defn looks-card-title-molecule
   [{:looks-card.title/keys [primary secondary struck]}]
@@ -71,29 +58,15 @@
     (when struck
       [:span.content-4.strike.ml1 struck])]])
 
-(defcomponent looks-card-hair-item-molecule
-  [{:looks-card.hair-item/keys [image-url length]} _ {:keys [id]}]
-  [:div.relative
-   [:img.block
-    {:key id
-     :src image-url}]
-   [:div.absolute.top-0.right-0.content-4.m1
-    length]])
-
 (defcomponent looks-card-organism*
-  [{:as data :looks-card/keys [height-px id]
+  [{:as data :looks-card/keys [id]
     target :looks-card.action/target} _ _]
   [:a.col-12.px1-on-tb-dt.col-4-on-tb-dt.black.pb2
    (merge {:data-test id}
           (apply utils/route-to target))
    [:div.border.border-cool-gray.p2
-    [:div.flex
-     {:style {:height (str height-px "px")}}
-     (looks-card-hero-molecule data)
-     [:div.flex.flex-column.justify-between.mlp2
-      (component/elements looks-card-hair-item-molecule
-                          data
-                          :looks-card/hair-items)]]
+    (component/build image-grids/hero-with-little-column-molecule
+                     (with :looks-card.image-grid data))
     (looks-card-title-molecule data)]])
 
 (defcomponent looks-card-organism
@@ -115,7 +88,7 @@
   [{:keys [hero]
     :as queried-data} _ _]
   [:div
-   (component/build looks-hero-organism hero)
+   (component/build looks-hero-title-organism hero)
    (component/build facet-filters/organism queried-data
                     {:opts {:child-component looks-cards-organism}})])
 
@@ -138,32 +111,35 @@
                                           (take 4))]
     (merge
      {:looks-card.title/primary  title
-      :looks-card.hero/image-url (:url (first hero-imgs))
-      :looks-card.hero/badge-url (:platform-source (first hero-imgs))
       :looks-card.action/target  target
-      :looks-card.hero/gap-px    gap-px
-      :looks-card/id             (str "look-" id)
-      :looks-card/height-px      height-px
-      :looks-card/hair-items     (->> fanned-out-by-quantity-items
-                                      (sort-by :sku/price)
-                                      (map (fn [sku]
-                                             (let [img-count (count fanned-out-by-quantity-items)
-                                                   gap-count (dec img-count)
-                                                   img-px    (-> height-px
-                                                                 ;; remove total gap space
-                                                                 (- (* gap-px gap-count))
-                                                                 ;; divided among images
-                                                                 (/ img-count)
-                                                                 ;; rounded up
-                                                                 #?(:clj  identity
-                                                                    :cljs Math/ceil))
-                                                   ucare-id  (:ucare/id (catalog-images/image images-db "cart" sku))]
-                                               {:looks-card.hair-item/length (str (first (:hair/length sku)) "\"")
-                                                :looks-card.hair-item/image-url
-                                                (str "https://ucarecdn.com/"
+      :looks-card/id             (str "look-" id)}
+     (within :looks-card.image-grid
+             {:id             (str "look-" id)
+              :height-px      height-px})
+
+     (within :looks-card.image-grid.hero
+             {:image-url (:url (first hero-imgs))
+              :badge-url (:platform-source (first hero-imgs))})
+     (within :looks-card.image-grid.column
+             {:images (->> fanned-out-by-quantity-items
+                           (sort-by :sku/price)
+                           (map (fn [sku]
+                                  (let [img-count (count fanned-out-by-quantity-items)
+                                        gap-count (dec img-count)
+                                        img-px    (-> height-px
+                                                      ;; remove total gap space
+                                                      (- (* gap-px gap-count))
+                                                      ;; divided among images
+                                                      (/ img-count)
+                                                      ;; rounded up
+                                                      #?(:clj  identity
+                                                         :cljs Math/ceil))
+                                        ucare-id  (:ucare/id (catalog-images/image images-db "cart" sku))]
+                                    {:length (str (first (:hair/length sku)) "\"")
+                                     :image-url (str "https://ucarecdn.com/"
                                                      ucare-id
                                                      "/-/format/auto/-/scale_crop/"
-                                                     img-px "x" img-px "/center/")}))))}
+                                                     img-px "x" img-px "/center/")}))))})
      (if discounted-price
        {:looks-card.title/secondary discounted-price
         :looks-card.title/struck    total-price}

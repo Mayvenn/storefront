@@ -170,6 +170,7 @@
           :secondary/content-2
           :secondary/mt2]
          text))
+
 (defn
   ^{:usages [:cart-item-card]}
   proxima-tiny [text]
@@ -186,6 +187,16 @@
   (title [:align/right
           :primary/content-2
           :primary/proxima
+          :secondary/proxima
+          :secondary/content-4]
+         text))
+(defn
+  ^{:usages [:cart-item-card]}
+  proxima-tiny-left [text]
+  (title [:align/left
+          :primary/title-3
+          :primary/proxima
+          :primary/shout
           :secondary/proxima
           :secondary/content-4]
          text))

@@ -29,7 +29,8 @@
 (defn with
   "Given:
     `keyword-namespace` - A keyword which looks like a namespace
-    `data` - Map with namespaced keyword keys Return:
+    `data` - Map with namespaced keyword keys
+   Return:
     a map keyed by the name of `data`'s keys which were in the namespace of `keyword-namespace`
 
    Example
