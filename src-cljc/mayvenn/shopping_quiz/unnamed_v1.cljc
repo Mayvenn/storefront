@@ -86,7 +86,8 @@
      (c/build image-grids/hero-with-little-hair-column-molecule
               (with :quiz.result-v2.image-grid data))]
     (titles/proxima-left (with :quiz.result-v2.title data))
-    (c/build quiz-results-star-rating-organism (with :quiz.result-v2.rating data))
+    [:div.py1
+     (c/build quiz-results-star-rating-organism (with :quiz.result-v2.rating data))]
     (c/build shopping-quiz-v2-price-molecule (with :quiz.result-v2.price data))
     (titles/proxima-tiny-left (with :quiz.result-v2.line-item-summary data))
     [:div.flex.justify-center
