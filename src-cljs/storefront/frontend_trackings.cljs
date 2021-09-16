@@ -266,7 +266,7 @@
                                                      (when initialized-id   ;; look-id, shared-cart-id
                                                        {:id initialized-id}))}))))
 
-;; NOTE: deprecated, use `track-cart-initialization` instead
+;; If you are intending to track some bulk add event which should always create a new order, use `cart-initialized`
 (defn track-bulk-add-to-cart
   [{:keys [skus-db images-catalog store-experience order shared-cart-id look-id]}]
   (let [line-item-skuers       (waiter-line-items->line-item-skuer
@@ -297,15 +297,6 @@
                                                      :context              {:cart-items cart-items}}
                                                     (when look-id
                                                       {:look_id look-id})))))
-(defmethod perform-track events/api-success-update-order-from-shared-cart
-  [_ _ {:keys [look-id order shared-cart-id]} app-state]
-  (track-bulk-add-to-cart
-   {:skus-db          (get-in app-state keypaths/v2-skus)
-    :images-catalog   (get-in app-state keypaths/v2-images)
-    :store-experience (get-in app-state keypaths/store-experience)
-    :order            order
-    :shared-cart-id   shared-cart-id
-    :look-id          look-id}))
 
 (def interesting-payment-methods
   #{"apple-pay" "paypal" "quadpay"})

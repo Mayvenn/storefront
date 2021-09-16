@@ -346,7 +346,6 @@
 (defpath api-success-assign-servicing-stylist)
 
 (defpath api-success-update-order)
-(defpath api-success-update-order-from-shared-cart)
 (defpath api-success-update-order-update-address)
 (defpath api-success-update-order-update-guest-address)
 (defpath api-success-update-order-update-cart-payments)
