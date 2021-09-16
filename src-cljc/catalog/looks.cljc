@@ -12,7 +12,7 @@
             [storefront.effects :as effects]
             [spice.maps :as maps]
             [mayvenn.visual.tools :refer [with within]]
-            [mayvenn.visual.ui.image-grids :as image-grids]
+            [mayvenn.visual.lib.image-grid :as image-grid]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.sites :as sites]
             [storefront.component :as component :refer [defcomponent]]
@@ -65,7 +65,7 @@
    (merge {:data-test id}
           (apply utils/route-to target))
    [:div.border.border-cool-gray.p2
-    (component/build image-grids/hero-with-little-hair-column-molecule
+    (component/build image-grid/hero-with-little-hair-column-molecule
                      (with :looks-card.image-grid data))
     (looks-card-title-molecule data)]])
 

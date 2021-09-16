@@ -23,17 +23,20 @@
         (ui/back-caret {})
         [:span.ml1.border-bottom.border-black.border-width-3 copy]]]])))
 
-;; TODO move/refactor to remove destructuring?
+;; TODO Remove "rating" ns shim (ie, raw-data)
 (defn stars-rating-molecule
-  [{:rating/keys [value id]}]
-  (component/html
-   (when (and id value)
-     (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars value "13px")]
-       [:div.flex.items-center.button-font-3.s-color
-        {:data-test id}
-        whole-stars
-        partial-star
-        empty-stars]))))
+  [{:keys [value id]
+    :as raw-data}]
+  (let [id (or id (:rating/id raw-data))
+        value (or value (:rating/value raw-data))]
+    (component/html
+     (when (and id value)
+       (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars value "13px")]
+         [:div.flex.items-center.button-font-3.s-color
+          {:data-test id}
+          whole-stars
+          partial-star
+          empty-stars])))))
 
 (defn ^:private ucare-hero
   [mob-uuid dsk-uuid file-name alt]

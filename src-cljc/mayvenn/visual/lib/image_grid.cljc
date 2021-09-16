@@ -1,4 +1,4 @@
-(ns mayvenn.visual.ui.image-grids
+(ns mayvenn.visual.lib.image-grid
   (:require
    [storefront.component :as component :refer [defcomponent]]
    [mayvenn.visual.tools :refer [with]]
@@ -29,7 +29,7 @@
      :style         {:margin-top (str gap-in-num-px "px")}
      :height        (str height-in-num-px "px")
      :width         (str height-in-num-px "px")
-     :square-size    height-in-num-px
+     :square-size   height-in-num-px
      :src           image-url})
    [:div.absolute.top-0.right-0.content-4.m1
     length]])

@@ -8,6 +8,7 @@
    api.orders
    [appointment-booking.core :as booking.core]
    [clojure.string :refer [split starts-with?]]
+   [catalog.images :as catalog-images]
    [mayvenn.concept.looks-suggestions :as looks-suggestions]
    [mayvenn.concept.progression :as progression]
    [mayvenn.concept.questioning :as questioning]
@@ -53,7 +54,7 @@
             [stylist-matching.stylist-results :as stylist-results]
             [stylist-matching.ui.stylist-search :as stylist-search]))
 
-(def ^:private id :unified-freeinstall)
+(def ^:private shopping-quiz-id :unified-freeinstall)
 
 (defn header<
   [undo-history step]
@@ -397,6 +398,20 @@
 
 ;; Template: 2/Suggestions
 
+(c/defcomponent suggestions-template-v2
+  [data _ _]
+  [:div.col-12.bg-cool-gray.stretch
+   [:div.bg-white
+    (quiz-header (with :header data))]
+   (c/build progress-bar/variation-1 (with :progress data))
+   [:div.flex.flex-column.mbj2
+    (titles/canela-huge {:primary "Our picks for you"})
+    (c/elements card/look-suggestion-2
+                data
+                :suggestions-v2)]
+   (c/build escape-hatch/variation-1
+            (with :escape-hatch data))])
+
 (c/defcomponent suggestions-template
   [data _ _]
   [:div.col-12.bg-cool-gray.stretch
@@ -412,7 +427,7 @@
             (with :escape-hatch data))])
 
 (defn suggestions<
-  [quiz-progression looks-suggestions undo-history]
+  [skus-db images-db quiz-progression looks-suggestions undo-history]
   (merge
    (progress< quiz-progression)
    (header< undo-history (apply max quiz-progression))
@@ -422,29 +437,64 @@
                                  {:page/slug           "mayvenn-install"
                                   :catalog/category-id "23"}]
     :escape-hatch.action/label  "Browse Hair"
-    :suggestions
-    (for [[idx {:as           looks-suggestion
-                :product/keys [sku-ids]
-                :hair/keys    [origin texture]
-                img-id        :img/id}]
-          (map-indexed vector looks-suggestions)
-          :let [skus                  (mapv looks-suggestions/mini-cellar sku-ids)
-                {bundles  "bundles"
-                 closures "closures"} (group-by :hair/family skus)]]
-      {:id            (str "result-option-" idx)
-       :index-label   (str "Hair + Service Bundle " (inc idx))
-       :ucare-id      img-id
-       :primary       (str origin " " texture)
-       :secondary     (formatted-lengths< bundles closures)
-       :tertiary      (->> skus (mapv :sku/price) (reduce + 0) mf/as-money)
-       :tertiary-note "Install Included"
-       :action/id     (str "result-option-" idx)
-       :action/label  "Choose this look"
-       :action/target [e/biz|looks-suggestions|selected
-                       {:id            id
-                        :selected-look looks-suggestion
-                        :on/success
-                        [e/navigate-shopping-quiz-unified-freeinstall-summary]}]})}))
+    :suggestions                (for [[idx {:as           looks-suggestion
+                                            :product/keys [sku-ids]
+                                            :hair/keys    [origin texture]
+                                            img-id        :img/id
+                                            }]
+                                      (map-indexed vector looks-suggestions)
+                                      :let [skus                  (mapv looks-suggestions/mini-cellar sku-ids)
+                                            {bundles  "bundles"
+                                             closures "closures"} (group-by :hair/family skus)]]
+                                  {:id            (str "result-option-" idx)
+                                   :index-label   (str "Hair + Service Bundle " (inc idx))
+                                   :ucare-id      img-id
+                                   :primary       (str origin " " texture)
+                                   :secondary     (formatted-lengths< bundles closures)
+                                   :tertiary      (->> skus (mapv :sku/price) (reduce + 0) mf/as-money)
+                                   :tertiary-note "Install Included"
+                                   :action/id     (str "result-option-" idx)
+                                   :action/label  "Choose this look"
+                                   :action/target [e/biz|looks-suggestions|selected
+                                                   {:id            shopping-quiz-id
+                                                    :selected-look looks-suggestion
+                                                    :on/success
+                                                    [e/navigate-shopping-quiz-unified-freeinstall-summary]}]})
+
+    :suggestions-v2 (for [looks-suggestion looks-suggestions
+                          :let             [{:product/keys [sku-ids]
+                                             :hair/keys    [origin texture]
+                                             img-id        :img.v2/id} looks-suggestion
+                                skus                  (mapv skus-db sku-ids)
+                                service-sku           (get skus-db (:service/sku-id looks-suggestion))
+                                discounted-price (->> skus
+                                                      (remove #(= "service" (first (:catalog/department %))))
+                                                      (map :sku/price)
+                                                      (apply +))
+                                retail-price (+ discounted-price
+                                                (:sku/price service-sku))]]
+                      (merge
+                       (within :image-grid {:height-in-num-px 240
+                                            :gap-in-num-px    3})
+                       (within :image-grid.hero {:image-url     img-id
+                                                 :badge-url     nil
+                                                 :gap-in-num-px 3})
+                       (within :image-grid.hair-column {:images (map (fn [sku]
+                                                                       (let [image (catalog-images/image images-db "cart" sku)]
+                                                                         {:image-url (:ucare/id image)
+                                                                          :length    (str (first (:hair/length sku)) "\"")}))
+                                                                     skus)})
+                       (within :title {:primary (str origin " " texture " hair + free install service")})
+                       (within :price {:discounted-price (mf/as-money discounted-price)
+                                       :retail-price     (mf/as-money retail-price)})
+                       (within :line-item-summary {:primary (str (count sku-ids) " products in this look")})
+                       (within :action {:id     shopping-quiz-id
+                                        :label  "Choose this look"
+                                        :target [e/biz|looks-suggestions|selected
+                                                 {:id            shopping-quiz-id
+                                                  :selected-look looks-suggestion
+                                                  :on/success
+                                                  [e/navigate-shopping-quiz-unified-freeinstall-summary]}]})))}))
 
 ;; Template: 1/Questions
 
@@ -496,7 +546,7 @@
            :primary   answer
            :id        (str (name question-id) "-" (name choice-id))
            :target    [e/biz|questioning|answered
-                       {:questioning/id id
+                       {:questioning/id shopping-quiz-id
                         :question/idx   question-idx
                         :question/id    question-id
                         :choice/idx     choice-idx
@@ -563,7 +613,7 @@
   combined with picking a stylist that can do that look.
   "
   [state]
-  (let [quiz-progression (progression/<- state id)
+  (let [quiz-progression (progression/<- state shopping-quiz-id)
         step             (apply max quiz-progression)
         undo-history     (get-in state storefront.keypaths/navigation-undo-stack)]
     (case step
@@ -572,6 +622,7 @@
       3 (let [matching                    (stylist-matching<- state)
               current-stylist             (api.current/stylist state)
               skus-db                     (get-in state k/v2-skus)
+              images-db                   (get-in state k/v2-images)
               {:order/keys [items]
                order       :waiter/order} (api.orders/current state)
 
@@ -653,8 +704,10 @@
             (c/build find-your-stylist-template
                      (find-your-stylist< quiz-progression matching undo-history))))
       ;; STEP 2: choosing a look
-      2 (let [looks-suggestions (looks-suggestions/<- state id)
-              selected-look     (looks-suggestions/selected<- state id)]
+      2 (let [looks-suggestions (looks-suggestions/<- state shopping-quiz-id)
+              selected-look     (looks-suggestions/selected<- state shopping-quiz-id)
+              skus-db                     (get-in state k/v2-skus)
+              images-db                   (get-in state k/v2-images)]
           (cond
             (utils/requesting? state request-keys/new-order-from-sku-ids)
             (c/build loading-template)
@@ -666,12 +719,16 @@
             (c/build summary-template
                      (summary< quiz-progression selected-look undo-history))
 
+            (experiments/shopping-quiz-v2? state)
+            (c/build suggestions-template-v2
+                     (suggestions< skus-db images-db quiz-progression looks-suggestions undo-history))
+
             :else
-            (c/build suggestions-template
-                     (suggestions< quiz-progression looks-suggestions undo-history))))
+            (c/build
+                     (suggestions< skus-db images-db quiz-progression looks-suggestions undo-history))))
       ;; STEP 1: Taking the quiz
-      1 (let [{:keys [questions answers progression]} (questioning/<- state id)
-              wait                                    (wait/<- state id)]
+      1 (let [{:keys [questions answers progression]} (questioning/<- state shopping-quiz-id)
+              wait                                    (wait/<- state shopping-quiz-id)]
           (if wait
             (c/build waiting-template
                      waiting<)
@@ -687,7 +744,7 @@
              (cookie-jar/save-unified-fi-quiz-entered (get-in state k/cookie) {:unified-fi-quiz true})))
   (publish e/biz|progression|reset
            #:progression
-            {:id    id
+            {:id    shopping-quiz-id
              :value #{0}}))
 
 (defmethod trackings/perform-track e/navigate-shopping-quiz-unified-freeinstall-intro
@@ -708,19 +765,19 @@
 
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-question
   [_ _ _ _ state]
-  (let [progress (progression/<- state id)]
+  (let [progress (progression/<- state shopping-quiz-id)]
     (if (nil? progress)
       (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-intro]})
       (do
         (publish e/biz|progression|progressed
                  #:progression
-                  {:id    id
+                  {:id    shopping-quiz-id
                    :value 1
                    :regress #{2 3}})
         (publish e/biz|questioning|reset
-                 {:questioning/id id})
+                 {:questioning/id shopping-quiz-id})
         (publish e/biz|looks-suggestions|reset
-                 {:id id})))))
+                 {:id shopping-quiz-id})))))
 
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-recommendations
   [_ _ {params :query-params} _ _]
@@ -728,23 +785,23 @@
     (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-intro]})
     (do
       (publish e/biz|looks-suggestions|reset
-               {:id id})
+               {:id shopping-quiz-id})
       (publish e/biz|progression|progressed
                #:progression
-                {:id    id
+                {:id    shopping-quiz-id
                  :value 2
                  :regress #{3}})
       (publish e/biz|questioning|submitted
-               {:questioning/id id
+               {:questioning/id shopping-quiz-id
                 :answers        (maps/map-values keyword params)
                 :on/success     [e/biz|looks-suggestions|queried]}))))
 
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-summary
   [_ _ _ _ state]
-  (if (looks-suggestions/selected<- state id)
+  (if (looks-suggestions/selected<- state shopping-quiz-id)
     (publish e/biz|progression|progressed
              #:progression
-              {:id      id
+              {:id      shopping-quiz-id
                :value   2
                :regress #{3}})
     (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-intro]})))
@@ -778,7 +835,7 @@
     #?(:cljs (google-maps/insert)))
   (publish e/biz|progression|progressed
            #:progression
-            {:id    id
+            {:id    shopping-quiz-id
              :value 3})
   (publish e/flow|stylist-matching|initialized)
   (when-let [preferred-services (->> (api.orders/current state)
@@ -810,7 +867,7 @@
          (google-maps/insert)
          (publish e/biz|progression|progressed
                   #:progression
-                  {:id    id
+                  {:id    shopping-quiz-id
                    :value 3}))))
 
 ;; Init the model if there isn't one, e.g. Direct load
@@ -861,7 +918,7 @@
           (api.current/stylist state))
     (publish e/biz|progression|progressed
              #:progression
-              {:id    id
+              {:id    shopping-quiz-id
                :value 3})
     (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-intro]})))
 
