@@ -13,19 +13,20 @@
   [destination-event product-id page-slug sku-id dt-prefix idx
    {:keys [image-url]}]
   (component/html
-   [:div.p1
-    (when dt-prefix {:data-test (str dt-prefix idx)})
-    [:a (if destination-event
-          (util/fake-href destination-event {:offset idx})
-          (util/route-to events/navigate-product-details
-                         {:catalog/product-id product-id
-                          :page/slug          page-slug
-                          :query-params       {:SKU    sku-id
-                                               :offset idx}}))
-     (ui/aspect-ratio
-      1 1
-      {:class "flex items-center"}
-      (ui/basic-defer-img {:class "col-12"} image-url))]]))
+   [:a.block.p1
+    (merge
+     (when dt-prefix {:data-test (str dt-prefix "-slide-" idx)})
+     (if destination-event
+       (util/fake-href destination-event {:offset idx})
+       (util/route-to events/navigate-product-details
+                      {:catalog/product-id product-id
+                       :page/slug          page-slug
+                       :query-params       {:SKU    sku-id
+                                            :offset idx}})))
+    (ui/aspect-ratio
+     1 1
+     {:class "flex items-center"}
+     (ui/basic-defer-img {:class "col-12"} image-url))]))
 
 (defn ->title-case [s]
   #?(:clj (string/capitalize s)
@@ -43,9 +44,11 @@
                                   :button-copy "View this look"}}}))
 
 (defcomponent component
-  [{{:keys [social-cards product-id page-slug sku-id destination-event]} :carousel-data} owner opts]
+  [{{:keys [social-cards product-id page-slug sku-id destination-event]} :carousel-data
+    id :id} owner opts]
   (when (seq social-cards)
     [:div.center.mt4
+     {:data-test id}
      [:div.proxima.title-2.m2.shout "#MayvennMade"]
      (component/build
       carousel/component
@@ -68,7 +71,8 @@
                                          destination-event
                                          product-id
                                          page-slug
-                                         sku-id "mayvenn-made-slide-")
+                                         sku-id
+                                         id)
                               social-cards)}))
      [:p.center.px6.mb2.mt4.content-2.proxima
       "Want to show up on our homepage? "
@@ -104,4 +108,5 @@
        [:div.absolute
         {:style {:top "1.5rem" :right "1.5rem"}}
         (ui/modal-close {:class       "stroke-black fill-gray"
+                         :data-test   "pdp-ugc-modal-close"
                          :close-attrs close-attrs})]]))))

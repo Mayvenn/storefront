@@ -142,13 +142,13 @@
         (when (:offset ugc)
           [:div.absolute.overlay.z4.overflow-auto
            {:key "popup-ugc"}
-           (component/build ugc/popup-component ugc opts)])
+           (component/build ugc/popup-component (assoc ugc :id "popup-ugc") opts)])
         [:div
          {:key "page"}
          (page
           (component/html
            [:div ^:inline (carousel carousel-images product)
-            (component/build ugc/component ugc opts)])
+            (component/build ugc/component (assoc ugc :id "ugc-dt") opts)])
           (component/html
            [:div
             [:div
@@ -167,7 +167,7 @@
             (component/build tabbed-information/component data)
             (component/build catalog.M/non-hair-product-description data opts)
             [:div.hide-on-tb-dt.m3
-             [:div.mxn2.mb3 (component/build ugc/component ugc opts)]]]))]]
+             [:div.mxn2.mb3 (component/build ugc/component (assoc ugc :id "ugc-mb") opts)]]]))]]
 
        (when (seq reviews)
          [:div.container.col-7-on-tb-dt.px2
