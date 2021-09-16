@@ -27,7 +27,8 @@
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.request-keys :as request-keys]
-   [spice.maps :as maps]))
+   [spice.maps :as maps]
+   [mayvenn.live-help.core :as live-help]))
 
 (defn display-adjustable-line-items
   [line-items skus images update-line-item-requests delete-line-item-requests]
@@ -255,16 +256,18 @@
 
 (defn ^:export layout [app-state _]
   (let [nav-event (get-in app-state keypaths/navigation-event)]
-    [:div.flex.flex-column.stretch {:style {:margin-bottom "-1px"}}
-     #?(:cljs (popup/built-component app-state nil))
+    [:div
+     [:div.flex.flex-column.stretch {:style {:margin-bottom "-1px"}}
+      #?(:cljs (popup/built-component app-state nil))
 
-     ^:inline (promo-banner/built-static-organism app-state nil)
-     (header/built-component app-state nil)
-     [:div.relative.flex.flex-column.flex-auto
-      (flash/built-component app-state nil)
+      ^:inline (promo-banner/built-static-organism app-state nil)
+      (header/built-component app-state nil)
+      [:div.relative.flex.flex-column.flex-auto
+       (flash/built-component app-state nil)
 
-      [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
-       (built-component app-state nil)]
+       [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
+        (built-component app-state nil)]
 
-      [:footer
-       (storefront.footer/built-component app-state nil)]]]))
+       [:footer
+        (storefront.footer/built-component app-state nil)]]]
+     (live-help/bug-component app-state)]))

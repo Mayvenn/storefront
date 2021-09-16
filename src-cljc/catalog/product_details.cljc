@@ -26,7 +26,6 @@
             [catalog.ui.molecules :as catalog.M]
             [checkout.cart.swap :as swap]
             [homepage.ui.faq :as faq]
-            [mayvenn.live-help.core :as live-help]
             [mayvenn.visual.lib.call-out-box :as call-out-box]
             [mayvenn.visual.tools :refer [with within]]
             [mayvenn.visual.ui.titles :as titles]
@@ -131,8 +130,7 @@
            picker-data
            ugc
            faq-section
-           add-to-cart
-           live-help] :as data} _ opts]
+           add-to-cart] :as data} _ opts]
   (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
     (if-not product
@@ -150,9 +148,6 @@
          (page
           (component/html
            [:div ^:inline (carousel carousel-images product)
-            [:div.my5
-             (when live-help
-               (component/build call-out-box/variation-2 (update live-help :action/id str "-desktop")))]
             (component/build ugc/component ugc opts)])
           (component/html
            [:div
@@ -172,7 +167,6 @@
             (component/build tabbed-information/component data)
             (component/build catalog.M/non-hair-product-description data opts)
             [:div.hide-on-tb-dt.m3
-             (when live-help (component/build call-out-box/variation-1 live-help))
              [:div.mxn2.mb3 (component/build ugc/component ugc opts)]]]))]]
 
        (when (seq reviews)
@@ -496,15 +490,11 @@
   (if (and (-> (products/current-product state) :hair/family first (= "bundles"))
            (experiments/multiple-lengths-pdp? state))
     (component/build multiple-lengths/component (merge (multiple-lengths/query state)
-                                                       {:add-to-cart (multiple-lengths/add-to-cart-query state)
-                                                        :live-help   (when (live-help/kustomer-started? state)
-                                                                       (live-help/banner-query "product-detail-page-banner"))})
+                                                       {:add-to-cart (multiple-lengths/add-to-cart-query state)})
                      opts)
     (component/build component
                      (merge (query state)
-                            {:add-to-cart (add-to-cart-query state)
-                             :live-help   (when (live-help/kustomer-started? state)
-                                            (live-help/banner-query "product-detail-page-banner"))})
+                            {:add-to-cart (add-to-cart-query state)})
                      opts)))
 
 (defn url-points-to-invalid-sku? [selected-sku query-params]

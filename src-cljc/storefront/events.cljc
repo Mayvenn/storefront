@@ -706,6 +706,7 @@
 (defpath biz|follow|defined)
 
 (defpath flow|live-help|reset)
+(defpath flow|live-help|ready)
 (defpath flow|live-help|opened)
 
 ;; suggesting looks (from quiz)

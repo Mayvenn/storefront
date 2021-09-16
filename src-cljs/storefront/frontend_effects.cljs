@@ -48,7 +48,8 @@
             [spice.core :as spice]
             [storefront.platform.component-utils :as utils]
             [storefront.accessors.sites :as sites]
-            [storefront.accessors.promos :as promos]))
+            [storefront.accessors.promos :as promos]
+            [mayvenn.live-help.core :as live-help]))
 
 (defn changed? [previous-app-state app-state keypath]
   (not= (get-in previous-app-state keypath)
@@ -88,7 +89,7 @@
   (messages/handle-message events/biz|email-capture|reset)
   (refresh-account app-state)
 
-  (when (= :shop (sites/determine-site app-state))
+  #_(when (= :shop (sites/determine-site app-state))
     ;; Enables Kustomer Chat 2.0
     (messages/handle-message events/flow|live-help|reset))
 
@@ -116,10 +117,7 @@
     (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)}))
 
   (when (= feature "edit-gallery")
-    (messages/handle-message events/poll-gallery))
-
-  (when (= feature "live-help")
-    (messages/handle-message events/flow|live-help|reset)))
+    (messages/handle-message events/poll-gallery)))
 
 (defmethod effects/perform-effects events/ensure-sku-ids
   [_ _ {:keys [sku-ids]} _ app-state]
@@ -251,6 +249,8 @@
       (when (get-in app-state keypaths/popup)
         (messages/handle-message events/popup-hide))
       (quadpay/hide-modal))
+
+    (live-help/maybe-start app-state)
 
     (let [utm-params (some-> query-params
                              (select-keys [:utm_source :utm_medium :utm_campaign :utm_content :utm_term])

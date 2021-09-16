@@ -5,7 +5,9 @@
             [storefront.events :as e]
             [storefront.keypaths :as k]
             [storefront.macros :refer [defpath]]
+            [storefront.trackings :as trackings]
             [storefront.platform.messages :as messages]
+            [storefront.hooks.stringer :as stringer]
             [storefront.transitions :as transitions]))
 
 (defpath kustomer|started)
@@ -64,7 +66,8 @@
     (.addListener "onClose"              #(messages/handle-message kustomer|onClose              {:response %1 :error %2}))
     (.addListener "onConversationCreate" #(messages/handle-message kustomer|onConversationCreate {:response %1 :error %2}))
     (.addListener "onLogin"              #(messages/handle-message kustomer|onLogin              {:response %1 :error %2}))
-    (.addListener "onLogout"             #(messages/handle-message kustomer|onLogout             {:response %1 :error %2}))))
+    (.addListener "onLogout"             #(messages/handle-message kustomer|onLogout             {:response %1 :error %2})))
+  (messages/handle-later e/flow|live-help|ready))
 
 (defmethod transitions/transition-state kustomer|onConversationCreate
   [_ _ {:keys [^KustomerOnConversationCreateResponse response _error]} app-state]
@@ -79,3 +82,7 @@
 (defmethod transitions/transition-state kustomer|onUnread
   [_ _ {:keys [^KustomerOnUnreadRespones response _error]} app-state]
   (assoc-in app-state k/kustomer-conversation-id (.. response -change -conversationId)))
+
+(defmethod trackings/perform-track kustomer|onOpen
+  [_ _ _ _]
+  (stringer/track-event "kustomer-chat-opened" {}))

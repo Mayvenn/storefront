@@ -33,8 +33,7 @@
             [storefront.utils :as general-utils]
             [storefront.request-keys :as request-keys]
             [spice.date :as date]
-            storefront.keypaths
-            [mayvenn.live-help.core :as live-help]))
+            storefront.keypaths))
 
 ;;  Navigating to the results page causes the effect of searching for stylists
 ;;
@@ -312,7 +311,6 @@
                                         {:stylist      stylist
                                          :result-index idx}]
      :stylist-card.gallery/id           (str "stylist-card-gallery-" store-slug)
-     :element/type                      :stylist-card
      :stylist-card.gallery/items        (let [ucare-img-urls (map :resizable-url gallery-images)]
                                           (map-indexed
                                            (fn [j ucare-img-url]
@@ -481,18 +479,11 @@
                              (component/component-id count-id))])
          (when (:list.matching/key data)
            [:div
-            (for [{:keys [type data]} (:list.matching/cards data)]
-              (case type
-                :matching-stylist-card
-                [:div {:key (:react/key data)}
-                 (ui/screen-aware stylist-cards/organism
-                                  data
-                                  (component/component-id (:react/key data)))]
-
-                :live-help-breaker
-                [:div.m3 {:key "call-out-box"} (component/build live-help/banner data)]
-
-                nil))])
+            (for [data (:list.matching/cards data)]
+              [:div {:key (:react/key data)}
+               (ui/screen-aware stylist-cards/organism
+                                data
+                                (component/component-id (:react/key data)))])])
          (when (:list.breaker/id data)
            [:div
             {:key       "non-matching-breaker"
@@ -744,7 +735,6 @@
   [{:param/keys   [services]
     :results/keys [stylists]
     :keys         [status]}
-   kustomer-started?
    just-added-only?
    just-added-experience?
    stylist-results-test?]
@@ -771,17 +761,7 @@
      :list.stylist-counter/key   (when (pos? (count matching-stylists))
                                    "stylist-count-content")
      :list.matching/key          (when (seq matching-stylists) "stylist-matching")
-     :list.matching/cards        (cond->> matching-stylist-cards
-                                   :always
-                                   (mapv
-                                    (fn [msc]
-                                      {:type :matching-stylist-card
-                                       :data msc}))
-
-                                   kustomer-started?
-                                   (general-utils/insert-at-pos 3
-                                    {:type :live-help-breaker
-                                     :data {:live-help/location "stylist-results-breaker"}}))
+     :list.matching/cards        matching-stylist-cards
      :list.breaker/id              (when (seq non-matching-stylists) "non-matching-breaker")
      :list.breaker/results-content (when (and (seq non-matching-stylists)
                                               (empty? matching-stylists))
@@ -809,7 +789,6 @@
             stylist-results-test?  (experiments/stylist-results-test? app-state)
 
             ;; Externals
-            kustomer-started? (live-help/kustomer-started? app-state)
             google-loaded?    (get-in app-state storefront.keypaths/loaded-google-maps)
 
             address-field-errors   (get-in app-state k/address-field-errors)
@@ -844,7 +823,6 @@
                                                                 first
                                                                 not-empty))
                           :results               (results< matching
-                                                           kustomer-started?
                                                            just-added-only?
                                                            just-added-experience?
                                                            stylist-results-test?)}

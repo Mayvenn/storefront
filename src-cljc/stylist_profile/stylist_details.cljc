@@ -14,7 +14,6 @@
             api.products
             api.stylist
             [clojure.string :refer [join]]
-            mayvenn.live-help.core
             spice.core
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.sites :as sites]
@@ -40,8 +39,7 @@
             [stylist-profile.ui.ratings-bar-chart :as ratings-bar-chart]
             [stylist-profile.ui.specialties-shopping :as specialties-shopping]
             [stylist-profile.ui.sticky-select-stylist :as sticky-select-stylist]
-            [stylist-profile.ui.stylist-reviews :as stylist-reviews]
-            [mayvenn.live-help.core :as live-help]))
+            [stylist-profile.ui.stylist-reviews :as stylist-reviews]))
 
 ;; ---------------------------- behavior
 
@@ -132,7 +130,6 @@
            ratings-bar-chart
            specialties-discountable
            sticky-select-stylist
-           live-help
            stylist-reviews]} _ _]
   [:div.bg-white.col-12.mb6.stretch {:style {:margin-bottom "-1px"}}
    [:main
@@ -147,7 +144,6 @@
      (c/build experience/organism experience)
      (c/build specialties-shopping/organism specialties-discountable)]
     clear-float-atom
-    (when live-help [:div.m3 (c/build live-help/banner {:live-help/location "stylist-profile-page"})])
     (c/build ratings-bar-chart/organism ratings-bar-chart)
     (c/build stylist-reviews/organism stylist-reviews)]
    (c/build footer/organism footer)
@@ -362,7 +358,6 @@
                                                          newly-added-stylist-ui-experiment?
                                                          detailed-stylist
                                                          instagram-stylist-profile?)
-                       :live-help                (live-help/kustomer-started? state)
                        :ratings-bar-chart        (ratings-bar-chart<- hide-star-distribution?
                                                                       detailed-stylist)
                        :experience               (experience<- detailed-stylist)

@@ -122,29 +122,6 @@
 
      [:div.border-bottom.border-gray.hide-on-mb]]))
 
-(defn live-help-toast< [kustomer-started?]
-  (when kustomer-started?
-    {:live-help-toast/primary                 "Need help?"
-     :live-help-toast/id                      "toast-need-help"
-     :live-help-button/cta-label              "Chat with us"
-     :live-help-button/cta-target             [events/flow|live-help|opened {:location "cart-toast"}]
-     :live-help-button/id                     "toast-chat-with-us"
-     :live-help-button/label-and-border-color "#4427c1"
-     :live-help-button/icon                   [:svg/chat-bubble-diamonds {:class "fill-p-color mr1"
-                                                                          :style {:height "14px"
-                                                                                  :width  "13px"}}]}))
-
-(component/defcomponent live-help-toast-component
-  [{:live-help-toast/keys [primary id] :as query} _ _]
-  (when id
-    [:div.bg-white.flex.justify-between.px3.py2.shout.proxima.title-3
-     {:style {:border-left   "4px solid #4427c1"
-              :border-top    "1px solid #8B8B8B"
-              :border-bottom "1px solid #8B8B8B"
-              :border-right  "1px solid #8B8B8B"}}
-     primary
-     (component/build live-help/button-component query)]))
-
 (defcomponent full-component
   [{:keys [promo-banner
            service-items
@@ -263,40 +240,36 @@
        [:span.flex.items-center.px2.proxima.title-3.shout.black primary])])))
 
 (defcomponent template
-  [{:keys [header footer popup flash cart nav-event live-help-toast]} _ _]
-  [:div.flex.flex-column.stretch
-   {:style {:margin-bottom "-1px"}}
-   #?(:cljs (popup/built-component popup nil))
-   (when-let [promo-banner (:promo-banner cart)]
-     (promo-banner/static-organism promo-banner nil nil))
-   (header/built-component header nil)
-   [:div.relative.flex.flex-column.flex-auto
-    (flash/built-component flash nil)
+  [{:keys [header footer popup flash live-help-bug cart nav-event]} _ _]
+  [:div
+   [:div.flex.flex-column.stretch
+    {:style {:margin-bottom "-1px"}}
+    #?(:cljs (popup/built-component popup nil))
+    (when-let [promo-banner (:promo-banner cart)]
+      (promo-banner/static-organism promo-banner nil nil))
+    (header/built-component header nil)
+    [:div.relative.flex.flex-column.flex-auto
+     (flash/built-component flash nil)
 
-    [:main.bg-white.flex-auto
-     {:data-test (keypaths/->component-str nav-event)}
-     [:div
-      [:div.hide-on-tb-dt
-       [:div.border-bottom.border-gray.border-width-1.m-auto.col-7-on-dt
-        [:div.flex.justify-between
-         [:div.px2.my2.flex.items-center (ui-molecules/return-link (:return-link cart))]
-         (clear-cart-link (:clear-cart-link cart))]]
-       (when live-help-toast
-         [:div.bg-refresh-gray.px2.pt3
-          (component/build live-help-toast-component live-help-toast)])]
-      [:div.hide-on-mb.col-7-on-dt.mx-auto
+     [:main.bg-white.flex-auto
+      {:data-test (keypaths/->component-str nav-event)}
+      [:div
+       [:div.hide-on-tb-dt
+        [:div.border-bottom.border-gray.border-width-1.m-auto.col-7-on-dt
+         [:div.flex.justify-between
+          [:div.px2.my2.flex.items-center (ui-molecules/return-link (:return-link cart))]
+          (clear-cart-link (:clear-cart-link cart))]]]
+       [:div.hide-on-mb.col-7-on-dt.mx-auto
 
-       [:div.m-auto.container
-        [:div.flex.justify-between
-         [:div.px2.my2 (ui-molecules/return-link (:return-link cart))]
-         (clear-cart-link (:clear-cart-link cart))]]
-       (when live-help-toast
-         [:div.myj1.mx-auto.container
-          (component/build live-help-toast-component live-help-toast)])]
-      [:div.col-7-on-dt.mx-auto
-       (component/build full-component cart)]]]
-    [:footer
-     (storefront.footer/built-component footer nil)]]])
+        [:div.m-auto.container
+         [:div.flex.justify-between
+          [:div.px2.my2 (ui-molecules/return-link (:return-link cart))]
+          (clear-cart-link (:clear-cart-link cart))]]]
+       [:div.col-7-on-dt.mx-auto
+        (component/build full-component cart)]]]
+     [:footer
+      (storefront.footer/built-component footer nil)]]]
+   (live-help/bug-component live-help-bug)])
 
 ;;; --------------
 
@@ -816,9 +789,9 @@
                                                                           (seq (get-in app-state keypaths/shipping-methods))
                                                                           (seq (get-in app-state keypaths/states)))
                                         :suggestions                 suggestions}
-                      :live-help-toast (live-help-toast< (live-help/kustomer-started? app-state))
                       :header          app-state
                       :footer          app-state
                       :popup           app-state
                       :flash           app-state
+                      :live-help-bug   app-state
                       :nav-event       nav-event})))

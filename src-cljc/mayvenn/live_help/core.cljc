@@ -1,64 +1,54 @@
 (ns mayvenn.live-help.core
-  (:require #?@(:cljs [[storefront.hooks.kustomer :as kustomer]
-                       [storefront.hooks.stringer :as stringer]])
-            [storefront.accessors.experiments :as experiments]
+  (:require #?@(:cljs [[storefront.hooks.kustomer :as kustomer]])
             [storefront.keypaths :as k]
             [storefront.effects :as fx]
-            [storefront.events :as e]
-            [mayvenn.visual.lib.call-out-box :as call-out-box]
-            [storefront.component :as c]
-            [storefront.components.svg :as svg]
+            [storefront.transitions :as transitions]
+            [storefront.platform.messages :as messages]
+            [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
-            [storefront.trackings :as trackings]
-            [storefront.accessors.sites :as sites]))
+            [storefront.components.ui :as ui]
+            [storefront.component :as component]))
 
-(defn kustomer-started? [app-state]
-  (boolean
-   (and
-    (= :shop (sites/determine-site app-state))
-    (get-in app-state k/started-kustomer))))
+(def ready (conj k/models-live-help :ready))
 
-#?(:cljs
-   (defmethod fx/perform-effects e/flow|live-help|reset
-     [_ _ _ _ state]
-     (when-not (get-in state k/loaded-kustomer)
-       (kustomer/init))))
+(def ^:private bug-hidden-nav-events #{events/navigate-adventure-stylist-profile})
 
-#?(:cljs
-   (defmethod fx/perform-effects e/flow|live-help|opened
-     [_ _ _ _ state]
-     (when (kustomer-started? state)
-       (kustomer/open-conversation))))
+(defn maybe-start
+  [state]
+  (when (and
+         (-> state (get-in ready) not)
+         (-> state (get-in k/navigation-undo-stack) count (> 0))
+         (-> state (get-in k/navigation-event) bug-hidden-nav-events not))
+    (messages/handle-message events/flow|live-help|reset)))
 
-(defmethod trackings/perform-track e/flow|live-help|opened
-  [_ _ {:keys [location]} _]
-  #?(:cljs (stringer/track-event "chat_link_pressed" {:location-on-page location})))
+(defmethod fx/perform-effects events/flow|live-help|reset
+  [_ _ _ _ state]
+  #?(:cljs (kustomer/init)))
 
-(defn banner-query [location]
-  (let [target [e/flow|live-help|opened {:location location}]]
-    {:title/icon      [:svg/chat-bubble-diamonds {:class "mb2"
-                                                  :style {:height "30px"
-                                                          :fill   "black"
-                                                          :width  "28px"}}]
-     :title/primary   "How can we help?"
-     :title/secondary "Text now to get live help with an expert about your dream look"
-     :title/target    target
-     :action/id       "live-help"
-     :action/label    "Chat with us"
-     :action/target   target}))
+(defmethod transitions/transition-state events/flow|live-help|reset
+  [_ event _ app-state]
+  (-> app-state
+      (assoc-in k/models-live-help {})))
 
-(c/defcomponent banner
-  [{:live-help/keys [location]} _ _]
-  (c/build call-out-box/variation-1 (banner-query location)))
+(defmethod transitions/transition-state events/flow|live-help|ready
+  [_ event _ app-state]
+  (-> app-state
+      (assoc-in ready true)))
 
-(c/defcomponent button-component
-  [{:live-help-button/keys [cta-label cta-target id icon label-and-border-color]} _ _]
+(defmethod fx/perform-effects events/flow|live-help|opened
+  [_ _ _ _ state]
+  #?(:cljs (kustomer/open-conversation)))
+
+(component/defcomponent bug-template [{:live-help-bug/keys [id target]} _opts _owner]
   (when id
-    [:a.flex.items-center
-     (assoc (apply utils/fake-href cta-target)
-            :data-test id)
-     (svg/symbolic->html icon)
-     [:div.button-font-3.shout.border-bottom.border-width-2
-      {:style {:border-color label-and-border-color
-               :color        label-and-border-color}}
-      cta-label]]))
+    [:div.fixed.bottom-0.right-0.m4
+     (merge {:data-test id}
+            (utils/fake-href target))
+     (ui/img {:src "4e27fe5a-2069-4094-8f23-7e4c5305007b"
+              :width "50px"})]))
+
+(defn bug-component [state]
+  (component/build bug-template {:live-help-bug/id     (when (and (get-in state ready)
+                                                                  (not (bug-hidden-nav-events (get-in state k/navigation-event))))
+                                                         "live-help-bug")
+                                 :live-help-bug/target events/flow|live-help|opened}))

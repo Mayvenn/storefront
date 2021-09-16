@@ -5,6 +5,7 @@
             [storefront.components.footer :as footer]
             [storefront.components.header :as header]
             [ui.promo-banner :as promo-banner]
+            [mayvenn.live-help.core :as live-help]
             [storefront.keypaths :as keypaths]))
 
 (defn wrap-standard
@@ -27,4 +28,5 @@
      [:main.bg-white.flex-auto
       {:data-test (keypaths/->component-str nav-event)}
       template]
-     [:footer (footer/built-component state nil)]]]))
+     [:footer (footer/built-component state nil)]]
+    (live-help/bug-component state)]))

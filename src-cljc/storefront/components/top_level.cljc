@@ -39,7 +39,8 @@
             [storefront.components.slideout-nav :as slideout-nav]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.routes :as routes]))
+            [storefront.routes :as routes]
+            [mayvenn.live-help.core :as live-help]))
 
 ;; HACK until the day there are no more built-components
 (defn ^:private first-arg-only [inner-fn]
@@ -201,7 +202,8 @@
       {:data-test (keypaths/->component-str nav-event)}
       ((main-component nav-event) data nil)]
 
-     [:footer (footer/built-component data nil)]]]))
+     [:footer (footer/built-component data nil)]]
+    (live-help/bug-component data)]))
 
 (defn classic-site
   [data owner opts]
@@ -253,7 +255,8 @@
         [:div.stretch
          {:style {:margin-bottom "-30px"}
           :class "max-580 mx-auto relative"}
-         ((main-component nav-event) data nil)]]
+         ((main-component nav-event) data nil)]
+        (live-help/bug-component data)]
 
        (contains? #{events/navigate-shop-by-look} nav-event)
        ((main-component nav-event) data nil)
