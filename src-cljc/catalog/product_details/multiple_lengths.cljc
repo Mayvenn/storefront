@@ -224,7 +224,7 @@
                        :page-slug    (:page/slug product)
                        :sku-id       (:catalog/sku-id sku)
                        :social-cards social-cards}
-       :offset        (get-in data keypaths/ui-ugc-category-popup-offset)
+       :offset        (:offset (get-in data keypaths/navigation-query-params))
        :close-message [events/navigate-product-details
                        {:catalog/product-id (:catalog/product-id product)
                         :page/slug          (:page/slug product)

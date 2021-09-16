@@ -196,7 +196,7 @@
                        :page-slug    (:page/slug product)
                        :sku-id       (:catalog/sku-id sku)
                        :social-cards social-cards}
-       :offset        (get-in data keypaths/ui-ugc-category-popup-offset)
+       :offset        (:offset (get-in data keypaths/navigation-query-params))
        :close-message [events/navigate-product-details
                        {:catalog/product-id (:catalog/product-id product)
                         :page/slug          (:page/slug product)
@@ -668,8 +668,7 @@
 
 (defmethod transitions/transition-state events/initialize-product-details
   [_ event {:as args :keys [catalog/product-id query-params]} app-state]
-  (let [ugc-offset        (:offset query-params)
-        product-options   (generate-product-options product-id app-state)
+  (let [product-options   (generate-product-options product-id app-state)
         product           (products/product-by-id app-state product-id)
         product-skus      (products/extract-product-skus app-state product)
         sku               (or (->> (:SKU query-params)
@@ -683,7 +682,6 @@
     (-> app-state
         (assoc-in catalog.keypaths/detailed-product-id product-id)
         (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
-        (assoc-in keypaths/ui-ugc-category-popup-offset ugc-offset)
         (assoc-in keypaths/browse-sku-quantity 1)
         (assoc-in catalog.keypaths/detailed-product-selected-picker nil)
         (assoc-in catalog.keypaths/detailed-product-picker-visible? nil)

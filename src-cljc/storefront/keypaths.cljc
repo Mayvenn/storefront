@@ -139,7 +139,6 @@
                     store-info-expanded
                     shop-bundle-sets-menu-expanded})
 (def menus (conj header-menus menu-expanded))
-(def ui-ugc-category-popup-offset (conj ui :popup-ugc-category-offset))
 
 (def expanded-commission-order-id (conj ui :expanded-commission-order-id))
 
