@@ -628,7 +628,6 @@
                google-loaded?    (get-in state k/loaded-google-maps)
                convert-loaded?   (get-in state k/loaded-convert)
                quadpay-loaded?   (get-in state k/loaded-quadpay)
-               kustomer-started? (live-help/kustomer-started? state)
                paypal-redirect?  (get-in state k/cart-paypal-redirect)
 
                requesting?
