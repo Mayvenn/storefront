@@ -724,7 +724,7 @@
                      (suggestions< skus-db images-db quiz-progression looks-suggestions undo-history))
 
             :else
-            (c/build
+            (c/build suggestions-template
                      (suggestions< skus-db images-db quiz-progression looks-suggestions undo-history))))
       ;; STEP 1: Taking the quiz
       1 (let [{:keys [questions answers progression]} (questioning/<- state shopping-quiz-id)
