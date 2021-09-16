@@ -787,9 +787,9 @@
     :catalog/department               #{"hair"}
     :category/show-title?             true
     :category/new?                    true
-    :category/description             "Get a free Mayvenn Service by a licensed stylist with qualifying purchases. "
+    :category/description             "Get a complimentary Mayvenn Service by a licensed stylist with qualifying purchases. "
     :copy/learn-more-target           [events/popup-show-consolidated-cart-free-install]
-    :copy/title                       "Free Service Eligible Products"
+    :copy/title                       "Complimentary Service Eligible Products"
     :hair/family                      #{"bundles" "closures" "frontals" "360-frontals"}
     :page/slug                        "mayvenn-install"
     :page/title                       "Free Hair Service - Buy 3 Items for Free Service | Mayvenn"
