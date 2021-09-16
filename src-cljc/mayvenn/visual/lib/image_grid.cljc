@@ -21,7 +21,6 @@
 
 (defcomponent height-adjusting-hair-image-molecule
   [{:keys [image-url length gap-in-num-px height-in-num-px]} _ {:keys [id]}]
-  #_(let [image-url (if  )])
   [:div.relative
    (ui/img
     {:key           id
