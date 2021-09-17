@@ -555,10 +555,12 @@
                                      (filterv not-empty)
                                      (mapv
                                       #(determine-sku-from-selections data (merge selections %))))
-        multi-length-total      (reduce +
-                                        (->>
-                                         chosen-skus
-                                         (mapv #(:sku/price %))))]
+        multi-length-total      (if (some nil? chosen-skus)
+                                  nil
+                                  (reduce +
+                                          (->>
+                                           chosen-skus
+                                           (mapv #(:sku/price %)))))]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
