@@ -39,6 +39,7 @@
             [storefront.components.slideout-nav :as slideout-nav]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
+            stylist-directory.keypaths
             [storefront.routes :as routes]
             [mayvenn.live-help.core :as live-help]))
 
@@ -256,7 +257,9 @@
          {:style {:margin-bottom "-30px"}
           :class "max-580 mx-auto relative"}
          ((main-component nav-event) data nil)]
-        (live-help/bug-component data)]
+        (when #?(:clj true
+                 :cljs (-> data (get-in stylist-directory.keypaths/stylist-search-show-filters?) not))
+          (live-help/bug-component data))]
 
        (contains? #{events/navigate-shop-by-look} nav-event)
        ((main-component nav-event) data nil)
