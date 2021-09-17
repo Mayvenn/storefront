@@ -138,9 +138,10 @@
     (when adv-header
       (header/adventure-header adv-header))
     (c/build card/organism card)
+    [:div.my2.px3
+     (carousel/organism carousel)]
     (c/build maps/component google-maps)
     [:div.my2.m1-on-tb-dt.mb2-on-tb-dt.px3
-     (carousel/organism carousel)
      (c/build experience/organism experience)
      (c/build specialties-shopping/organism specialties-discountable)]
     clear-float-atom
