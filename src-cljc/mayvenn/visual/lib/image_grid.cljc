@@ -44,10 +44,12 @@
                          :length    blah}]} "
   [{:as data :keys [height-in-num-px gap-in-num-px]} _ _]
   (let [column-count         (count (:hair-column/images data))
-        size-of-column-image (-> height-in-num-px
-                                 (/ column-count)
-                                 #?(:clj  identity
-                                    :cljs Math/ceil))]
+        size-of-column-image (if (zero? column-count)
+                               0
+                               (-> height-in-num-px
+                                   (/ column-count)
+                                   #?(:clj  identity
+                                      :cljs Math/ceil)))]
     [:div.flex
      {:style {:height (str (+ height-in-num-px
                               ;; NOTE: Rather than trying to account for the gaps in the columns,
@@ -56,13 +58,14 @@
                               (* gap-in-num-px
                                  column-count)) "px")}}
      (component/build hero-molecule (with :hero data))
-     [:div.flex.flex-column.justify-between
-      (component/elements height-adjusting-hair-image-molecule
-                          (update (with :hair-column data)
-                                  :images
-                                  (partial map
-                                           (fn [image]
-                                             (merge {:gap-in-num-px    gap-in-num-px
-                                                     :height-in-num-px size-of-column-image}
-                                                    image))))
-                          :images)]]))
+     (when (pos? column-count)
+       [:div.flex.flex-column.justify-between
+        (component/elements height-adjusting-hair-image-molecule
+                            (update (with :hair-column data)
+                                    :images
+                                    (partial map
+                                             (fn [image]
+                                               (merge {:gap-in-num-px    gap-in-num-px
+                                                       :height-in-num-px size-of-column-image}
+                                                      image))))
+                            :images)])]))
