@@ -7,6 +7,7 @@
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
             [storefront.components.ui :as ui]
+            [storefront.components.svg :as svg]
             [storefront.component :as component]))
 
 (def ready (conj k/models-live-help :ready))
@@ -44,8 +45,8 @@
     [:div.fixed.bottom-0.right-0.m4
      (merge {:data-test id}
             (utils/fake-href target))
-     (ui/img {:src "4e27fe5a-2069-4094-8f23-7e4c5305007b"
-              :width "50px"})]))
+     (svg/chat-bug {:width "50px"
+                    :height "50px"})]))
 
 (defn bug-component [state]
   (component/build bug-template {:live-help-bug/id     (when (and (get-in state ready)

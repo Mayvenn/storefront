@@ -513,6 +513,13 @@
    [:svg opts
     ^:inline (svg-xlink "edit")]))
 
+(defn chat-bug
+  "A chat bubble icon for the live-help bug"
+  [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "chat-bug")]))
+
 (defn symbolic->html
   "Converts a data from query that describes an svg to the appropriate html.
 

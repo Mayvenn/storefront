@@ -387,4 +387,13 @@
   <symbol id="edit" viewBox="0 0 16 17">
     <path d="m0 12.169 4.444 4.337H0v-4.337zm7.816-7.584 4.4 4.293-6.286 6.134-4.4-4.293 6.286-6.134zm3.143-3.067 4.4 4.293-1.886 1.84-4.4-4.293 1.886-1.84z" fill="#8B8B8B" fill-rule="evenodd"/>
   </symbol>
+  <symbol id="chat-bug" viewBox="0 0 52 52">
+    <g transform="translate(1 1)" fill="none" fill-rule="evenodd">
+      <circle stroke="#434343" fill="#000" cx="25" cy="25" r="24.5"/>
+      <g transform="translate(12 13)" fill="#FFF">
+        <rect width="26" height="21" rx="4"/>
+        <path d="M21.154 20.636v5.406l-7.404-5.406z"/>
+      </g>
+    </g>
+  </symbol>
 </svg>
