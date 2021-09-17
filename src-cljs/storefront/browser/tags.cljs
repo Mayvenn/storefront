@@ -66,7 +66,7 @@
    (let [existing-tag      (query-by-src src)
          existing-callback (some-> existing-tag .-onload)]
      (cond
-       (not (query-by-src src))  (-> src
+       (not existing-tag)        (-> src
                                      (src-tag class)
                                      (insert-tag-with-callback callback))
        (some? existing-callback) (set! (.-onload existing-tag)
