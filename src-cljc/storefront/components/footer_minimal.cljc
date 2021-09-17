@@ -17,8 +17,9 @@
        [:div call-number " | 8am-5pm PST M-F"]
        [:div.left.mt3 (component/build footer-links/component {:minimal? true} nil)]]]]]
 
-   [:div.hide-on-tb-dt.py2.px3 ;; mobile
-    [:div.content-3.proxima (ui/link :link/phone :a.inherit-color {} call-number) " | 8am-5pm PST M-F"]
+   [:div.hide-on-tb-dt.py2.px3.flex.flex-column ;; mobile
+    [:div.title-2.proxima.shout.mx-auto.mb1 "Need Help?"]
+    [:div.content-3.proxima.mx-auto (ui/link :link/phone :a.inherit-color {} call-number) " | 8am-5pm PST M-F"]
     [:div.left (component/build footer-links/component {:minimal? true} nil)]]
    ;; Space for promotion helper
    [:div {:style {:padding-bottom "100px"}}]])
