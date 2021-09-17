@@ -41,11 +41,11 @@
 
 (defn insert []
   (when-not (.hasOwnProperty js/window "google")
-    (tags/insert-tag-with-callback
-     (tags/src-tag (str "https://maps.googleapis.com/maps/api/js?key="
-                        config/places-api-key
-                        "&libraries=places")
-                   "places-autocomplete")
+    (tags/insert-tag-with-src-once
+     (str "https://maps.googleapis.com/maps/api/js?key="
+          config/places-api-key
+          "&libraries=places")
+     "places-autocomplete"
      #(m/handle-message events/inserted-google-maps))))
 
 (defn attach

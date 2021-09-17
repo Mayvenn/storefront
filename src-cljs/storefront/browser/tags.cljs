@@ -55,8 +55,27 @@
   (doseq [tag (array-seq (.querySelectorAll js/document (str "." class)))]
     (remove-tag tag)))
 
+(defn query-by-src [src]
+  (.querySelector js/document (str "[src=\"" src "\"]")))
+
+(defn insert-tag-with-src-once
+  ([src class]
+   (when-not (query-by-src src)
+     (insert-tag-with-src src class)))
+  ([src class callback]
+   (let [existing-tag      (query-by-src src)
+         existing-callback (some-> existing-tag .-onload)]
+     (cond
+       (not (query-by-src src))  (-> src
+                                     (src-tag class)
+                                     (insert-tag-with-callback callback))
+       (some? existing-callback) (set! (.-onload existing-tag)
+                                       (juxt existing-callback callback))
+       :else                     (set! (.-onload existing-tag)
+                                       callback)))))
+
 (defn remove-tag-by-src [src]
-  (when-let [tag (.querySelector js/document (str "[src=\"" src "\"]"))]
+  (when-let [tag (query-by-src src)]
     (remove-tag tag)))
 
 (defn remove-tag-pair [class]
