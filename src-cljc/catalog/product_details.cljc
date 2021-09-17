@@ -727,7 +727,7 @@
                              :sku-id->quantity sku-id->quantity}
                             #(do
                                (messages/handle-message events/api-success-add-multiple-skus-to-bag
-                                                        {:order         (:order %)})
+                                                        (select-keys % [:order :sku-id->quantity]))
                                (when (not (= events/navigate-cart nav-event))
                                  (history/enqueue-navigate (if cart-interstitial?
                                                              events/navigate-added-to-cart

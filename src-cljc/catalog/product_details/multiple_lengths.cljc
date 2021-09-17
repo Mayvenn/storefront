@@ -310,7 +310,7 @@
         sku-id->quantity                   (into {}
                                                  (map (fn [[sku-id skus]] [sku-id (count skus)])
                                                       (group-by :catalog/sku-id selected-skus)))
-        multiple-skus                      (< 1 (count selected-skus))]
+        multiple-skus                      (pos? (count selected-skus))]
     (merge
      {:cta/id    "add-to-cart"
       :cta/label (if multiple-skus

@@ -298,6 +298,35 @@
                                                     (when look-id
                                                       {:look_id look-id})))))
 
+(defmethod perform-track events/api-success-add-multiple-skus-to-bag
+  [_ _ {:keys [sku-id->quantity order] :as args} app-state]
+  ;; NOTE: Currently does not handle cases where one of the skus being added in a free-install sku
+  (when (some-> sku-id->quantity count pos?)
+    (let [images-catalog   (get-in app-state keypaths/v2-images)
+          skus-db          (get-in app-state keypaths/v2-skus)
+          store-experience (get-in app-state keypaths/store-experience)
+
+          added-line-item-skuers    (sku-id->quantity-to-line-item-skuer skus-db sku-id->quantity)
+          added-stringer-cart-items (map (partial line-item-skuer->stringer-cart-item images-catalog)
+                                         added-line-item-skuers)
+
+          store-slug     (get-in app-state keypaths/store-slug)
+          order-quantity (orders/product-and-service-quantity order)]
+      (stringer/track-event "bulk_add_to_cart"
+                            {:store_experience store-experience
+                             :order_number     (:number order)
+                             :order_total      (:total order)
+                             :order_quantity   (apply + (vals sku-id->quantity))
+                             :skus             (->> added-line-item-skuers (map :catalog/sku-id) (string/join ","))
+                             :variant_ids      (->> added-line-item-skuers (map :legacy/variant-id) (string/join ","))
+                             :context          {:cart-items added-stringer-cart-items}})
+      (google-tag-manager/track-add-to-cart {:number           (:number order)
+                                             :store-slug       store-slug
+                                             :store-is-stylist (not (or (#{"store" "shop" "internal"} store-slug)
+                                                                        (= "retail-location" (get-in app-state keypaths/store-experience))))
+                                             :order-quantity   order-quantity
+                                             :line-item-skuers added-line-item-skuers}))))
+
 (def interesting-payment-methods
   #{"apple-pay" "paypal" "quadpay"})
 
