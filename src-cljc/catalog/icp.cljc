@@ -207,27 +207,9 @@
          vals
          (sort-by (comp category-order :catalog/category-id)))) )
 
-
-;; TODO Delete me after closure wigs launch
-(defn add-closure-wigs-if-feature-flag-enabled [interstitial-category has-feature-flag?]
-  (let [closure-wigs-id          "41"
-        closure-wigs-subcats     [{:subsection/title    "4 x 4 Closure Wigs"
-                                   :subsection/selector {:hair/family       #{"closure-wigs"}
-                                                         :hair.closure/area #{"4x4"}}}
-                                  {:subsection/title    "5 x 5 Closure Wigs"
-                                   :subsection/selector {:hair/family       #{"closure-wigs"}
-                                                         :hair.closure/area #{"5x5"}}}]
-        should-add-closure-wigs? (and has-feature-flag?
-                                      (= "13" (:catalog/category-id interstitial-category)))]
-    (cond-> interstitial-category
-      should-add-closure-wigs? (update :subcategories/ids conj closure-wigs-id)
-      should-add-closure-wigs? (update :subsections/subsection-selectors concat closure-wigs-subcats))))
-
 (defn page
   [state _]
-  (let [interstitial-category               (add-closure-wigs-if-feature-flag-enabled
-                                             (accessors.categories/current-category state)
-                                             (experiments/closure-wigs? state))
+  (let [interstitial-category               (accessors.categories/current-category state)
         facet-filtering-state               (assoc (get-in state catalog.keypaths/k-models-facet-filtering)
                                                    :facet-filtering/item-label "item")
         selections                          (:facet-filtering/filters facet-filtering-state)

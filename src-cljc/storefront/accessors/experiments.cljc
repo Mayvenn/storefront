@@ -120,10 +120,6 @@
   [data]
   (display-feature? data "multiple-lengths-pdp"))
 
-(defn closure-wigs?
-  [data]
-  (display-feature? data "closure-wigs"))
-
 (defn instagram-stylist-profile?
   [data]
   (display-feature? data "instagram-stylist-profile"))

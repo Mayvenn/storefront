@@ -668,8 +668,7 @@
                                                    "30 Day Quality Guarantee, our Wigs can be customized to fit"
                                                    "your unique look using the built-in combs and adjustable strap.")
            :product-list/title               "Shop All Wigs"
-           ;; NOTE Uncomment "41" once closure wigs are live.
-           :subcategories/ids                ["24" "26" "25" "40" #_"41"]
+           :subcategories/ids                ["24" "26" "25" "40" "41"]
            :subcategories/layout             :list
            :subsections/subsection-selectors [{:subsection/title    "Lace Front Wigs"
                                                :subsection/selector {:hair/family #{"lace-front-wigs"}}}
@@ -679,12 +678,10 @@
                                                :subsection/selector {:hair/family #{"ready-wigs"}}}
                                               {:subsection/title    "Headband Wigs"
                                                :subsection/selector {:hair/family #{"headband-wigs"}}}
-
-                                              ;; NOTE Uncomment these two entries once closure wigs are live.
-                                              #_{:subsection/title    "4 x 4 Closure Wigs"
+                                              {:subsection/title    "4 x 4 Closure Wigs"
                                                :subsection/selector {:hair/family       #{"closure-wigs"}
                                                                      :hair.closure/area #{"4x4"}}}
-                                              #_{:subsection/title    "5 x 5 Closure Wigs"
+                                              {:subsection/title    "5 x 5 Closure Wigs"
                                                :subsection/selector {:hair/family       #{"closure-wigs"}
                                                                      :hair.closure/area #{"5x5"}}}]
            :contentful/faq-id                :icp-wigs
