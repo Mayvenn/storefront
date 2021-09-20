@@ -314,7 +314,7 @@
          {:stylist-search.title/id                        "find-your-stylist-stylist-search-title"
           :stylist-search.title/primary                   "Where do you want to get your hair done?"
           :stylist-search.location-search-box/id          "stylist-match-address"
-          :stylist-search.location-search-box/placeholder "Enter city or street address"
+          :stylist-search.location-search-box/placeholder "Enter address, city, or zip code"
           :stylist-search.location-search-box/value       (str input)
           :stylist-search.location-search-box/clear?      (seq location)
           :stylist-search.button/id                       "stylist-match-address-submit"
