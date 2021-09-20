@@ -363,12 +363,15 @@
         faq                (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
                              (get-in data (conj keypaths/cms-faq pdp-faq-id)))
         selected-picker    (get-in data catalog.keypaths/detailed-product-selected-picker)]
-    #?(:cljs (when (= (count product-skus)
-                      (count out-of-stock-skus))
-               (exception-handler/report (ex-info "All skus for product are out of stock, see #179585779"
-                                                  {:product           product
-                                                   :out-of-stock-skus out-of-stock-skus
-                                                   :undo-stack        nav-stack}))))
+    #?(:cljs (when (and (some? product)
+                        (pos? (count product-skus))
+                        (= (count product-skus)
+                           (count out-of-stock-skus)))
+               (try (exception-handler/report (ex-info "All skus for product are out of stock, see #179585779"
+                                                       {:product           product
+                                                        :out-of-stock-skus out-of-stock-skus
+                                                        :undo-stack        nav-stack}))
+                    (finally nil))))
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
