@@ -8,7 +8,6 @@
                        [storefront.components.popup :as popup]
                        [storefront.components.svg :as svg]
                        [storefront.history :as history]
-                       [storefront.hooks.exception-handler :as exception-handler]
                        [storefront.hooks.facebook-analytics :as facebook-analytics]
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.hooks.stringer :as stringer]
@@ -338,37 +337,29 @@
   (let [selections         (get-in data catalog.keypaths/detailed-product-selections)
         product            (products/current-product data)
         product-skus       (products/extract-product-skus data product)
-        out-of-stock-skus  (remove :inventory/in-stock? product-skus)
-        nav-stack          (get-in data keypaths/navigation-undo-stack nil)
         images-catalog     (get-in data keypaths/v2-images)
         facets             (facets/by-slug data)
         selected-sku       (get-in data catalog.keypaths/detailed-product-selected-sku)
         carousel-images    (find-carousel-images product product-skus images-catalog
-                                                 ;;TODO These selection election keys should not be hard coded
-                                                 (select-keys selections [:hair/color
-                                                                          :hair/base-material])
-                                                 selected-sku)
+                                                   ;;TODO These selection election keys should not be hard coded
+                                                   (select-keys selections [:hair/color
+                                                                            :hair/base-material])
+                                                   selected-sku)
         length-guide-image (->> product
-                                (images/for-skuer images-catalog)
-                                (select {:use-case #{"length-guide"}})
-                                first)
+                                  (images/for-skuer images-catalog)
+                                  (select {:use-case #{"length-guide"}})
+                                  first)
         product-options    (get-in data catalog.keypaths/detailed-product-options)
         ugc                (ugc-query product selected-sku data)
         sku-price          (or (:product/essential-price selected-sku)
-                               (:sku/price selected-sku))
+                                 (:sku/price selected-sku))
         review-data        (review-component/query data)
         shop?              (or (= "shop" (get-in data keypaths/store-slug))
-                               (= "retail-location" (get-in data keypaths/store-experience)))
+                                 (= "retail-location" (get-in data keypaths/store-experience)))
         hair?              (accessors.products/hair? product)
         faq                (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
                              (get-in data (conj keypaths/cms-faq pdp-faq-id)))
         selected-picker    (get-in data catalog.keypaths/detailed-product-selected-picker)]
-    #?(:cljs (when (= (count product-skus)
-                      (count out-of-stock-skus))
-               (exception-handler/report (ex-info "All skus for product are out of stock, see #179585779"
-                                                  {:product           product
-                                                   :out-of-stock-skus out-of-stock-skus
-                                                   :undo-stack        nav-stack}))))
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
