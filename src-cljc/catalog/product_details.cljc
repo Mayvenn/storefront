@@ -522,12 +522,7 @@
                        (fn [response]
                          (messages/handle-message events/api-success-v3-products-for-details response)
                          (when-let [selected-sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)]
-                           (messages/handle-message events/viewed-sku {:sku selected-sku}))))
-
-     (when-let [current-product (products/current-product app-state)]
-       (if (auth/permitted-product? app-state current-product)
-         (review-hooks/insert-reviews)
-         (effects/redirect events/navigate-home)))))
+                           (messages/handle-message events/viewed-sku {:sku selected-sku}))))))
 
 (defn generate-product-options
   [product-id app-state]
@@ -706,6 +701,9 @@
                             (when selected-sku
                               {:query-params {:SKU (:catalog/sku-id selected-sku)}})))
          (let [product (get-in app-state (conj keypaths/v2-products product-id))]
+           (if (auth/permitted-product? app-state product)
+             (review-hooks/insert-reviews)
+             (effects/redirect events/navigate-home))
            (seo/set-tags app-state)
            (when-let [album-keyword (storefront.ugc/product->album-keyword shop? product)]
              (effects/fetch-cms-keypath app-state [:ugc-collection album-keyword]))
