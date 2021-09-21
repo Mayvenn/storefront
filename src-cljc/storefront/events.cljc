@@ -411,10 +411,6 @@
 (defpath clear-features)
 (defpath bucketed-for)
 
-(defpath reviews)
-(defpath reviews-component-mounted)
-(defpath reviews-component-will-unmount)
-
 (defpath inserted)
 (defpath inserted-stringer)
 (defpath inserted-convert)

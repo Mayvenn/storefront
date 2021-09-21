@@ -553,12 +553,6 @@
 (defmethod transition-state events/inserted-facebook [_ event args app-state]
   (assoc-in app-state keypaths/loaded-facebook true))
 
-(defmethod transition-state events/reviews-component-mounted [_ event args app-state]
-  (update-in app-state keypaths/review-components-count inc))
-
-(defmethod transition-state events/reviews-component-will-unmount [_ event args app-state]
-  (update-in app-state keypaths/review-components-count dec))
-
 (defmethod transition-state events/stripe-component-mounted [_ event {:keys [card-element]} app-state]
   (assoc-in app-state keypaths/stripe-card-element card-element))
 

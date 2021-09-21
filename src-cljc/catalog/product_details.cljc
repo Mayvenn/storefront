@@ -704,6 +704,7 @@
            (if (auth/permitted-product? app-state product)
              (review-hooks/insert-reviews)
              (effects/redirect events/navigate-home))
+           (review-hooks/start)
            (seo/set-tags app-state)
            (when-let [album-keyword (storefront.ugc/product->album-keyword shop? product)]
              (effects/fetch-cms-keypath app-state [:ugc-collection album-keyword]))

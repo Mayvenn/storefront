@@ -279,8 +279,6 @@
 (def error-message (conj errors :error-message))
 (def error-code (conj errors :error-code))
 
-(def review-components-count (conj ui :review-components-count))
-
 (def loaded (conj ui :loaded))
 (def loaded-convert (conj loaded :convert))
 (def loaded-facebook (conj loaded :facebook))

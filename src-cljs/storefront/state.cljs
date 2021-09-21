@@ -161,7 +161,6 @@
                                             :failure {:message nil}}
                                     :later {:success {:message nil}
                                             :failure {:message nil}}}
-          :review-components-count 0
           :static                  nil
           :loaded                  {:reviews  false
                                     :stripe   false

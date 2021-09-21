@@ -916,12 +916,6 @@
   (when-let [el (.querySelector js/document "[data-ref=cart-button]")]
     (scroll/scroll-to-elem el)))
 
-(defmethod effects/perform-effects events/reviews-component-mounted [_ event args _ app-state]
-  (let [expected-reviews-count 2
-        actual-reviews-count   (get-in app-state keypaths/review-components-count)]
-    (when (= expected-reviews-count actual-reviews-count)
-      (reviews/start))))
-
 (defmethod effects/perform-effects events/checkout-address-component-mounted
   [_ event {:keys [address-elem address-keypath]} _ app-state]
   (google-maps/attach "address" address-elem address-keypath))
