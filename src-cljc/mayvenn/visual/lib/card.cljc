@@ -10,6 +10,7 @@
             [mayvenn.visual.ui.titles :as titles]
             [mayvenn.visual.ui.thumbnails :as thumbnails]
             [mayvenn.visual.lib.image-grid :as image-grid]
+            [catalog.ui.molecules :as catalog.M]
             ui.molecules
             [mayvenn.visual.tools :refer [with]]
             [storefront.component :as c]
@@ -39,6 +40,7 @@
      :image-grid
      :title
      :price
+     :review
      :line-item-summary
      :action"
   [data _ _]
@@ -48,6 +50,7 @@
      (c/build image-grid/hero-with-little-hair-column-molecule
               (with :image-grid data))]
     (titles/proxima-left (with :title data))
+    (catalog.M/yotpo-reviews-summary (with :review data))
     [:div.flex
      [:p.content-3.mr1 (:price/discounted-price data)]
      [:p.content-3.strike (:price/retail-price data)]]
