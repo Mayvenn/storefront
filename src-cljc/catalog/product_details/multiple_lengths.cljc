@@ -453,7 +453,7 @@
                                                                                                 :selection        :hair/length
                                                                                                 :navigation-event events/navigate-product-details
                                                                                                 :value            ""}]}])
-       (map (fn [{:option/keys [slug sku-swatch rectangle-swatch name] :as option}]
+       (map (fn [{:option/keys [slug name] :as option}]
               (let [available? (boolean (get-in availability [selected-hair-color slug]))
                     sold-out?  (not (boolean (get-in availability [selected-hair-color
                                                                    slug
@@ -481,27 +481,27 @@
             options)))))
 
 (defn ^:private picker-modal<
-  [product-options picker-visible? selected-picker length-index multi-length-selections availability]
+  [product-options picker-visible? selected-picker length-index multi-length-selections availability length-guide-image]
   (let [picker-type        (last selected-picker)
         options            (get product-options picker-type)
-        length-selection   (:hair/length (get multi-length-selections length-index))
         options-for-color  (color-product-options->color-picker-modal-options options multi-length-selections)
         options-for-length (length-product-options->length-picker-modal-options options multi-length-selections length-index availability)]
-    {:picker-modal/title        (case picker-type
-                                  :hair/color  "Color"
-                                  :hair/length "Length"
-                                  nil)
-     :picker-modal/type         picker-type
-     :picker-modal/options      (case picker-type
-                                  :hair/color  options-for-color
-                                  :hair/length options-for-length
-                                  nil)
+    {:picker-modal/title              (case picker-type
+                                        :hair/color  "Color"
+                                        :hair/length "Length"
+                                        nil)
+     :picker-modal/type               picker-type
+     :picker-modal/options            (case picker-type
+                                        :hair/color  options-for-color
+                                        :hair/length options-for-length
+                                        nil)
+     :picker-modal/length-guide-image length-guide-image
      ;; NOTE: There is a difference between selected and visible. We toggle
      ;; picker visibility to signal that the modal should close but we don't remove
      ;; the options so the close animation isn't stopped prematurely due to the
      ;; child options re-rendering.
-     :picker-modal/visible?     (and picker-visible? options selected-picker)
-     :picker-modal/close-target [events/control-product-detail-picker-close]}))
+     :picker-modal/visible?           (and picker-visible? options selected-picker)
+     :picker-modal/close-target       [events/control-product-detail-picker-close]}))
 
 (defn ^:private total-query
   [multi-length-total item-count shop?]
@@ -512,7 +512,7 @@
                            shop?
                            "Hair + Free Install"
 
-                           :elsewise nil)
+                           :else nil)
             :secondary (mf/as-money-or-dashes multi-length-total)}))
 
 (defn query [data]
@@ -556,45 +556,47 @@
                                           (->>
                                            chosen-skus
                                            (mapv #(:sku/price %)))))]
-    (merge
-     {:reviews                            review-data
-      :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
-      :yotpo-reviews-summary/product-id   (some-> review-data :yotpo-data-attributes :data-product-id)
-      :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
-      :title/primary                      (:copy/title product)
-      :ugc                                ugc
-      :fetching-product?                  (utils/requesting? data (conj request-keys/get-products
-                                                                        (:catalog/product-id product)))
-      :adding-to-bag?                     (utils/requesting? data (conj request-keys/add-to-bag
-                                                                        (:catalog/sku-id selected-sku)))
-      :sku-quantity                       (get-in data keypaths/browse-sku-quantity 1)
-      :options                            product-options
-      :product                            product
-      :selections                         selections
-      :selected-options                   (get-selected-options selections product-options)
-      :selected-sku                       selected-sku
-      :facets                             facets
-      :faq-section                        (when (and shop? faq)
-                                            (let [{:keys [question-answers]} faq]
-                                              {:faq/expanded-index (get-in data keypaths/faq-expanded-section)
-                                               :list/sections      (for [{:keys [question answer]} question-answers]
-                                                                     {:faq/title   (:text question)
-                                                                      :faq/content answer})}))
-      :carousel-images                    carousel-images
-      :selected-picker                    selected-picker
-      :picker-modal                       (when selected-picker
-                                            (picker-modal< product-options
-                                                           (get-in data catalog.keypaths/detailed-product-picker-visible?)
-                                                           (get-in data catalog.keypaths/detailed-product-selected-picker)
-                                                           (get-in data catalog.keypaths/detailed-product-lengths-index)
-                                                           multi-length-selections
-                                                           sku-availability))}
-     (picker-query {:facets            facets
-                    :selections        selections
-                    :options           product-options
-                    :length-selections multi-length-selections
-                    :sku-availability  sku-availability})
-     (total-query multi-length-total (count chosen-skus))
+  (merge
+   {:reviews                            review-data
+    :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
+    :yotpo-reviews-summary/product-id   (some-> review-data :yotpo-data-attributes :data-product-id)
+    :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
+    :title/primary                      (:copy/title product)
+    :ugc                                ugc
+    :fetching-product?                  (utils/requesting? data (conj request-keys/get-products
+                                                                      (:catalog/product-id product)))
+    :adding-to-bag?                     (utils/requesting? data (conj request-keys/add-to-bag
+                                                                      (:catalog/sku-id selected-sku)))
+    :sku-quantity                       (get-in data keypaths/browse-sku-quantity 1)
+    :options                            product-options
+    :product                            product
+    :selections                         selections
+    :selected-options                   (get-selected-options selections product-options)
+    :selected-sku                       selected-sku
+    :facets                             facets
+    :faq-section                        (when (and shop? faq)
+                                          (let [{:keys [question-answers]} faq]
+                                            {:faq/expanded-index (get-in data keypaths/faq-expanded-section)
+                                             :list/sections      (for [{:keys [question answer]} question-answers]
+                                                                   {:faq/title   (:text question)
+                                                                    :faq/content answer})}))
+    :carousel-images                    carousel-images
+    :selected-picker                    selected-picker
+    ;; Problem? separate picker modal and picker-query queries.
+    :picker-modal                       (when selected-picker
+                                          (picker-modal< product-options
+                                                         (get-in data catalog.keypaths/detailed-product-picker-visible?)
+                                                         (get-in data catalog.keypaths/detailed-product-selected-picker)
+                                                         (get-in data catalog.keypaths/detailed-product-lengths-index)
+                                                         multi-length-selections
+                                                         sku-availability
+                                                         length-guide-image))}
+   (picker-query {:facets            facets
+                  :selections        selections
+                  :options           product-options
+                  :length-selections multi-length-selections
+                  :sku-availability  sku-availability})
+     (total-query multi-length-total (count chosen-skus) shop?)
      (when (-> (get-in data catalog.keypaths/detailed-product-multiple-lengths-selections) count (< 5))
        #:add-length{:id    "add-length"
                     :event events/control-product-detail-picker-add-length})
