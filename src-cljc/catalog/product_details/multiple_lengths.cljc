@@ -2,16 +2,10 @@
   (:require #?@(:cljs [[goog.dom]
                        [goog.events]
                        [goog.style]
-                       [storefront.accessors.auth :as auth]
-                       [storefront.api :as api]
                        [storefront.browser.scroll :as scroll]
                        [storefront.components.popup :as popup]
                        [storefront.components.svg :as svg]
-                       [storefront.history :as history]
-                       [storefront.hooks.facebook-analytics :as facebook-analytics]
-                       [storefront.hooks.reviews :as review-hooks]
                        [storefront.hooks.stringer :as stringer]
-                       [storefront.hooks.seo :as seo]
                        [storefront.trackings :as trackings]])
             [api.catalog :refer [select]]
             api.current
@@ -24,9 +18,7 @@
             [catalog.selector.sku :as sku-selector]
             [catalog.ui.add-to-cart :as add-to-cart]
             [catalog.ui.molecules :as catalog.M]
-            [checkout.cart.swap :as swap]
             [homepage.ui.faq :as faq]
-            [mayvenn.visual.lib.call-out-box :as call-out-box]
             [mayvenn.visual.tools :refer [with within]]
             [mayvenn.visual.ui.titles :as titles]
             [spice.selector :as selector]
@@ -51,8 +43,7 @@
             [storefront.request-keys :as request-keys]
             [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
-            storefront.ugc
-            [spice.core :as spice]))
+            storefront.ugc))
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
