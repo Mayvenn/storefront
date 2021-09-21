@@ -58,9 +58,18 @@
 
 (defn header<
   [undo-history step]
-  {:header/back    (not-empty (first undo-history))
-   :header/target  [e/navigate-home]
-   :header/primary (str "Hair Quiz (" step "/3)")})
+  (let [previous-nav (not-empty (first undo-history))]
+    {:header/back (when-not (->> previous-nav
+                                 :navigation-message
+                                 second
+                                 :navigate/caused-by
+                                 (= "first-nav"))
+                    previous-nav)
+     :header/target [(case step
+                       3 e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist
+                       2 e/navigate-shopping-quiz-unified-freeinstall-intro
+                       e/navigate-home)]
+     :header/primary (str "Hair Quiz (" step "/3)")}))
 
 (defn progress<
   [progression]
