@@ -305,8 +305,8 @@
     (merge
      {:cta/id    "add-to-cart"
       :cta/label (if multiple-skus
-                   "Add Product to Bag"
-                   "Add to Bag")
+                   "Add Products to Bag"
+                   "Add Product to Bag")
 
       ;; Fork here to use bulk add to cart
       :cta/target                  (if multiple-skus
