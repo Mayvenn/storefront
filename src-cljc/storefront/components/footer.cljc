@@ -55,7 +55,7 @@
              [:span.p-color "NEW "])
            title])])]]))
 
-(defcomponent contacts-section [{:keys [call-number sms-number contact-email]} _ _]
+(defcomponent contacts-section [{:keys [call-number sms-number contact-email business-hours]} _ _]
   [:div
    [:div.content-3.proxima.shout.bold.mb2 "Contact us"]
    [:div.flex.items-center
@@ -63,7 +63,9 @@
      [:span.hide-on-tb-dt (ui/link :link/phone :a.inherit-color {} call-number)]
      [:span.hide-on-mb call-number]]
     [:span.content-1.proxima..bold.mx3 "|"]
-    (ui/link :link/email :a.block.py1.inherit-color {} contact-email)]])
+    (ui/link :link/email :a.block.py1.inherit-color {} contact-email)]
+   [:div.py1
+    business-hours]])
 
 (defn- social-link
   ([uri icon] (social-link {:height "20px" :width "20px"} uri icon))
@@ -103,6 +105,7 @@
   [data]
   {:sms-number    (get-in data keypaths/sms-number)
    :call-number   config/support-phone-number
+   :business-hours "Monday - Friday, 11am - 8pm ET"
    :contact-email "help@mayvenn.com"})
 
 (defn dtc-link [{:keys [title new-link? nav-message id]}]
