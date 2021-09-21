@@ -504,11 +504,15 @@
      :picker-modal/close-target [events/control-product-detail-picker-close]}))
 
 (defn ^:private total-query
-  [multi-length-total item-count]
+  [multi-length-total item-count shop?]
   (let [still-to-go (- 3 item-count)]
-    #:total{:primary   (if (> still-to-go 0)
-                         (str "Add " still-to-go " more for Free Install")
-                         "Hair + Free Install")
+    #:total{:primary (cond (and shop? (> still-to-go 0))
+                           (str "Add " still-to-go " more for Free Install")
+
+                           shop?
+                           "Hair + Free Install"
+
+                           :elsewise nil)
             :secondary (mf/as-money-or-dashes multi-length-total)}))
 
 (defn query [data]
