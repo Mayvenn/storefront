@@ -476,14 +476,17 @@
 (defmethod effects/perform-effects events/api-success-shared-cart-fetch
   [_ _ {{:keys [promotion-codes servicing-stylist-id]} :shared-cart :as args} _ app-state]
   #?(:cljs
-     (let [shared-cart  (get-in app-state keypaths/shared-cart-current)
-           catalog-skus (get-in app-state keypaths/v2-skus)
-           api-cache    (get-in app-state keypaths/api-cache)
-           stylist?     (auth/stylist? (auth/signed-in app-state))]
-       (if (->> shared-cart
-                (api.orders/enrich-line-items-with-sku-data catalog-skus)
-                :line-items
-                (some (partial invalid-line-item? stylist?)))
+     (let [shared-cart     (get-in app-state keypaths/shared-cart-current)
+           catalog-skus    (get-in app-state keypaths/v2-skus)
+           api-cache       (get-in app-state keypaths/api-cache)
+           on-look-detail? (= events/navigate-shop-by-look-details
+                              (get-in app-state keypaths/navigation-event))
+           stylist?        (auth/stylist? (auth/signed-in app-state))]
+       (if (and (->> shared-cart
+                     (api.orders/enrich-line-items-with-sku-data catalog-skus)
+                     :line-items
+                     (some (partial invalid-line-item? stylist?)))
+                (not on-look-detail?))
          (do (messages/handle-message events/flash-later-show-failure
                                       {:message "The bag that has been shared with you has items that are no longer available."})
              (history/enqueue-navigate events/navigate-home))
@@ -491,7 +494,7 @@
                (api/fetch-matched-stylist api-cache servicing-stylist-id
                                           {:error-handler   #(publish events/shared-cart-error-matched-stylist-not-eligible %)
                                            :success-handler #(publish events/api-success-fetch-shared-cart-matched-stylist %)}))
-             (when (= events/navigate-shop-by-look-details (get-in app-state keypaths/navigation-event))
+             (when on-look-detail?
                (messages/handle-message events/initialize-look-details
                                         (assoc args :shared-cart shared-cart))))))))
 
@@ -562,8 +565,8 @@
                                            :user-token           (get-in state keypaths/user-token)
                                            :stylist-id           (get-in state keypaths/store-stylist-id)
                                            :servicing-stylist-id (get-in state keypaths/order-servicing-stylist-id)}
-                                   success-handler
-                                   error-handler))))
+                                          success-handler
+                                          error-handler))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/control-shared-cart-checkout-clicked
