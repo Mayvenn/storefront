@@ -145,7 +145,6 @@
         epitome-sku           (->> skus
                                    (sort-by :sku/price)
                                    first)
-
         epitome-product       (->> epitome-sku
                                    :catalog/sku-id
                                    (products/find-product-by-sku-id products-db))

@@ -42,7 +42,8 @@
      :price
      :review
      :line-item-summary
-     :action"
+     :action
+     :review"
   [data _ _]
   [:div.bg-white.m3
    [:div.left-align.p3
