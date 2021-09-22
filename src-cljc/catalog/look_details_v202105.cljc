@@ -310,7 +310,7 @@
                                           :edgePadding 0
                                           :controls    true
                                           :items       1}
-                               :slides   (:carousel/images data)}}))))
+                               :slides   (map ui/img (:carousel/images data))}}))))
 
 (defn ^:private yotpo-reviews-summary-component [{:keys [yotpo-data-attributes]}]
   (when yotpo-data-attributes
@@ -464,10 +464,10 @@
                         (select ?model-image)
                         (sort-by :order)
                         first)]
-    (ui/img {:class    "col-12 mb4"
-             :alt      title
-             :max-size 749
-             :src      (:url image)})))
+    {:class    "col-12 mb4"
+     :alt      title
+     :max-size 749
+     :src      (:url image)}))
 
 (defn ^:private get-cart-product-image
   [images-catalog {:keys [copy/title] :as skuer}]
@@ -475,19 +475,20 @@
                         (select ?cart-product-image)
                         (sort-by :order)
                         first)]
-    (ui/img {:class    "col-12 mb4"
-             :alt      title
-             :max-size 749
-             :src      (:url image)})))
+    {:class    "col-12 mb4"
+     :alt      title
+     :max-size 749
+     :src      (:url image)}))
 
 (defn ^:private imgs [images-catalog look skus]
   (let [sorted-line-items (shared-cart/sort-by-depart-and-price skus)]
     (list
-     (ui/img {:class    "col-12"
-              :max-size 749
-              :src      (:image-url look)})
+     {:class    "col-12"
+      :max-size 749
+      :src      (:image-url look)}
      (get-model-image images-catalog (first sorted-line-items))
      (get-cart-product-image images-catalog (first sorted-line-items)))))
+
 
 (defn ^:private picker-modal<
   [picker-options picker-visible? selected-picker]
