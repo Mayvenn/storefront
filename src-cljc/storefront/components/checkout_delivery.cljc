@@ -55,11 +55,15 @@
            [:div.content-3 (:tertiary/copy option)]
            [:div.content-3.p-color (:quaternary/copy option)]])])]]))
 
-(def shipping-method-rules
-  {"WAITER-SHIPPING-1" {:min-delivery 4 :max-delivery 6 :saturday-delivery? true}
-   "WAITER-SHIPPING-7" {:min-delivery 2 :max-delivery 4 :saturday-delivery? true}
-   "WAITER-SHIPPING-2" {:min-delivery 1 :max-delivery 2 :saturday-delivery? false}
-   "WAITER-SHIPPING-4" {:min-delivery 1 :max-delivery 1 :saturday-delivery? false}})
+(defn shipping-method-rules
+  [sku drop-shipping?]
+  (case sku
+    "WAITER-SHIPPING-1" (if drop-shipping?
+                          {:min-delivery 7 :max-delivery 10 :saturday-delivery? true}
+                          {:min-delivery 4 :max-delivery 6 :saturday-delivery? true})
+    "WAITER-SHIPPING-7" {:min-delivery 2 :max-delivery 4 :saturday-delivery? true}
+    "WAITER-SHIPPING-2" {:min-delivery 1 :max-delivery 2 :saturday-delivery? false}
+    "WAITER-SHIPPING-4" {:min-delivery 1 :max-delivery 1 :saturday-delivery? false}))
 
 (defn convert-weekend
   "Converts weekend days to additional number of days that delay delivery"
@@ -153,7 +157,7 @@
    {:keys [sku price] :as shipping-method}]
   (let [{:keys [min-delivery
                 max-delivery
-                saturday-delivery?]} (get shipping-method-rules sku)
+                saturday-delivery?]} (shipping-method-rules sku drop-shipping?)
 
         revised-min (number-of-days-to-ship
                      east-coast-weekday
@@ -171,7 +175,7 @@
     {:react/key            sku
      :disabled/classes     (when disabled? "gray")
      :primary/data-test    (when selected? "selected-shipping-method")
-     :primary/copy         (shipping/names-with-time-range sku)
+     :primary/copy         (shipping/names-with-time-range sku drop-shipping?)
      :secondary/copy       (str "Delivery Date: "
                                 (format-delivery-date (date/add-delta current-local-time {:days revised-min}))
                                 (when-not (= revised-min revised-max)
@@ -206,10 +210,10 @@
            (->> (.formatToParts
                  (js/Intl.DateTimeFormat
                   "en-US" #js
-                  {:timeZone "America/New_York"
-                   :weekday  "short"
-                   :hour     "numeric"
-                   :hour12   false}) now)
+                           {:timeZone "America/New_York"
+                            :weekday  "short"
+                            :hour     "numeric"
+                            :hour12   false}) now)
                 js->clj
                 (mapv js->clj)
                 (mapv (fn [{:strs [type value]}]

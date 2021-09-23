@@ -454,13 +454,16 @@
    :cart-summary-line/action-target [events/control-checkout-remove-promotion {:code coupon-code}]})
 
 (defn shipping-method-summary-line-query
-  [shipping-method non-shipping-line-items]
+  [shipping-method line-items-excluding-shipping]
   (let [free-shipping? (= "WAITER-SHIPPING-1" (:sku shipping-method))
-        only-services? (every? line-items/service? non-shipping-line-items)]
+        only-services? (every? line-items/service? line-items-excluding-shipping)
+        drop-shipping? (->> (map :variant-attrs line-items-excluding-shipping)
+                            (select {:warehouse/slug #{"factory-cn"}})
+                            boolean)]
     (when (and shipping-method (not (and free-shipping? only-services?)))
       {:cart-summary-line/id       "shipping"
        :cart-summary-line/label    "Shipping"
-       :cart-summary-line/sublabel (-> shipping-method :sku shipping/timeframe)
+       :cart-summary-line/sublabel (-> shipping-method :sku (shipping/timeframe drop-shipping?) spice.core/spy)
        :cart-summary-line/value    (->> shipping-method
                                         vector
                                         (apply (juxt :quantity :unit-price))
