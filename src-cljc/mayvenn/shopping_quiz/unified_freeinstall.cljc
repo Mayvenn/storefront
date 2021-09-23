@@ -484,12 +484,8 @@
                                                                   (apply +))
                                             retail-price (+ discounted-price
                                                             (:sku/price service-sku))
-                                            epitome-sku           (->> skus
-                                                                       (sort-by :sku/price)
-                                                                       first)
-                                            epitome-product       (->> epitome-sku
-                                                                       :catalog/sku-id
-                                                                       (products/find-product-by-sku-id products-db))]]
+                                            review-sku (first skus)
+                                            review-product  (products/find-product-by-sku-id products-db (:catalog/sku-id review-sku))]]
                       (merge
                        (within :image-grid {:height-in-num-px 240
                                             :gap-in-num-px    3})
@@ -513,9 +509,10 @@
                                                   :on/success
                                                   [e/navigate-shopping-quiz-unified-freeinstall-summary]}]})
                        #?(:cljs
-                          (within :review {:yotpo-reviews-summary/product-title (:copy/title epitome-product)
-                                           :yotpo-reviews-summary/product-id    (:legacy/variant-id epitome-sku)
-                                           :yotpo-reviews-summary/data-url      (routes/path-for e/navigate-product-details epitome-product)}))))}))
+                          (within :review {:yotpo-reviews-summary (let [review-data (reviews/yotpo-data-attributes review-product skus-db)]
+                                                                    {:yotpo-reviews-summary/product-title (some-> review-data :data-name)
+                                                                     :yotpo-reviews-summary/product-id    (some-> review-data :data-product-id)
+                                                                     :yotpo-reviews-summary/data-url      (some-> review-data :data-url)})}))))}))
 
 ;; Template: 1/Questions
 
