@@ -34,7 +34,7 @@
      [:.yotpo.bottomLine.mr2 yotpo-data-attributes]
      [:.yotpo.QABottomLine yotpo-data-attributes]]]])
 
-(defn- yotpo-data-attributes
+(defn yotpo-data-attributes
   "Uses the first Sku from a Product to determine Yotpo data- attributes"
   [product all-skus]
   (when-let [{:keys [legacy/variant-id]}

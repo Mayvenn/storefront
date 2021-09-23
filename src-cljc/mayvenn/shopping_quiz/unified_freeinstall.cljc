@@ -23,16 +23,19 @@
    [mayvenn.visual.ui.actions :as actions]
    [mayvenn.visual.ui.titles :as titles]
    #?@(:cljs [[storefront.hooks.google-maps :as google-maps]
-                       [storefront.history :as history]
-                       [storefront.hooks.exception-handler :as exception-handler]
-                       [storefront.hooks.quadpay :as quadpay]
-                       [storefront.hooks.stringer :as stringer]
-                       [storefront.browser.cookie-jar :as cookie-jar]
-                       [stylist-matching.search.filters-modal :as filter-menu]])
+              [storefront.history :as history]
+              [storefront.hooks.exception-handler :as exception-handler]
+              [storefront.hooks.quadpay :as quadpay]
+              [storefront.hooks.stringer :as stringer]
+              [storefront.hooks.reviews :as review-hooks]
+              [storefront.browser.cookie-jar :as cookie-jar]
+              [stylist-matching.search.filters-modal :as filter-menu]
+              [storefront.platform.reviews :as reviews]])
    [spice.core :as spice]
    [spice.maps :as maps]
    [storefront.accessors.experiments :as experiments]
    [storefront.accessors.orders :as orders]
+   [storefront.accessors.products :as products]
    [storefront.accessors.sites :as accessors.sites]
    [storefront.component :as c]
    [storefront.components.money-formatters :as mf]
@@ -44,15 +47,16 @@
    [storefront.keypaths :as k]
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages
-             :refer [handle-message]
-             :rename {handle-message publish}]
-            [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]
-            [storefront.trackings :as trackings]
-            [stylist-matching.core :refer [stylist-matching<- query-params<- service-delimiter]]
-            [stylist-matching.keypaths :as matching.k]
-            [stylist-matching.stylist-results :as stylist-results]
-            [stylist-matching.ui.stylist-search :as stylist-search]))
+    :refer [handle-message]
+    :rename {handle-message publish}]
+   [storefront.platform.component-utils :as utils]
+   [storefront.request-keys :as request-keys]
+   [storefront.trackings :as trackings]
+   [stylist-matching.core :refer [stylist-matching<- query-params<- service-delimiter]]
+   [stylist-matching.keypaths :as matching.k]
+   [stylist-matching.stylist-results :as stylist-results]
+   [stylist-matching.ui.stylist-search :as stylist-search]
+   [storefront.routes :as routes]))
 
 (def ^:private shopping-quiz-id :unified-freeinstall)
 
@@ -425,7 +429,7 @@
             (with :escape-hatch data))])
 
 (defn suggestions<
-  [skus-db images-db quiz-progression looks-suggestions undo-history]
+  [products-db skus-db images-db quiz-progression looks-suggestions undo-history]
   (merge
    (progress< quiz-progression)
    (header< undo-history (apply max quiz-progression))
@@ -463,14 +467,16 @@
                           :let             [{:product/keys [sku-ids]
                                              :hair/keys    [origin texture]
                                              img-id        :img.v2/id} looks-suggestion
-                                skus                  (mapv skus-db sku-ids)
-                                service-sku           (get skus-db (:service/sku-id looks-suggestion))
-                                discounted-price (->> skus
-                                                      (remove #(= "service" (first (:catalog/department %))))
-                                                      (map :sku/price)
-                                                      (apply +))
-                                retail-price (+ discounted-price
-                                                (:sku/price service-sku))]]
+                                            skus                  (mapv skus-db sku-ids)
+                                            service-sku           (get skus-db (:service/sku-id looks-suggestion))
+                                            discounted-price (->> skus
+                                                                  (remove #(= "service" (first (:catalog/department %))))
+                                                                  (map :sku/price)
+                                                                  (apply +))
+                                            retail-price (+ discounted-price
+                                                            (:sku/price service-sku))
+                                            review-sku (first skus)
+                                            review-product  (products/find-product-by-sku-id products-db (:catalog/sku-id review-sku))]]
                       (merge
                        (within :image-grid {:height-in-num-px 240
                                             :gap-in-num-px    3})
@@ -492,7 +498,12 @@
                                                  {:id            shopping-quiz-id
                                                   :selected-look looks-suggestion
                                                   :on/success
-                                                  [e/navigate-shopping-quiz-unified-freeinstall-summary]}]})))}))
+                                                  [e/navigate-shopping-quiz-unified-freeinstall-summary]}]})
+                       #?(:cljs
+                          (within :review (let [review-data (reviews/yotpo-data-attributes review-product skus-db)]
+                                            {:yotpo-reviews-summary/product-title (some-> review-data :data-name)
+                                             :yotpo-reviews-summary/product-id    (some-> review-data :data-product-id)
+                                             :yotpo-reviews-summary/data-url      (some-> review-data :data-url)})))))}))
 
 ;; Template: 1/Questions
 
@@ -701,6 +712,7 @@
       ;; STEP 2: choosing a look
       2 (let [looks-suggestions (looks-suggestions/<- state shopping-quiz-id)
               selected-look     (looks-suggestions/selected<- state shopping-quiz-id)
+              products-db       (get-in state k/v2-products)
               skus-db           (get-in state k/v2-skus)
               images-db         (get-in state k/v2-images)]
           (cond
@@ -716,11 +728,11 @@
 
             (experiments/shopping-quiz-v2? state)
             (c/build suggestions-template-v2
-                     (suggestions< skus-db images-db quiz-progression looks-suggestions undo-history))
+                     (suggestions< products-db skus-db images-db quiz-progression looks-suggestions undo-history))
 
             :else
             (c/build suggestions-template
-                     (suggestions< skus-db images-db quiz-progression looks-suggestions undo-history))))
+                     (suggestions< products-db skus-db images-db quiz-progression looks-suggestions undo-history))))
       ;; STEP 1: Taking the quiz
       1 (let [{:keys [questions answers progression]} (questioning/<- state shopping-quiz-id)
               wait                                    (wait/<- state shopping-quiz-id)]
@@ -779,6 +791,7 @@
   (if (nil? params)
     (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-intro]})
     (do
+      #?(:cljs (review-hooks/insert-reviews))
       (publish e/biz|looks-suggestions|reset
                {:id shopping-quiz-id})
       (publish e/biz|progression|progressed

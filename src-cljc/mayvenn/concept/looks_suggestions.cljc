@@ -15,6 +15,7 @@
   (:require #?@(:cljs
                 [[storefront.hooks.stringer :as stringer]
                  [storefront.api :as api]
+                 [storefront.hooks.reviews :as review-hooks]
                  storefront.frontend-trackings])
             api.orders
             [mayvenn.concept.booking :as booking]
@@ -514,6 +515,7 @@
 
 (defmethod fx/perform-effects e/biz|looks-suggestions|resulted
   [_ _ {:keys [id results]} _]
+  #?(:cljs (review-hooks/start))
   (publish e/ensure-sku-ids
            {:sku-ids (set
                       (concat

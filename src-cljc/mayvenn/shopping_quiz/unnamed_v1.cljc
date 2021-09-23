@@ -2,7 +2,10 @@
   "
   Visual Layer: Original version of Shopping Quiz
   "
-  (:require api.orders
+  (:require #?@(:cljs
+                [[storefront.hooks.reviews :as review-hooks]
+                 [storefront.platform.reviews :as reviews]])
+            api.orders
             [mayvenn.concept.looks-suggestions :as looks-suggestions]
             [mayvenn.concept.questioning :as questioning]
             [mayvenn.concept.wait :as wait]
@@ -15,6 +18,7 @@
             [catalog.images :as catalog-images]
             [storefront.keypaths :as keypaths]
             [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.products :as products]
             [storefront.component :as c]
             [storefront.components.header :as header]
             [storefront.components.money-formatters :as mf]
@@ -29,6 +33,7 @@
              :rename {handle-message publish}]
             [storefront.request-keys :as request-keys]
             [ui.molecules]
+            [storefront.routes :as routes]
             [clojure.string :as str]))
 
 (def ^:private shopping-quiz-id :unnamed-v1)
@@ -83,8 +88,8 @@
                                        :class     "mt2 col-8"}
                                       (apply utils/fake-href cta-target)) cta-label)]]]])
 
-(c/defcomponent look-suggestion-2-wrapper [data _ _]
-  (c/build card/look-suggestion-2 (with :quiz.result-v2 data)))
+(c/defcomponent look-suggestion-2-wrapper [data _ opts]
+  (c/build card/look-suggestion-2 (with :quiz.result-v2 data) opts))
 
 (c/defcomponent results-template
   [{:keys [header quiz-results shopping-quiz-v2?]} _ _]
@@ -131,22 +136,28 @@
            (concat [" + " (-> closures first :hair/length first) "” Closure"]))))
 
 (defn quiz-result-option<
-  [skus-db images-db idx
+  [products-db skus-db images-db idx
    {:as           looks-suggestion
     :product/keys [sku-ids]
     :hair/keys    [origin texture]
     img-id        :img/id
     v2-img-id     :img.v2/id}]
   (let [skus                  (mapv skus-db sku-ids)
+        epitome-sku           (->> skus
+                                   (sort-by :sku/price)
+                                   first)
+        epitome-product       (->> epitome-sku
+                                   :catalog/sku-id
+                                   (products/find-product-by-sku-id products-db))
         service-sku           (get skus-db (:service/sku-id looks-suggestion))
         {bundles  "bundles"
          closures "closures"} (group-by (comp first :hair/family) skus)
-        discounted-price (->> skus
-                              (remove #(= "service" (first (:catalog/department %))))
-                              (map :sku/price)
-                              (apply +))
-        retail-price (+ discounted-price
-                        (:sku/price service-sku))]
+        discounted-price      (->> skus
+                                   (remove #(= "service" (first (:catalog/department %))))
+                                   (map :sku/price)
+                                   (apply +))
+        retail-price          (+ discounted-price
+                                 (:sku/price service-sku))]
     (merge
      {:quiz.result/id            (str "result-option-" idx)
       :quiz.result/index-label   (str "Option " (inc idx))
@@ -166,6 +177,10 @@
      (within :quiz.result-v2.image-grid.hero {:image-url     v2-img-id
                                               :badge-url     nil
                                               :gap-in-num-px 3})
+     #?(:cljs (within :quiz.result-v2.review (let [review-data (reviews/yotpo-data-attributes epitome-product skus-db)]
+                                               {:yotpo-reviews-summary/product-title (some-> review-data :data-name)
+                                                :yotpo-reviews-summary/product-id    (some-> review-data :data-product-id)
+                                                :yotpo-reviews-summary/data-url      (some-> review-data :data-url)})))
      (within :quiz.result-v2.image-grid.hair-column {:images (map (fn [sku]
                                                                     (let [image (catalog-images/image images-db "cart" sku)]
                                                                       {:image-url (:ucare/id image)
@@ -182,14 +197,14 @@
                                                :selected-look looks-suggestion}]}))))
 
 (defn quiz-results<
-  [skus-db images-db answers look-suggestions]
+  [products-db skus-db images-db answers look-suggestions]
   (merge
    (if (every? #{:unsure} (vals answers))
      {:quiz.results/primary   "Still Undecided?"
       :quiz.results/secondary "These are our most popular styles."}
      {:quiz.results/primary   "Hair & Services"
       :quiz.results/secondary "We think these styles will look great on you."})
-   {:quiz.results/options        (map-indexed (partial quiz-result-option< skus-db images-db)
+   {:quiz.results/options        (map-indexed (partial quiz-result-option< products-db skus-db images-db)
                                               look-suggestions)
     :quiz.alternative/primary    "Wanna explore more options?"
     :quiz.alternative/id         "quiz-result-alternative"
@@ -246,6 +261,7 @@
         {:keys [questions answers progression]
          :as   questioning}            (questioning/<- state shopping-quiz-id)
         skus-db                        (get-in state keypaths/v2-skus)
+        products-db                    (get-in state keypaths/v2-products)
         images-db                      (get-in state keypaths/v2-images)
         looks-suggestions              (looks-suggestions/<- state shopping-quiz-id)
         header-data                    {:forced-mobile-layout? true
@@ -261,7 +277,7 @@
       (c/build waiting-template)
 
       (seq looks-suggestions)
-      (->> {:quiz-results      (quiz-results< skus-db images-db answers looks-suggestions)
+      (->> {:quiz-results      (quiz-results< products-db skus-db images-db answers looks-suggestions)
             :header            header-data
             :shopping-quiz-v2? shopping-quiz-v2?}
            (c/build results-template))
@@ -277,6 +293,8 @@
 
 (defmethod fx/perform-effects e/navigate-adventure-quiz
   [_ _ _ _ _]
+  #?(:cljs
+     (review-hooks/insert-reviews))
   (publish e/biz|looks-suggestions|reset
            {:id shopping-quiz-id})
   (publish e/biz|questioning|reset
