@@ -509,10 +509,10 @@
                                                   :on/success
                                                   [e/navigate-shopping-quiz-unified-freeinstall-summary]}]})
                        #?(:cljs
-                          (within :review {:yotpo-reviews-summary (let [review-data (reviews/yotpo-data-attributes review-product skus-db)]
-                                                                    {:yotpo-reviews-summary/product-title (some-> review-data :data-name)
-                                                                     :yotpo-reviews-summary/product-id    (some-> review-data :data-product-id)
-                                                                     :yotpo-reviews-summary/data-url      (some-> review-data :data-url)})}))))}))
+                          (within :review (let [review-data (reviews/yotpo-data-attributes review-product skus-db)]
+                                            {:yotpo-reviews-summary/product-title (some-> review-data :data-name)
+                                             :yotpo-reviews-summary/product-id    (some-> review-data :data-product-id)
+                                             :yotpo-reviews-summary/data-url      (some-> review-data :data-url)})))))}))
 
 ;; Template: 1/Questions
 

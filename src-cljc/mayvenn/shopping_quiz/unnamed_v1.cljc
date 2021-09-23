@@ -3,7 +3,8 @@
   Visual Layer: Original version of Shopping Quiz
   "
   (:require #?@(:cljs
-                [[storefront.hooks.reviews :as review-hooks]])
+                [[storefront.hooks.reviews :as review-hooks]
+                 [storefront.platform.reviews :as reviews]])
             api.orders
             [mayvenn.concept.looks-suggestions :as looks-suggestions]
             [mayvenn.concept.questioning :as questioning]
@@ -87,8 +88,8 @@
                                        :class     "mt2 col-8"}
                                       (apply utils/fake-href cta-target)) cta-label)]]]])
 
-(c/defcomponent look-suggestion-2-wrapper [data _ _]
-  (c/build card/look-suggestion-2 (with :quiz.result-v2 data)))
+(c/defcomponent look-suggestion-2-wrapper [data _ opts]
+  (c/build card/look-suggestion-2 (with :quiz.result-v2 data) opts))
 
 (c/defcomponent results-template
   [{:keys [header quiz-results shopping-quiz-v2?]} _ _]
@@ -176,9 +177,10 @@
      (within :quiz.result-v2.image-grid.hero {:image-url     v2-img-id
                                               :badge-url     nil
                                               :gap-in-num-px 3})
-     (within :quiz.result-v2.review.yotpo-reviews-summary {:product-title (:copy/title epitome-product)
-                                                           :product-id    (:legacy/variant-id epitome-sku)
-                                                           :data-url      (routes/path-for e/navigate-product-details epitome-product)})
+     #?(:cljs (within :quiz.result-v2.review (let [review-data (reviews/yotpo-data-attributes epitome-product skus-db)]
+                                               {:yotpo-reviews-summary/product-title (some-> review-data :data-name)
+                                                :yotpo-reviews-summary/product-id    (some-> review-data :data-product-id)
+                                                :yotpo-reviews-summary/data-url      (some-> review-data :data-url)})))
      (within :quiz.result-v2.image-grid.hair-column {:images (map (fn [sku]
                                                                     (let [image (catalog-images/image images-db "cart" sku)]
                                                                       {:image-url (:ucare/id image)
