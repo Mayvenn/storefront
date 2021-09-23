@@ -463,7 +463,7 @@
     (when (and shipping-method (not (and free-shipping? only-services?)))
       {:cart-summary-line/id       "shipping"
        :cart-summary-line/label    "Shipping"
-       :cart-summary-line/sublabel (-> shipping-method :sku (shipping/timeframe drop-shipping?) spice.core/spy)
+       :cart-summary-line/sublabel (-> shipping-method :sku (shipping/timeframe drop-shipping?))
        :cart-summary-line/value    (->> shipping-method
                                         vector
                                         (apply (juxt :quantity :unit-price))
