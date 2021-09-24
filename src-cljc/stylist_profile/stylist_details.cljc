@@ -240,13 +240,13 @@
                                                         (not hide-star-distribution?))
                                                "star-distribution-table")
             :card.star-rating/rating-content (str "(" score ")")})
-         (when-let [instagram (and instagram-stylist-profile?
-                                   (-> stylist
-                                       :diva/stylist
-                                       :social-media
-                                       :instagram))]
+         (when-let [ig-username (and instagram-stylist-profile?
+                                     (-> stylist
+                                         :diva/stylist
+                                         :social-media
+                                         :instagram))]
            {:card.instagram/id     "instagram"
-            :card.instagram/target instagram})
+            :card.instagram/target [e/external-redirect-instagram-profile {:ig-username ig-username}]})
          {:card.phone-link/target       [;; this event is unused, removed: 09126dbb16385f72045f99836b42ce7b781a5d56
                                          e/control-adventure-stylist-phone-clicked
                                          {:stylist-id   id

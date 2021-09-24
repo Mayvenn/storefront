@@ -49,7 +49,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.accessors.sites :as sites]
             [storefront.accessors.promos :as promos]
-            [mayvenn.live-help.core :as live-help]))
+            [mayvenn.live-help.core :as live-help]
+            [storefront.components.marquee :as marquee]))
 
 (defn changed? [previous-app-state app-state keypath]
   (not= (get-in previous-app-state keypath)
@@ -147,6 +148,10 @@
 
 (defmethod effects/perform-effects events/external-redirect-quadpay-checkout [_ event {:keys [quadpay-redirect-url]} _ app-state]
   (set! (.-location js/window) quadpay-redirect-url))
+
+(defmethod effects/perform-effects events/external-redirect-instagram-profile
+  [_ _ {:keys [ig-username]} _ app-state]
+  (set! (.-location js/window) (marquee/instagram-url ig-username)))
 
 (defmethod effects/perform-effects events/control-navigate [_ event {:keys [navigation-message]} _ app-state]
   ;; A user has clicked a link
@@ -996,3 +1001,4 @@
 (defmethod effects/perform-effects events/user-identified
   [_ _ _ _ app-state]
   (email-capture/start-long-timer-if-unstarted (get-in app-state keypaths/cookie)))
+

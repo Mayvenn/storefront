@@ -60,15 +60,16 @@
   [{:card.instagram/keys [id target]}]
   (when id
     [:a.proxima.button-font-2.inherit-color.shout.ml3.flex.items-center
-     {:data-test id
-      :href      (marquee/instagram-url target)}
+     (merge
+      (apply utils/fake-href target)
+      {:data-test id})
      [:img
       {:src    "//ucarecdn.com/df7cc161-057f-46f4-94a7-d5638c91755c/-/format/auto/-/resize/25x25/"
        :width  "25"
        :height "25"
        :alt    "instagram logo"
        :class "mr3"}]
-     target]))
+     (:ig-username (second target))]))
 
 (defn share-icon-molecule
   [share-icon-data]

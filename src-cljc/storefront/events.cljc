@@ -20,6 +20,7 @@
 (defpath external-redirect-google-maps)
 (defpath external-redirect-phone)
 (defpath external-redirect-typeform-recommend-stylist)
+(defpath external-redirect-instagram-profile)
 
 (defpath stringer-browser-identified)
 (defpath module-loaded)
