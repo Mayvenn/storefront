@@ -8,6 +8,15 @@
             [storefront.platform.component-utils :as utils]
             [ui.molecules :as molecules]))
 
+(defn stylist-card-top-stylist-badge
+  [{:stylist-card.top-stylist.badge/keys [id icon primary]}]
+  (when id
+    (component/html
+     [:div.flex.mb1
+      [:div.bg-p-color.white.button-font-4.shout.capped.pl1.pr3.flex.items-center.pyp2
+       (svg/symbolic->html icon)
+       primary]])))
+
 (defn stylist-card-salon-name-molecule
   [{:stylist-card.salon-name/keys [id value]}]
   (when id
@@ -101,6 +110,19 @@
                             :height "12px"})
      [:span content]]))
 
+(defn top-stylist-information-points-molecule
+  [{:keys [points]}]
+  [:div.px2.pt3
+   {:style {:display               "grid"
+            :grid-template-columns "auto auto"}}
+   (for [{:keys [id icon primary]} points]
+     [:div.pb1
+      [:div.left-align
+       [:div.proxima.content-3.flex.flex-auto
+        (when icon
+          (svg/symbolic->html icon))
+        [:div (when id {:data-test id}) primary]]]])])
+
 (defn stylist-card-header-molecule
   [{:stylist-card.header/keys [target id] :as data}]
   (when id
@@ -109,6 +131,7 @@
      [:div.flex.justify-center.items-center.col-3.ml4
       (stylist-card-thumbnail-molecule data)]
      [:div.col-9.medium.px3
+      (stylist-card-top-stylist-badge data)
       (titles/proxima-left (with :stylist-card.title data))
       [:div.flex.items-center
        (molecules/stars-rating-molecule data)
@@ -128,4 +151,5 @@
     (if (:screen/seen? data)
       (stylist-card-gallery-molecule data)
       (ui/aspect-ratio 426 105 [:div]))]
-   [:div.col-12.py3.px2 (stylist-card-cta-molecule data)]])
+   (top-stylist-information-points-molecule (with :stylist-card.top-stylist.laurels data))
+   [:div.col-12.pt1.pb3.px2 (stylist-card-cta-molecule data)]])
