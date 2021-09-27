@@ -739,29 +739,34 @@
    just-added-experience?
    stylist-results-test?]
   (let [{matching-stylists     true
-         non-matching-stylists false} (group-by (partial core/matches-preferences?
-                                                         services)
-                                                stylists)
-
-        matching-stylist-cards     (stylist-data->stylist-cards
-                                    {:just-added-only?       just-added-only?
-                                     :just-added-experience? just-added-experience?
-                                     :stylist-results-test?  stylist-results-test?
-                                     :stylists               matching-stylists})
-        non-matching-stylist-cards (stylist-data->stylist-cards
-                                    {:just-added-only?       just-added-only?
-                                     :just-added-experience? just-added-experience?
-                                     :stylist-results-test?  stylist-results-test?
-                                     :stylists               non-matching-stylists})]
+         non-matching-stylists false}             (group-by (partial core/matches-preferences?
+                                                                     services)
+                                                            stylists)
+        top-stylist                               (some #(when (:top-stylist %) %) matching-stylists)
+        matching-stylists-with-top-stylist-bumped (if top-stylist
+                                                    (concat [top-stylist]
+                                                            (remove #(= (:stylist-id %)
+                                                                        (:stylist-id top-stylist)) matching-stylists))
+                                                    matching-stylists)
+        matching-stylist-cards                    (stylist-data->stylist-cards
+                                                   {:just-added-only?       just-added-only?
+                                                    :just-added-experience? just-added-experience?
+                                                    :stylist-results-test?  stylist-results-test?
+                                                    :stylists               matching-stylists-with-top-stylist-bumped})
+        non-matching-stylist-cards                (stylist-data->stylist-cards
+                                                   {:just-added-only?       just-added-only?
+                                                    :just-added-experience? just-added-experience?
+                                                    :stylist-results-test?  stylist-results-test?
+                                                    :stylists               non-matching-stylists})]
 
     {:stylist-results-present? (seq (concat matching-stylists non-matching-stylists))
 
-     :stylist-results-returned?  (contains? status :results/stylists)
-     :list.stylist-counter/title (str (count matching-stylists) " Stylists Found")
-     :list.stylist-counter/key   (when (pos? (count matching-stylists))
-                                   "stylist-count-content")
-     :list.matching/key          (when (seq matching-stylists) "stylist-matching")
-     :list.matching/cards        matching-stylist-cards
+     :stylist-results-returned?    (contains? status :results/stylists)
+     :list.stylist-counter/title   (str (count matching-stylists) " Stylists Found")
+     :list.stylist-counter/key     (when (pos? (count matching-stylists))
+                                     "stylist-count-content")
+     :list.matching/key            (when (seq matching-stylists) "stylist-matching")
+     :list.matching/cards          matching-stylist-cards
      :list.breaker/id              (when (seq non-matching-stylists) "non-matching-breaker")
      :list.breaker/results-content (when (and (seq non-matching-stylists)
                                               (empty? matching-stylists))
@@ -794,6 +799,7 @@
             address-field-errors   (get-in app-state k/address-field-errors)
             back-button-target     [e/navigate-adventure-find-your-stylist]]
         (component/build template
+
                          {:gallery-modal         (gallery-modal-query app-state)
                           :spinning?             (or (empty? (:status matching))
                                                      (utils/requesting? app-state request-keys/fetch-matched-stylists)
