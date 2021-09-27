@@ -330,33 +330,7 @@
           [e/biz|follow|defined
            {:follow/start    [e/control-adventure-location-submit]
             :follow/after-id e/flow|stylist-matching|resulted
-            :follow/then     [e/top-stylist-navigation-decided
-                              {:decision
-                               {:top-stylist     e/navigate-shopping-quiz-unified-freeinstall-top-stylist
-                                :stylist-results e/navigate-shopping-quiz-unified-freeinstall-stylist-results}}]}]}))
-
-(defmethod fx/perform-effects e/top-stylist-navigation-decided
-  [_ _ {:keys [decision] :follow/keys [args]} _ state]
-  (->> [(:stylist-results decision)
-        {:query-params (->> (stylist-matching<- state)
-                            (query-params<- {}))}]
-       (if (and
-            (experiments/top-stylist? state)
-            (->> (:results args)
-                 (some :top-stylist)
-                 boolean))
-         [(:top-stylist decision)])
-       #?(:cljs (apply history/enqueue-navigate))))
-
-(defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-top-stylist
-  [_ _ _args _ _state]
-  (publish e/biz|follow|defined
-           {:follow/after-id e/flow|stylist-matching|matched
-            :follow/then     [e/post-stylist-matched-navigation-decided
-                              {:decision
-                               {:booking e/navigate-shopping-quiz-unified-freeinstall-appointment-booking
-                                :success e/navigate-shopping-quiz-unified-freeinstall-match-success}}]}))
-
+            :follow/then     [e/navigate-shopping-quiz-unified-freeinstall-stylist-results]}]}))
 
 ;; Template: 2/Summary
 

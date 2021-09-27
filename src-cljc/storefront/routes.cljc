@@ -44,8 +44,7 @@
    "/_style/ui"              (edn->bidi events/navigate-design-system-ui)})
 
 (def stylist-matching-routes
-  {"/adv/top-stylist"                                            (edn->bidi events/navigate-adventure-top-stylist)
-   "/adv/find-your-stylist"                                      (edn->bidi events/navigate-adventure-find-your-stylist)
+  {"/adv/find-your-stylist"                                      (edn->bidi events/navigate-adventure-find-your-stylist)
    "/adv/stylist-results"                                        (edn->bidi events/navigate-adventure-stylist-results)
    "/adv/match-success"                                          (edn->bidi events/navigate-adventure-match-success)
    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug]            (edn->bidi events/navigate-adventure-stylist-profile)
@@ -62,7 +61,6 @@
    "/quiz/unified-freeinstall/recommendations"     (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-recommendations)
    "/quiz/unified-freeinstall/summary"             (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-summary)
    "/quiz/unified-freeinstall/find-your-stylist"   (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-find-your-stylist)
-   "/quiz/unified-freeinstall/top-stylist"         (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-top-stylist)
    "/quiz/unified-freeinstall/stylist-results"     (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-stylist-results)
    "/quiz/unified-freeinstall/match-success"       (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-match-success)
    "/quiz/unified-freeinstall/appointment-booking" (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-appointment-booking)})

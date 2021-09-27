@@ -232,7 +232,7 @@
          text))
 
 (defn
-  ^{:usages [:top-stylist :stylist-search :unified-freeinstall]}
+  ^{:usages [:stylist-search :unified-freeinstall]}
   canela [text]
   (title [:align/center
           :primary/title-2
@@ -242,7 +242,7 @@
          text))
 
 (defn
-  ^{:usages [:top-stylist :stylist-search :unified-freeinstall]}
+  ^{:usages [:stylist-search :unified-freeinstall]}
   canela-left [text]
   (title [:align/left
           :primary/title-2

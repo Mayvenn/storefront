@@ -251,16 +251,11 @@
   [_ event {:as args :keys [results]} state state']
   (follow/publish-all state event args)
   #?(:cljs
-     (let [nav-event      (first (get-in state' storefront.keypaths/navigation-message))
-           service-params (-> state' stylist-matching<- :param/services)]
-       (if (and (= e/navigate-adventure-find-your-stylist nav-event)
-                (experiments/top-stylist? state')
-                (contains-top-stylist? service-params results))
-         (history/enqueue-navigate e/navigate-adventure-top-stylist)
-         (when (= e/navigate-adventure-find-your-stylist nav-event)
-           (history/enqueue-navigate e/navigate-adventure-stylist-results
-                                     {:query-params (->> (stylist-matching<- state')
-                                                         (query-params<- {}))}))))))
+     (let [nav-event      (get-in state' storefront.keypaths/navigation-event)]
+       (when (= e/navigate-adventure-find-your-stylist nav-event)
+         (history/enqueue-navigate e/navigate-adventure-stylist-results
+                                   {:query-params (->> (stylist-matching<- state')
+                                                       (query-params<- {}))})))))
 
 ;; Stylists: Resulted
 (defmethod t/transition-state e/flow|stylist-matching|resulted
