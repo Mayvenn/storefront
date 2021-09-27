@@ -367,10 +367,10 @@
                         (pos? (count product-skus))
                         (= (count product-skus)
                            (count out-of-stock-skus)))
-               (try (exception-handler/report (ex-info "All skus for product are out of stock, see #179585779"
-                                                       {:product           product
-                                                        :out-of-stock-skus out-of-stock-skus
-                                                        :undo-stack        nav-stack}))
+               (try (exception-handler/report (ex-info "All skus for product are out of stock, see #179585779" {})
+                                              {:product           product
+                                               :out-of-stock-skus out-of-stock-skus
+                                               :undo-stack        nav-stack})
                     (finally nil))))
     (merge
      {:reviews                            review-data
