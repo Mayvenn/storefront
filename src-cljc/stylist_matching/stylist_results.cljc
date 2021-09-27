@@ -819,9 +819,9 @@
                                                                           address-field-errors)
                           :header                (header<- current-order
                                                            back-button-target
-                                                           (->> (get-in app-state storefront.keypaths/navigation-undo-stack)
-                                                                first
-                                                                not-empty))
+                                        ; NOTE: This is nil so that the browser back button doesn't
+                                        ; get invoked when direct load (it is redirecting to adv flow)
+                                                           nil)
                           :results               (results< matching
                                                            just-added-only?
                                                            just-added-experience?

@@ -275,7 +275,9 @@
       [:div
        {:data-test "header-back"}
        [:a.block.black.p2.flex.justify-center.items-center
-        (apply utils/route-back-or-to back target)
+        (if back
+          (apply utils/route-back-or-to back target)
+          (apply utils/route-to target))
         (svg/left-arrow {:width  "20"
                          :height "20"})]]
       [:div]))
