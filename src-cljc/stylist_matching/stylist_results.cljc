@@ -792,14 +792,7 @@
             google-loaded?    (get-in app-state storefront.keypaths/loaded-google-maps)
 
             address-field-errors   (get-in app-state k/address-field-errors)
-            back-button-target     [(if (and (experiments/top-stylist? app-state)
-                                             (->> (:results/stylists matching)
-                                                  (filter :top-stylist)
-                                                  (filter (partial stylist-matching.core/matches-preferences?
-                                                                   (:param/services matching)))
-                                                  seq))
-                                      e/navigate-adventure-top-stylist
-                                      e/navigate-adventure-find-your-stylist)]]
+            back-button-target     [e/navigate-adventure-find-your-stylist]]
         (component/build template
                          {:gallery-modal         (gallery-modal-query app-state)
                           :spinning?             (or (empty? (:status matching))

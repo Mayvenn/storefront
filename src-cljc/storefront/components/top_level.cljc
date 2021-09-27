@@ -116,9 +116,6 @@
    events/navigate-adventure-find-your-stylist #(ui/lazy-load-component :catalog
                                                                         'stylist-matching.find-your-stylist/page
                                                                         events/navigate-adventure-find-your-stylist)
-   events/navigate-adventure-top-stylist       #(ui/lazy-load-component :catalog
-                                                                        'stylist-matching.top-stylist/page
-                                                                        events/navigate-adventure-top-stylist)
    events/navigate-adventure-stylist-results   #(ui/lazy-load-component :catalog
                                                                         'stylist-matching.stylist-results/page
                                                                         events/navigate-adventure-stylist-results)
@@ -158,10 +155,6 @@
                                                                            :catalog
                                                                            'mayvenn.shopping-quiz.unified-freeinstall/page
                                                                            events/navigate-shopping-quiz-unified-freeinstall-stylist-results)
-   events/navigate-shopping-quiz-unified-freeinstall-top-stylist         #(ui/lazy-load-component
-                                                                           :catalog
-                                                                           'stylist-matching.top-stylist/page
-                                                                           events/navigate-shopping-quiz-unified-freeinstall-top-stylist)
    events/navigate-shopping-quiz-unified-freeinstall-appointment-booking #(ui/lazy-load-component
                                                                            :catalog
                                                                            'mayvenn.shopping-quiz.unified-freeinstall/page

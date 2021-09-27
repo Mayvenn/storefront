@@ -132,7 +132,6 @@
     events/navigate-cart
     events/navigate-adventure-appointment-booking
     events/navigate-adventure-find-your-stylist
-    events/navigate-adventure-top-stylist
     events/navigate-adventure-stylist-results
     events/navigate-adventure-match-success
     events/navigate-adventure-stylist-profile

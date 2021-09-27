@@ -520,7 +520,6 @@
 ;; ADVENTURE
 (defpath navigate-adventure)
 (defpath navigate-adventure-find-your-stylist)
-(defpath navigate-adventure-top-stylist)
 (defpath navigate-adventure-stylist-results)
 (defpath navigate-adventure-stylist-gallery)
 (defpath navigate-adventure-match-success)
@@ -731,7 +730,6 @@
 (defpath navigate-shopping-quiz-unified-freeinstall-recommendations)
 (defpath navigate-shopping-quiz-unified-freeinstall-summary)
 (defpath navigate-shopping-quiz-unified-freeinstall-find-your-stylist)
-(defpath navigate-shopping-quiz-unified-freeinstall-top-stylist)
 (defpath navigate-shopping-quiz-unified-freeinstall-stylist-results)
 (defpath navigate-shopping-quiz-unified-freeinstall-match-success)
 (defpath navigate-shopping-quiz-unified-freeinstall-appointment-booking)
@@ -769,8 +767,6 @@
 (defpath control-stylist-gallery-posts-drag-predicate-initialized)
 (defpath stylist-gallery-posts-drag-predicate-loop)
 (defpath stylist-gallery-posts-reordered)
-
-(defpath top-stylist-navigation-decided)
 
 ;; Appointment Booking TODO consider moving to own namespace
 (defpath biz|appointment-booking|initialized)
