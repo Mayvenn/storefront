@@ -13,6 +13,7 @@
   (when id
     (component/html
      [:div.flex.mb1
+      {:data-test id}
       [:div.bg-p-color.white.button-font-4.shout.capped.pl1.pr3.flex.items-center.pyp2
        (svg/symbolic->html icon)
        primary]])))
