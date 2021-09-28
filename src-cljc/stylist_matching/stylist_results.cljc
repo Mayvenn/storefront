@@ -223,7 +223,7 @@
                 zipcode]))
 
 (defn stylist-card<-
-  [just-added-only? just-added-experience? stylist-results-test? idx stylist]
+  [just-added-only? just-added-experience? stylist-results-test? top-stylist-v2? idx stylist]
   (let [{:keys [rating-star-counts
                 salon
                 service-menu
@@ -328,7 +328,8 @@
             :stylist-card.salon-name/value     salon-name
             :stylist-card.address-marker/id    (str "stylist-card-address-" store-slug)
             :stylist-card.address-marker/value (address->display-string salon)}
-           (when top-stylist-badge?
+           (when (and top-stylist-badge?
+                      top-stylist-v2?)
              (within :stylist-card.top-stylist
                      (merge
                       (within :badge
@@ -357,12 +358,13 @@
                                          :primary "State licensed stylist"}]})))))))
 
 (defn stylist-cards-query
-  [{:keys [just-added-only? just-added-experience? stylist-results-test?]} stylists]
+  [{:keys [just-added-only? just-added-experience? stylist-results-test? top-stylist-v2?]} stylists]
   (map-indexed
    (partial stylist-card<-
             just-added-only?
             just-added-experience?
-            stylist-results-test?)
+            stylist-results-test?
+            top-stylist-v2?)
    stylists))
 
 (defn gallery-modal-query
@@ -767,7 +769,8 @@
     :keys         [status]}
    just-added-only?
    just-added-experience?
-   stylist-results-test?]
+   stylist-results-test?
+   top-stylist-v2?]
   (let [{matching-stylists     true
          non-matching-stylists false}             (group-by (partial core/matches-preferences?
                                                                      services)
@@ -782,6 +785,7 @@
                                                    {:just-added-only?       just-added-only?
                                                     :just-added-experience? just-added-experience?
                                                     :stylist-results-test?  stylist-results-test?
+                                                    :top-stylist-v2?        top-stylist-v2?
                                                     :stylists               matching-stylists-with-top-stylist-bumped})
         non-matching-stylist-cards                (stylist-data->stylist-cards
                                                    {:just-added-only?       just-added-only?
@@ -821,6 +825,7 @@
             just-added-only?       (experiments/just-added-only? app-state)
             just-added-experience? (experiments/just-added-experience? app-state)
             just-added-control?    (experiments/just-added-control? app-state)
+            top-stylist-v2?        (experiments/top-stylist-v2? app-state)
             stylist-results-test?  (experiments/stylist-results-test? app-state)
 
             ;; Externals
@@ -854,7 +859,8 @@
                           :results               (results< matching
                                                            just-added-only?
                                                            just-added-experience?
-                                                           stylist-results-test?)}
+                                                           stylist-results-test?
+                                                           top-stylist-v2?)}
 
                          {:key (str "stylist-results-"
                                     (hash (:results/stylists matching))

@@ -276,6 +276,7 @@
    just-added-only?
    just-added-experience?
    stylist-results-test?
+   top-stylist-v2?
    address-field-errors]
   (merge
    (progress< quiz-progression)
@@ -298,7 +299,8 @@
     :results         (stylist-results/results< matching
                                                just-added-only?
                                                just-added-experience?
-                                               stylist-results-test?)}))
+                                               stylist-results-test?
+                                               top-stylist-v2?)}))
 
 ;; Template: 3/Find your stylist
 
@@ -626,6 +628,7 @@
               just-added-experience? (experiments/just-added-experience? state)
               stylist-results-test?  (experiments/stylist-results-test? state)
               easy-booking?          (experiments/easy-booking? state)
+              top-stylist-v2?        (experiments/top-stylist-v2? state)
               booking-done           (booking/<- state ::booking/done)
 
               address-field-errors (get-in state matching.k/address-field-errors)
@@ -672,7 +675,8 @@
                                        just-added-only?
                                        just-added-experience?
                                        stylist-results-test?
-                                       address-field-errors))
+                                       address-field-errors
+                                       top-stylist-v2?))
 
             ;; Waiting for Google to load
             (not google-loaded?) ;; TODO(corey) different spinner

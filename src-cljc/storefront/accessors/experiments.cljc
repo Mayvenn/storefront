@@ -112,6 +112,10 @@
   [data]
   (display-feature? data "easy-booking"))
 
+(defn top-stylist-v2?
+  [data]
+  (display-feature? data "top-stylist-v2?"))
+
 (defn multiple-lengths-pdp?
   [data]
   (display-feature? data "multiple-lengths-pdp"))
