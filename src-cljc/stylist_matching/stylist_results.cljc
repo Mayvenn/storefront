@@ -70,16 +70,16 @@
       ;; Pull stylist-ids (s) from URI; predetermined search results
       (when (seq stylist-ids)
         (publish e/flow|stylist-matching|param-ids-constrained
-                                 {:ids stylist-ids}))
+                 {:ids stylist-ids}))
       ;; Pull name search from URI
       (publish e/flow|stylist-matching|set-presearch-field
-                               {:name moniker})
+               {:name moniker})
       (publish e/flow|stylist-matching|param-name-constrained
-                               {:name moniker})
+               {:name moniker})
 
       ;; Address from URI
       (publish e/flow|stylist-matching|set-address-field
-                               {:address address})
+               {:address address})
 
       ;; Pull preferred services from URI; filters for service types
       (when-let [services (some-> preferred-services
@@ -87,13 +87,13 @@
                                   (string/split (re-pattern service-delimiter))
                                   set)]
         (publish e/flow|stylist-matching|param-services-constrained
-                                 {:services services}))
+                 {:services services}))
       ;; Pull lat/long from URI; search by proximity
       (when (and (not-empty latitude)
                  (not-empty longitude))
         (publish e/flow|stylist-matching|param-location-constrained
-                                 {:latitude  (spice/parse-double latitude)
-                                  :longitude (spice/parse-double longitude)}))
+                 {:latitude  (spice/parse-double latitude)
+                  :longitude (spice/parse-double longitude)}))
       ;; FIXME(matching)
       (when-not (= (get-in prev-state storefront.keypaths/navigation-event)
                    (get-in state storefront.keypaths/navigation-event))
@@ -339,8 +339,7 @@
                                                   :width "15px"
                                                   :height "11px"}]})
                       (within :laurels
-                              {:points [
-                                        {:icon    [:svg/calendar {:style {:height "1.2em"
+                              {:points [{:icon    [:svg/calendar {:style {:height "1.2em"
                                                                           :width  "1.7em"}
                                                                   :class "fill-s-color mr1"}]
                                          :primary (str (ui/pluralize-with-amount years-of-experience "year") " of experience")}
@@ -362,12 +361,12 @@
 (defn stylist-cards-query
   [{:keys [just-added-only? just-added-experience? stylist-results-test? top-stylist-v2?]} stylists]
   (map-indexed
-   (partial stylist-card<-
+    (partial stylist-card<-
             just-added-only?
             just-added-experience?
             stylist-results-test?
             top-stylist-v2?)
-   stylists))
+    stylists))
 
 (defn gallery-modal-query
   [app-state]
@@ -573,11 +572,11 @@
                           (fn [sku-id]
                             (when-let [sku (get skus-db (get srv->sv2 sku-id sku-id))]
                               #:preference-pill
-                              {:target  [e/control-stylist-search-toggle-filter
-                                         {:previously-checked?      true
-                                          :stylist-filter-selection sku-id}]
-                               :id      (str "remove-preference-button-" sku-id)
-                               :primary (:sku/title sku)})))
+                               {:target  [e/control-stylist-search-toggle-filter
+                                          {:previously-checked?      true
+                                           :stylist-filter-selection sku-id}]
+                                :id      (str "remove-preference-button-" sku-id)
+                                :primary (:sku/title sku)})))
                          not-empty)]
      {:stylist-results.service-filters/preferences pills})
 
@@ -817,7 +816,7 @@
   [app-state _]
   ;; 2 modes: filters or results
   (or #?(:clj nil :cljs (some->> (filter-menu/query app-state)
-                        (component/build filter-menu/component)))
+                                 (component/build filter-menu/component)))
       (let [;; Models
             current-order (api.orders/current app-state)
             matching      (stylist-matching.core/stylist-matching<- app-state)
