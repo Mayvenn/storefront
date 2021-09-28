@@ -640,12 +640,8 @@
                                                            :content-key :copy/materials}
                                                           {:heading     "Lace Size"
                                                            :content-key :copy/lace-size}
-                                                          {:heading     "Lace Color"
-                                                           :content-key :copy/lace-color}
                                                           {:heading     "Silk Size"
                                                            :content-key :copy/silk-size}
-                                                          {:heading     "Silk Color"
-                                                           :content-key :copy/silk-color}
                                                           {:heading     "Cap Size"
                                                            :content-key :copy/cap-size}
                                                           {:heading     "Wig Density"
