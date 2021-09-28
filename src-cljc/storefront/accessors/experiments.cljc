@@ -127,3 +127,7 @@
 (defn shopping-quiz-v2?
   [data]
   (display-feature? data "shopping-quiz-v2"))
+
+(defn stylist-profile?
+  [data]
+  (display-feature? data "stylist-profile"))

@@ -1,4 +1,4 @@
-(ns stylist-profile.stylist-details
+(ns stylist-profile.stylist-details-v2021-10
   "Stylist details (profile) that includes a map and gallery."
   (:require #?@(:cljs
                 [[storefront.api :as api]
@@ -39,7 +39,8 @@
             [stylist-profile.ui.ratings-bar-chart :as ratings-bar-chart]
             [stylist-profile.ui.specialties-shopping :as specialties-shopping]
             [stylist-profile.ui.sticky-select-stylist :as sticky-select-stylist]
-            [stylist-profile.ui.stylist-reviews :as stylist-reviews]))
+            [stylist-profile.ui.stylist-reviews :as stylist-reviews]
+            [storefront.utils.query :as query]))
 
 ;; ---------------------------- behavior
 
@@ -138,6 +139,7 @@
     (when adv-header
       (header/adventure-header adv-header))
     (c/build card/organism card)
+    [:div.bg-pink "aw yeah"]
     [:div.my2.px3
      (carousel/organism carousel)]
     (c/build maps/component google-maps)
@@ -327,7 +329,6 @@
          :specialties-shopping/specialties
          (map service-sku-query offered-services)}))))
 
-;; TODO(corey) Stylist not found template? currently redirects to find-your-stylist
 (defn query
   [state]
   (let [skus-db           (get-in state storefront.keypaths/v2-skus)

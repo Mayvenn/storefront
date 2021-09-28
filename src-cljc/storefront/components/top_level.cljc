@@ -123,7 +123,7 @@
                                                                         'stylist-matching.match-success/page
                                                                         events/navigate-adventure-match-success)
    events/navigate-adventure-stylist-profile   #(ui/lazy-load-component :catalog
-                                                                        'stylist-profile.stylist-details/page
+                                                                        'stylist-profile.core/page
                                                                         events/navigate-adventure-stylist-profile)
    events/navigate-adventure-stylist-gallery   #(ui/lazy-load-component :catalog
                                                                         'adventure.stylist-matching.stylist-gallery/built-component
