@@ -355,7 +355,7 @@
                                                                            :width  "1.7em"}
                                                                    :class "fill-s-color mr1"}]
                                          :primary "State licensed stylist"}]})))
-             {:stylist-card.salon-name/id    (str "salon-" salon-name)
+             {:stylist-card.salon-name/id    (str "salon-" store-slug)
               :stylist-card.salon-name/value salon-name}))))
 
 (defn stylist-cards-query
