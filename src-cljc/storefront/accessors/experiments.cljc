@@ -114,7 +114,7 @@
 
 (defn top-stylist-v2?
   [data]
-  (display-feature? data "top-stylist-v2?"))
+  (display-feature? data "top-stylist-v2"))
 
 (defn multiple-lengths-pdp?
   [data]
