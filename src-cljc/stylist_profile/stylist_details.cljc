@@ -294,14 +294,20 @@
                                   (remove nil?)
                                   (join ", "))})
 
+(def service->requirement-copy
+  {"SV2-LBI-X" "FREE with purchase of 3+ Bundles"
+   "SV2-CBI-X" "FREE with purchase of 2+ Bundles and a Closure"
+   "SV2-FBI-X" "FREE with purchase of 2+ Bundles and a Lace Frontal"
+   "SV2-3BI-X" "FREE with purchase of 2+ Bundles and a 360 Frontal"
+   "SV2-WGC-X" "FREE with purchase of a Lace Front Wig or a 360 Lace Wig"})
+
 (defn ^:private service-sku-query
   [{:sku/keys                   [title price]
-    :promo.mayvenn-install/keys [requirement-copy]
     :catalog/keys               [sku-id]}]
   {:id         sku-id
    :title      title
    :subtitle   (str "(" (mf/as-money price) ")")
-   :content    requirement-copy})
+   :content    (get service->requirement-copy sku-id)})
 
 (defn ^:private shop-discountable-services<-
   [skus-db
@@ -310,7 +316,9 @@
   (when (seq offered-sku-ids)
     (let [offered-services (->> (vals skus-db)
                                 (select ?discountable-install)
-                                (filter (comp offered-sku-ids :catalog/sku-id))
+                                (filter (fn[service-sku]
+                                          (= 1 (count (:service-awards/offered-service-slugs service-sku)))))
+                                (filter (comp offered-sku-ids :legacy/derived-from-sku))
                                 (sort-by (comp offered-ordering :catalog/sku-id))
                                 not-empty)]
       (when offered-services
