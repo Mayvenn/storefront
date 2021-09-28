@@ -22,7 +22,7 @@
   [{:stylist-card.salon-name/keys [id value]}]
   (when id
     (component/html
-     [:div.content-2.proxima
+     [:div.content-2.proxima {:data-test id}
       value])))
 
 (defn stylist-card-address-marker-molecule
