@@ -276,8 +276,8 @@
    just-added-only?
    just-added-experience?
    stylist-results-test?
-   top-stylist-v2?
-   address-field-errors]
+   address-field-errors
+   top-stylist-v2?]
   (merge
    (progress< quiz-progression)
    (header< undo-history (apply max quiz-progression))
