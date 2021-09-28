@@ -347,7 +347,9 @@
                                         {:icon    [:svg/mayvenn-logo {:style {:height "1.1em"
                                                                               :width  "1.5em"}
                                                                       :class "fill-s-color mr1"}]
-                                         :primary (str "Booked " rating-count " times")}
+                                         :primary (if (>= rating-count 3)
+                                                    (str "Booked " rating-count " times")
+                                                    "New stylist")}
                                         {:icon    [:svg/experience-badge {:style {:height "1.2em"
                                                                                   :width  "1.7em"}
                                                                           :class "fill-s-color mr1"}]
