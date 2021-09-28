@@ -324,12 +324,10 @@
                                                                                            :query-params {:offset j}}]
                                                      :stylist-card.gallery-item/ucare-id ucare-img-url})
                                                   ucare-img-urls))
-            :stylist-card.salon-name/id        salon-name
-            :stylist-card.salon-name/value     salon-name
             :stylist-card.address-marker/id    (str "stylist-card-address-" store-slug)
             :stylist-card.address-marker/value (address->display-string salon)}
-           (when (and top-stylist-badge?
-                      top-stylist-v2?)
+           (if (and top-stylist-badge?
+                    top-stylist-v2?)
              (within :stylist-card.top-stylist
                      (merge
                       (within :badge
@@ -356,7 +354,9 @@
                                         {:icon    [:svg/certified {:style {:height "1.2em"
                                                                            :width  "1.7em"}
                                                                    :class "fill-s-color mr1"}]
-                                         :primary "State licensed stylist"}]})))))))
+                                         :primary "State licensed stylist"}]})))
+             {:stylist-card.salon-name/id    salon-name
+              :stylist-card.salon-name/value salon-name}))))
 
 (defn stylist-cards-query
   [{:keys [just-added-only? just-added-experience? stylist-results-test? top-stylist-v2?]} stylists]
