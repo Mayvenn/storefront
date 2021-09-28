@@ -346,7 +346,7 @@
                                                                       :class "fill-s-color mr1"}]
                                          :primary (if (>= rating-count 3)
                                                     (str "Booked " rating-count " times")
-                                                    "New stylist")}
+                                                    "New Mayvenn stylist")}
                                         {:icon    [:svg/experience-badge {:style {:height "1.2em"
                                                                                   :width  "1.7em"}
                                                                           :class "fill-s-color mr1"}]
