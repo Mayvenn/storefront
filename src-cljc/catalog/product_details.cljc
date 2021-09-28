@@ -367,11 +367,13 @@
                         (pos? (count product-skus))
                         (= (count product-skus)
                            (count out-of-stock-skus)))
-               (try (exception-handler/report (ex-info "All skus for product are out of stock, see #179585779" {})
-                                              {:product           product
-                                               :out-of-stock-skus out-of-stock-skus
-                                               :undo-stack        nav-stack})
-                    (finally nil))))
+               (let [exception (ex-info "All skus for product are out of stock, see #179585779" {})]
+                 (try (exception-handler/report exception
+                                                {:product           product
+                                                 :out-of-stock-skus out-of-stock-skus
+                                                 :undo-stack        nav-stack})
+                      (catch js/Error e nil)
+                      (finally nil)))))
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
