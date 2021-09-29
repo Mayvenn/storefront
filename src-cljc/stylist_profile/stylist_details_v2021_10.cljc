@@ -139,41 +139,45 @@
     :stylist.address/keys [city state]
     :stylist.rating/keys  [cardinality publishable? score]
     :as                   stylist}]
-  (within :stylist-profile.card
-          (merge
-           (within :hero
-                   {:background/ucare-id      "3cff075a-977d-4b69-841f-2bd497446b58"
-                    :circle-portrait/portrait portrait
-                    :title/id                 "stylist-name"
-                    :title/primary            name
-                    :star-bar/id              "star-bar"
-                    :star-bar/value           score
-                    :star-bar/opts            {:class "fill-p-color"}
-                    :review-count             cardinality
-                    :salon/id                 "salon-name"
-                    :salon/primary            salon
-                    :salon/location                 (str city ", " state)})
-           {:star-rating/id           (str "rating-count-" slug)
-            :star-rating/value        score}
-           (within :laurels
-                   {:points [{:icon    [:svg/calendar {:style {:height "1.2em"
+  (merge
+   (within :hero
+           {:background/ucare-id      "3cff075a-977d-4b69-841f-2bd497446b58"
+            :circle-portrait/portrait portrait
+            :title/id                 "stylist-name"
+            :title/primary            name
+            :star-bar/id              "star-bar"
+            :star-bar/value           score
+            :star-bar/opts            {:class "fill-p-color"}
+            :review-count             cardinality
+            :salon/id                 "salon-name"
+            :salon/primary            salon
+            :salon/location           (str city ", " state)})
+   {:star-rating/id    (str "rating-count-" slug)
+    :star-rating/value score}
+   (within :laurels
+           {:points [{:icon    [:svg/calendar {:style {:height "1.2em"
+                                                       :width  "1.7em"}
+                                               :class "fill-s-color mr1"}]
+                      :primary (str (ui/pluralize-with-amount experience "year") " of experience")}
+                     {:icon    [:svg/mayvenn-logo {:style {:height "1.1em"
+                                                           :width  "1.5em"}
+                                                   :class "fill-s-color mr1"}]
+                      :primary (if (>= cardinality 3)
+                                 (str "Booked " cardinality " times")
+                                 "New Mayvenn stylist")}
+                     {:icon    [:svg/experience-badge {:style {:height "1.2em"
                                                                :width  "1.7em"}
                                                        :class "fill-s-color mr1"}]
-                              :primary (str (ui/pluralize-with-amount experience "year") " of experience")}
-                             {:icon    [:svg/mayvenn-logo {:style {:height "1.1em"
-                                                                   :width  "1.5em"}
-                                                           :class "fill-s-color mr1"}]
-                              :primary (if (>= cardinality 3)
-                                         (str "Booked " cardinality " times")
-                                         "New Mayvenn stylist")}
-                             {:icon    [:svg/experience-badge {:style {:height "1.2em"
-                                                                       :width  "1.7em"}
-                                                               :class "fill-s-color mr1"}]
-                              :primary "Professional salon"}
-                             {:icon    [:svg/certified {:style {:height "1.2em"
-                                                                :width  "1.7em"}
-                                                        :class "fill-s-color mr1"}]
-                              :primary "State licensed stylist"}]}))))
+                      :primary "Professional salon"}
+                     {:icon    [:svg/certified {:style {:height "1.2em"
+                                                        :width  "1.7em"}
+                                                :class "fill-s-color mr1"}]
+                      :primary "State licensed stylist"}]})
+   (within :cta
+           {:id      "stylist-profile-cta"
+            :primary (str "Select " (-> stylist :diva/stylist :store-nickname))
+            :target  [e/flow|stylist-matching|matched {:stylist      (:diva/stylist stylist)
+                                                       :result-index 0}]})))
 
 (defn ^:private ratings-bar-chart<-
   [hide-star-distribution?
@@ -273,7 +277,8 @@
               :stylist-reviews          (reviews<- fetching-reviews?
                                                    detailed-stylist
                                                    paginated-reviews)
-              :card                     (card<- detailed-stylist)
+
+              :card                     (within :stylist-profile.card (card<- detailed-stylist))
               :ratings-bar-chart        (ratings-bar-chart<- hide-star-distribution?
                                                              detailed-stylist)
               :experience               (experience<- detailed-stylist)

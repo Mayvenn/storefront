@@ -34,7 +34,7 @@
 (defn ^:private hero
   [{:background/keys [ucare-id] :as data}]
   [:div.relative
-   [:div.absolute.z1.flex.flex-column.items-center.right-0.left-0.pt2.pb1
+   [:div.absolute.z1.overlay.flex.flex-column.items-center.justify-center
     (circle-portrait data)
     (stylist-title data)
     [:div.flex
@@ -47,19 +47,24 @@
 
 (defn ^:private star-rating
   [{:keys [id value]}]
-  [:div.flex.justify-center.pyj1
-   (svg/symbolic->html [:svg/whole-star {:class "fill-p-color"
-                                         :style {:height "1.2em"
-                                                 :width  "1.2em"} }])
-   [:div
-    [:div.title-1.proxima.p-color
-     {:data-test id}
-     value]
+  [:div.flex.justify-center.mt4.mb2
+   [:div.mt1.mr1
+    (svg/symbolic->html [:svg/whole-star {:class "fill-p-color"
+                                          :style {:height "0.9em"
+                                                  :width  "0.9em"} }])]
+   [:div.center
+    [:div.title-1.proxima.p-color {:data-test id} value]
     [:div "Rating"]]])
+
+(defn ^:private cta
+  [{:keys [id primary target]}]
+  [:div.mx3.mt3.mb7 {:data-test id}
+   (ui/button-medium-primary (apply utils/fake-href target) primary)])
 
 (c/defcomponent organism
   [data _ _]
   [:div
    (hero (with :stylist-profile.card.hero data))
    (star-rating (with :stylist-profile.card.star-rating data))
-   (stylist-matching.ui.stylist-cards/top-stylist-information-points-molecule (with :stylist-profile.card.laurels data))])
+   (stylist-matching.ui.stylist-cards/top-stylist-information-points-molecule (with :stylist-profile.card.laurels data))
+   (cta (with :stylist-profile.card.cta data))])
