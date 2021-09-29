@@ -155,22 +155,18 @@
    {:star-rating/id    (str "rating-count-" slug)
     :star-rating/value score}
    (within :laurels
-           {:points [{:icon    [:svg/calendar {:style {:height "1.2em"
-                                                       :width  "1.7em"}
+           {:points [{:icon    [:svg/calendar {:style {:height "1.2em"}
                                                :class "fill-s-color mr1"}]
                       :primary (str (ui/pluralize-with-amount experience "year") " of experience")}
-                     {:icon    [:svg/mayvenn-logo {:style {:height "1.1em"
-                                                           :width  "1.5em"}
+                     {:icon    [:svg/mayvenn-logo {:style {:height "1.2em"}
                                                    :class "fill-s-color mr1"}]
                       :primary (if (>= cardinality 3)
                                  (str "Booked " cardinality " times")
                                  "New Mayvenn stylist")}
-                     {:icon    [:svg/experience-badge {:style {:height "1.2em"
-                                                               :width  "1.7em"}
+                     {:icon    [:svg/experience-badge {:style {:height "1.2em"}
                                                        :class "fill-s-color mr1"}]
                       :primary "Professional salon"}
-                     {:icon    [:svg/certified {:style {:height "1.2em"
-                                                        :width  "1.7em"}
+                     {:icon    [:svg/certified {:style {:height "1.2em"}
                                                 :class "fill-s-color mr1"}]
                       :primary "State licensed stylist"}]})
    (within :cta
