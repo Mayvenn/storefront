@@ -117,12 +117,11 @@
    {:style {:display               "grid"
             :grid-template-columns "auto auto"}}
    (for [{:keys [id icon primary]} points]
-     [:div.pb1
-      [:div.left-align
-       [:div.proxima.content-3.flex.flex-auto
-        (when icon
-          (svg/symbolic->html icon))
-        [:div (when id {:data-test id}) primary]]]])])
+     [:div.pb1.proxima.content-3.flex
+      [:div.flex.items-center.justify-center {:style {:width "25px"}}
+       (when icon
+         (svg/symbolic->html icon))]
+      [:div (when id {:data-test id}) primary]])])
 
 (defn stylist-card-header-molecule
   [{:stylist-card.header/keys [target id] :as data}]
