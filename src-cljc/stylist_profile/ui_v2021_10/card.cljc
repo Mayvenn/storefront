@@ -66,5 +66,6 @@
   [:div
    (hero (with :stylist-profile.card.hero data))
    (star-rating (with :stylist-profile.card.star-rating data))
-   (stylist-matching.ui.stylist-cards/top-stylist-information-points-molecule (with :stylist-profile.card.laurels data))
+   [:div.mx-auto.col-10
+    (stylist-matching.ui.stylist-cards/top-stylist-information-points-molecule (with :stylist-profile.card.laurels data))]
    (cta (with :stylist-profile.card.cta data))])
