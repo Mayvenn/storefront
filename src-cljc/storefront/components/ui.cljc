@@ -936,7 +936,7 @@
 (defmethod link :link/sms [link-type tag attrs & body]
   (apply sms-link tag attrs body))
 
-(defn ^:private star [type size index opts]
+(defn ^:private star [type size opts index]
   (component/html
    [:span.mrp1.flex.items-center
     {:key (str (name type) "-" index)}
@@ -949,21 +949,21 @@
 
 (defn rating->stars [rating size opts]
   (let [remainder-rating (mod rating 1)
-        whole-stars      (map #(star :whole size % opts) (range (int rating)))
+        whole-stars      (map (partial star :whole size opts) (range (int rating)))
         partial-star     (cond
                            (<= remainder-rating 0.2)
                            nil
 
                            (< 0.2 remainder-rating 0.7)
-                           (star :half size "half" opts)
+                           (star :half size opts "half")
 
                            (<= 0.7 remainder-rating)
-                           (star :three-quarter size "three-quarter" opts)
+                           (star :three-quarter size opts "three-quarter")
 
                            :else
                            nil)
         empty-stars (map
-                     (partial star :empty size)
+                     (partial star :empty size opts)
                      (range
                       (- 5
                          (count whole-stars)
