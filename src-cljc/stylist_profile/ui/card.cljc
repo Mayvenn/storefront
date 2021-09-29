@@ -18,9 +18,9 @@
    [:div.title-2.proxima.shout primary]])
 
 (defn card-star-rating-molecule
-  [{:card.star-rating/keys [id value rating-content scroll-anchor]}]
+  [{:card.star-rating/keys [id value rating-content scroll-anchor opts]}]
   (when id
-    (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars value "13px")]
+    (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars value "13px" opts)]
       [:div.flex.items-center.mtn1
        {:data-test id}
        whole-stars

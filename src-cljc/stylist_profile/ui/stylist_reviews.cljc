@@ -33,7 +33,7 @@
           {:key       review-id
            :data-test (str "review-" index)}
           [:div
-           (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars stars "13px")]
+           (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars stars "13px" {})]
              [:div.flex
               whole-stars
               partial-star

@@ -936,29 +936,29 @@
 (defmethod link :link/sms [link-type tag attrs & body]
   (apply sms-link tag attrs body))
 
-(defn ^:private star [type size index]
+(defn ^:private star [type size index opts]
   (component/html
    [:span.mrp1.flex.items-center
     {:key (str (name type) "-" index)}
     (case type
-      :whole         (svg/whole-star {:height size :width size})
-      :three-quarter (svg/three-quarter-star {:height size :width size})
-      :half          (svg/half-star {:height size :width size})
-      :empty         (svg/empty-star {:height size :width size})
+      :whole         (svg/whole-star (merge {:height size :width size} opts))
+      :three-quarter (svg/three-quarter-star (merge {:height size :width size} opts))
+      :half          (svg/half-star (merge {:height size :width size} opts))
+      :empty         (svg/empty-star (merge {:height size :width size} opts))
       nil)]))
 
-(defn rating->stars [rating size]
+(defn rating->stars [rating size opts]
   (let [remainder-rating (mod rating 1)
-        whole-stars      (map (partial star :whole size) (range (int rating)))
+        whole-stars      (map #(star :whole size % opts) (range (int rating)))
         partial-star     (cond
                            (<= remainder-rating 0.2)
                            nil
 
                            (< 0.2 remainder-rating 0.7)
-                           (star :half size "half")
+                           (star :half size "half" opts)
 
                            (<= 0.7 remainder-rating)
-                           (star :three-quarter size "three-quarter")
+                           (star :three-quarter size "three-quarter" opts)
 
                            :else
                            nil)
@@ -972,16 +972,6 @@
     {:whole-stars  whole-stars
      :partial-star partial-star
      :empty-stars  empty-stars}))
-
-(defn star-rating
-  [rating]
-  (component/html
-   (let [{:keys [whole-stars partial-star empty-stars]} (rating->stars rating "13px")]
-     [:div.flex.items-center
-      whole-stars
-      partial-star
-      empty-stars
-      [:span.mlp2 rating]])))
 
 (def ^:private screen-aware-component
   #?(:clj (fn [data owner {:keys [embed opts]}]

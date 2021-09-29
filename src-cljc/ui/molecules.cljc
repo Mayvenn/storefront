@@ -25,13 +25,13 @@
 
 ;; TODO Remove "rating" ns shim (ie, raw-data)
 (defn stars-rating-molecule
-  [{:keys [value id]
+  [{:keys [value id opts]
     :as raw-data}]
   (let [id (or id (:rating/id raw-data))
         value (or value (:rating/value raw-data))]
     (component/html
      (when (and id value)
-       (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars value "13px")]
+       (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars value "13px" opts)]
          [:div.flex.items-center.button-font-3.s-color
           {:data-test id}
           whole-stars
@@ -115,41 +115,6 @@
      [:a.mlp3.content-3 ^:attrs (merge {:data-test id}
                                        (apply utils/fake-href target))
       label])))
-
-(defn ^:private star [index type]
-  (component/html
-   [:span.mrp1
-    {:key (str (name type) "-" index)}
-    (case type
-      :whole         (svg/whole-star         {:height "13px" :width "13px"})
-      :three-quarter (svg/three-quarter-star {:height "13px" :width "13px"})
-      :half          (svg/half-star          {:height "13px" :width "13px"})
-      :empty         (svg/empty-star         {:height "13px" :width "13px"})
-      nil)]))
-
-(defn ^:private rating->stars
-  [rating full-rating]
-  (when (pos? full-rating)
-    (conj
-     (rating->stars (dec rating) (dec full-rating))
-     (condp <= rating
-       1    :whole
-       0.75 :three-quarter
-       0.50 :half
-       :empty))))
-
-(defn svg-star-rating
-  [rating]
-  (component/html
-   [:div.flex.items-center
-    [:span.mrp2 rating]
-    (map-indexed star (rating->stars rating 5))]))
-
-(defn svg-star-rating-molecule
-  [{:rating/keys [value]}]
-  (component/html
-   [:div.content-3.s-color
-    (svg-star-rating value)]))
 
 (defn human-readable-appointment-date [date slot-id]
   (let [date-copy #?(:clj nil
