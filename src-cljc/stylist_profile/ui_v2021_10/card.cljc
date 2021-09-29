@@ -28,14 +28,13 @@
 (defn ^:private salon
   [{:keys [id primary location]}]
   [:div.center {:data-test id}
-   [:div.title-2.proxima primary]
+   [:div.bold primary]
    [:div location]])
 
 (defn ^:private hero
   [{:background/keys [ucare-id] :as data}]
-  (clojure.pprint/pprint data)
   [:div.relative
-   [:div.absolute.z1.flex.flex-column.items-center.right-0.left-0.py1
+   [:div.absolute.z1.flex.flex-column.items-center.right-0.left-0.pt2.pb1
     (circle-portrait data)
     (stylist-title data)
     [:div.flex
@@ -43,11 +42,12 @@
      (review-count data)]
     (salon (with :salon data))]
    ^:inline (ui/img {:src   ucare-id
-                     :class "block col-12"})])
+                     :class "block col-12"
+                     :height 196})])
 
 (defn ^:private star-rating
   [{:keys [id value]}]
-  [:div.flex.justify-center
+  [:div.flex.justify-center.pyj1
    (svg/symbolic->html [:svg/whole-star {:class "fill-p-color"
                                          :style {:height "1.2em"
                                                  :width  "1.2em"} }])
