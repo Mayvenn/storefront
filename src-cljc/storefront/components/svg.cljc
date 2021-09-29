@@ -548,6 +548,7 @@
        :svg/mirror                          ^:inline (mirror attrs)
        :svg/play-video                      ^:inline (play-video attrs)
        :svg/shaded-shipping-package         ^:inline (shaded-shipping-package attrs)
+       :svg/whole-star                      ^:inline (whole-star attrs)
        :svg/worry-free                      ^:inline (worry-free attrs)
        [:div])
      [:div])))

@@ -1,38 +1,29 @@
 (ns stylist-profile.stylist-details-v2021-10
   "Stylist details (profile) that includes a map and gallery."
-  (:require #?@(:cljs
-                [[storefront.api :as api]
-                 [storefront.browser.tags :as tags]
-                 [storefront.hooks.facebook-analytics :as facebook-analytics]
-                 [storefront.hooks.google-maps :as google-maps]
-                 [storefront.hooks.seo :as seo]])
-            adventure.keypaths
+  (:require adventure.keypaths
             [adventure.stylist-matching.maps :as maps]
             [api.catalog :refer [select ?discountable-install ?service]]
             api.current
             api.orders
             api.products
             api.stylist
-            [clojure.string :refer [join]]
+            [mayvenn.visual.tools :refer [with within]]
+            [clojure.string :as string]
             spice.core
             [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.sites :as sites]
             [storefront.component :as c]
             [storefront.components.formatters :as f]
             [storefront.components.header :as header]
             [storefront.components.money-formatters :as mf]
-            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.effects :as fx]
             [storefront.events :as e]
-            [storefront.trackings :as trackings]
-            [storefront.transitions :as t]
             storefront.keypaths
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :refer [handle-message]]
             [storefront.request-keys :as request-keys]
             stylist-directory.keypaths
-            [stylist-profile.ui.card :as card]
+            ;; NEW
+            [stylist-profile.ui-v2021-10.card :as card-v2]
+            ;; OLD
             [stylist-profile.ui.carousel :as carousel]
             [stylist-profile.ui.experience :as experience]
             [stylist-profile.ui.footer :as footer]
@@ -41,80 +32,6 @@
             [stylist-profile.ui.sticky-select-stylist :as sticky-select-stylist]
             [stylist-profile.ui.stylist-reviews :as stylist-reviews]
             [storefront.utils.query :as query]))
-
-;; ---------------------------- behavior
-
-(defmethod t/transition-state e/navigate-adventure-stylist-profile
-  [_ _ {:keys [stylist-id]} app-state]
-  (-> app-state
-      ;; TODO(corey) use model?
-      (assoc-in adventure.keypaths/stylist-profile-id (spice.core/parse-double stylist-id))
-      (assoc-in stylist-directory.keypaths/paginated-reviews nil)))
-
-(defmethod fx/perform-effects e/navigate-adventure-stylist-profile
-  [_ _ {:keys [stylist-id]} _ state]
-  (if (not= :shop (sites/determine-site state))
-    (fx/redirect e/navigate-home)
-    (do
-      (handle-message e/cache|product|requested
-                      {:query ?service})
-      (let [cache (get-in state storefront.keypaths/api-cache)]
-        #?(:cljs
-           (tags/add-classname ".kustomer-app-icon" "hide"))
-        #?(:cljs
-           (handle-message e/cache|stylist|requested
-                           {:stylist/id stylist-id
-                            :on/success #(seo/set-tags state)
-                            :on/failure (fn [] (handle-message e/flash-later-show-failure
-                                                               {:message
-                                                                (str "The stylist you are looking for is not available. "
-                                                                     "Please search for another stylist in your area below. ")})
-                                          (fx/redirect e/navigate-adventure-find-your-stylist))}))
-        #?(:cljs
-           (api/fetch-stylist-reviews cache
-                                      {:stylist-id stylist-id
-                                       :page       1}))
-        #?(:cljs
-           (google-maps/insert))))))
-
-(defmethod trackings/perform-track e/navigate-adventure-stylist-profile
-  [_ event {:keys [stylist-id]} app-state]
-  #?(:cljs
-     (facebook-analytics/track-event "ViewContent"
-                                     {:content_type "stylist"
-                                      :content_ids [(spice.core/parse-int stylist-id)]})))
-
-(defmethod t/transition-state e/api-success-fetch-stylist-reviews
-  [_ _ paginated-reviews app-state]
-  (let [existing-reviews (:reviews (get-in app-state stylist-directory.keypaths/paginated-reviews))]
-    (-> app-state
-        (assoc-in stylist-directory.keypaths/paginated-reviews paginated-reviews)
-        (update-in (conj stylist-directory.keypaths/paginated-reviews :reviews)
-                   (partial concat existing-reviews)))))
-
-(defmethod fx/perform-effects e/share-stylist
-  [_ _ {:keys [url text title stylist-id]} _]
-  #?(:cljs
-     (.. (js/navigator.share (clj->js {:title title
-                                       :text  text
-                                       :url   url}))
-         (then  (fn []
-                  (handle-message e/api-success-shared-stylist
-                                  {:stylist-id stylist-id})))
-         (catch (fn [err]
-                  (handle-message e/api-failure-shared-stylist
-                                  {:stylist-id stylist-id
-                                   :error      (.toString err)}))))))
-
-(defmethod fx/perform-effects e/control-fetch-stylist-reviews
-  [dispatch event args prev-app-state app-state]
-  #?(:cljs
-     (api/fetch-stylist-reviews (get-in app-state storefront.keypaths/api-cache)
-                                {:stylist-id (get-in app-state adventure.keypaths/stylist-profile-id)
-                                 :page       (-> (get-in app-state stylist-directory.keypaths/paginated-reviews)
-                                                 :current-page
-                                                 (or 0)
-                                                 inc)})))
 
 ;; ---------------------------- display
 
@@ -138,8 +55,7 @@
       (c/build header/mobile-nav-header-component mayvenn-header))
     (when adv-header
       (header/adventure-header adv-header))
-    (c/build card/organism card)
-    [:div.bg-pink "aw yeah"]
+    (c/build card-v2/organism card)
     [:div.my2.px3
      (carousel/organism carousel)]
     (c/build maps/component google-maps)
@@ -219,50 +135,45 @@
         :reviews/cta-label  "View More"}))))
 
 (defn ^:private card<-
-  [hostname
-   hide-star-distribution?
-   newly-added-stylist-ui?
-   {:stylist/keys         [id name portrait salon slug phone-number]
-    :stylist.address/keys [city]
+  [{:stylist/keys         [id name portrait salon slug experience]
+    :stylist.address/keys [city state]
     :stylist.rating/keys  [cardinality publishable? score]
-    :as                   stylist}
-   instagram-stylist-profile?]
-  (merge {:card.circle-portrait/portrait   portrait
-          :card.transposed-title/id        "stylist-name"
-          :card.transposed-title/primary   name
-          :card.transposed-title/secondary salon}
-         (if (and (< cardinality 3)
-                  newly-added-stylist-ui?)
-           {:card.just-added/id      (str "just-added-" slug)
-            :card.just-added/content "Just Added"}
-           {:card.star-rating/id             (str "rating-count-" slug)
-            :card.star-rating/value          score
-            :card.star-rating/scroll-anchor  (when (and publishable?
-                                                        (pos? cardinality)
-                                                        (not hide-star-distribution?))
-                                               "star-distribution-table")
-            :card.star-rating/rating-content (str "(" score ")")})
-         (when-let [ig-username (and instagram-stylist-profile?
-                                     (-> stylist
-                                         :diva/stylist
-                                         :social-media
-                                         :instagram))]
-           {:card.instagram/id     "instagram"
-            :card.instagram/target [e/external-redirect-instagram-profile {:ig-username ig-username}]})
-         {:card.phone-link/target       [;; this event is unused, removed: 09126dbb16385f72045f99836b42ce7b781a5d56
-                                         e/control-adventure-stylist-phone-clicked
-                                         {:stylist-id   id
-                                          :phone-number phone-number}]
-          :card.phone-link/phone-number phone-number
-          :share-icon/target            [e/share-stylist
-                                         {:stylist-id id
-                                          :title      (str name " - " city)
-                                          :text       (str name " is a Mayvenn Certified Stylist with top-rated reviews, great professionalism, and amazing work. "
-                                                           "Check out this stylist here:")
-                                          :url        (str "https://" hostname ".com/stylist/" id "-" slug
-                                                           "?utm_campaign=" id "&utm_term=fi_stylist_share&utm_medium=referral")}]
-          :share-icon/icon              (svg/share-icon {:height "19px"
-                                                         :width  "18px"})}))
+    :as                   stylist}]
+  (within :stylist-profile.card
+          (merge
+           (within :hero
+                   {:background/ucare-id      "3cff075a-977d-4b69-841f-2bd497446b58"
+                    :circle-portrait/portrait portrait
+                    :title/id                 "stylist-name"
+                    :title/primary            name
+                    :star-bar/id              "star-bar"
+                    :star-bar/value           score
+                    :star-bar/opts            {:class "fill-p-color"}
+                    :review-count             cardinality
+                    :salon/id                 "salon-name"
+                    :salon/primary            salon
+                    :salon/location                 (str city ", " state)})
+           {:star-rating/id           (str "rating-count-" slug)
+            :star-rating/value        score}
+           (within :laurels
+                   {:points [{:icon    [:svg/calendar {:style {:height "1.2em"
+                                                               :width  "1.7em"}
+                                                       :class "fill-s-color mr1"}]
+                              :primary (str (ui/pluralize-with-amount experience "year") " of experience")}
+                             {:icon    [:svg/mayvenn-logo {:style {:height "1.1em"
+                                                                   :width  "1.5em"}
+                                                           :class "fill-s-color mr1"}]
+                              :primary (if (>= cardinality 3)
+                                         (str "Booked " cardinality " times")
+                                         "New Mayvenn stylist")}
+                             {:icon    [:svg/experience-badge {:style {:height "1.2em"
+                                                                       :width  "1.7em"}
+                                                               :class "fill-s-color mr1"}]
+                              :primary "Professional salon"}
+                             {:icon    [:svg/certified {:style {:height "1.2em"
+                                                                :width  "1.7em"}
+                                                        :class "fill-s-color mr1"}]
+                              :primary "State licensed stylist"}]}))))
 
 (defn ^:private ratings-bar-chart<-
   [hide-star-distribution?
@@ -294,7 +205,7 @@
                                    setting
                                    (when licensed? "licensed")]
                                   (remove nil?)
-                                  (join ", "))})
+                                  (string/join ", "))})
 
 (def service->requirement-copy
   {"SV2-LBI-X" "FREE with purchase of 3+ Bundles"
@@ -362,11 +273,7 @@
               :stylist-reviews          (reviews<- fetching-reviews?
                                                    detailed-stylist
                                                    paginated-reviews)
-              :card                     (card<- host-name
-                                                hide-star-distribution?
-                                                newly-added-stylist-ui-experiment?
-                                                detailed-stylist
-                                                instagram-stylist-profile?)
+              :card                     (card<- detailed-stylist)
               :ratings-bar-chart        (ratings-bar-chart<- hide-star-distribution?
                                                              detailed-stylist)
               :experience               (experience<- detailed-stylist)
