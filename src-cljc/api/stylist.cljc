@@ -113,7 +113,8 @@
   [{:keys [rating rating-star-counts mayvenn-rating-publishable]}]
   (let [histogram (mapv last (sort-by first rating-star-counts))]
     ;; we produce a histogram of ratings, with 0-numbering
-    {:stylist.rating/score        rating
+    {:stylist.rating/score        (some-> rating spice/parse-double)
+     :stylist.rating/decimal-score rating
      :stylist.rating/histogram    histogram
      :stylist.rating/cardinality  (some->> histogram (apply +))
      :stylist.rating/maximum      (some->> histogram seq (apply max))

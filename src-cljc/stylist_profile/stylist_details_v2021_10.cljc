@@ -137,7 +137,7 @@
 (defn ^:private card<-
   [{:stylist/keys         [name portrait salon slug experience]
     :stylist.address/keys [city state]
-    :stylist.rating/keys  [cardinality score]
+    :stylist.rating/keys  [cardinality decimal-score score]
     :as                   stylist}]
   (merge
    (within :hero
@@ -153,7 +153,7 @@
             :salon/primary            salon
             :salon/location           (str city ", " state)})
    {:star-rating/id    (str "rating-count-" slug)
-    :star-rating/value score}
+    :star-rating/value decimal-score}
    (within :laurels
            {:points [{:icon    [:svg/calendar {:style {:height "1.2em"}
                                                :class "fill-s-color mr1"}]
