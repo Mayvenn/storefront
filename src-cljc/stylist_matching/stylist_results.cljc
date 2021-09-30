@@ -335,7 +335,7 @@
                                :primary "Top Stylist"
                                :icon [:svg/crown {:class "fill-white mr1"
                                                   :width "15px"
-                                                  :height "11px"}]})
+                                                  :height "10px"}]})
                       (within :laurels
                               {:points [{:icon    [:svg/calendar {:style {:height "1.2em"}
                                                                   :class "fill-s-color mr1"}]
