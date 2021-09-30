@@ -47,14 +47,14 @@
 
 (defn ^:private star-rating
   [{:keys [id value]}]
-  [:div.flex.justify-center.mt4.mb2
-   [:div.mt1.mr1
-    (svg/symbolic->html [:svg/whole-star {:class "fill-p-color"
-                                          :style {:height "0.9em"
-                                                  :width  "0.9em"} }])]
-   [:div.center
-    [:div.title-1.proxima.p-color {:data-test id} value]
-    [:div "Rating"]]])
+  [:div.flex.mt4.mb2.flex-column
+   [:div.flex.justify-center.mr2
+    [:div.mt1.mr1
+     (svg/symbolic->html [:svg/whole-star {:class "fill-p-color"
+                                           :style {:height "0.9em"
+                                                   :width  "0.9em"}}])]
+    [:div.title-1.proxima.p-color {:data-test id} value]]
+   [:div.flex.justify-center "Rating"]])
 
 (defn ^:private cta
   [{:keys [id primary target]}]

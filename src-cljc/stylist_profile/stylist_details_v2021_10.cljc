@@ -135,9 +135,9 @@
         :reviews/cta-label  "View More"}))))
 
 (defn ^:private card<-
-  [{:stylist/keys         [id name portrait salon slug experience]
+  [{:stylist/keys         [name portrait salon slug experience]
     :stylist.address/keys [city state]
-    :stylist.rating/keys  [cardinality publishable? score]
+    :stylist.rating/keys  [cardinality score]
     :as                   stylist}]
   (merge
    (within :hero
