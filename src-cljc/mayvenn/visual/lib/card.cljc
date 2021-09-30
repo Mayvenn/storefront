@@ -18,7 +18,7 @@
             [storefront.component :as c]
             [storefront.components.ui :as ui]))
 
-(c/defcomponent look-suggestion-1
+(c/defcomponent look-1
   [{:as   data
     :keys [id index-label ucare-id primary secondary tertiary tertiary-note]} _ _]
   [:div.left-align.mx1.my1
@@ -37,7 +37,7 @@
        {:style {:width "175px"}}
        (actions/small-primary (with :action data))]]]]])
 
-(c/defdynamic-component look-suggestion-2
+(c/defdynamic-component look-2
   (did-mount [_] #?(:cljs (review-hooks/start)))
   (render [this]
           (let [data (c/get-props this)]

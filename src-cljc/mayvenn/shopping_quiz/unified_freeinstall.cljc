@@ -336,6 +336,20 @@
 
 ;; Template: 2/Summary
 
+(c/defcomponent summary-template-v2
+  [data _ _]
+  [:div.col-12.bg-pale-purple.stretch
+   [:div.bg-white
+    (quiz-header (with :header data))]
+   (c/build progress-bar/variation-1 (with :progress data))
+   [:div.flex.flex-column.justify-center.items-center.myj3
+    [:div.col-8.my2
+     (titles/canela (with :title data))]
+    [:div.mb6.col-10.col-8-on-tb
+     (c/build card/look-2
+              (:summary-v2 data))]
+    (actions/large-primary (with :action data))]])
+
 (c/defcomponent summary-template
   [data _ _]
   [:div.col-12.bg-pale-purple.stretch
@@ -346,15 +360,19 @@
     [:div.col-8.my2
      (titles/canela (with :title data))]
     [:div.mb6.col-10.col-8-on-tb
-     (c/build card/look-suggestion-1
+     (c/build card/look-1
               (with :suggestion data))]
     (actions/large-primary (with :action data))]])
 
 (defn summary<
-  [quiz-progression
+  [products-db
+   skus-db
+   images-db
+   quiz-progression
    {:product/keys [sku-ids]
     :hair/keys    [origin texture]
-    img-id        :img/id}
+    img-id        :img/id
+    :as           selected-look}
    undo-history]
   (let [skus                  (mapv looks-suggestions/mini-cellar sku-ids)
         {bundles  "bundles"
@@ -372,7 +390,41 @@
             :action/id                "summary-continue"
             :action/label             "Continue"
             :action/target            [e/go-to-navigate
-                                       {:target [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]})))
+                                       {:target [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]
+            :summary-v2
+            (let [{:product/keys [sku-ids]
+                   :hair/keys    [origin texture]
+                   img-id        :img.v2/id} selected-look
+                  skus                       (mapv skus-db sku-ids)
+                  service-sku                (get skus-db (:service/sku-id selected-look))
+                  discounted-price           (->> skus
+                                                  (remove #(= "service" (first (:catalog/department %))))
+                                                  (map :sku/price)
+                                                  (apply +))
+                  retail-price               (+ discounted-price
+                                                (:sku/price service-sku))
+                  review-sku                 (first skus)
+                  review-product             (products/find-product-by-sku-id products-db (:catalog/sku-id review-sku))]
+              (merge
+               (within :image-grid {:height-in-num-px 240
+                                    :gap-in-num-px    3})
+               (within :image-grid.hero {:image-url     img-id
+                                         :badge-url     nil
+                                         :gap-in-num-px 3})
+               (within :image-grid.hair-column {:images (map (fn [sku]
+                                                               (let [image (catalog-images/image images-db "cart" sku)]
+                                                                 {:image-url (:ucare/id image)
+                                                                  :length    (str (first (:hair/length sku)) "\"")}))
+                                                             skus)})
+               (within :title {:primary (str origin " " texture " hair + free install service")})
+               (within :price {:discounted-price (mf/as-money discounted-price)
+                               :retail-price     (mf/as-money retail-price)})
+               (within :line-item-summary {:primary (str (count sku-ids) " products in this look")})
+               #?(:cljs
+                  (within :review (let [review-data (reviews/yotpo-data-attributes review-product skus-db)]
+                                    {:yotpo-reviews-summary/product-title (some-> review-data :data-name)
+                                     :yotpo-reviews-summary/product-id    (some-> review-data :data-product-id)
+                                     :yotpo-reviews-summary/data-url      (some-> review-data :data-url)})))))})))
 
 ;; Template: 2/Suggestions
 
@@ -384,7 +436,7 @@
    (c/build progress-bar/variation-1 (with :progress data))
    [:div.flex.flex-column.mbj2
     (titles/canela-huge {:primary "Our picks for you"})
-    (c/elements card/look-suggestion-2
+    (c/elements card/look-2
                 data
                 :suggestions-v2)]
    (c/build escape-hatch/variation-1
@@ -398,7 +450,7 @@
    (c/build progress-bar/variation-1 (with :progress data))
    [:div.flex.flex-column.mbj2
     (titles/canela-huge {:primary "Our picks for you"})
-    (c/elements card/look-suggestion-1
+    (c/elements card/look-1
                 data
                 :suggestions)]
    (c/build escape-hatch/variation-1
@@ -418,8 +470,7 @@
     :suggestions                (for [[idx {:as           looks-suggestion
                                             :product/keys [sku-ids]
                                             :hair/keys    [origin texture]
-                                            img-id        :img/id
-                                            }]
+                                            img-id        :img/id}]
                                       (map-indexed vector looks-suggestions)
                                       :let [skus                  (mapv looks-suggestions/mini-cellar sku-ids)
                                             {bundles  "bundles"
@@ -700,9 +751,14 @@
             (utils/requesting? state request-keys/get-products)
             (c/build waiting-template waiting<)
 
+            (and (experiments/shopping-quiz-v2? state)
+                 selected-look)
+            (c/build summary-template-v2
+                     (summary< products-db skus-db images-db quiz-progression selected-look undo-history))
+
             selected-look
             (c/build summary-template
-                     (summary< quiz-progression selected-look undo-history))
+                     (summary< products-db skus-db images-db quiz-progression selected-look undo-history))
 
             (experiments/shopping-quiz-v2? state)
             (c/build suggestions-template-v2
@@ -853,8 +909,8 @@
          (google-maps/insert)
          (publish e/biz|progression|progressed
                   #:progression
-                  {:id    shopping-quiz-id
-                   :value 3}))))
+                   {:id    shopping-quiz-id
+                    :value 3}))))
 
 ;; Init the model if there isn't one, e.g. Direct load
   ;; NOTE(corey) perhaps reify params capture as event, for reuse

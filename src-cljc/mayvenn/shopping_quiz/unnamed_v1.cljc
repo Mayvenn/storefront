@@ -88,8 +88,8 @@
                                        :class     "mt2 col-8"}
                                       (apply utils/fake-href cta-target)) cta-label)]]]])
 
-(c/defcomponent look-suggestion-2-wrapper [data _ opts]
-  (c/build card/look-suggestion-2 (with :quiz.result-v2 data) opts))
+(c/defcomponent look-2-wrapper [data _ opts]
+  (c/build card/look-2 (with :quiz.result-v2 data) opts))
 
 (c/defcomponent results-template
   [{:keys [header quiz-results shopping-quiz-v2?]} _ _]
@@ -102,7 +102,7 @@
      [:div.shout.proxima.title-2 (:quiz.results/primary quiz-results)]
      [:div.m3.canela.title-1 (:quiz.results/secondary quiz-results)]]
     (if shopping-quiz-v2?
-      (c/elements look-suggestion-2-wrapper quiz-results :quiz.results/options)
+      (c/elements look-2-wrapper quiz-results :quiz.results/options)
       (c/elements quiz-results-organism quiz-results :quiz.results/options))]
    [:div.absolute.bottom-0.left-0.right-0
     dividers/green
