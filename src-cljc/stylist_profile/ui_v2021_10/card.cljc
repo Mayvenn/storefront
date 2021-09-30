@@ -58,7 +58,7 @@
 
 (defn ^:private cta
   [{:keys [id primary target]}]
-  [:div.mx3.mt3.mb7 {:data-test id}
+  [:div.mx3.mt3.mb7#nonsticky-select-stylist {:data-test id}
    (ui/button-medium-primary (apply utils/fake-href target) primary)])
 
 (c/defcomponent organism

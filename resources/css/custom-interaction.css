@@ -83,6 +83,27 @@ video.hide-chromecast-icon::-internal-media-controls-overlay-cast-button {
     100% { opacity: 1 }
 }
 
+.slide-up {
+    animation: slideUp 1s ease;
+    visibility: visible;
+    /* animation-iteration-count: 1; */
+    /* animation-fill-mode: forwards; */
+}
+
+@keyframes slideUp {
+    0% {
+        visibility: hidden;
+        bottom: -50%;
+    }
+    1% {
+        visibility: visible;
+    }
+    100% {
+        bottom: 0%;
+        visibility: visible;
+    }
+}
+
 .spin-y{
     -webkit-animation: spin linear 1.44s infinite;
     animation: spin linear 1.44s infinite;

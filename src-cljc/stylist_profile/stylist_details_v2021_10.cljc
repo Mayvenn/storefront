@@ -23,13 +23,13 @@
             stylist-directory.keypaths
             ;; NEW
             [stylist-profile.ui-v2021-10.card :as card-v2]
+            [stylist-profile.ui-v2021-10.sticky-select-stylist :as sticky-select-stylist-v2]
             ;; OLD
             [stylist-profile.ui.carousel :as carousel]
             [stylist-profile.ui.experience :as experience]
             [stylist-profile.ui.footer :as footer]
             [stylist-profile.ui.ratings-bar-chart :as ratings-bar-chart]
             [stylist-profile.ui.specialties-shopping :as specialties-shopping]
-            [stylist-profile.ui.sticky-select-stylist :as sticky-select-stylist]
             [stylist-profile.ui.stylist-reviews :as stylist-reviews]
             [storefront.utils.query :as query]))
 
@@ -66,7 +66,7 @@
     (c/build ratings-bar-chart/organism ratings-bar-chart)
     (c/build stylist-reviews/organism stylist-reviews)]
    (c/build footer/organism footer)
-   (c/build sticky-select-stylist/organism sticky-select-stylist)])
+   (c/build sticky-select-stylist-v2/organism sticky-select-stylist)])
 
 (defn ^:private header<-
   [{:order.items/keys [quantity]} undo-history]
