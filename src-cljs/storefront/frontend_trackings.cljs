@@ -561,6 +561,4 @@
 
 (defmethod perform-track events/external-redirect-instagram-profile
   [_ _ {:keys [ig-username]} _]
-  (prn "QUICK STRAINGER")
-  (stringer/track-event "stylist_instagram_link-clicked" {:instagram-username ig-username})
-  (prn "after STRAINGER"))
+  (stringer/track-event "stylist_instagram_link-clicked" {:instagram-username ig-username}))
