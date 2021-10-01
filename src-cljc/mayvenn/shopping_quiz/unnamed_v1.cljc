@@ -171,12 +171,10 @@
                                    :selected-look looks-suggestion}]
       :quiz.result/tertiary-note "Install Included"}
 
-     (within :quiz.result-v2.image-grid {:height-in-num-px 240
-                                         :gap-in-num-px    3})
+     (within :quiz.result-v2.image-grid {:gap-px    6})
 
      (within :quiz.result-v2.image-grid.hero {:image-url     v2-img-id
-                                              :badge-url     nil
-                                              :gap-in-num-px 3})
+                                              :badge-url     nil})
      #?(:cljs (within :quiz.result-v2.review (let [review-data (reviews/yotpo-data-attributes epitome-product skus-db)]
                                                {:yotpo-reviews-summary/product-title (some-> review-data :data-name)
                                                 :yotpo-reviews-summary/product-id    (some-> review-data :data-product-id)

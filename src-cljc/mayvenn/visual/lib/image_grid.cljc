@@ -1,10 +1,11 @@
 (ns mayvenn.visual.lib.image-grid
   (:require
+   [clojure.string :as string]
    [storefront.component :as component :refer [defcomponent]]
    [mayvenn.visual.tools :refer [with]]
    [storefront.components.ui :as ui]))
 
-(defcomponent hero-molecule
+(defcomponent ^:private hero-molecule
   [{:keys [image-url badge-url gap-in-num-px]} _ _]
   [:div.relative.flex-auto
    {:style {:margin-top (str gap-in-num-px "px")
@@ -19,7 +20,7 @@
              :width  "22px"}}
     badge-url]])
 
-(defcomponent height-adjusting-hair-image-molecule
+(defcomponent ^:private height-adjusting-hair-image-molecule
   [{:keys [image-url length gap-in-num-px height-in-num-px]} _ {:keys [id]}]
   [:div.relative
    (ui/img
@@ -32,7 +33,6 @@
      :src           image-url})
    [:div.absolute.top-0.right-0.content-4.m1
     length]])
-
 
 (defcomponent hero-with-little-hair-column-molecule
   "Expects data shaped like
@@ -69,3 +69,56 @@
                                                        :height-in-num-px size-of-column-image}
                                                       image))))
                             :images)])]))
+
+(defn ^:private hair-image-molecule
+  [{:keys [image-url length grid-area id]}]
+  [:div.relative
+   {:id id
+    :style {:grid-area grid-area}}
+   (ui/img
+      {:key           id
+       :class "container-size"
+     :src           image-url})
+   [:div.absolute.top-0.right-0.content-4.m1 length]])
+
+(defcomponent square-hero-with-right-tiled-column-molecule
+  "This is very similar to hero-with-little-hair-column-molecule, except that its size is determined entirely by its container
+   and it tries very hard to make every image a square. Downside: depending on the number of images, the aspect ratio changes.
+
+   Expects data shaped like:
+  {:gap-px
+   :hero/image-url
+   :hero/badge-url
+   :hair-column/images [{:image-url blah
+                         :length    blah}]} "
+  [{:as data :keys [gap-px :hair-column/images]} _ _]
+  (let [row-count (count images)
+        col-count (inc row-count)]
+    [:div {:style {:display               "grid"
+                   :gap                   (str gap-px "px")
+                   :grid-template-columns (str "repeat( " col-count ", 1fr)")
+                   :grid-template-rows    (str "repeat("  row-count ", 1fr)")
+                   :aspect-ratio          (str col-count "/" row-count)}}
+     ;; Hero
+     [:div.relative.flex-auto {:style {:grid-area (str "1 / 1 / " col-count " / " col-count)}}
+      (ui/img {:class    "container-size"
+               :style    {:object-position "50% 25%"
+                          :object-fit      "cover"}
+               :src      (:hero/image-url data)
+               :max-size 749})
+      [:div.absolute.bottom-0.m1.justify-start
+       {:style {:height "22px"
+                :width  "22px"}}
+       (:hero/badge-url data)]]
+
+     ;; Tiles
+     (->> images
+          (map-indexed (fn [ix image]
+                         (let [row-start (inc ix)
+                               col-start col-count
+                               row-end (inc row-start)
+                               col-end (inc col-start)]
+                           (assoc image
+                                  :grid-area (string/join " / " [row-start col-start row-end col-end])
+                                  :id ix))))
+          (map hair-image-molecule))]))

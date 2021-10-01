@@ -406,11 +406,9 @@
                   review-sku                 (first skus)
                   review-product             (products/find-product-by-sku-id products-db (:catalog/sku-id review-sku))]
               (merge
-               (within :image-grid {:height-in-num-px 240
-                                    :gap-in-num-px    3})
+               (within :image-grid {:gap-px 6})
                (within :image-grid.hero {:image-url     img-id
-                                         :badge-url     nil
-                                         :gap-in-num-px 3})
+                                         :badge-url     nil})
                (within :image-grid.hair-column {:images (map (fn [sku]
                                                                (let [image (catalog-images/image images-db "cart" sku)]
                                                                  {:image-url (:ucare/id image)
@@ -505,11 +503,9 @@
                                             review-sku (first skus)
                                             review-product  (products/find-product-by-sku-id products-db (:catalog/sku-id review-sku))]]
                       (merge
-                       (within :image-grid {:height-in-num-px 240
-                                            :gap-in-num-px    3})
-                       (within :image-grid.hero {:image-url     img-id
-                                                 :badge-url     nil
-                                                 :gap-in-num-px 3})
+                       (within :image-grid {:gap-px    6})
+                       (within :image-grid.hero {:image-url img-id
+                                                 :badge-url nil})
                        (within :image-grid.hair-column {:images (map (fn [sku]
                                                                        (let [image (catalog-images/image images-db "cart" sku)]
                                                                          {:image-url (:ucare/id image)

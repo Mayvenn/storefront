@@ -45,7 +45,7 @@
              [:div.bg-white.m3
               [:div.left-align.p3
                [:div.mb3
-                (c/build image-grid/hero-with-little-hair-column-molecule
+                (c/build image-grid/square-hero-with-right-tiled-column-molecule
                          (with :image-grid data))]
                (titles/proxima-left (with :title data))
                (catalog.M/yotpo-reviews-summary (with :review data))
