@@ -60,13 +60,15 @@
                      :data-test "confirm-form-submit"}))
 
 (defn checkout-button-query
-  [data]
-  (let [saving-card?   (checkout-credit-card/saving-card? data)
-        has-order?     (get-in data keypaths/order)
-        placing-order? (utils/requesting? data request-keys/place-order)
-        placing-quadpay-order? (utils/requesting? data request-keys/update-cart-payments)]
+  [data free-mayvenn-service]
+  (let [saving-card?                        (checkout-credit-card/saving-card? data)
+        has-order?                          (get-in data keypaths/order)
+        placing-order?                      (utils/requesting? data request-keys/place-order)
+        placing-quadpay-order?              (utils/requesting? data request-keys/update-cart-payments)
+        order-has-inapplicable-freeinstall? (not (:free-mayvenn-service/discounted? free-mayvenn-service))]
     {:disabled? (or (utils/requesting? data request-keys/update-shipping-method)
-                    (not has-order?))
+                    (not has-order?)
+                    order-has-inapplicable-freeinstall?)
      :spinning? (or saving-card? placing-order? placing-quadpay-order?)}))
 
 (defmethod effects/perform-effects events/control-checkout-quadpay-confirmation-submit
@@ -148,8 +150,9 @@
               (component/build cart-item-v202004/no-stylist-organism queried-data nil)]
 
              ;; TODO: Separate mayvenn install base into its own service line item key
-             (for [service-line-item service-line-items]
+             (for [[index service-line-item] (map-indexed vector  service-line-items)]
                [:div
+                {:key (str index "-service-item")}
                 [:div.mt2-on-mb
                  (component/build cart-item-v202004/organism {:cart-item service-line-item}
                                   (component/component-id (:react/key service-line-item)))]])]
@@ -462,7 +465,7 @@
       :products                     (get-in data keypaths/v2-products)
       :payment                      (checkout-credit-card/query data)
       :delivery                     (checkout-delivery/query data)
-      :checkout-button-data         (checkout-button-query data)
+      :checkout-button-data         (checkout-button-query data free-mayvenn-service)
       :selected-quadpay?            selected-quadpay?
       :loaded-quadpay?              (get-in data keypaths/loaded-quadpay)
       :servicing-stylist            servicing-stylist
