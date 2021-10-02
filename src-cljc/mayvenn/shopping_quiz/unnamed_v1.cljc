@@ -171,7 +171,7 @@
                                    :selected-look looks-suggestion}]
       :quiz.result/tertiary-note "Install Included"}
 
-     (within :quiz.result-v2.image-grid {:gap-px    6})
+     (within :quiz.result-v2.image-grid {:gap-px 3})
 
      (within :quiz.result-v2.image-grid.hero {:image-url     v2-img-id
                                               :badge-url     nil})

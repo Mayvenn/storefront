@@ -406,7 +406,7 @@
                   review-sku                 (first skus)
                   review-product             (products/find-product-by-sku-id products-db (:catalog/sku-id review-sku))]
               (merge
-               (within :image-grid {:gap-px 6})
+               (within :image-grid {:gap-px 3})
                (within :image-grid.hero {:image-url     img-id
                                          :badge-url     nil})
                (within :image-grid.hair-column {:images (map (fn [sku]
@@ -503,7 +503,7 @@
                                             review-sku (first skus)
                                             review-product  (products/find-product-by-sku-id products-db (:catalog/sku-id review-sku))]]
                       (merge
-                       (within :image-grid {:gap-px    6})
+                       (within :image-grid {:gap-px 3})
                        (within :image-grid.hero {:image-url img-id
                                                  :badge-url nil})
                        (within :image-grid.hair-column {:images (map (fn [sku]
