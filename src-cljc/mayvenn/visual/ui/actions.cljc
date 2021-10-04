@@ -51,6 +51,17 @@
               (apply utils/route-to target))
        label)])))
 
+(defn wide-large-primary
+  [{:keys [id disabled? label target]}]
+  (when id
+    (c/html
+     [:div.col-12
+      (ui/button-large-primary
+       (merge {:data-test id}
+              (when disabled? {:disabled? disabled?})
+              (apply utils/route-to target))
+       label)])))
+
 (defn large-paypal
   [{:keys [id disabled? spinning? target]}]
   (when id

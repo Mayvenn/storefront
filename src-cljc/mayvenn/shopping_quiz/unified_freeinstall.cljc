@@ -349,7 +349,7 @@
      (c/build card/look-2
               (:summary-v2 data))]
     [:div.col-12.px3
-     (actions/large-primary (with :action data))]]])
+     (actions/wide-large-primary (with :action data))]]])
 
 (c/defcomponent summary-template
   [data _ _]
