@@ -7,7 +7,7 @@
             api.orders
             api.products
             api.stylist
-            [mayvenn.visual.tools :refer [within]]
+            [mayvenn.visual.tools :refer [within with]]
             [clojure.string :as string]
             spice.core
             [storefront.accessors.experiments :as experiments]
@@ -25,11 +25,11 @@
             [stylist-profile.ui-v2021-10.card :as card-v2]
             [stylist-profile.ui-v2021-10.sticky-select-stylist :as sticky-select-stylist-v2]
             [stylist-profile.ui-v2021-10.gallery :as gallery]
+            [stylist-profile.ui-v2021-10.services-offered :as services-offered]
             ;; OLD
             [stylist-profile.ui.experience :as experience]
             [stylist-profile.ui.footer :as footer]
             [stylist-profile.ui.ratings-bar-chart :as ratings-bar-chart]
-            [stylist-profile.ui.specialties-shopping :as specialties-shopping]
             [stylist-profile.ui.stylist-reviews :as stylist-reviews]
             [storefront.utils.query :as query]))
 
@@ -37,18 +37,27 @@
 
 (def ^:private clear-float-atom [:div.clearfix])
 
+(defn licenses-molecule
+  [{:keys [id primary secondary]}]
+  (c/html
+   [:div.pt5
+    [:div.title-3.proxima.shout
+     {:data-test id
+      :key       id}
+     primary]
+    [:div
+     secondary]]))
+
 (c/defcomponent template
   [{:keys [adv-header
            card
-           experience
            footer
            gallery
            google-maps
            mayvenn-header
            ratings-bar-chart
-           specialties-discountable
            sticky-select-stylist
-           stylist-reviews]} _ _]
+           stylist-reviews] :as data} _ _]
   [:div.bg-white.col-12.mb6.stretch {:style {:margin-bottom "-1px"}}
    [:main
     (when mayvenn-header
@@ -57,10 +66,10 @@
       (header/adventure-header adv-header))
     (c/build card-v2/organism card)
     (c/build gallery/organism gallery)
-    (c/build maps/component google-maps)
     [:div.my2.m1-on-tb-dt.mb2-on-tb-dt.px3
-     (c/build experience/organism experience)
-     (c/build specialties-shopping/organism specialties-discountable)]
+     (c/build services-offered/organism (with :services-offered data))
+     (licenses-molecule (with :licenses data))]
+    (c/build maps/component google-maps)
     clear-float-atom
     (c/build ratings-bar-chart/organism ratings-bar-chart)
     (c/build stylist-reviews/organism stylist-reviews)]
@@ -222,12 +231,10 @@
    "SV2-WGC-X" "FREE with purchase of a Lace Front Wig or a 360 Lace Wig"})
 
 (defn ^:private service-sku-query
-  [{:sku/keys                   [title price]
+  [{:product/keys                   [essential-title]
     :catalog/keys               [sku-id]}]
   {:id         sku-id
-   :title      title
-   :subtitle   (str "(" (mf/as-money price) ")")
-   :content    (get service->requirement-copy sku-id)})
+   :title      essential-title})
 
 (defn ^:private shop-discountable-services<-
   [skus-db
@@ -242,10 +249,10 @@
                                 (sort-by (comp offered-ordering :catalog/sku-id))
                                 not-empty)]
       (when offered-services
-        {:specialties-shopping.title/id      "free-mayvenn-services"
-         :specialties-shopping.title/primary "Free Mayvenn Services"
-         :specialties-shopping/specialties
-         (map service-sku-query offered-services)}))))
+        (within :services-offered
+                {:title/id "free-mayvenn-services"
+                 :title/primary "Services Offered"
+                 :services (map service-sku-query offered-services)})))))
 
 (defn query
   [state]
@@ -274,21 +281,23 @@
                                :quantity              (or (:order.items/quantity current-order) 0)}}
              {:adv-header (header<- current-order undo-history)})
            (when detailed-stylist
-             {:gallery                  (gallery<- detailed-stylist instagram-stylist-profile?)
-              :stylist-reviews          (reviews<- fetching-reviews?
-                                                   detailed-stylist
-                                                   paginated-reviews)
+             (merge
+              (shop-discountable-services<- skus-db detailed-stylist)
+              {:licenses/id        "stylist-license"
+               :licenses/primary   "Licenses / Certifications"
+               :licenses/secondary "Cosmetology license, Mayvenn Certified"
+               :gallery            (gallery<- detailed-stylist instagram-stylist-profile?)
+               :stylist-reviews    (reviews<- fetching-reviews?
+                                                    detailed-stylist
+                                                    paginated-reviews)
 
-              :card                     (within :stylist-profile.card (card<- detailed-stylist))
-              :ratings-bar-chart        (ratings-bar-chart<- hide-star-distribution?
-                                                             detailed-stylist)
-              :experience               (experience<- detailed-stylist)
-              :google-maps              (maps/map-query state)
-              :sticky-select-stylist    (sticky-select-stylist<- current-stylist
-                                                                 detailed-stylist)
-              :specialties-discountable (shop-discountable-services<-
-                                         skus-db
-                                         detailed-stylist)}))))
+               :card                  (within :stylist-profile.card (card<- detailed-stylist))
+               :ratings-bar-chart     (ratings-bar-chart<- hide-star-distribution?
+                                                              detailed-stylist)
+               :experience            (experience<- detailed-stylist)
+               :google-maps           (maps/map-query state)
+               :sticky-select-stylist (sticky-select-stylist<- current-stylist
+                                                                  detailed-stylist)})))))
 
 (defn ^:export built-component
   [app-state]
