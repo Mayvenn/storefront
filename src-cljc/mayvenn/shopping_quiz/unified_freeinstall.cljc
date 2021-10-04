@@ -345,10 +345,11 @@
    [:div.flex.flex-column.justify-center.items-center.myj3
     [:div.col-8.my2
      (titles/canela (with :title data))]
-    [:div.mb6.col-10.col-8-on-tb
+    [:div.mb6.col-12
      (c/build card/look-2
               (:summary-v2 data))]
-    (actions/large-primary (with :action data))]])
+    [:div.col-12.px3
+     (actions/large-primary (with :action data))]]])
 
 (c/defcomponent summary-template
   [data _ _]
