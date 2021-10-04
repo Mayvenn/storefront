@@ -129,9 +129,10 @@
             :stylist/id   (:stylist-id diva-stylist)
             :stylist/slug (:store-slug diva-stylist)
 
-            :stylist/portrait (:portrait diva-stylist)
-            :stylist/name     (display-name<- diva-stylist)
-            :stylist/salon    (:name salon)
+            :stylist/portrait     (:portrait diva-stylist)
+            :stylist/name         (display-name<- diva-stylist)
+            :stylist/salon        (:name salon)
+            :stylist/social-media (:social-media diva-stylist)
 
             :stylist/setting    (case (:salon-type salon)
                                   "salon"   "in-salon"

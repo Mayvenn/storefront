@@ -7,7 +7,7 @@
             api.orders
             api.products
             api.stylist
-            [mayvenn.visual.tools :refer [with within]]
+            [mayvenn.visual.tools :refer [within]]
             [clojure.string :as string]
             spice.core
             [storefront.accessors.experiments :as experiments]
@@ -24,8 +24,8 @@
             ;; NEW
             [stylist-profile.ui-v2021-10.card :as card-v2]
             [stylist-profile.ui-v2021-10.sticky-select-stylist :as sticky-select-stylist-v2]
+            [stylist-profile.ui-v2021-10.gallery :as gallery]
             ;; OLD
-            [stylist-profile.ui.carousel :as carousel]
             [stylist-profile.ui.experience :as experience]
             [stylist-profile.ui.footer :as footer]
             [stylist-profile.ui.ratings-bar-chart :as ratings-bar-chart]
@@ -40,9 +40,9 @@
 (c/defcomponent template
   [{:keys [adv-header
            card
-           carousel
            experience
            footer
+           gallery
            google-maps
            mayvenn-header
            ratings-bar-chart
@@ -56,8 +56,7 @@
     (when adv-header
       (header/adventure-header adv-header))
     (c/build card-v2/organism card)
-    [:div.my2.px3
-     (carousel/organism carousel)]
+    (c/build gallery/organism gallery)
     (c/build maps/component google-maps)
     [:div.my2.m1-on-tb-dt.mb2-on-tb-dt.px3
      (c/build experience/organism experience)
@@ -101,17 +100,25 @@
                                          :else                                 "Continue with ")
                                        (:stylist/name detailed-stylist))}))
 
-(defn ^:private carousel<-
-  [{:stylist/keys [slug id] :stylist.gallery/keys [images]}]
-  {:carousel/items (->> images
-                        (map-indexed
-                         (fn [j {:keys [resizable-url]}]
-                           {:key            (str "gallery-img-" id "-" j)
-                            :ucare-img-url  resizable-url
-                            :target-message [e/navigate-adventure-stylist-gallery
-                                             {:stylist-id   id
-                                              :store-slug   slug
-                                              :query-params {:offset j}}]})))})
+(defn ^:private gallery<-
+  [{:stylist/keys [slug id social-media] :stylist.gallery/keys [images]}
+   instagram-stylist-profile?]
+  (merge
+   (when-let [ig-username (and instagram-stylist-profile? (:instagram social-media))]
+     {:gallery.instagram/id     "instagram"
+      :gallery.instagram/target [e/external-redirect-instagram-profile {:ig-username ig-username}]})
+   {:gallery/items              (->> images
+                                     (map-indexed
+                                      (fn [j {:keys [resizable-url]}]
+                                        {:key            (str "gallery-img-" id "-" j)
+                                         :ucare-img-url  resizable-url
+                                         :target-message [e/navigate-adventure-stylist-gallery
+                                                          {:stylist-id   id
+                                                           :store-slug   slug
+                                                           :query-params {:offset j}}]})))
+    :gallery/target [e/navigate-adventure-stylist-gallery
+                     {:stylist-id   id
+                      :store-slug   slug}]}))
 
 (defn ^:private reviews<-
   [fetching-reviews?
@@ -257,10 +264,8 @@
                                       (nil? (first undo-history)))
 
         hide-star-distribution?            (experiments/hide-star-distribution? state)
-        newly-added-stylist-ui-experiment? (and (experiments/stylist-results-test? state)
-                                                (or (experiments/just-added-only? state)
-                                                    (experiments/just-added-experience? state)))
         instagram-stylist-profile?         (experiments/instagram-stylist-profile? state)
+
         ;; Requestings
         fetching-reviews?                  (utils/requesting? state request-keys/fetch-stylist-reviews)]
     (merge {:footer footer<-}
@@ -269,7 +274,7 @@
                                :quantity              (or (:order.items/quantity current-order) 0)}}
              {:adv-header (header<- current-order undo-history)})
            (when detailed-stylist
-             {:carousel                 (carousel<- detailed-stylist)
+             {:gallery                  (gallery<- detailed-stylist instagram-stylist-profile?)
               :stylist-reviews          (reviews<- fetching-reviews?
                                                    detailed-stylist
                                                    paginated-reviews)
