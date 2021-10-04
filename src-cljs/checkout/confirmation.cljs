@@ -68,7 +68,9 @@
         order-has-inapplicable-freeinstall? (not (:free-mayvenn-service/discounted? free-mayvenn-service))]
     {:disabled? (or (utils/requesting? data request-keys/update-shipping-method)
                     (not has-order?)
-                    order-has-inapplicable-freeinstall?)
+                    (and
+                     free-mayvenn-service
+                     (not (:free-mayvenn-service/discounted? free-mayvenn-service))))
      :spinning? (or saving-card? placing-order? placing-quadpay-order?)}))
 
 (defmethod effects/perform-effects events/control-checkout-quadpay-confirmation-submit
