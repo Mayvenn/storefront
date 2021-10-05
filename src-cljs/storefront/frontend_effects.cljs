@@ -150,8 +150,11 @@
   (set! (.-location js/window) quadpay-redirect-url))
 
 (defmethod effects/perform-effects events/external-redirect-instagram-profile
-  [_ _ {:keys [ig-username]} _ app-state]
-  (set! (.-location js/window) (marquee/instagram-url ig-username)))
+  [_ _ {:keys [ig-username open-in-new-tab?]} _ app-state]
+  (let [url (marquee/instagram-url ig-username)]
+    (if open-in-new-tab?
+      (js/window.open url)
+      (set! (.-location js/window) url))))
 
 (defmethod effects/perform-effects events/control-navigate [_ event {:keys [navigation-message]} _ app-state]
   ;; A user has clicked a link

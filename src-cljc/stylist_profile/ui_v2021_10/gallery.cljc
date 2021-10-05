@@ -7,15 +7,25 @@
 (defn instagram
   [{:keys [id target]}]
   (when id
-    [:a.block.proxima.button-font-2.inherit-color.shout.flex.items-center
-     (merge (apply utils/fake-href target) {:data-test id})
-     [:img
-      {:src    "//ucarecdn.com/df7cc161-057f-46f4-94a7-d5638c91755c/-/format/auto/-/resize/25x25/"
-       :width  "25"
-       :height "25"
-       :alt    "instagram logo"
-       :class "mr2"}]
-     (:ig-username (second target))]))
+    (let [logo
+          [:img
+           {:src    "//ucarecdn.com/df7cc161-057f-46f4-94a7-d5638c91755c/-/format/auto/-/resize/25x25/"
+            :width  "25"
+            :height "25"
+            :alt    "instagram logo"
+            :class  "mr2"}]
+
+          [evt {:keys [ig-username] :as evt-args}]
+          target]
+      [:div
+       [:a.block.proxima.button-font-2.inherit-color.shout.flex.items-center.hide-on-mb-tb
+        (merge (utils/fake-href evt (assoc evt-args :open-in-new-tab? true)) {:data-test id})
+        logo
+        ig-username]
+       [:a.block.proxima.button-font-2.inherit-color.shout.flex.items-center.hide-on-dt
+        (merge (utils/fake-href evt (assoc evt-args :open-in-new-tab? false)) {:data-test id})
+        logo
+        ig-username]])))
 
 (c/defcomponent organism
   [{:gallery/keys [items target] :as data} _ _]
