@@ -942,16 +942,6 @@
   (api/get-promotions (get-in app-state keypaths/api-cache)
                       (first (get-in app-state keypaths/order-promotion-codes))))
 
-(defmethod effects/perform-effects events/api-success-update-order-add-service-line-item
-  [_ _ {:keys [shop?]} _ app-state]
-  (messages/handle-message events/flash-dismiss)
-  (when-not shop?
-    (messages/handle-message events/flash-show-success
-                             {:message "The coupon code was successfully applied to your order."
-                              :scroll? false}))
-  (api/get-promotions (get-in app-state keypaths/api-cache)
-                      (first (get-in app-state keypaths/order-promotion-codes))))
-
 (defmethod effects/perform-effects events/sign-out [_ event args app-state-before app-state]
   (messages/handle-message events/clear-order)
   (cookie-jar/clear-account (get-in app-state keypaths/cookie))
