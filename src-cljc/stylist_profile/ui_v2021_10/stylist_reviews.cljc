@@ -50,11 +50,12 @@
       (c/build
        carousel/component
        {}
-       {:opts {:settings {:edgePadding 10
-                          :nav         false
-                          :controls    false
-                          :items       1
-                          :loop        false}
+       {:opts {:settings {:edgePadding          10
+                          :preventScrollOnTouch "auto" ; https://github.com/ganlanyuan/tiny-slider/issues/370
+                          :nav                  false
+                          :controls             false
+                          :items                1
+                          :loop                 false}
                :slides   (map slide reviews)}})
       (when cta-id
         (ui/button-medium-underline-primary
