@@ -7,7 +7,9 @@
             stylist-matching.ui.stylist-cards
             [storefront.platform.component-utils :as utils]
             [storefront.components.svg :as svg]
-            [ui.molecules :as molecules]))
+            [storefront.effects :as fx]
+            [ui.molecules :as molecules]
+            [storefront.events :as e]))
 
 
 
@@ -47,7 +49,8 @@
 
 (defn ^:private star-rating
   [{:keys [id value]}]
-  [:div.flex.mt4.mb2.flex-column
+  [:a.block.flex.mt4.mb2.flex-column
+   (utils/fake-href e/control-scroll-to-selector {:selector "[data-ref=reviews]"}  )
    [:div.flex.justify-center.mr2
     [:div.mt1.mr1
      (svg/symbolic->html [:svg/whole-star {:class "fill-p-color"

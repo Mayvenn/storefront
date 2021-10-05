@@ -43,17 +43,18 @@
   (c/html
    (when id
      [:div.m2
-      {:key id
-       :id  "reviews"}
+      {:key      id
+       :id       "reviews"
+       :data-ref "reviews"}
       (avg-rating-and-review-count rating review-count)
       (c/build
        carousel/component
        {}
-       {:opts {:settings {:edgePadding  10
-                          :nav      false
-                          :controls false
-                          :items    1
-                          :loop     false}
+       {:opts {:settings {:edgePadding 10
+                          :nav         false
+                          :controls    false
+                          :items       1
+                          :loop        false}
                :slides   (map slide reviews)}})
       (when cta-id
         (ui/button-medium-underline-primary
