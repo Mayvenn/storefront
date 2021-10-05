@@ -37,6 +37,20 @@
 @custom-media --on-desktop (min-width: 1000px);
 @custom-media --over-max-580 (min-width: 580px);
 
+/* When there's over 5 lines of text, show an ellipsis */
+.ellipsis-5 {
+    /* See https://github.com/postcss/autoprefixer/issues/1220 */
+    /*! autoprefixer: off */
+    -webkit-box-orient: vertical;
+    /* autoprefixer: on */
+    display: block;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
 :root {
     --error:          #ff004f;
     --yellow:         #ffc520;

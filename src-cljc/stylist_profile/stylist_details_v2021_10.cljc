@@ -21,17 +21,17 @@
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
             stylist-directory.keypaths
+            [storefront.utils.query :as query]
+
             ;; NEW
             [stylist-profile.ui-v2021-10.card :as card-v2]
             [stylist-profile.ui-v2021-10.sticky-select-stylist :as sticky-select-stylist-v2]
             [stylist-profile.ui-v2021-10.gallery :as gallery]
             [stylist-profile.ui-v2021-10.services-offered :as services-offered]
+            [stylist-profile.ui-v2021-10.stylist-reviews :as stylist-reviews-v2]
+
             ;; OLD
-            [stylist-profile.ui.experience :as experience]
-            [stylist-profile.ui.footer :as footer]
-            [stylist-profile.ui.ratings-bar-chart :as ratings-bar-chart]
-            [stylist-profile.ui.stylist-reviews :as stylist-reviews]
-            [storefront.utils.query :as query]))
+            [stylist-profile.ui.footer :as footer]))
 
 ;; ---------------------------- display
 
@@ -55,7 +55,6 @@
            gallery
            google-maps
            mayvenn-header
-           ratings-bar-chart
            sticky-select-stylist
            stylist-reviews] :as data} _ _]
   [:div.bg-white.col-12.mb6.stretch {:style {:margin-bottom "-1px"}}
@@ -71,8 +70,7 @@
      (licenses-molecule (with :licenses data))]
     (c/build maps/component google-maps)
     clear-float-atom
-    (c/build ratings-bar-chart/organism ratings-bar-chart)
-    (c/build stylist-reviews/organism stylist-reviews)]
+    (c/build stylist-reviews-v2/organism stylist-reviews)]
    (c/build footer/organism footer)
    (c/build sticky-select-stylist-v2/organism sticky-select-stylist)])
 
@@ -129,26 +127,26 @@
                      {:stylist-id   id
                       :store-slug   slug}]}))
 
+
 (defn ^:private reviews<-
-  [fetching-reviews?
-   {:stylist.rating/keys [publishable? score] diva-stylist :diva/stylist}
+  [{:stylist.rating/keys [publishable? score] diva-stylist :diva/stylist}
    {stylist-reviews :reviews :as paginated-reviews}]
-  (when (and publishable?
-             (seq stylist-reviews))
-    (merge
-     {:reviews/id           "stylist-reviews"
-      :reviews/spinning?    fetching-reviews?
-      :reviews/rating       score
-      :reviews/review-count (:review-count diva-stylist)
-      :reviews/reviews      (->> stylist-reviews
-                                 (mapv #(update %
-                                                :review-date
-                                                f/short-date)))}
-     (when (not= (:current-page paginated-reviews)
-                 (:pages paginated-reviews))
-       {:reviews/cta-id     "more-stylist-reviews"
-        :reviews/cta-target [e/control-fetch-stylist-reviews]
-        :reviews/cta-label  "View More"}))))
+  (let [max-reviews-shown 3]
+    (when (and publishable?
+               (seq stylist-reviews))
+      (merge
+       {:reviews/id           "stylist-reviews"
+        :reviews/rating       score
+        :reviews/review-count (:review-count diva-stylist) ; Is this the same as (count stylist-reviews)?
+        :reviews/reviews      (->> stylist-reviews
+                                   (mapv #(-> %
+                                              (update :review-date f/short-date)
+                                              (assoc :target [e/navigate-home])))
+                                   (take max-reviews-shown))}
+       (when (> (count stylist-reviews) max-reviews-shown)
+         {:reviews/cta-id     "show-all-stylist-reviews"
+          :reviews/cta-target [e/control-fetch-stylist-reviews] ; TODO
+          :reviews/cta-label  (str "Show all " (count stylist-reviews) " reviews")})))))
 
 (defn ^:private card<-
   [{:stylist/keys         [name portrait salon slug experience]
@@ -190,28 +188,6 @@
             :primary (str "Select " (-> stylist :diva/stylist :store-nickname))
             :target  [e/flow|stylist-matching|matched {:stylist      (:diva/stylist stylist)
                                                        :result-index 0}]})))
-
-(defn ^:private ratings-bar-chart<-
-  [hide-star-distribution?
-   {:stylist.rating/keys [histogram maximum publishable?]}]
-  (when (and publishable?
-             (some pos? histogram)
-             (not hide-star-distribution?))
-    {:ratings-bar-chart/id "star-distribution-table"
-     :ratings-bar-chart/bars
-     (->> histogram
-          (map-indexed
-           (fn enrich-% [i quantity]
-             (let [row (inc i)]
-               {:ratings-bar-chart.bar/id        (str "rating-bar-" row)
-                :ratings-bar-chart.bar/primary   row
-                :ratings-bar-chart.bar/secondary (str "(" quantity ")")
-                :ratings-bar-chart.bar/amount    (str (->> (/ quantity maximum)
-                                                           double
-                                                           (* 100))
-                                                      "%")})))
-          reverse)}))
-
 (defn ^:private experience<-
   [{:stylist/keys [experience setting licensed?]}]
   {:experience.title/id      "stylist-experience"
@@ -222,13 +198,6 @@
                                    (when licensed? "licensed")]
                                   (remove nil?)
                                   (string/join ", "))})
-
-(def service->requirement-copy
-  {"SV2-LBI-X" "FREE with purchase of 3+ Bundles"
-   "SV2-CBI-X" "FREE with purchase of 2+ Bundles and a Closure"
-   "SV2-FBI-X" "FREE with purchase of 2+ Bundles and a Lace Frontal"
-   "SV2-3BI-X" "FREE with purchase of 2+ Bundles and a 360 Frontal"
-   "SV2-WGC-X" "FREE with purchase of a Lace Front Wig or a 360 Lace Wig"})
 
 (defn ^:private service-sku-query
   [{:product/keys                   [essential-title]
@@ -265,16 +234,11 @@
         paginated-reviews (get-in state stylist-directory.keypaths/paginated-reviews)
 
         ;; Navigation
-        {host-name :host}         (get-in state storefront.keypaths/navigation-uri)
         undo-history              (get-in state storefront.keypaths/navigation-undo-stack)
         from-cart-or-direct-load? (or (= (first (:navigation-message (first undo-history))) e/navigate-cart)
                                       (nil? (first undo-history)))
 
-        hide-star-distribution?            (experiments/hide-star-distribution? state)
-        instagram-stylist-profile?         (experiments/instagram-stylist-profile? state)
-
-        ;; Requestings
-        fetching-reviews?                  (utils/requesting? state request-keys/fetch-stylist-reviews)]
+        instagram-stylist-profile? (experiments/instagram-stylist-profile? state)]
     (merge {:footer footer<-}
            (if from-cart-or-direct-load?
              {:mayvenn-header {:forced-mobile-layout? true
@@ -287,17 +251,13 @@
                :licenses/primary   "Licenses / Certifications"
                :licenses/secondary "Cosmetology license, Mayvenn Certified"
                :gallery            (gallery<- detailed-stylist instagram-stylist-profile?)
-               :stylist-reviews    (reviews<- fetching-reviews?
-                                                    detailed-stylist
-                                                    paginated-reviews)
+               :stylist-reviews    (reviews<- detailed-stylist paginated-reviews)
 
                :card                  (within :stylist-profile.card (card<- detailed-stylist))
-               :ratings-bar-chart     (ratings-bar-chart<- hide-star-distribution?
-                                                              detailed-stylist)
                :experience            (experience<- detailed-stylist)
                :google-maps           (maps/map-query state)
                :sticky-select-stylist (sticky-select-stylist<- current-stylist
-                                                                  detailed-stylist)})))))
+                                                               detailed-stylist)})))))
 
 (defn ^:export built-component
   [app-state]
