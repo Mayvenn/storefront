@@ -38,13 +38,15 @@
   (render [this]
           (component/html
            (let [{:keys [settings slides]}              (component/get-opts this)
-                 {:keys [controls] :or {controls true}} settings]
+                 {:keys [controls controls-classes] :or {controls true}} settings]
              [:div.relative.stacking-context
               (when controls
                 [:div.z2.carousel-prev {:style {:height "50px" :width "50px"}
+                                        :class controls-classes
                                         :ref   (component/use-ref this "prev-button")}])
               (when controls
                 [:div.z2.carousel-next {:style {:height "50px" :width "50px"}
+                                        :class controls-classes
                                         :ref   (component/use-ref this "next-button")}])
               [:div.slides {:ref (component/use-ref this "container")}
                (for [[idx slide] (map-indexed vector slides)]

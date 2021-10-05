@@ -35,7 +35,7 @@
      [:div.title-3.proxima reviewer-name]
      [:div.proxima.content-4.dark-gray review-date]]
     [:div.proxima.content-4 (get install-type->display-name install-type)]]
-   [:p.proxima.content-3.ellipsis-5 review-content]
+   [:p.proxima.content-3.ellipsis-5.col-11-on-dt.mx-auto review-content]
    [:div.mt2.content-3
     [:a.flex.items-center.underline (apply utils/route-to target)
                                     "Show more"
@@ -57,9 +57,10 @@
        {:opts {:settings {:edgePadding          10
                           :preventScrollOnTouch "auto" ; https://github.com/ganlanyuan/tiny-slider/issues/370
                           :nav                  false
-                          :controls             false
+                          :controls             true
                           :items                1
-                          :loop                 false}
+                          :loop                 false
+                          :controls-classes     "hide-on-mb-tb"}
                :slides   (map slide reviews)}})
       (when cta-id
         [:div.mx3.my4
