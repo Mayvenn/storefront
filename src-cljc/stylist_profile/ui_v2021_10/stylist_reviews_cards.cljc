@@ -1,4 +1,4 @@
-(ns stylist-profile.ui-v2021-10.stylist-reviews
+(ns stylist-profile.ui-v2021-10.stylist-reviews-cards
   (:require [storefront.component :as c]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
@@ -37,12 +37,15 @@
     [:div.proxima.content-4 (get install-type->display-name install-type)]]
    [:p.proxima.content-3.ellipsis-5 review-content]
    [:div.mt2.content-3
-    [:a.flex.items-center.underline (utils/route-to target) "Show more" (ui/forward-caret {:class "ml1"})]]])
+    [:a.flex.items-center.underline (apply utils/route-to target)
+                                    "Show more"
+                                    (ui/forward-caret {:class "ml1"})]]])
 
 (c/defcomponent organism
   [{:reviews/keys [rating cta-target cta-id cta-label id review-count reviews]} _ _]
   (c/html
    (when id
+     (prn cta-target)
      [:div.mx2.mt2.mb8
       {:key      id
        :id       "reviews"
@@ -61,6 +64,6 @@
       (when cta-id
         [:div.mx3.my4
          (ui/button-small-secondary
-          (merge (utils/route-to cta-target)
+          (merge (apply utils/route-to cta-target)
                  {:data-test cta-id})
           cta-label)])])))

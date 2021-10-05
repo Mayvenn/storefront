@@ -48,6 +48,7 @@
    "/adv/stylist-results"                                        (edn->bidi events/navigate-adventure-stylist-results)
    "/adv/match-success"                                          (edn->bidi events/navigate-adventure-match-success)
    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug]            (edn->bidi events/navigate-adventure-stylist-profile)
+   ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug "/reviews"] (edn->bidi events/navigate-adventure-stylist-profile-reviews)
    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug "/gallery"] (edn->bidi events/navigate-adventure-stylist-gallery)
    "/certified-stylists"                                         (edn->bidi events/navigate-info-certified-stylists)
    "/about-our-hair"                                             (edn->bidi events/navigate-info-about-our-hair)

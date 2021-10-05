@@ -125,6 +125,9 @@
    events/navigate-adventure-stylist-profile   #(ui/lazy-load-component :catalog
                                                                         'stylist-profile.core/page
                                                                         events/navigate-adventure-stylist-profile)
+   events/navigate-adventure-stylist-profile-reviews   #(ui/lazy-load-component :catalog
+                                                                                'stylist-profile.stylist-reviews-v2021-10/page
+                                                                                events/navigate-adventure-stylist-profile-reviews)
    events/navigate-adventure-stylist-gallery   #(ui/lazy-load-component :catalog
                                                                         'adventure.stylist-matching.stylist-gallery/built-component
                                                                         events/navigate-adventure-stylist-gallery)

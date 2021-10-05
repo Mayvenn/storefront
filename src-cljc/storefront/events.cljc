@@ -525,6 +525,7 @@
 (defpath navigate-adventure-stylist-gallery)
 (defpath navigate-adventure-match-success)
 (defpath navigate-adventure-stylist-profile)
+(defpath navigate-adventure-stylist-profile-reviews)
 
 (defpath adventure-address-component-mounted)
 (defpath control-adventure-stylist-salon-address-clicked)

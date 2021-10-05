@@ -806,27 +806,28 @@
                      "Sitemap: https://shop.mayvenn.com/sitemap.xml"])
 
 (def server-render-pages
-  {events/navigate-home                      generic-server-render
-   events/navigate-category                  render-category
-   events/navigate-legacy-named-search       redirect-named-search
-   events/navigate-legacy-ugc-named-search   redirect-named-search
-   events/navigate-legacy-product-page       redirect-legacy-product-page
-   events/navigate-product-details           render-product-details
-   events/navigate-content-help              generic-server-render
-   events/navigate-content-about-us          generic-server-render
-   events/navigate-content-privacy           generic-server-render
-   events/navigate-content-privacyv1         generic-server-render
-   events/navigate-content-tos               generic-server-render
-   events/navigate-content-guarantee         generic-server-render
-   events/navigate-content-ugc-usage-terms   generic-server-render
-   events/navigate-content-voucher-terms     generic-server-render
-   events/navigate-content-program-terms     generic-server-render
-   events/navigate-store-gallery             generic-server-render
-   events/navigate-checkout-processing       generic-server-render
-   events/navigate-adventure-stylist-profile generic-server-render
-   events/navigate-adventure-stylist-gallery generic-server-render
-   events/navigate-shop-by-look              generic-server-render
-   events/navigate-shop-by-look-details      render-look-details})
+  {events/navigate-home                              generic-server-render
+   events/navigate-category                          render-category
+   events/navigate-legacy-named-search               redirect-named-search
+   events/navigate-legacy-ugc-named-search           redirect-named-search
+   events/navigate-legacy-product-page               redirect-legacy-product-page
+   events/navigate-product-details                   render-product-details
+   events/navigate-content-help                      generic-server-render
+   events/navigate-content-about-us                  generic-server-render
+   events/navigate-content-privacy                   generic-server-render
+   events/navigate-content-privacyv1                 generic-server-render
+   events/navigate-content-tos                       generic-server-render
+   events/navigate-content-guarantee                 generic-server-render
+   events/navigate-content-ugc-usage-terms           generic-server-render
+   events/navigate-content-voucher-terms             generic-server-render
+   events/navigate-content-program-terms             generic-server-render
+   events/navigate-store-gallery                     generic-server-render
+   events/navigate-checkout-processing               generic-server-render
+   events/navigate-adventure-stylist-profile         generic-server-render
+   events/navigate-adventure-stylist-profile-reviews generic-server-render
+   events/navigate-adventure-stylist-gallery         generic-server-render
+   events/navigate-shop-by-look                      generic-server-render
+   events/navigate-shop-by-look-details              render-look-details})
 
 (defn robots [_]
   (string/join "\n" robots-content))
@@ -1010,7 +1011,8 @@
   (fn [{:keys [subdomains uri query-params] :as req}]
     (let [[event {:keys [stylist-id store-slug]}] (routes/navigation-message-for uri query-params (first subdomains))]
       (if (#{events/navigate-adventure-stylist-gallery
-             events/navigate-adventure-stylist-profile} event)
+             events/navigate-adventure-stylist-profile
+             events/navigate-adventure-stylist-profile-reviews} event)
         (if-let [stylist (api/get-servicing-stylist storeback-config stylist-id)]
           (if (not= (:store-slug stylist) store-slug)
             ;; Correct stylist slug

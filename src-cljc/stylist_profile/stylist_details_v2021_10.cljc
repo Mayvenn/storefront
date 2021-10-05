@@ -29,7 +29,7 @@
             [stylist-profile.ui-v2021-10.sticky-select-stylist :as sticky-select-stylist-v2]
             [stylist-profile.ui-v2021-10.gallery :as gallery]
             [stylist-profile.ui-v2021-10.services-offered :as services-offered]
-            [stylist-profile.ui-v2021-10.stylist-reviews :as stylist-reviews-v2]
+            [stylist-profile.ui-v2021-10.stylist-reviews-cards :as stylist-reviews-cards-v2]
 
             ;; OLD
             [stylist-profile.ui.footer :as footer]))
@@ -71,7 +71,7 @@
      (licenses-molecule (with :licenses data))]
     (c/build maps/component google-maps)
     clear-float-atom
-    (c/build stylist-reviews-v2/organism stylist-reviews)
+    (c/build stylist-reviews-cards-v2/organism stylist-reviews)
     ui-dividers/green]
    (c/build footer/organism footer)
    (c/build sticky-select-stylist-v2/organism sticky-select-stylist)])
@@ -133,7 +133,9 @@
 (defn ^:private reviews<-
   [{:stylist.rating/keys [publishable? score] diva-stylist :diva/stylist}
    {stylist-reviews :reviews :as paginated-reviews}]
-  (let [max-reviews-shown 3]
+  (let [max-reviews-shown 3
+        stylist-id (:stylist-id diva-stylist)
+        store-slug (:store-slug diva-stylist)]
     (when (and publishable?
                (seq stylist-reviews))
       (merge
@@ -141,13 +143,19 @@
         :reviews/rating       score
         :reviews/review-count (:review-count diva-stylist) ; Is this the same as (count stylist-reviews)?
         :reviews/reviews      (->> stylist-reviews
-                                   (mapv #(-> %
-                                              (update :review-date f/short-date)
-                                              (assoc :target e/navigate-home)))
+                                   (map-indexed (fn [ix review]
+                                                  (-> review
+                                                      (update :review-date f/short-date)
+                                                      (assoc :target [e/navigate-adventure-stylist-profile-reviews
+                                                                      {:stylist-id   stylist-id
+                                                                       :store-slug   store-slug
+                                                                       :query-params {:offset ix}}]))))
                                    (take max-reviews-shown))}
        (when (> (count stylist-reviews) max-reviews-shown)
          {:reviews/cta-id     "show-all-stylist-reviews"
-          :reviews/cta-target [e/control-fetch-stylist-reviews] ; TODO
+          :reviews/cta-target [e/navigate-adventure-stylist-profile-reviews
+                               {:stylist-id   stylist-id
+                                :store-slug   store-slug}]
           :reviews/cta-label  (str "Show all " (count stylist-reviews) " reviews")})))))
 
 (defn ^:private card<-

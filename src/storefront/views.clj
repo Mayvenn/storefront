@@ -135,6 +135,7 @@
     events/navigate-adventure-stylist-results
     events/navigate-adventure-match-success
     events/navigate-adventure-stylist-profile
+    events/navigate-adventure-stylist-profile-reviews
     events/navigate-adventure-stylist-gallery})
 
 (def ^:private homepage-events
