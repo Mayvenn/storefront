@@ -153,6 +153,7 @@
 (defpath control-change-state)
 (defpath control-focus)
 (defpath control-blur)
+(defpath control-scroll-to-selector)
 
 (defpath control-design-system-popup-show)
 (defpath control-design-system-popup-dismiss)

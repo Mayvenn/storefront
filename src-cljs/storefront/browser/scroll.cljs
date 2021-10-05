@@ -1,7 +1,9 @@
 (ns storefront.browser.scroll
   (:require [goog.object :as object]
             [goog.dom.classlist :as classlist]
+            [storefront.events :as e]
             [storefront.browser.events :as events]
+            [storefront.effects :as fx]
             [clojure.string :as string]))
 
 (defn disable-body-scrolling []
@@ -87,3 +89,7 @@
     (scroll-to-elem el)))
 
 ;; END ATTN:
+
+(defmethod fx/perform-effects e/control-scroll-to-selector
+  [dispatch event {:keys [selector]} prev-app-state app-state]
+  (scroll-selector-to-top selector))
