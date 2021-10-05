@@ -7,6 +7,7 @@
             api.orders
             api.products
             api.stylist
+            [mayvenn.visual.ui.dividers :as ui-dividers]
             [mayvenn.visual.tools :refer [within with]]
             [clojure.string :as string]
             spice.core
@@ -70,7 +71,8 @@
      (licenses-molecule (with :licenses data))]
     (c/build maps/component google-maps)
     clear-float-atom
-    (c/build stylist-reviews-v2/organism stylist-reviews)]
+    (c/build stylist-reviews-v2/organism stylist-reviews)
+    ui-dividers/green]
    (c/build footer/organism footer)
    (c/build sticky-select-stylist-v2/organism sticky-select-stylist)])
 
@@ -141,7 +143,7 @@
         :reviews/reviews      (->> stylist-reviews
                                    (mapv #(-> %
                                               (update :review-date f/short-date)
-                                              (assoc :target [e/navigate-home])))
+                                              (assoc :target e/navigate-home)))
                                    (take max-reviews-shown))}
        (when (> (count stylist-reviews) max-reviews-shown)
          {:reviews/cta-id     "show-all-stylist-reviews"
