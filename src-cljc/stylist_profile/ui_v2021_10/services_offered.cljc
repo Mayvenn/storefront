@@ -11,7 +11,7 @@
 
 (c/defcomponent service-pill-molecule
   [{:keys [title]} _ {:keys [id]}]
-  [:span.capped.bg-pale-purple.px2.py1.mr2.content-3
+  [:div.capped.bg-pale-purple.px2.py1.mr2.mb1.content-3
    {:key id}
    title])
 
@@ -19,4 +19,5 @@
   [data _ _]
   [:div.pt5
    (services-title-molecule data)
-   (c/elements service-pill-molecule data :services)])
+   (into [:div.flex.flex-wrap]
+         (c/elements service-pill-molecule data :services))])
