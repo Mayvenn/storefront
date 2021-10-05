@@ -42,7 +42,7 @@
   (render [this]
           (let [data (c/get-props this)]
             (c/html
-             [:div.bg-white.m3
+             [:div.bg-white
               [:div.left-align.p3
                [:div.mb3
                 (c/build image-grid/square-hero-with-right-tiled-column-molecule

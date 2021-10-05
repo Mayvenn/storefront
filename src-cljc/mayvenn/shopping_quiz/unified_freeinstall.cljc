@@ -342,14 +342,12 @@
    [:div.bg-white
     (quiz-header (with :header data))]
    (c/build progress-bar/variation-1 (with :progress data))
-   [:div.flex.flex-column.justify-center.items-center.myj3
-    [:div.col-8.my2
+   [:div.flex.flex-column.items-center
+    [:div.col-10.pt2
      (titles/canela (with :title data))]
-    [:div.mb6.col-12
+    [:div.col-12.p3
      (c/build card/look-2
-              (:summary-v2 data))]
-    [:div.col-12.px3
-     (actions/wide-large-primary (with :action data))]]])
+              (:summary-v2 data))]]])
 
 (c/defcomponent summary-template
   [data _ _]
@@ -380,8 +378,8 @@
          closures "closures"} (group-by :hair/family skus)]
     (merge (progress< quiz-progression)
            (header< undo-history (apply max quiz-progression))
-           {:title/primary            ["Nice choice!"
-                                       "Now let's find a stylist near you!"]
+           {:title/primary            ["Nice choice!"]
+            :title/secondary          ["Now let's find a stylist near you!"]
             :suggestion/id            "selected-look"
             :suggestion/ucare-id      img-id
             :suggestion/primary       (str origin " " texture)
@@ -415,6 +413,10 @@
                                                                  {:image-url (:ucare/id image)
                                                                   :length    (str (first (:hair/length sku)) "\"")}))
                                                              skus)})
+               (within :action {:id                "summary-continue"
+                                :label             "Continue"
+                                :target            [e/go-to-navigate
+                                                           {:target [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]})
                (within :title {:primary (str origin " " texture " hair + free install service")})
                (within :price {:discounted-price (mf/as-money discounted-price)
                                :retail-price     (mf/as-money retail-price)})
@@ -426,6 +428,9 @@
                                      :yotpo-reviews-summary/data-url      (some-> review-data :data-url)})))))})))
 
 ;; Template: 2/Suggestions
+(c/defcomponent card-look-2-suggestion-wrapper [data _ _]
+  [:div.m3
+   (c/build card/look-2 data)])
 
 (c/defcomponent suggestions-template-v2
   [data _ _]
@@ -435,7 +440,7 @@
    (c/build progress-bar/variation-1 (with :progress data))
    [:div.flex.flex-column.mbj2
     (titles/canela-huge {:primary "Our picks for you"})
-    (c/elements card/look-2
+    (c/elements card-look-2-suggestion-wrapper
                 data
                 :suggestions-v2)]
    (c/build escape-hatch/variation-1

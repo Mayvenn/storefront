@@ -89,7 +89,8 @@
                                       (apply utils/fake-href cta-target)) cta-label)]]]])
 
 (c/defcomponent look-2-wrapper [data _ opts]
-  (c/build card/look-2 (with :quiz.result-v2 data) opts))
+  [:div.m3
+   (c/build card/look-2 (with :quiz.result-v2 data) opts)])
 
 (c/defcomponent results-template
   [{:keys [header quiz-results shopping-quiz-v2?]} _ _]
