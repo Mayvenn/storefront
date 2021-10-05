@@ -465,6 +465,7 @@
 (defpath bulk-add-sku-to-bag)
 (defpath control-bulk-add-skus-to-bag)
 (defpath add-servicing-stylist-and-sku)
+(defpath upsold-free-install)
 
 (defpath cart-swap-popup-show)
 (defpath control-cart-swap-popup-dismiss)

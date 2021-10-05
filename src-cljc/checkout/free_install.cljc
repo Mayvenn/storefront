@@ -1,10 +1,13 @@
 (ns checkout.free-install
   (:require
    #?@(:cljs [[storefront.accessors.auth :as auth]
+              [storefront.api :as api]
               [storefront.history :as history]])
    [storefront.component :as component]
    [storefront.components.ui :as ui]
    [storefront.events :as events]
+   [storefront.keypaths :as keypaths]
+   [storefront.platform.messages :as messages]
    [storefront.platform.component-utils :as utils]
    [storefront.effects :as effects]
    [adventure.components.layered :as layered]))
@@ -27,10 +30,9 @@
     (ui/button-medium-primary (merge {:class "mb3" :style {:width "275px"}}
                                      (utils/fake-href events/control-checkout-free-install-added)) "Add My Free Install")
     (ui/button-medium-underline-primary (merge {:class "mb6"}
-                                               utils/fake-href events/control-checkout-free-install-skipped) "Skip & continue")]])
+                                               (utils/fake-href events/control-checkout-free-install-skipped)) "Skip & continue")]])
 
-(defn query [state]
-  {})
+(defn query [state])
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
@@ -42,9 +44,29 @@
        (history/enqueue-navigate events/navigate-checkout-returning-or-guest {}))))
 
 (defmethod effects/perform-effects events/control-checkout-free-install-added
-  [_ _ _ _ app-state]
-  (continue app-state))
+  [_ _ args _ app-state]
+  (messages/handle-message events/upsold-free-install args))
 
 (defmethod effects/perform-effects events/control-checkout-free-install-skipped
   [_ _ _ _ app-state]
   (continue app-state))
+
+(defmethod effects/perform-effects events/upsold-free-install
+  [_ _ _ _ app-state]
+  #?(:cljs
+     (api/add-sku-to-bag
+      (get-in app-state keypaths/session-id)
+      {:sku                {:catalog/sku-id "SV2-LBI-X"}
+       :quantity           1
+       :stylist-id         (get-in app-state keypaths/store-stylist-id)
+       :token              (get-in app-state keypaths/order-token)
+       :number             (get-in app-state keypaths/order-number)
+       :user-id            (get-in app-state keypaths/user-id)
+       :user-token         (get-in app-state keypaths/user-token)
+       :heat-feature-flags (get-in app-state keypaths/features)}
+      #(do
+         (messages/handle-message events/api-success-add-sku-to-bag
+                                  {:order    %
+                                   :quantity 1
+                                   :sku      {:catalog/sku-id "SV2-LBI-X"}})
+         (continue app-state)))))
