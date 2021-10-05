@@ -484,3 +484,7 @@
    (select ?discountable items)
    (empty? (mapcat :item.service/addons items))
    (empty? (mapcat :join/addon-facets items))))
+
+(defn lacks-freeinstall?
+  [{:order/keys [items]}]
+  true)

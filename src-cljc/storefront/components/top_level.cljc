@@ -90,6 +90,7 @@
    events/navigate-checkout-processing     #(ui/lazy-load-component :checkout 'checkout.processing/built-component events/navigate-checkout-processing)
    events/navigate-cart                    #(ui/lazy-load-component :catalog  'checkout.classic-cart/built-component events/navigate-cart)
    events/navigate-checkout-add            #(ui/lazy-load-component :checkout 'checkout.add/built-component events/navigate-checkout-add)
+   events/navigate-checkout-free-install   #(ui/lazy-load-component :checkout 'checkout.free-install/built-component events/navigate-checkout-free-install)
    events/navigate-voucher-redeem          #(ui/lazy-load-component :redeem   'voucher.redeem/built-component events/navigate-voucher-redeem)
    events/navigate-voucher-redeemed        #(ui/lazy-load-component :redeem   'voucher.redeemed/built-component events/navigate-voucher-redeemed)
    events/navigate-content-guarantee       (constantly content/built-component)

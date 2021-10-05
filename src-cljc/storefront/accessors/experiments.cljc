@@ -131,3 +131,7 @@
 (defn stylist-profile?
   [data]
   (display-feature? data "stylist-profile"))
+
+(defn fi-upsell-interstitial?
+  [data]
+  (display-feature? data "fi-upsell-interstitial"))

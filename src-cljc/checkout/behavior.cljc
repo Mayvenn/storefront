@@ -8,6 +8,7 @@
             [api.catalog :refer [select ?discountable ?service]]
             [api.orders :as api.orders]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.experiments :as experiments]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -74,10 +75,20 @@
 
 (defmethod effects/perform-effects events/checkout-order-cleared-for-mayvenn-checkout
   [_ _ _ _ state]
-  (->> (if (-> state
-               api.orders/current
-               api.orders/requires-addons-followup?)
+  (->> (cond
+         (and
+          (experiments/fi-upsell-interstitial? state)
+          (-> state
+              api.orders/current
+              api.orders/lacks-freeinstall?))
+         events/navigate-checkout-free-install
+
+         (-> state
+             api.orders/current
+             api.orders/requires-addons-followup?)
          events/navigate-checkout-add
+
+         :else
          events/navigate-checkout-address)
        #?(:cljs history/enqueue-navigate)))
 
