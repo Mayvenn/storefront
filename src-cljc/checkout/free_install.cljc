@@ -13,26 +13,37 @@
    [adventure.components.layered :as layered]))
 
 (component/defcomponent component
-  [data _ _]
+  [{:keys [heading shop-framed-checklist ctas] :as thing} _ _]
   [:div.container.p2
    {:style {:max-width "580px"}}
-   [:div.title-2.canela.center.mt6.mb3
-    "Your Install Is On Us"]
+  [:div.title-2.canela.center.mt6.mb3
+    (-> heading :copy :primary)]
    [:div.center.col-11.mx-auto
-    "You qualify for our complimentary Mayvenn Install service. No catch - it's free."
+    (-> heading :copy :secondary)
     (ui/button-small-underline-primary (merge {:class "ml1"}
                                               (utils/fake-href
-                                               events/popup-show-consolidated-cart-free-install)) "LEARN MORE")]
-   (component/build layered/shop-framed-checklist {:header/value "What's included?"
-                                                   :bullets ["Shampoo" "Braid down" "Sew-in and style" "Paid for by Mayvenn"]
-                                                   :divider-img nil})
+                                               (-> heading :popup :target))) (-> heading :popup :label))]
+   (component/build layered/shop-framed-checklist shop-framed-checklist)
    [:div.flex.flex-column.items-center
     (ui/button-medium-primary (merge {:class "mb3" :style {:width "275px"}}
-                                     (utils/fake-href events/control-checkout-free-install-added)) "Add My Free Install")
+                                     (-> ctas :upsell-button :target)) (-> ctas :upsell-button :label))
     (ui/button-medium-underline-primary (merge {:class "mb6"}
-                                               (utils/fake-href events/control-checkout-free-install-skipped)) "Skip & continue")]])
+                                               (-> ctas :continue-button :target)) (-> ctas :continue-button :label))]])
 
-(defn query [state])
+(defn query [state]
+  {:heading               {:popup {:target events/popup-show-consolidated-cart-free-install
+                                   :label  "LEARN MORE"}
+                           :copy  {:primary   "Your Install Is On Us"
+                                   :secondary "You qualify for our complimentary Mayvenn Install service. No catch - it's free."}}
+   :shop-framed-checklist {:header/value "What's included?"
+                           :bullets      ["Shampoo"
+                                          "Braid down"
+                                          "Sew-in and style"
+                                          "Paid for by Mayvenn"]}
+   :ctas                  {:upsell-button   {:target (utils/fake-href events/control-checkout-free-install-added)
+                                             :label  "Add My Free Install"}
+                           :continue-button {:target (utils/fake-href events/control-checkout-free-install-skipped)
+                                             :label  "Skip & continue"}}})
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
