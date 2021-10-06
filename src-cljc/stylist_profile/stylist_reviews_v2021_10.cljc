@@ -71,5 +71,5 @@
                paginated-reviews)))
 
 (defn ^:export page
-  [app-state]
+  [app-state _]
   (c/build template (query app-state)))
