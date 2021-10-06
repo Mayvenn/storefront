@@ -12,7 +12,8 @@
 
 (def ready (conj k/models-live-help :ready))
 
-(def ^:private bug-hidden-nav-events #{events/navigate-adventure-stylist-profile})
+(def ^:private bug-hidden-nav-events #{events/navigate-adventure-stylist-profile
+                                       events/navigate-added-to-cart})
 
 (defn maybe-start
   [state]
