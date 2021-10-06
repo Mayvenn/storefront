@@ -17,7 +17,11 @@
         [:div.my2.pr2
          {:style {:min-width "50%"}}
          [:div.proxima.title-3.shout heading]
-         [:div content]
+         [:div
+          (if-not (string? content)
+            (for [block content]
+              [:div block])
+            content)]
          (when-let [link-content (:link/content section)]
            (ui/button-small-underline-primary
             (assoc

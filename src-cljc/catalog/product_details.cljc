@@ -325,14 +325,15 @@
                                                       "stylist with qualifying purchases.* ")}))))
 
 (defn ^:private tab-section<
-  [product
-   {:keys [heading content-key]
+  [data
+   {:keys [content-path fallback-content-path]
     :as   section}]
-  (when-let [content (get product content-key)]
-    (merge
-     {:heading heading
-      :content content}
-     (select-keys section [:link/content :link/target :link/id]))))
+  (when-let [content (or (get-in data content-path)
+                         (and fallback-content-path
+                              (get-in data fallback-content-path)))]
+    (-> section
+        (select-keys [:heading :link/content :link/target :link/id])
+        (assoc :content content))))
 
 (defn query [data]
   (let [selections         (get-in data catalog.keypaths/detailed-product-selections)
@@ -404,11 +405,12 @@
                                          :icon     {:opts {:height "20px"
                                                            :width  "20px"}
                                                     :id   "info-color-circle"}
-                                         :sections (keep (partial tab-section< product)
+                                         :sections (keep (partial tab-section< {:product product
+                                                                                :selected-sku selected-sku})
                                                          [(merge
                                                            (when (seq (:copy/model-wearing product))
                                                              {:heading     "Model Wearing"
-                                                              :content-key :copy/model-wearing})
+                                                              :content-path [:product :copy/model-wearing]})
                                                            (when length-guide-image
                                                              {:link/content "Length Guide"
                                                               :link/target  [events/popup-show-length-guide
@@ -416,29 +418,30 @@
                                                                               :location           "hair-info-tab"}]
                                                               :link/id      "hair-info-tab-length-guide"}))
                                                           {:heading     "Unit Weight"
-                                                           :content-key :copy/weights}
+                                                           :content-path [:selected-sku :hair/weight]
+                                                           :fallback-content-path [:product :copy/weights]}
                                                           {:heading     "Hair Quality"
-                                                           :content-key :copy/quality}
+                                                           :content-path [:product :copy/quality]}
                                                           {:heading     "Hair Origin"
-                                                           :content-key :copy/origin}
+                                                           :content-path [:product :copy/origin]}
                                                           {:heading     "Hair Weft Type"
-                                                           :content-key :copy/weft-type}
+                                                           :content-path [:product :copy/weft-type]}
                                                           {:heading     "Part Design"
-                                                           :content-key :copy/part-design}
+                                                           :content-path [:product :copy/part-design]}
                                                           {:heading     "Features"
-                                                           :content-key :copy/features}
+                                                           :content-path [:product :copy/features]}
                                                           {:heading     "Available Materials"
-                                                           :content-key :copy/materials}
+                                                           :content-path [:product :copy/materials]}
                                                           {:heading     "Lace Size"
-                                                           :content-key :copy/lace-size}
+                                                           :content-path [:product :copy/lace-size]}
                                                           {:heading     "Silk Size"
-                                                           :content-key :copy/silk-size}
+                                                           :content-path [:product :copy/silk-size]}
                                                           {:heading     "Cap Size"
-                                                           :content-key :copy/cap-size}
+                                                           :content-path [:product :copy/cap-size]}
                                                           {:heading     "Wig Density"
-                                                           :content-key :copy/density}
+                                                           :content-path [:product :copy/density]}
                                                           {:heading     "Tape-in Glue Information"
-                                                           :content-key :copy/tape-in-glue}])}
+                                                           :content-path [:product :copy/tape-in-glue]}])}
                                         {:title    "Description"
                                          :id       :description
                                          :active?  (= active-tab-name :description)
@@ -446,24 +449,26 @@
                                                            :width  "18px"}
                                                     :id   "description"}
                                          :primary  (:copy/description product)
-                                         :sections (keep (partial tab-section< product)
+                                         :sections (keep (partial tab-section< {:product product
+                                                                                :selected-sku selected-sku})
                                                          [{:heading     "Hair Type"
-                                                           :content-key :copy/hair-type}
+                                                           :content-path [:product :copy/hair-type]}
                                                           {:heading     "What's Included"
-                                                           :content-key :copy/whats-included}
+                                                           :content-path [:product :copy/whats-included]}
                                                           {:heading     "Available Services"
-                                                           :content-key :copy/available-services}])}
+                                                           :content-path [:product :copy/available-services]}])}
                                         {:title    "Care"
                                          :id       :care
                                          :active?  (= active-tab-name :care)
                                          :icon     {:opts {:height "20px"
                                                            :width  "20px"}
                                                     :id   "heart"}
-                                         :sections (keep (partial tab-section< product)
+                                         :sections (keep (partial tab-section< {:product product
+                                                                                :selected-sku selected-sku})
                                                          [{:heading     "Maintenance Level"
-                                                           :content-key :copy/maintenance-level}
+                                                           :content-path [:product :copy/maintenance-level]}
                                                           {:heading     "Can it be Dyed?"
-                                                           :content-key :copy/dyeable?}])}]})
+                                                           :content-path [:product :copy/dyeable?]}])}]})
        (let [{:keys [copy/description
                      copy/colors
                      copy/weights
