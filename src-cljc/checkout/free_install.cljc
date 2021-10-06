@@ -56,13 +56,13 @@
 
 (defmethod effects/perform-effects events/control-checkout-free-install-added
   [_ _ args _ app-state]
-  (messages/handle-message events/upsold-free-install args))
+  (messages/handle-message events/free-install-upsold args))
 
 (defmethod effects/perform-effects events/control-checkout-free-install-skipped
   [_ _ _ _ app-state]
   (continue app-state))
 
-(defmethod effects/perform-effects events/upsold-free-install
+(defmethod effects/perform-effects events/free-install-upsold
   [_ _ _ _ app-state]
   #?(:cljs
      (api/add-sku-to-bag
