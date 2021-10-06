@@ -1,6 +1,7 @@
 (ns stylist-profile.stylist-reviews-v2021-10
   (:require adventure.keypaths
             api.stylist
+            [stylist-profile.ui-v2021-10.stylist-reviews-cards :as stylist-reviews-cards-v2]
             [storefront.component :as c]
             [storefront.components.formatters :as f]
             [storefront.components.ui :as ui]
@@ -29,23 +30,7 @@
         [:div.content-3.proxima.ml1
          (str "(" review-count ")")]]]
 
-      (map-indexed
-       (fn[index {:keys [review-id stars install-type review-content reviewer-name review-date]}]
-         [:div.py2.border-bottom.border-cool-gray
-          {:key       review-id
-           :data-test (str "review-" index)}
-          [:div
-           (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars stars "13px" {})]
-             [:div.flex
-              whole-stars
-              partial-star
-              empty-stars
-              [:div.ml2.content-3.proxima (get install-type->display-name install-type)]])]
-          [:div.py1 review-content]
-          [:div.flex
-           [:div "— " reviewer-name]
-           [:div.ml1.dark-gray review-date]]])
-       reviews)
+      (map-indexed stylist-reviews-cards-v2/review-card reviews)
       (when cta-id
         [:div.p5.center
          {:data-test cta-id}
