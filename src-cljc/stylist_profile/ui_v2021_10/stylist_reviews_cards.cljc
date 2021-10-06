@@ -25,32 +25,52 @@
     [:div.proxima.title-1.p-color rating " • "]]
    [:div review-count " Ratings"]])
 
-(defn review-card [ix {:keys [review-id install-type stars review-content reviewer-name review-date target]}]
-  [:div.border.border-cool-gray.rounded.p2.mx1.proxima
-   {:key       review-id
-    :data-test (str "review-" ix)}
-   [:div.mb3
-    ;; User portrait will go here
-    [:div.grid.x2x2.gap-0
-     [:div.title-3.proxima reviewer-name]
-     (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars stars "13px" {})]
-       [:div.flex.justify-end whole-stars partial-star empty-stars])
-     [:div.proxima.content-4.dark-gray review-date]
-     [:div.proxima.content-4.right-align (get install-type->display-name install-type)]]]
-   [:div.proxima.content-3.col-11-on-dt.mx-auto
-    [:div {:id    (str "review-" ix "-content")
-           :class (if target
-                    "ellipsis-5"
-                    "ellipsis-15")} review-content]]
-   [:div.mt2.content-3
-    {:id (str "review-" ix "-content-more")}
-    (when target
-      [:a.flex.items-center.underline (apply utils/route-to target)
-       "Show more"
-       (ui/forward-caret {:class "ml1"})])]])
+(c/defdynamic-component review-card
+  (constructor
+   [this props]
+   (c/create-ref! this (str "slide-" (-> this c/get-props :review-id)))
+   {:overflow? false})
+  (did-mount
+   [this]
+   #?(:cljs
+      (c/set-state! this :overflow? (some->> (c/get-props this)
+                                             :review-id
+                                             (str "slide-")
+                                             (c/get-ref this)))))
+  (render
+   [this]
+   (c/html
+    (let [{:keys [review-id install-type stars review-content reviewer-name review-date target overflow?]} (c/get-props this)
+          {:keys [idx]} (c/get-opts this)]
+      [:div.border.border-cool-gray.rounded.p2.mx1.proxima
+       {:key       review-id
+        :data-test (str "review-" idx)}
+       [:div.mb3
+        ;; User portrait will go here
+        [:div.grid.x2x2.gap-0
+         [:div.title-3.proxima reviewer-name]
+         (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars stars "13px" {})]
+           [:div.flex.justify-end whole-stars partial-star empty-stars])
+         [:div.proxima.content-4.dark-gray review-date]
+         [:div.proxima.content-4.right-align (get install-type->display-name install-type)]]]
+       [:div.proxima.content-3.col-11-on-dt.mx-auto
+        [:div
+         {:id    (str "review-" idx "-content")
+          :ref   (c/use-ref this (str "slide-" review-id))
+          :class (if target
+                   "ellipsis-5"
+                   "ellipsis-15")} review-content]]
+       [:div.mt2.content-3
+        {:id (str "review-" idx "-content-more")}
+        (let [element           (c/get-ref this (str "slide-" review-id))
+              element-overflow? (when element
+                                  (< (.-offsetHeight element) (.-scrollHeight element)))]
+          (when (and target element-overflow?)
+            [:a.flex.items-center.underline (apply utils/route-to target) "Show more" (ui/forward-caret {:class "ml1"})]))]]))))
+
 
 (c/defcomponent organism
-  [{:reviews/keys [rating cta-target cta-id cta-label id review-count reviews]} _ _]
+  [{:reviews/keys [rating cta-target cta-id cta-label id review-count] :as data} _ _]
   (c/html
    (when id
      (prn cta-target)
@@ -69,7 +89,7 @@
                           :items                1
                           :loop                 false
                           :controls-classes     "hide-on-mb-tb"}
-               :slides   (map-indexed review-card reviews)}})
+               :slides   (c/elements review-card data :reviews/reviews)}})
       (when cta-id
         [:div.mx3.my4
          (ui/button-small-secondary

@@ -18,7 +18,7 @@
    "wig-customization" "Wig Customization"})
 
 (c/defcomponent template
-  [{:reviews/keys [spinning? cta-target cta-id cta-label id review-count reviews]} _ _]
+  [{:reviews/keys [spinning? cta-target cta-id cta-label id review-count reviews] :as data} _ _]
   (c/html
    (when id
      [:div.mx3.my6
@@ -30,7 +30,7 @@
         [:div.content-3.proxima.ml1
          (str "(" review-count ")")]]]
 
-      (map-indexed stylist-reviews-cards-v2/review-card reviews)
+      (c/elements stylist-reviews-cards-v2/review-card data :reviews/reviews)
       (when cta-id
         [:div.p5.center
          {:data-test cta-id}
