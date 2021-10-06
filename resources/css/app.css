@@ -26,7 +26,8 @@
 @import 'basscss-padding';
 @import 'custom-padding.css';
 @import 'basscss-grid/lib/grid.css';
-@import 'custom-grid.css'; /* responsive helpers preferred over basscss-grid/lib/*-grid.css */
+@import 'custom-basscss-grid.css'; /* responsive helpers preferred over basscss-grid/lib/*-grid.css */
+@import 'custom-grid.css';
 @import 'basscss-flexbox';
 @import 'custom-flexbox.css';
 @import 'basscss-position';

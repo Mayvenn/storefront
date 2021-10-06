@@ -1,83 +1,29 @@
-/* responsive grid helpers */
+/* CSS grid helpers */
+/* not to be confused with BassCSS "grids" */
+/* (see custom-basscss-grid.css) */
 
-.container-height { height: 100% }
-.container-size { width: 100%; height: 100% }
-
-@media (--on-tablet) {
-    .col-on-tb {
-        float: left;
-        box-sizing: border-box;
-    }
-
-    .col-right-on-tb {
-        float: right;
-        box-sizing: border-box;
-    }
-
-    .col-1-on-tb  { width: calc(1/12 * 100%); }
-    .col-2-on-tb  { width: calc(2/12 * 100%); }
-    .col-3-on-tb  { width: calc(3/12 * 100%); }
-    .col-4-on-tb  { width: calc(4/12 * 100%); }
-    .col-5-on-tb  { width: calc(5/12 * 100%); }
-    .col-6-on-tb  { width: calc(6/12 * 100%); }
-    .col-7-on-tb  { width: calc(7/12 * 100%); }
-    .col-8-on-tb  { width: calc(8/12 * 100%); }
-    .col-9-on-tb  { width: calc(9/12 * 100%); }
-    .col-10-on-tb { width: calc(10/12 * 100%); }
-    .col-11-on-tb { width: calc(11/12 * 100%); }
-    .col-12-on-tb { width: 100%; }
+.grid {
+    display: grid;
 }
 
-@media (--on-tablet-and-desktop) {
-    .col-on-tb-dt {
-        float: left;
-        box-sizing: border-box;
-    }
-
-    .col-right-on-tb-dt {
-        float: right;
-        box-sizing: border-box;
-    }
-
-    .col-1-on-tb-dt  { width: calc(1/12 * 100%); }
-    .col-2-on-tb-dt  { width: calc(2/12 * 100%); }
-    .col-3-on-tb-dt  { width: calc(3/12 * 100%); }
-    .col-4-on-tb-dt  { width: calc(4/12 * 100%); }
-    .col-5-on-tb-dt  { width: calc(5/12 * 100%); }
-    .col-6-on-tb-dt  { width: calc(6/12 * 100%); }
-    .col-7-on-tb-dt  { width: calc(7/12 * 100%); }
-    .col-8-on-tb-dt  { width: calc(8/12 * 100%); }
-    .col-9-on-tb-dt  { width: calc(9/12 * 100%); }
-    .col-10-on-tb-dt { width: calc(10/12 * 100%); }
-    .col-11-on-tb-dt { width: calc(11/12 * 100%); }
-    .col-12-on-tb-dt { width: 100%; }
+.x2x2 {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
 }
 
-@media (--on-desktop) {
-    .col-on-dt {
-        float: left;
-        box-sizing: border-box;
-    }
+.gap-0 {gap: 0px}
+.gap-1 {gap: var(--space-1)}
+.gap-2 {gap: var(--space-2)}
+.gap-3 {gap: var(--space-3)}
+.gap-4 {gap: var(--space-4)}
+.gap-6 {gap: var(--space-6)}
+.gap-8 {gap: var(--space-8)}
 
-    .col-right-on-dt {
-        float: right;
-        box-sizing: border-box;
-    }
-
-    .col-1-on-dt  { width: calc(1/12 * 100%); }
-    .col-2-on-dt  { width: calc(2/12 * 100%); }
-    .col-3-on-dt  { width: calc(3/12 * 100%); }
-    .col-4-on-dt  { width: calc(4/12 * 100%); }
-    .col-5-on-dt  { width: calc(5/12 * 100%); }
-    .col-6-on-dt  { width: calc(6/12 * 100%); }
-    .col-7-on-dt  { width: calc(7/12 * 100%); }
-    .col-8-on-dt  { width: calc(8/12 * 100%); }
-    .col-9-on-dt  { width: calc(9/12 * 100%); }
-    .col-10-on-dt { width: calc(10/12 * 100%); }
-    .col-11-on-dt { width: calc(11/12 * 100%); }
-    .col-12-on-dt { width: 100%; }
+:root {
+    --space-1: .5rem;
+    --space-2: 1rem;
+    --space-3: 2rem;
+    --space-4: 4rem;
+    --space-6: 16rem;
+    --space-8: 64rem;
 }
-
-@custom-media --on-tablet             (min-width: 750px) and (max-width: 999px);
-@custom-media --on-tablet-and-desktop (min-width: 750px);
-@custom-media --on-desktop            (min-width: 1000px);
