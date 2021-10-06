@@ -441,7 +441,8 @@
                        events/navigate-checkout-address
                        events/navigate-checkout-returning-or-guest
                        events/navigate-checkout-sign-in
-                       events/navigate-checkout-processing} event)))
+                       events/navigate-checkout-processing
+                       events/navigate-checkout-free-install} event)))
 
       (effects/redirect events/navigate-checkout-address))))
 
@@ -938,16 +939,6 @@
 (defmethod effects/perform-effects events/api-success-update-order-add-promotion-code
   [_ _ {:keys [allow-dormant?]} _ app-state]
   (when-not allow-dormant?
-    (messages/handle-message events/flash-show-success
-                             {:message "The coupon code was successfully applied to your order."
-                              :scroll? false}))
-  (api/get-promotions (get-in app-state keypaths/api-cache)
-                      (first (get-in app-state keypaths/order-promotion-codes))))
-
-(defmethod effects/perform-effects events/api-success-update-order-add-service-line-item
-  [_ _ {:keys [shop?]} _ app-state]
-  (messages/handle-message events/flash-dismiss)
-  (when-not shop?
     (messages/handle-message events/flash-show-success
                              {:message "The coupon code was successfully applied to your order."
                               :scroll? false}))

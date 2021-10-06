@@ -122,6 +122,7 @@
 (defpath navigate-checkout-confirmation)
 (defpath navigate-checkout-processing)
 (defpath navigate-checkout-add)
+(defpath navigate-checkout-free-install)
 
 (defpath navigate-about-mayvenn-install)
 
@@ -233,6 +234,9 @@
 (defpath control-checkout-quadpay-confirmation-submit)
 (defpath control-checkout-add-checked)
 (defpath control-checkout-add-continued)
+
+(defpath control-checkout-free-install-added)
+(defpath control-checkout-free-install-skipped)
 
 (defpath control-footer-email-submit)
 (defpath control-footer-email-on-focus)
@@ -353,7 +357,6 @@
 (defpath api-success-update-order-update-cart-payments)
 (defpath api-success-update-order-update-shipping-method)
 (defpath api-success-update-order-add-promotion-code)
-(defpath api-success-update-order-add-service-line-item)
 (defpath api-success-update-order-remove-promotion-code)
 (defpath api-success-update-order-place-order)
 (defpath api-success-update-order-proceed-to-quadpay)
@@ -463,6 +466,7 @@
 (defpath bulk-add-sku-to-bag)
 (defpath control-bulk-add-skus-to-bag)
 (defpath add-servicing-stylist-and-sku)
+(defpath free-install-upsold)
 
 (defpath cart-swap-popup-show)
 (defpath control-cart-swap-popup-dismiss)

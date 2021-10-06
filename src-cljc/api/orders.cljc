@@ -71,6 +71,29 @@
    "3CW"  [["bundle" ?bundles 2] ["360 frontal" ?360-frontals 1]]
    "WGC"  [["Virgin Lace Front or a Virgin 360 Wig" ?wigs 1]]})
 
+(defn ^:private failed-rules [waiter-order rule]
+  (let [physical-items (->> waiter-order
+                            :shipments
+                            (mapcat :line-items)
+                            (filter (fn [item]
+                                      (= "spree" (:source item))))
+                            (map (fn [item]
+                                   (merge
+                                    (dissoc item :variant-attrs)
+                                    (:variant-attrs item)))))]
+    (keep (fn [[word essentials rule-quantity]]
+            (let [cart-quantity    (->> physical-items
+                                        (select essentials)
+                                        (map :quantity)
+                                        (apply +))
+                  missing-quantity (- rule-quantity cart-quantity)]
+              (when (pos? missing-quantity)
+                {:word             word
+                 :cart-quantity    cart-quantity
+                 :missing-quantity missing-quantity
+                 :essentials       essentials})))
+          rule)))
+
 (defn free-mayvenn-service
   "
   Free Mayvenn Services
@@ -91,25 +114,7 @@
                                   (orders/service-line-items waiter-order)))
         rules-for-service (or (get rules (:sku service-line-item))
                               (get SV2-rules (-> service-line-item :service-attrs :product/sku-part)))
-        physical-items    (->> waiter-order :shipments (mapcat :line-items)
-                               (filter (fn [item]
-                                         (= "spree" (:source item))))
-                               (map (fn [item]
-                                      (merge
-                                       (dissoc item :variant-attrs)
-                                       (:variant-attrs item)))))
-        failed-rules      (keep (fn [[word essentials rule-quantity]]
-                                  (let [cart-quantity    (->> physical-items
-                                                              (select essentials)
-                                                              (map :quantity)
-                                                              (apply +))
-                                        missing-quantity (- rule-quantity cart-quantity)]
-                                    (when (pos? missing-quantity)
-                                      {:word             word
-                                       :cart-quantity    cart-quantity
-                                       :missing-quantity missing-quantity
-                                       :essentials       essentials})))
-                                rules-for-service)]
+        failed-rules      (failed-rules waiter-order rules-for-service)]
     (when (seq service-line-item)
       #:free-mayvenn-service
       {;; Some sort of key indicating you can add more after completion
@@ -153,15 +158,18 @@
                                (maps/map-values (fn [facet]
                                                   (update facet :facet/options (partial maps/index-by :option/slug)))))
         items             (items<- waiter-order recents products-db skus-db images-db facets-db servicing-stylist)]
-    {:waiter/order         waiter-order
-     :order/submitted?     (= "submitted" (:state waiter-order))
-     :order.shipping/phone (get-in waiter-order [:shipping-address :phone])
-     :order.items/quantity (orders/displayed-cart-count waiter-order)
-     :order/items          items
-     :service/world        (cond ; Consider current order contents first
-                             (select ?new-world-service items) "SV2"
-                             (select ?service items)           "SRV"
-                             :else                             "SV2")}))
+    {:waiter/order                  waiter-order
+     :order/submitted?              (= "submitted" (:state waiter-order))
+     :order.shipping/phone          (get-in waiter-order [:shipping-address :phone])
+     :order.items/quantity          (orders/displayed-cart-count waiter-order)
+     :order/items                   items
+     :service/world                 (cond ; Consider current order contents first
+                                      (select ?new-world-service items) "SV2"
+                                      (select ?service items)           "SRV"
+                                      :else                             "SV2")
+     :free-mayvenn-service/eligible (->> SV2-rules
+                                         vals
+                                         (some (comp empty? (partial failed-rules waiter-order))))}))
 
 (defn completed
   [app-state]
