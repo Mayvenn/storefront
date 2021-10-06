@@ -42,38 +42,38 @@
    (c/html
     (let [{:keys [review-id install-type stars review-content reviewer-name review-date target overflow?]} (c/get-props this)
           {:keys [idx]} (c/get-opts this)]
-      [:div.border.border-cool-gray.rounded.p2.mx1.proxima
+      [:div.border.border-cool-gray.rounded.p3.mx1.proxima
        {:key       review-id
         :data-test (str "review-" idx)}
-       [:div.mb3
+       [:div.mb2
         ;; User portrait will go here
-        [:div.grid.x2x2.gap-0
+        [:div.flex.justify-between.items-baseline
          [:div.title-3.proxima reviewer-name]
-         (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars stars "13px" {})]
-           [:div.flex.justify-end whole-stars partial-star empty-stars])
-         [:div.proxima.content-4.dark-gray review-date]
-         [:div.proxima.content-4.right-align (get install-type->display-name install-type)]]]
-       [:div.proxima.content-3.col-11-on-dt.mx-auto
-        [:div
-         {:id    (str "review-" idx "-content")
-          :ref   (c/use-ref this (str "slide-" review-id))
-          :class (if target
-                   "ellipsis-5"
-                   "ellipsis-15")} review-content]]
-       [:div.mt2.content-3
+         [:div.proxima.content-4.dark-gray.right-align review-date]]
+        [:div.flex.justify-between.items-baseline
+         [:div.proxima.content-4 (get install-type->display-name install-type)]
+         #_(let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars stars "13px" {})]
+             [:div.flex.justify-end whole-stars partial-star empty-stars])]]
+       [:div.proxima.content-3.col-11-on-dt.mx-auto.ellipsis-5
+        {:id    (str "review-" idx "-content")
+         :ref   (c/use-ref this (str "slide-" review-id))}
+        [:span.line-height-4 review-content]]
+       [:div.mt2.content-3.col-11-on-dt.mx-auto
         {:id (str "review-" idx "-content-more")}
         (let [element           (c/get-ref this (str "slide-" review-id))
               element-overflow? (when element
                                   (< (.-offsetHeight element) (.-scrollHeight element)))]
           (when (and target element-overflow?)
-            [:a.flex.items-center.underline (apply utils/route-to target) "Show more" (ui/forward-caret {:class "ml1"})]))]]))))
+            [:a.flex.items-center.underline.black.bold
+             (apply utils/route-to target)
+             "Show more"
+             (ui/forward-caret {:class "ml1"})]))]]))))
 
 
 (c/defcomponent organism
   [{:reviews/keys [rating cta-target cta-id cta-label id review-count] :as data} _ _]
   (c/html
    (when id
-     (prn cta-target)
      [:div.mx2.mt2.mb8
       {:key      id
        :id       "reviews"
