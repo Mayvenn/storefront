@@ -45,8 +45,25 @@
        [:div.line-height-3.pr1 (svg/position {:height "18px"
                                               :width  "18px"})]
        [:div.content-3.self-center
-        (string/join ", " (filter identity [address-1 address-2 city state zipcode]))]]
+        (string/join ", " (remove nil? [address-1 address-2 city state zipcode]))]]
       (ui/button-small-underline-primary
        {:class "self-center"
         :href  (str "https://www.google.com/maps/dir/?api=1&destination=" latitude "," longitude)}
        "DIRECTIONS")])])
+
+(defcomponent component-v2
+  [{:keys [loaded? salon] :as data} owner opts]
+  [:div.mb3
+   (if loaded?
+     (component/build inner-component data)
+     [:div.flex.items-center.bg-cool-gray {:style {:min-height "250px"}} ui/spinner])
+   (let [{:keys [name address-1 address-2 city state zipcode latitude longitude]} (spice.core/sspy salon)]
+     [:div.bg-cool-gray.py3.px4.flex.items-center
+      [:div.content-2.flex-grow-1
+       [:div.bold.mb1 name]
+       [:div address-1]
+       [:div (string/join ", " (remove nil? [address-2 city state zipcode]))]]
+      [:div.self-start
+       (ui/button-small-underline-primary
+        {:href  (str "https://www.google.com/maps/dir/?api=1&destination=" latitude "," longitude)}
+        "DIRECTIONS")]])])

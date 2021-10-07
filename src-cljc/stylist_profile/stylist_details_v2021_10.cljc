@@ -69,7 +69,7 @@
     [:div.my2.m1-on-tb-dt.mb2-on-tb-dt.px3
      (c/build services-offered/organism (with :services-offered data))
      (licenses-molecule (with :licenses data))]
-    (c/build maps/component google-maps)
+    (c/build maps/component-v2 google-maps)
     clear-float-atom
     (c/build stylist-reviews-cards-v2/organism stylist-reviews)
     ui-dividers/green]
