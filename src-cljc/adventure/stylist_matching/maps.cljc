@@ -57,7 +57,7 @@
    (if loaded?
      (component/build inner-component data)
      [:div.flex.items-center.bg-cool-gray {:style {:min-height "250px"}} ui/spinner])
-   (let [{:keys [name address-1 address-2 city state zipcode latitude longitude]} (spice.core/sspy salon)]
+   (let [{:keys [name address-1 address-2 city state zipcode latitude longitude]} salon]
      [:div.bg-cool-gray.py3.px4.flex.items-center
       [:div.content-2.flex-grow-1
        [:div.bold.mb1 name]
