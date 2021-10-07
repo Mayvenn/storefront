@@ -68,27 +68,28 @@
 
 (c/defcomponent organism
   [{:reviews/keys [rating cta-target cta-id cta-label id review-count] :as data} _ _]
-  (c/html
-   (when id
-     [:div.mx2.mt2.mb8
-      {:key      id
-       :id       "reviews"
-       :data-ref "reviews"}
-      (avg-rating-and-review-count rating review-count)
-      (c/build
-       carousel/component
-       {}
-       {:opts {:settings {:edgePadding          10
-                          :preventScrollOnTouch "auto" ; https://github.com/ganlanyuan/tiny-slider/issues/370
-                          :nav                  false
-                          :controls             true
-                          :items                1.1
-                          :loop                 false
-                          :controls-classes     "hide-on-mb-tb"}
-               :slides   (c/elements review-card data :reviews/reviews)}})
-      (when cta-id
-        [:div.mx3.my4
-         (ui/button-small-secondary
-          (merge (apply utils/route-to cta-target)
-                 {:data-test cta-id})
-          cta-label)])])))
+  (when id
+    (c/html
+     [:div.border-top.border-cool-gray.pt6.mt2.mb8
+      [:div
+       {:key      id
+        :id       "reviews"
+        :data-ref "reviews"}
+       (avg-rating-and-review-count rating review-count)
+       (c/build
+        carousel/component
+        {}
+        {:opts {:settings {:edgePadding          10
+                           :preventScrollOnTouch "auto" ; https://github.com/ganlanyuan/tiny-slider/issues/370
+                           :nav                  false
+                           :controls             true
+                           :items                1.1
+                           :loop                 false
+                           :controls-classes     "hide-on-mb-tb"}
+                :slides   (c/elements review-card data :reviews/reviews)}})
+       (when cta-id
+         [:div.mx3.my4
+          (ui/button-small-secondary
+           (merge (apply utils/route-to cta-target)
+                  {:data-test cta-id})
+           cta-label)])]])))

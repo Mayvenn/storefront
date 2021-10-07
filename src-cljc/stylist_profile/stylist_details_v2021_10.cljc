@@ -64,6 +64,7 @@
       (c/build header/mobile-nav-header-component mayvenn-header))
     (when adv-header
       (header/adventure-header adv-header))
+
     (c/build card-v2/organism card)
     (c/build gallery/organism gallery)
     [:div.my2.m1-on-tb-dt.mb2-on-tb-dt.px3
