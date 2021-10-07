@@ -73,19 +73,17 @@
         [:div.flex.justify-between.items-baseline
          [:div (install-type->display-name install-type)]
          [:div.dark-gray.right-align review-date]]]
-       [:div.proxima.content-3
-        {:id    (str "review-" idx "-content")
-         :ref   (c/use-ref this (str "slide-" review-id))
-         :class (when overflow? "ellipsis-15")}
-        [:span.line-height-4 review-content]]
-       [:div.mt2.content-3
-        {:id (str "review-" idx "-content-more")}
-        (when overflow?
-          [:a.flex.items-center.underline.black.bold.pointer
-           {:on-click #?(:cljs #(js/setTimeout (c/set-state! this :overflow? false) 0)
-                         :clj nil)}
-           "Show more"
-           (ui/forward-caret {:class "ml1"})])]]))))
+       [:div.relative
+        [:div.proxima.content-3
+         {:ref   (c/use-ref this (str "slide-" review-id))
+          :class (when overflow? "ellipsis-15")}
+         [:span.line-height-4 review-content]]
+        [:div.mt2.content-3.absolute.bottom-0.right-0.bg-white.pl1
+         (when overflow?
+           [:a.p-color.bold.pointer
+            {:on-click #?(:cljs #(js/setTimeout (c/set-state! this :overflow? false) 0)
+                          :clj nil)}
+            "...More"])]]]))))
 
 (defn avg-rating-and-review-count [rating review-count]
   [:div.flex.items-center.mx4.pt4
