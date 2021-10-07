@@ -1,14 +1,20 @@
 (ns stylist-profile.stylist-reviews-v2021-10
-  (:require adventure.keypaths
+  (:require #?@(:cljs
+                [[storefront.browser.scroll :as scroll]])
+            adventure.keypaths
             api.stylist
-            [stylist-profile.ui-v2021-10.stylist-reviews-cards :as stylist-reviews-cards-v2]
             [storefront.component :as c]
             [storefront.components.formatters :as f]
             [storefront.components.ui :as ui]
+            [storefront.effects :as fx]
             [storefront.events :as e]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
             stylist-directory.keypaths))
+
+;; TODO
+;; * style correctly (inc stars)
+;; * header
 
 (def install-type->display-name
   {"leave-out"         "Leave Out Install"
@@ -16,6 +22,53 @@
    "frontal"           "Frontal Install"
    "360-frontal"       "360° Frontal Install"
    "wig-customization" "Wig Customization"})
+
+(c/defdynamic-component review
+  (constructor
+   [this props]
+   (c/create-ref! this (str "slide-" (-> this c/get-props :review-id)))
+   {})
+  (did-mount
+   [this]
+   #?(:cljs
+      (let [element (some->> (c/get-props this)
+                             :review-id
+                             (str "slide-")
+                             (c/get-ref this))]
+        (->> (< (.-offsetHeight element) (.-scrollHeight element))
+             (c/set-state! this :overflow?)))))
+  (render
+   [this]
+   (c/html
+    (let [{:keys [review-id install-type stars review-content reviewer-name review-date target]} (c/get-props this)
+          {:keys [idx]}                                                                          (c/get-opts this)
+          {:keys [overflow?]}                                                                    (c/get-state this)]
+      [:div.border.border-cool-gray.rounded.p3.mx1.proxima
+       {:key       review-id
+        :data-test (str "review-" idx)
+        :data-ref  (str "review-" idx)}
+       [:div.mb2.proxima.content-4
+        ;; User portrait will go here
+        [:div.flex.justify-between.items-baseline.content-3
+         [:div.bold reviewer-name]
+         (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars stars "11px" {:class "fill-p-color"})]
+           [:div.flex.justify-end whole-stars partial-star empty-stars])]
+        [:div.flex.justify-between.items-baseline
+         [:div (install-type->display-name install-type)]
+         [:div.dark-gray.right-align review-date]]]
+       [:div.proxima.content-3
+        {:id    (str "review-" idx "-content")
+         :ref   (c/use-ref this (str "slide-" review-id))
+         :class (when overflow? "ellipsis-15")}
+        [:span.line-height-4 review-content]]
+       [:div.mt2.content-3
+        {:id (str "review-" idx "-content-more")}
+        (when overflow?
+          [:a.flex.items-center.underline.black.bold.pointer
+           {:on-click #?(:cljs #(js/setTimeout (c/set-state! this :overflow? false) 0)
+                         :clj nil)}
+           "Show more"
+           (ui/forward-caret {:class "ml1"})])]]))))
 
 (c/defcomponent template
   [{:reviews/keys [spinning? cta-target cta-id cta-label id review-count reviews] :as data} _ _]
@@ -30,7 +83,7 @@
         [:div.content-3.proxima.ml1
          (str "(" review-count ")")]]]
 
-      (c/elements stylist-reviews-cards-v2/review-card-with-stars data :reviews/reviews)
+      (c/elements review data :reviews/reviews)
       (when cta-id
         [:div.p5.center
          {:data-test cta-id}
@@ -51,9 +104,7 @@
       :reviews/rating       score
       :reviews/review-count (:review-count diva-stylist)
       :reviews/reviews      (->> stylist-reviews
-                                 (mapv #(update %
-                                                :review-date
-                                                f/short-date)))}
+                                 (mapv #(update % :review-date f/short-date)))}
      (when (not= (:current-page paginated-reviews)
                  (:pages paginated-reviews))
        {:reviews/cta-id     "more-stylist-reviews"
@@ -73,3 +124,9 @@
 (defn ^:export page
   [app-state _]
   (c/build template (query app-state)))
+
+(defmethod fx/perform-effects e/navigate-adventure-stylist-profile-reviews
+  [_ _ {:keys [query-params]} _ state]
+  #?(:cljs
+     (when-let [offset (:offset query-params)]
+       (scroll/scroll-to-selector (str "[data-ref=review-" offset "]")))))

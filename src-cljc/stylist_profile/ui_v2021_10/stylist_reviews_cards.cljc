@@ -66,53 +66,6 @@
            "Show more"
            (ui/forward-caret {:class "ml1"})])]]))))
 
-(c/defdynamic-component review-card-with-stars
-  (constructor
-   [this props]
-   (c/create-ref! this (str "slide-" (-> this c/get-props :review-id)))
-   {:overflow? true})
-  (did-mount
-   [this]
-   #?(:cljs
-      (let [element (some->> (c/get-props this)
-                             :review-id
-                             (str "slide-")
-                             (c/get-ref this))]
-        (->> (< (.-offsetHeight element) (.-scrollHeight element))
-             (c/set-state! this :overflow?)))))
-  (render
-   [this]
-   (c/html
-    (let [{:keys [review-id install-type stars review-content reviewer-name review-date target]} (c/get-props this)
-          {:keys [idx]}                                                                          (c/get-opts this)
-          {:keys [overflow?]}                                                                    (c/get-state this)]
-      [:div.border.border-cool-gray.rounded.p3.mx1.proxima
-       {:key       review-id
-        :data-test (str "review-" idx)}
-       [:div.mb2
-        ;; User portrait will go here
-        [:div.flex.justify-between.items-baseline
-         [:div.title-3.proxima reviewer-name]
-         [:div.proxima.content-4.dark-gray.right-align review-date]]
-        [:div.flex.justify-between.items-baseline
-         [:div.proxima.content-4 (get install-type->display-name install-type)]
-         (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars stars "13px" {})]
-             [:div.flex.justify-end whole-stars partial-star empty-stars])]]
-       [:div.proxima.content-3
-        {:id    (str "review-" idx "-content")
-         :ref   (c/use-ref this (str "slide-" review-id))
-         :class (when overflow? "ellipsis-15")} ; TODO change to ellipsis-15
-        [:span.line-height-4 review-content]]
-       [:div.mt2.content-3
-        {:id (str "review-" idx "-content-more")}
-        (when overflow?
-          [:a.flex.items-center.underline.black.bold.pointer
-           {:on-click #?(:cljs #(js/setTimeout (c/set-state! this :overflow? false) 0)
-                         :clj nil)}
-           "Show more"
-           (ui/forward-caret {:class "ml1"})])]]))))
-
-
 (c/defcomponent organism
   [{:reviews/keys [rating cta-target cta-id cta-label id review-count] :as data} _ _]
   (c/html
