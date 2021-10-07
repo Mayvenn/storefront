@@ -48,7 +48,7 @@
       [:div.border.border-cool-gray.rounded.p3.mx1.proxima
        {:key       review-id
         :data-test (str "review-" idx)}
-       [:div.mb2.col-11.mx-auto
+       [:div.mb2.col-11-on-dt.mx-auto
         ;; User portrait will go here
         [:div.flex.justify-between.items-baseline
          [:div.title-3.proxima reviewer-name]
@@ -130,7 +130,7 @@
                           :preventScrollOnTouch "auto" ; https://github.com/ganlanyuan/tiny-slider/issues/370
                           :nav                  false
                           :controls             true
-                          :items                1
+                          :items                1.1
                           :loop                 false
                           :controls-classes     "hide-on-mb-tb"}
                :slides   (c/elements review-card data :reviews/reviews)}})
