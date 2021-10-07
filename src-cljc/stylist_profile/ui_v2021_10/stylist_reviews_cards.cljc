@@ -48,7 +48,7 @@
       [:div.border.border-cool-gray.rounded.p3.mx1.proxima
        {:key       review-id
         :data-test (str "review-" idx)}
-       [:div.mb2
+       [:div.mb2.col-11.mx-auto
         ;; User portrait will go here
         [:div.flex.justify-between.items-baseline
          [:div.title-3.proxima reviewer-name]
@@ -99,12 +99,12 @@
          [:div.proxima.content-4 (get install-type->display-name install-type)]
          (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars stars "13px" {})]
              [:div.flex.justify-end whole-stars partial-star empty-stars])]]
-       [:div.proxima.content-3.col-11-on-dt.mx-auto
+       [:div.proxima.content-3
         {:id    (str "review-" idx "-content")
          :ref   (c/use-ref this (str "slide-" review-id))
-         :class (when overflow? "ellipsis-5")} ; TODO change to ellipsis-15
+         :class (when overflow? "ellipsis-15")} ; TODO change to ellipsis-15
         [:span.line-height-4 review-content]]
-       [:div.mt2.content-3.col-11-on-dt.mx-auto
+       [:div.mt2.content-3
         {:id (str "review-" idx "-content-more")}
         (when overflow?
           [:a.flex.items-center.underline.black.bold.pointer
