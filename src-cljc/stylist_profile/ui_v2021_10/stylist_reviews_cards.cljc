@@ -55,11 +55,9 @@
          [:div.dark-gray.right-align review-date]]
         [:div (install-type->display-name install-type)]]
        [:div.proxima.content-3.col-11-on-dt.mx-auto.ellipsis-5
-        {:id  (str "review-" idx "-content")
-         :ref (c/use-ref this (str "slide-" review-id))}
+        {:ref (c/use-ref this (str "slide-" review-id))}
         [:span.line-height-4 review-content]]
        [:div.mt2.content-3.col-11-on-dt.mx-auto
-        {:id (str "review-" idx "-content-more")}
         (when overflow?
           [:a.flex.items-center.underline.black.bold
            (apply utils/route-to target)
