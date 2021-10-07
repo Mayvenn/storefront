@@ -35,8 +35,7 @@
      (instagram (with :gallery.instagram data))
      [:div]
      (ui/button-small-underline-primary (apply utils/route-to target) "See all")]
-    (into [:div {:style {:display               "grid"
-                         :grid-template-columns "repeat(3, 1fr)"}}]
+    (into [:div.grid.gap-1px.cols-3]
           (map (fn [{:keys [target-message key ucare-img-url]}]
                  (c/html
                   [:a.block
