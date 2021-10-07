@@ -57,7 +57,7 @@
                                            :style {:height "0.9em"
                                                    :width  "0.9em"}}])]
     [:div.title-1.proxima.p-color {:data-test id} value]]
-   [:div.flex.justify-center "Rating"]])
+   [:div.flex.justify-center.black "Rating"]])
 
 (defn ^:private cta
   [{:keys [id primary target]}]
