@@ -15,14 +15,10 @@
             [storefront.component :as c]
             [storefront.components.formatters :as f]
             [storefront.components.header :as header]
-            [storefront.components.money-formatters :as mf]
             [storefront.components.ui :as ui]
             [storefront.events :as e]
             storefront.keypaths
-            [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]
             stylist-directory.keypaths
-            [storefront.utils.query :as query]
 
             ;; NEW
             [stylist-profile.ui-v2021-10.card :as card-v2]
@@ -129,7 +125,6 @@
     :gallery/target [e/navigate-adventure-stylist-gallery
                      {:stylist-id   id
                       :store-slug   slug}]}))
-
 
 (defn ^:private reviews<-
   [{:stylist.rating/keys [publishable? score] diva-stylist :diva/stylist}

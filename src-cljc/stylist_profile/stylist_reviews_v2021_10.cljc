@@ -112,7 +112,7 @@
       (header (with :reviews.header data))
       [:div.border-top.border-cool-gray {:key id
                                          :id  "reviews"}
-       (avg-rating-and-review-count rating review-count) ; TODO get rating
+       (avg-rating-and-review-count rating review-count)
        (c/elements review data :reviews/reviews)
        (when cta-id
          [:div.p5.center
