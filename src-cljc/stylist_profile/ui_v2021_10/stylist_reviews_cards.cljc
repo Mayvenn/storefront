@@ -29,19 +29,64 @@
   (constructor
    [this props]
    (c/create-ref! this (str "slide-" (-> this c/get-props :review-id)))
-   {:overflow? false})
+   {})
   (did-mount
    [this]
    #?(:cljs
-      (c/set-state! this :overflow? (some->> (c/get-props this)
-                                             :review-id
-                                             (str "slide-")
-                                             (c/get-ref this)))))
+      (let [element (some->> (c/get-props this)
+                             :review-id
+                             (str "slide-")
+                             (c/get-ref this))]
+        (->> (< (.-offsetHeight element) (.-scrollHeight element))
+             (c/set-state! this :overflow?)))))
   (render
    [this]
    (c/html
-    (let [{:keys [review-id install-type stars review-content reviewer-name review-date target overflow?]} (c/get-props this)
-          {:keys [idx]} (c/get-opts this)]
+    (let [{:keys [review-id install-type stars review-content reviewer-name review-date target]} (c/get-props this)
+          {:keys [overflow?]}                                                                    (c/get-state this)
+          {:keys [idx]}                                                                          (c/get-opts this)]
+      [:div.border.border-cool-gray.rounded.p3.mx1.proxima
+       {:key       review-id
+        :data-test (str "review-" idx)}
+       [:div.mb2
+        ;; User portrait will go here
+        [:div.flex.justify-between.items-baseline
+         [:div.title-3.proxima reviewer-name]
+         [:div.proxima.content-4.dark-gray.right-align review-date]]
+        [:div.flex.justify-between.items-baseline
+         [:div.proxima.content-4 (get install-type->display-name install-type)]]]
+       [:div.proxima.content-3.col-11-on-dt.mx-auto.ellipsis-5
+        {:id  (str "review-" idx "-content")
+         :ref (c/use-ref this (str "slide-" review-id))}
+        [:span.line-height-4 review-content]]
+       [:div.mt2.content-3.col-11-on-dt.mx-auto
+        {:id (str "review-" idx "-content-more")}
+        (when overflow?
+          [:a.flex.items-center.underline.black.bold
+           (apply utils/route-to target)
+           "Show more"
+           (ui/forward-caret {:class "ml1"})])]]))))
+
+(c/defdynamic-component review-card-with-stars
+  (constructor
+   [this props]
+   (c/create-ref! this (str "slide-" (-> this c/get-props :review-id)))
+   {:overflow? true})
+  (did-mount
+   [this]
+   #?(:cljs
+      (let [element (some->> (c/get-props this)
+                             :review-id
+                             (str "slide-")
+                             (c/get-ref this))]
+        (->> (< (.-offsetHeight element) (.-scrollHeight element))
+             (c/set-state! this :overflow?)))))
+  (render
+   [this]
+   (c/html
+    (let [{:keys [review-id install-type stars review-content reviewer-name review-date target]} (c/get-props this)
+          {:keys [idx]}                                                                          (c/get-opts this)
+          {:keys [overflow?]}                                                                    (c/get-state this)]
       [:div.border.border-cool-gray.rounded.p3.mx1.proxima
        {:key       review-id
         :data-test (str "review-" idx)}
@@ -52,22 +97,21 @@
          [:div.proxima.content-4.dark-gray.right-align review-date]]
         [:div.flex.justify-between.items-baseline
          [:div.proxima.content-4 (get install-type->display-name install-type)]
-         #_(let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars stars "13px" {})]
+         (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars stars "13px" {})]
              [:div.flex.justify-end whole-stars partial-star empty-stars])]]
-       [:div.proxima.content-3.col-11-on-dt.mx-auto.ellipsis-5
+       [:div.proxima.content-3.col-11-on-dt.mx-auto
         {:id    (str "review-" idx "-content")
-         :ref   (c/use-ref this (str "slide-" review-id))}
+         :ref   (c/use-ref this (str "slide-" review-id))
+         :class (when overflow? "ellipsis-5")} ; TODO change to ellipsis-15
         [:span.line-height-4 review-content]]
        [:div.mt2.content-3.col-11-on-dt.mx-auto
         {:id (str "review-" idx "-content-more")}
-        (let [element           (c/get-ref this (str "slide-" review-id))
-              element-overflow? (when element
-                                  (< (.-offsetHeight element) (.-scrollHeight element)))]
-          (when (and target element-overflow?)
-            [:a.flex.items-center.underline.black.bold
-             (apply utils/route-to target)
-             "Show more"
-             (ui/forward-caret {:class "ml1"})]))]]))))
+        (when overflow?
+          [:a.flex.items-center.underline.black.bold.pointer
+           {:on-click #?(:cljs #(js/setTimeout (c/set-state! this :overflow? false) 0)
+                         :clj nil)}
+           "Show more"
+           (ui/forward-caret {:class "ml1"})])]]))))
 
 
 (c/defcomponent organism

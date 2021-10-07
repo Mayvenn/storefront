@@ -30,7 +30,7 @@
         [:div.content-3.proxima.ml1
          (str "(" review-count ")")]]]
 
-      (c/elements stylist-reviews-cards-v2/review-card data :reviews/reviews)
+      (c/elements stylist-reviews-cards-v2/review-card-with-stars data :reviews/reviews)
       (when cta-id
         [:div.p5.center
          {:data-test cta-id}
