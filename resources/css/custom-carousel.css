@@ -153,3 +153,7 @@
     --p-color:     #4427C1;
     --cool-gray:   #eeefef;
 }
+
+/* Hide next/prev buttons when on last/first slide */
+.carousel-next[aria-disabled=true], .carousel-prev[aria-disabled=true] {display: none;}
+.carousel-next[aria-disabled=false], .carousel-prev[aria-disabled=false] {display: block;}
