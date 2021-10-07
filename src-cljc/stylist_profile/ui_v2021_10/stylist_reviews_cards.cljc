@@ -48,13 +48,12 @@
       [:div.border.border-cool-gray.rounded.p3.mx1.proxima
        {:key       review-id
         :data-test (str "review-" idx)}
-       [:div.mb2.col-11-on-dt.mx-auto
+       [:div.mb2.col-11-on-dt.mx-auto.proxima.content-4
         ;; User portrait will go here
         [:div.flex.justify-between.items-baseline
-         [:div.title-3.proxima reviewer-name]
-         [:div.proxima.content-4.dark-gray.right-align review-date]]
-        [:div.flex.justify-between.items-baseline
-         [:div.proxima.content-4 (get install-type->display-name install-type)]]]
+         [:div.content-3.bold.proxima reviewer-name]
+         [:div.dark-gray.right-align review-date]]
+        [:div (install-type->display-name install-type)]]
        [:div.proxima.content-3.col-11-on-dt.mx-auto.ellipsis-5
         {:id  (str "review-" idx "-content")
          :ref (c/use-ref this (str "slide-" review-id))}
