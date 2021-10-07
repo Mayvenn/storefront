@@ -1,20 +1,19 @@
 (ns stylist-profile.stylist-reviews-v2021-10
-  (:require #?@(:cljs
-                [[storefront.browser.scroll :as scroll]])
+  (:require #?(:cljs
+               [storefront.browser.scroll :as scroll])
             adventure.keypaths
             api.stylist
+            [mayvenn.visual.tools :refer [with within]]
             [storefront.component :as c]
             [storefront.components.formatters :as f]
+            [storefront.components.header :as header]
+            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.effects :as fx]
             [storefront.events :as e]
+            storefront.keypaths
             [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]
             stylist-directory.keypaths))
-
-;; TODO
-;; * style correctly (inc stars)
-;; * header
 
 (def install-type->display-name
   {"leave-out"         "Leave Out Install"
@@ -23,11 +22,29 @@
    "360-frontal"       "360° Frontal Install"
    "wig-customization" "Wig Customization"})
 
+(defn header
+  [{:keys [title close-id close-route]}]
+  [:div
+   [:div.fixed.z4.top-0.left-0.right-0
+    (header/mobile-nav-header
+     {:class "bg-white black"
+      :style {:height "70px"}}
+     (when close-id
+       (c/html
+        [:a.block.flex.items-center
+         (merge {:data-test close-id}
+                (apply utils/route-to close-route))
+         (svg/left-arrow {:width  "20"
+                          :height "20"})]))
+     (c/html [:div.center.content-2.proxima title])
+     (c/html nil))]
+   [:div {:style {:margin-top "70px"}}]])
+
 (c/defdynamic-component review
   (constructor
    [this props]
    (c/create-ref! this (str "slide-" (-> this c/get-props :review-id)))
-   {})
+   {:overflow? true})
   (did-mount
    [this]
    #?(:cljs
@@ -43,7 +60,7 @@
     (let [{:keys [review-id install-type stars review-content reviewer-name review-date target]} (c/get-props this)
           {:keys [idx]}                                                                          (c/get-opts this)
           {:keys [overflow?]}                                                                    (c/get-state this)]
-      [:div.border.border-cool-gray.rounded.p3.mx1.proxima
+      [:div.border-cool-gray.border-bottom.m4.pb2
        {:key       review-id
         :data-test (str "review-" idx)
         :data-ref  (str "review-" idx)}
@@ -70,56 +87,70 @@
            "Show more"
            (ui/forward-caret {:class "ml1"})])]]))))
 
+(defn avg-rating-and-review-count [rating review-count]
+  [:div.flex.items-center.mx4.pt4
+   [:div.flex.items-center.mr1
+    (svg/symbolic->html [:svg/whole-star {:class "fill-p-color mr1"
+                                          :style {:height "0.8em"
+                                                  :width  "0.9em"}}])
+    [:div.proxima.title-1.p-color rating " • "]]
+   [:div review-count " Ratings"]])
+
+(defn back-cta [{:keys [id target label]}]
+  [:div.p4
+   (ui/button-small-secondary
+    (merge (apply utils/route-to target)
+           {:data-test id})
+    label)])
+
 (c/defcomponent template
-  [{:reviews/keys [spinning? cta-target cta-id cta-label id review-count reviews] :as data} _ _]
+  [{:reviews/keys [id review-count rating reviews
+                   cta-id cta-label cta-target] :as data} _ _]
   (c/html
    (when id
-     [:div.mx3.my6
-      {:key id
-       :id  "reviews"}
-      [:div.flex.justify-between
-       [:div.flex.items-center
-        [:div.h6.title-3.proxima.shout "REVIEWS"]
-        [:div.content-3.proxima.ml1
-         (str "(" review-count ")")]]]
-
-      (c/elements review data :reviews/reviews)
-      (when cta-id
-        [:div.p5.center
-         {:data-test cta-id}
-         (if spinning?
-           ui/spinner
-           (ui/button-medium-underline-primary
-            {:on-click (apply utils/send-event-callback cta-target)} cta-label))])])))
-
-(defn ^:private reviews<-
-  [fetching-reviews?
-   {:stylist.rating/keys [publishable? score] diva-stylist :diva/stylist}
-   {stylist-reviews :reviews :as paginated-reviews}]
-  (when (and publishable?
-             (seq stylist-reviews))
-    (merge
-     {:reviews/id           "stylist-reviews"
-      :reviews/spinning?    fetching-reviews?
-      :reviews/rating       score
-      :reviews/review-count (:review-count diva-stylist)
-      :reviews/reviews      (->> stylist-reviews
-                                 (mapv #(update % :review-date f/short-date)))}
-     (when (not= (:current-page paginated-reviews)
-                 (:pages paginated-reviews))
-       {:reviews/cta-id     "more-stylist-reviews"
-        :reviews/cta-target [e/control-fetch-stylist-reviews]
-        :reviews/cta-label  "View More"}))))
+     [:div
+      (header (with :reviews.header data))
+      [:div.border-top.border-cool-gray {:key id
+                                         :id  "reviews"}
+       (avg-rating-and-review-count rating review-count) ; TODO get rating
+       (c/elements review data :reviews/reviews)
+       (when cta-id
+         [:div.p5.center
+          {:data-test cta-id}
+          (ui/button-medium-underline-primary
+           {:on-click (apply utils/send-event-callback cta-target)} cta-label)])
+       (back-cta (with :reviews.back-cta data))]])))
 
 (defn query
   [state]
   (let [stylist-id        (get-in state adventure.keypaths/stylist-profile-id)
-        detailed-stylist  (api.stylist/by-id state stylist-id)
+        {:stylist.rating/keys [publishable? score]
+         diva-stylist         :diva/stylist
+         :stylist/keys        [slug name]}  (api.stylist/by-id state stylist-id)
         paginated-reviews (get-in state stylist-directory.keypaths/paginated-reviews)
-        fetching-reviews? (utils/requesting? state request-keys/fetch-stylist-reviews)]
-    (reviews<- fetching-reviews?
-               detailed-stylist
-               paginated-reviews)))
+        stylist-reviews (:reviews paginated-reviews)]
+    (when (and publishable?
+               (seq stylist-reviews))
+      (merge
+       (within :reviews {:id           "stylist-reviews"
+                         :rating       score
+                         :review-count (:review-count diva-stylist)
+                         :reviews      (->> stylist-reviews
+                                            (mapv #(update % :review-date f/short-date)))})
+       (when (not= (:current-page paginated-reviews)
+                   (:pages paginated-reviews))
+         {:reviews/cta-id     "more-stylist-reviews"
+          :reviews/cta-target [e/control-fetch-stylist-reviews]
+          :reviews/cta-label  "View More"})
+       (within :reviews.header {:title "Ratings"
+                                :close-id "header-back-to-profile"
+                                :close-route [e/navigate-adventure-stylist-profile {:stylist-id stylist-id
+                                                                                    :store-slug slug}]})
+       (within :reviews.back-cta
+               {:id     "back-to-profile"
+                :target [e/navigate-adventure-stylist-profile {:stylist-id   stylist-id
+                                                               :store-slug   slug}]
+                :label  (str "Back to " name "'s profile")})))))
 
 (defn ^:export page
   [app-state _]
