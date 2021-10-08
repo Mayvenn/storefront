@@ -1,13 +1,11 @@
 (ns stylist-profile.ui-v2021-10.card
   (:require clojure.pprint
-            [mayvenn.visual.tools :refer [with within]]
+            [mayvenn.visual.tools :refer [with]]
             [storefront.component :as c]
-            [storefront.components.marquee :as marquee]
             [storefront.components.ui :as ui]
             stylist-matching.ui.stylist-cards
             [storefront.platform.component-utils :as utils]
             [storefront.components.svg :as svg]
-            [storefront.effects :as fx]
             [ui.molecules :as molecules]
             [storefront.events :as e]))
 
@@ -39,7 +37,8 @@
    [:div.absolute.z1.overlay.flex.flex-column.items-center.justify-center
     (circle-portrait data)
     (stylist-title data)
-    [:div.flex
+    [:a.block.flex
+     (utils/fake-href e/control-scroll-to-selector {:selector "[data-ref=reviews]"}  )
      (molecules/stars-rating-molecule (with :star-bar data))
      (rating-count data)]
     (salon (with :salon data))]
