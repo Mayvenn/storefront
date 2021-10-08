@@ -60,7 +60,6 @@
       (c/build header/mobile-nav-header-component mayvenn-header))
     (when adv-header
       (header/adventure-header adv-header))
-
     (c/build card-v2/organism card)
     (c/build gallery/organism gallery)
     [:div.my2.m1-on-tb-dt.mb2-on-tb-dt.px3
@@ -130,14 +129,15 @@
   [{:stylist.rating/keys [publishable? score] diva-stylist :diva/stylist}
    {stylist-reviews :reviews :as paginated-reviews}]
   (let [max-reviews-shown 3
-        stylist-id (:stylist-id diva-stylist)
-        store-slug (:store-slug diva-stylist)]
+        stylist-id        (:stylist-id diva-stylist)
+        store-slug        (:store-slug diva-stylist)
+        review-count      (:review-count diva-stylist)]
     (when (and publishable?
                (seq stylist-reviews))
       (merge
        {:reviews/id           "stylist-reviews"
         :reviews/rating       score
-        :reviews/review-count (:review-count diva-stylist) ; Is this the same as (count stylist-reviews)?
+        :reviews/review-count review-count
         :reviews/reviews      (->> stylist-reviews
                                    (map-indexed (fn [ix review]
                                                   (-> review
@@ -147,12 +147,12 @@
                                                                        :store-slug   store-slug
                                                                        :query-params {:offset ix}}]))))
                                    (take max-reviews-shown))}
-       (when (> (count stylist-reviews) max-reviews-shown)
+       (when (> review-count max-reviews-shown)
          {:reviews/cta-id     "show-all-stylist-reviews"
           :reviews/cta-target [e/navigate-adventure-stylist-profile-reviews
-                               {:stylist-id   stylist-id
-                                :store-slug   store-slug}]
-          :reviews/cta-label  (str "Show all " (count stylist-reviews) " reviews")})))))
+                               {:stylist-id stylist-id
+                                :store-slug store-slug}]
+          :reviews/cta-label  (str "Show all " review-count " reviews")})))))
 
 (defn ^:private card<-
   [{:stylist/keys         [name portrait salon slug experience]
