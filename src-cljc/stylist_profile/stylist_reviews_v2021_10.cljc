@@ -85,14 +85,14 @@
                           :clj nil)}
             "...More"])]]]))))
 
-(defn avg-rating-and-review-count [rating review-count]
+(defn avg-rating-and-rating-count [rating rating-count]
   [:div.flex.items-center.mx4.pt4
    [:div.flex.items-center.mr1
     (svg/symbolic->html [:svg/whole-star {:class "fill-p-color mr1"
                                           :style {:height "0.8em"
                                                   :width  "0.9em"}}])
     [:div.proxima.title-1.p-color rating " • "]]
-   [:div review-count " Ratings"]])
+   [:div rating-count " Ratings"]])
 
 (defn back-cta [{:keys [id target label]}]
   [:div.p4
@@ -102,7 +102,7 @@
     label)])
 
 (c/defcomponent template
-  [{:reviews/keys [id review-count rating reviews
+  [{:reviews/keys [id rating-count rating reviews
                    cta-id cta-label cta-target] :as data} _ _]
   (c/html
    (when id
@@ -110,7 +110,7 @@
       (header (with :reviews.header data))
       [:div.border-top.border-cool-gray {:key id
                                          :id  "reviews"}
-       (avg-rating-and-review-count rating review-count)
+       (avg-rating-and-rating-count rating rating-count)
        (c/elements review data :reviews/reviews)
        (when cta-id
          [:div.p5.center
@@ -122,8 +122,7 @@
 (defn query
   [state]
   (let [stylist-id        (get-in state adventure.keypaths/stylist-profile-id)
-        {:stylist.rating/keys [publishable? score]
-         diva-stylist         :diva/stylist
+        {:stylist.rating/keys [publishable? score cardinality]
          :stylist/keys        [slug name]}  (api.stylist/by-id state stylist-id)
         paginated-reviews (get-in state stylist-directory.keypaths/paginated-reviews)
         stylist-reviews (:reviews paginated-reviews)]
@@ -132,7 +131,8 @@
       (merge
        (within :reviews {:id           "stylist-reviews"
                          :rating       score
-                         :review-count (:review-count diva-stylist)
+                         :review-count (:count paginated-reviews)
+                         :rating-count cardinality
                          :reviews      (->> stylist-reviews
                                             (mapv #(update % :review-date f/short-date)))})
        (when (not= (:current-page paginated-reviews)

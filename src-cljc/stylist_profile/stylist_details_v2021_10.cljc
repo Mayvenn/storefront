@@ -126,18 +126,18 @@
                       :store-slug   slug}]}))
 
 (defn ^:private reviews<-
-  [{:stylist.rating/keys [publishable? score] diva-stylist :diva/stylist}
+  [{:stylist.rating/keys [publishable? score cardinality] diva-stylist :diva/stylist}
    {stylist-reviews :reviews :as paginated-reviews}]
   (let [max-reviews-shown 3
         stylist-id        (:stylist-id diva-stylist)
         store-slug        (:store-slug diva-stylist)
-        review-count      (:review-count diva-stylist)]
+        review-count      (:count paginated-reviews)]
     (when (and publishable?
                (seq stylist-reviews))
       (merge
        {:reviews/id           "stylist-reviews"
         :reviews/rating       score
-        :reviews/review-count review-count
+        :reviews/rating-count cardinality
         :reviews/reviews      (->> stylist-reviews
                                    (map-indexed (fn [ix review]
                                                   (-> review
@@ -168,7 +168,7 @@
             :star-bar/id              "star-bar"
             :star-bar/value           score
             :star-bar/opts            {:class "fill-p-color"}
-            :review-count             cardinality
+            :rating-count             cardinality
             :salon/id                 "salon-name"
             :salon/primary            salon
             :salon/location           (str city ", " state)})

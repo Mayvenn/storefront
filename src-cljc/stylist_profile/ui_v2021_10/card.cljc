@@ -22,10 +22,10 @@
   [{:title/keys [primary id]}]
   [:div.title-2.proxima.shout.mt1 {:data-test id} primary])
 
-(defn ^:private review-count
-  [{:keys [review-count]}]
+(defn ^:private rating-count
+  [{:keys [rating-count]}]
   [:div.title-3.proxima.p-color.pl1
-   "(" review-count ")"])
+   "(" rating-count ")"])
 
 (defn ^:private salon
   [{:keys [id primary location]}]
@@ -41,7 +41,7 @@
     (stylist-title data)
     [:div.flex
      (molecules/stars-rating-molecule (with :star-bar data))
-     (review-count data)]
+     (rating-count data)]
     (salon (with :salon data))]
    ^:inline (ui/img {:src   ucare-id
                      :class "block col-12"

@@ -16,14 +16,14 @@
    "360-frontal"       "360° Frontal Install"
    "wig-customization" "Wig Customization"})
 
-(defn avg-rating-and-review-count [rating review-count]
+(defn avg-rating-and-rating-count [rating rating-count]
   [:div.flex.items-center.mx3.my2
    [:div.flex.items-center.mr1
     (svg/symbolic->html [:svg/whole-star {:class "fill-p-color mr1"
                                           :style {:height "0.8em"
                                                   :width  "0.9em"}}])
     [:div.proxima.title-1.p-color rating " • "]]
-   [:div review-count " Ratings"]])
+   [:div rating-count " Ratings"]])
 
 (c/defdynamic-component review-card
   (constructor
@@ -65,7 +65,7 @@
            (ui/forward-caret {:class "ml1"})])]]))))
 
 (c/defcomponent organism
-  [{:reviews/keys [rating cta-target cta-id cta-label id review-count] :as data} _ _]
+  [{:reviews/keys [rating cta-target cta-id cta-label id rating-count] :as data} _ _]
   (when id
     (c/html
      [:div.border-top.border-cool-gray.pt6.mt2.mb8
@@ -73,7 +73,7 @@
        {:key      id
         :id       "reviews"
         :data-ref "reviews"}
-       (avg-rating-and-review-count rating review-count)
+       (avg-rating-and-rating-count rating rating-count)
        (c/build
         carousel/component
         {}
