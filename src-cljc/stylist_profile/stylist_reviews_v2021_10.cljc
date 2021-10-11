@@ -4,6 +4,7 @@
             adventure.keypaths
             api.stylist
             [mayvenn.visual.tools :refer [with within]]
+            [spice.core :as spice]
             [storefront.component :as c]
             [storefront.components.formatters :as f]
             [storefront.components.header :as header]
@@ -57,7 +58,7 @@
   (render
    [this]
    (c/html
-    (let [{:keys [review-id install-type stars review-content reviewer-name review-date target]} (c/get-props this)
+    (let [{:keys [review-id install-type stars review-content reviewer-name review-date target expanded?]} (c/get-props this)
           {:keys [idx]}                                                                          (c/get-opts this)
           {:keys [overflow?]}                                                                    (c/get-state this)]
       [:div.border-cool-gray.border-bottom.m4.pb2
@@ -76,10 +77,12 @@
        [:div.relative
         [:div.proxima.content-3
          {:ref   (c/use-ref this (str "slide-" review-id))
-          :class (when overflow? "ellipsis-15")}
-         [:span.line-height-4 review-content]]
+          :class (when (and overflow? (not expanded?)) "ellipsis-15")}
+         [:span.line-height-4
+          {:style {:overflow-wrap "break-word"}}
+          review-content]]
         [:div.mt2.content-3.absolute.bottom-0.right-0.bg-white.pl1
-         (when overflow?
+         (when (and overflow? (not expanded?))
            [:a.p-color.bold.pointer
             {:on-click #?(:cljs #(js/setTimeout (c/set-state! this :overflow? false) 0)
                           :clj nil)}
@@ -121,11 +124,12 @@
 
 (defn query
   [state]
-  (let [stylist-id        (get-in state adventure.keypaths/stylist-profile-id)
+  (let [stylist-id                         (get-in state adventure.keypaths/stylist-profile-id)
         {:stylist.rating/keys [publishable? score cardinality]
-         :stylist/keys        [slug name]}  (api.stylist/by-id state stylist-id)
-        paginated-reviews (get-in state stylist-directory.keypaths/paginated-reviews)
-        stylist-reviews (:reviews paginated-reviews)]
+         :stylist/keys        [slug name]} (api.stylist/by-id state stylist-id)
+        paginated-reviews                  (get-in state stylist-directory.keypaths/paginated-reviews)
+        {:keys [offset]}                   (get-in state storefront.keypaths/navigation-query-params)
+        stylist-reviews                    (mapv #(update % :review-date f/short-date) (:reviews paginated-reviews))]
     (when (and publishable?
                (seq stylist-reviews))
       (merge
@@ -133,21 +137,23 @@
                          :rating       score
                          :review-count (:count paginated-reviews)
                          :rating-count cardinality
-                         :reviews      (->> stylist-reviews
-                                            (mapv #(update % :review-date f/short-date)))})
+                         :reviews      (if-let [offset (spice/parse-int offset)]
+                                         (-> stylist-reviews
+                                             (update-in [offset] #(assoc % :expanded? true)))
+                                         stylist-reviews)})
        (when (not= (:current-page paginated-reviews)
                    (:pages paginated-reviews))
          {:reviews/cta-id     "more-stylist-reviews"
           :reviews/cta-target [e/control-fetch-stylist-reviews]
           :reviews/cta-label  "View More"})
-       (within :reviews.header {:title "Ratings"
-                                :close-id "header-back-to-profile"
+       (within :reviews.header {:title       "Ratings"
+                                :close-id    "header-back-to-profile"
                                 :close-route [e/navigate-adventure-stylist-profile {:stylist-id stylist-id
                                                                                     :store-slug slug}]})
        (within :reviews.back-cta
                {:id     "back-to-profile"
-                :target [e/navigate-adventure-stylist-profile {:stylist-id   stylist-id
-                                                               :store-slug   slug}]
+                :target [e/navigate-adventure-stylist-profile {:stylist-id stylist-id
+                                                               :store-slug slug}]
                 :label  (str "Back to " name "'s profile")})))))
 
 (defn ^:export page
