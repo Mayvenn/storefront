@@ -45,7 +45,7 @@
       (assoc :img.v2/id "6c6f87fd-82b1-4de4-9c70-9a9b88233a56")))
 
 (def BNS-medium {:img/id          "16029dd0-285c-4bc6-803c-0c201c3d402c"
-                 :img.v2/id       "a8635154-d6c5-4620-b87e-6f7a923c30e4"
+                 :img.v2/id       "a3ee6d1c-ed09-4f17-a270-a4fdcaed8c19"
                  :hair/origin     "Brazilian"
                  :hair/texture    "Straight"
                  :service/sku-id  "SV2-LBI-X"
