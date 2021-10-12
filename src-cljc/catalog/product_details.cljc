@@ -328,7 +328,8 @@
   [data
    {:keys [content-path fallback-content-path]
     :as   section}]
-  (when-let [content (or (get-in data content-path)
+  (when-let [content (or (and content-path
+                              (get-in data content-path))
                          (and fallback-content-path
                               (get-in data fallback-content-path)))]
     (-> section
