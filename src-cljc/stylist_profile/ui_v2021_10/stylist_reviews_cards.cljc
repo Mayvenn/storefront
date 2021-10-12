@@ -56,7 +56,9 @@
         [:div (install-type->display-name install-type)]]
        [:div.proxima.content-3.col-11-on-dt.mx-auto.ellipsis-5
         {:ref (c/use-ref this (str "slide-" review-id))}
-        [:span.line-height-4 review-content]]
+        [:span.line-height-4
+         {:style {:overflow-wrap "break-word"}}
+         review-content]]
        [:div.mt2.content-3.col-11-on-dt.mx-auto
         (when overflow?
           [:a.flex.items-center.underline.black.bold
