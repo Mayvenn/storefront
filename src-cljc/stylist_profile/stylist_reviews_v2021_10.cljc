@@ -164,4 +164,4 @@
   [_ _ {:keys [query-params]} _ state]
   #?(:cljs
      (when-let [offset (:offset query-params)]
-       (scroll/scroll-to-selector (str "[data-ref=review-" offset "]")))))
+       (scroll/scroll-selector-to-top (str "[data-ref=review-" offset "]") -60))))
