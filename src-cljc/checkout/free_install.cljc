@@ -2,7 +2,9 @@
   (:require
    #?@(:cljs [[storefront.accessors.auth :as auth]
               [storefront.api :as api]
-              [storefront.history :as history]])
+              [storefront.history :as history]
+              [storefront.trackings :refer [perform-track]]
+              [storefront.hooks.stringer :as stringer]])
    [storefront.component :as component]
    [storefront.components.ui :as ui]
    [storefront.events :as events]
@@ -61,6 +63,11 @@
 (defmethod effects/perform-effects events/control-checkout-free-install-skipped
   [_ _ _ _ app-state]
   (continue app-state {}))
+
+#?(:cljs
+ (defmethod perform-track events/control-checkout-free-install-skipped
+   [_ event args app-state]
+   (stringer/track-event "add_free_install-skipped")))
 
 (defmethod effects/perform-effects events/free-install-upsold
   [_ _ args _ app-state]
