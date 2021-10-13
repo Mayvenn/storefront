@@ -242,8 +242,7 @@
                                                    (or (and stylist-results-test? just-added-only?)
                                                        (and stylist-results-test? just-added-experience?)))
         years-of-experience                   (some->> stylist-since (- (date/year (date/now))))
-        {salon-name :name
-         :keys      [latitude longitude]}     salon
+        {:keys      [latitude longitude]}     salon
         {:keys [specialty-sew-in-leave-out
                 specialty-sew-in-closure
                 specialty-sew-in-360-frontal
@@ -350,9 +349,7 @@
                                          :primary "Professional salon"}
                                         {:icon    [:svg/certified {:style {:height "1.2em"}
                                                                    :class "fill-s-color mr1"}]
-                                         :primary "State licensed stylist"}]})))
-             {:stylist-card.salon-name/id    (str "salon-" store-slug)
-              :stylist-card.salon-name/value salon-name}))))
+                                         :primary "State licensed stylist"}]})))))))
 
 (defn stylist-cards-query
   [{:keys [just-added-only? just-added-experience? stylist-results-test? top-stylist-v2?]} stylists]

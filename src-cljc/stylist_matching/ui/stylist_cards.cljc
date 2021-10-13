@@ -18,13 +18,6 @@
        (svg/symbolic->html icon)
        primary]])))
 
-(defn stylist-card-salon-name-molecule
-  [{:stylist-card.salon-name/keys [id value]}]
-  (when id
-    (component/html
-     [:div.content-2.proxima {:data-test id}
-      value])))
-
 (defn stylist-card-address-marker-molecule
   [{:stylist-card.address-marker/keys [id value]}]
   (when id
@@ -137,7 +130,6 @@
        (molecules/stars-rating-molecule data)
        (stylist-ratings-molecule data)
        (stylist-just-added-molecule data)]
-      (stylist-card-salon-name-molecule data)
       (stylist-card-address-marker-molecule data)
       (stylist-card-experience-molecule data)]]))
 
