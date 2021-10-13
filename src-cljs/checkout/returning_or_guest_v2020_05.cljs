@@ -1,6 +1,7 @@
 (ns checkout.returning-or-guest-v2020-05
   (:require [checkout.ui.checkout-address-form :as checkout-address-form]
             [checkout.ui.secure-checkout :as secure-checkout]
+            [checkout.ui.molecules :as molecules]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.components.checkout-steps :as checkout-steps]
@@ -20,13 +21,20 @@
 (defcomponent template
   [{:keys [secure-checkout
            checkout-steps
-           checkout-address-form]}
+           checkout-address-form
+           free-install-added]}
    _ _]
   [:div.container
+   (molecules/free-install-added-atom free-install-added)
    (c/build secure-checkout/organism secure-checkout)
    or-separator
    (c/build checkout-steps/component checkout-steps nil)
    (c/build checkout-address-form/organism checkout-address-form)])
+
+(defn ^:private free-install-added-query
+  [free-install-added?]
+  (when free-install-added?
+    {:free-install-added/primary "Free Install Added to Order"}))
 
 (defn ^:private secure-checkout-query
   [facebook-loaded?]
@@ -290,8 +298,10 @@
         focused                      (get-in app-state k/ui-focus)
         saving?                      (utils/requesting? app-state request-keys/update-addresses)
         phone-marketing-opt-in-value (get-in app-state k/checkout-phone-marketing-opt-in)
-        show-phone-marketing-opt-in? (not= "retail-location" (get-in app-state k/store-experience))]
-    {:secure-checkout       (secure-checkout-query facebook-loaded?)
+        show-phone-marketing-opt-in? (not= "retail-location" (get-in app-state k/store-experience))
+        free-install-added?          (:free-install-added (get-in app-state k/navigation-query-params))]
+    {:free-install-added    (free-install-added-query free-install-added?)
+     :secure-checkout       (secure-checkout-query facebook-loaded?)
      :checkout-steps        (checkout-steps-query current-nav-event)
      :checkout-address-form (checkout-address-form-query shipping-address
                                                          billing-address

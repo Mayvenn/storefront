@@ -40,7 +40,7 @@
                                           "Braid down"
                                           "Sew-in and style"
                                           "Paid for by Mayvenn"]}
-   :ctas                  {:upsell-button   {:target (utils/fake-href events/control-checkout-free-install-added)
+   :ctas                  {:upsell-button   {:target (utils/fake-href events/control-checkout-free-install-added {:query-params {:free-install-added true}})
                                              :label  "Add My Free Install"}
                            :continue-button {:target (utils/fake-href events/control-checkout-free-install-skipped)
                                              :label  "Skip & continue"}}})
@@ -48,11 +48,11 @@
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
 
-(defn ^:private continue [app-state]
+(defn ^:private continue [app-state args]
   #?(:cljs
      (if (-> app-state auth/signed-in :storefront.accessors.auth/at-all)
-       (history/enqueue-navigate events/navigate-checkout-address {})
-       (history/enqueue-navigate events/navigate-checkout-returning-or-guest {}))))
+       (history/enqueue-navigate events/navigate-checkout-address args)
+       (history/enqueue-navigate events/navigate-checkout-returning-or-guest args))))
 
 (defmethod effects/perform-effects events/control-checkout-free-install-added
   [_ _ args _ app-state]
@@ -60,10 +60,10 @@
 
 (defmethod effects/perform-effects events/control-checkout-free-install-skipped
   [_ _ _ _ app-state]
-  (continue app-state))
+  (continue app-state {}))
 
 (defmethod effects/perform-effects events/free-install-upsold
-  [_ _ _ _ app-state]
+  [_ _ args _ app-state]
   #?(:cljs
      (api/add-sku-to-bag
       (get-in app-state keypaths/session-id)
@@ -80,4 +80,4 @@
                                   {:order    %
                                    :quantity 1
                                    :sku      {:catalog/sku-id "SV2-LBI-X"}})
-         (continue app-state)))))
+         (continue app-state args)))))

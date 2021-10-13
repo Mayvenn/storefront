@@ -1,5 +1,6 @@
 (ns storefront.components.checkout-address
-  (:require [storefront.accessors.auth :as auth]
+  (:require [checkout.ui.molecules :as molecules]
+            [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.checkout-steps :as checkout-steps]
@@ -280,8 +281,9 @@
           :keypath   keypath})]]]]))
 
 (defcomponent component
-  [{:keys [saving? step-bar billing-address-data shipping-address-data] :as data} _ _]
+  [{:keys [saving? step-bar billing-address-data shipping-address-data free-install-added] :as data} _ _]
   [:div.container
+  (molecules/free-install-added-atom free-install-added)
    (component/build checkout-steps/component step-bar)
 
    [:div.m-auto.col-8-on-tb-dt
@@ -308,10 +310,16 @@
    :marketing-opt-in/keypath keypaths/checkout-phone-marketing-opt-in
    :marketing-opt-in/copy    nil})
 
+(defn ^:private free-install-added-query
+  [free-install-added?]
+  (when free-install-added?
+    {:free-install-added/primary "Free Install Added to Order"}))
+
 (defn query [data]
   (let [google-maps-loaded? (get-in data keypaths/loaded-google-maps)
         states              (map (juxt :name :abbr) (get-in data keypaths/states))
-        field-errors        (get-in data keypaths/field-errors)]
+        field-errors        (get-in data keypaths/field-errors)
+        free-install-added? (:free-install-added (get-in data keypaths/navigation-query-params))]
     (merge
      {:saving?               (utils/requesting? data request-keys/update-addresses)
       :step-bar              (cond-> (checkout-steps/query data)
@@ -329,7 +337,8 @@
                               :become-guest?       false
                               :google-maps-loaded? google-maps-loaded?
                               :field-errors        field-errors
-                              :focused             (get-in data keypaths/ui-focus)}}
+                              :focused             (get-in data keypaths/ui-focus)}
+      :free-install-added (free-install-added-query free-install-added?)}
      (phone-marketing-opt-in-query (get-in data keypaths/checkout-phone-marketing-opt-in)))))
 
 (defn ^:export built-component [data opts]

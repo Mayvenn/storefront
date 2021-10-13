@@ -103,3 +103,9 @@
                       :data-test secondary-link-id})
             secondary-link-label]])]
        [:div.content-4.dark-gray fine-print]]])))
+
+(defn free-install-added-atom
+  [{:free-install-added/keys [primary]}]
+  (when primary
+    [:div.bg-warm-gray.proxima.content-2.shout.bold.center.py1
+     primary]))

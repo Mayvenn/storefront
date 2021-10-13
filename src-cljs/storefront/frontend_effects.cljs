@@ -451,7 +451,7 @@
 
 (defmethod effects/perform-effects events/navigate-checkout-returning-or-guest [_ event args _ app-state]
   (when (get-in app-state keypaths/user-id)
-    (effects/redirect events/navigate-checkout-address))
+    (effects/redirect events/navigate-checkout-address args))
   (google-maps/remove-containers)
   (api/get-states (get-in app-state keypaths/api-cache))
   (facebook/insert))
@@ -462,7 +462,7 @@
 
 (defmethod effects/perform-effects events/navigate-checkout-address [_ event args _ app-state]
   (when-not (get-in app-state keypaths/user-id)
-    (effects/redirect events/navigate-checkout-returning-or-guest))
+    (effects/redirect events/navigate-checkout-returning-or-guest args))
   (google-maps/remove-containers)
   (api/get-states (get-in app-state keypaths/api-cache))
   (fetch-saved-cards app-state))
