@@ -45,7 +45,7 @@
       (assoc :img.v2/id "6c6f87fd-82b1-4de4-9c70-9a9b88233a56")))
 
 (def BNS-medium {:img/id          "16029dd0-285c-4bc6-803c-0c201c3d402c"
-                 :img.v2/id       "a3ee6d1c-ed09-4f17-a270-a4fdcaed8c19"
+                 :img.v2/id       "f3b05633-f844-4878-96c8-4ebc21eec7d3"
                  :hair/origin     "Brazilian"
                  :hair/texture    "Straight"
                  :service/sku-id  "SV2-LBI-X"
@@ -58,7 +58,7 @@
       (assoc :img.v2/id  "10bb8fad-24c5-42db-bb08-14d96aa079e7")))
 
 (def BNS-long {:img/id          "16029dd0-285c-4bc6-803c-0c201c3d402c"
-               :img.v2/id       "7a5b6bb0-f772-491d-90bd-9bea42887d10"
+               :img.v2/id       "3046e95c-b84f-4089-aff1-5281bf90f34a"
                :hair/origin     "Brazilian"
                :hair/texture    "Straight"
                :service/sku-id  "SV2-LBI-X"
