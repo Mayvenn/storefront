@@ -26,7 +26,8 @@
     [:div.content-2.proxima
      body]]))
 
-(def you-buy-the-hair
+(defn you-buy-the-hair
+  [video-navigate]
   (let [bullets [{:title/value "Pick Your Dream Look"
                    :body/value  "Have a vision in mind? We’ve got the hair for it. Otherwise, peruse our site for inspiration to find your next look."}
                   {:title/value ["Select A Mayvenn" ui/hyphen "Certified Stylist"]
@@ -49,9 +50,7 @@
                    bullets)]
 
      [:a.mt8
-      (apply utils/route-to [events/navigate-category {:catalog/category-id "23"
-                                                       :page/slug "mayvenn-install"
-                                                       :query-params {:video "free-install"}}])
+      (apply utils/route-to video-navigate)
       (svg/play-video {:width  "30px"
                        :height "30px"})
       [:div.underline.block.content-3.bold.p-color.shout
@@ -116,7 +115,7 @@
    (svg/vertical-squiggle {:style {:height "72px"}})])
 
 (defmethod popup/component :consolidated-cart-free-install
-  [{:keys [faq-data] :as queried-data} owner _]
+  [{:keys [faq-data video-navigate] :as queried-data} owner _]
   (ui/modal {:col-class   "col-12 col-10-on-tb col-10-on-dt my8-on-tb-dt flex justify-center"
              :close-attrs (utils/fake-href events/control-consolidated-cart-free-install-dismiss)
              :bg-class    "bg-darken-4"}
@@ -132,7 +131,7 @@
 
              [:div.flex.flex-column
               [:div.my10.mb10
-               you-buy-the-hair]
+               (you-buy-the-hair video-navigate)]
 
               [:div.pb6.bg-white mayvenn-guarantees]
 
@@ -159,4 +158,15 @@
 
 (defmethod popup/query :consolidated-cart-free-install
   [data]
-  {:faq-data (faq/free-install-query data)})
+  (let [checkout? (= events/navigate-checkout-free-install
+                     (first (get-in data keypaths/navigation-message)))]
+    (merge
+     {:faq-data (faq/free-install-query data)}
+     (cond
+       checkout?
+       {:video-navigate [events/navigate-checkout-free-install
+                         {:query-params {:video "free-install"}}]}
+       :else
+       {:video-navigate [events/navigate-category {:catalog/category-id "23"
+                                                   :page/slug           "mayvenn-install"
+                                                   :query-params        {:video "free-install"}}]}))))

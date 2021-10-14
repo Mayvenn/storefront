@@ -143,6 +143,11 @@
   (assoc-in app-state adventure.keypaths/adventure-home-video
             (adventure-slug->video (:video query-params))))
 
+(defmethod transition-state events/navigate-checkout-free-install
+  [_ event {:keys [query-params]} app-state]
+  (assoc-in app-state adventure.keypaths/adventure-home-video
+            (adventure-slug->video (:video query-params))))
+
 (defn clean-up-open-category-panels
   [app-state
    [current-nav-event current-nav-event-args]

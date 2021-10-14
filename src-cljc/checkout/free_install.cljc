@@ -5,8 +5,10 @@
               [storefront.history :as history]
               [storefront.trackings :refer [perform-track]]
               [storefront.hooks.stringer :as stringer]])
+   adventure.keypaths
    [storefront.component :as component]
    [storefront.components.ui :as ui]
+   [storefront.components.video :as video]
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.messages :as messages]
@@ -15,9 +17,19 @@
    [adventure.components.layered :as layered]))
 
 (component/defcomponent component
-  [{:keys [heading shop-framed-checklist ctas] :as thing} _ _]
+  [{:keys [heading shop-framed-checklist ctas video] :as thing} _ _]
   [:div.container.p2
    {:style {:max-width "580px"}}
+   (when video
+     (component/build video/component
+              video
+              ;; NOTE(jeff): we use an invalid video slug to preserve back behavior. There probably should be
+              ;;             an investigation to why history is replaced when doing A -> B -> A navigation
+              ;;             (B is removed from history).
+              {:opts
+               {:close-attrs
+                (utils/route-to events/navigate-checkout-free-install
+                                {:query-params        {:video "0"}})}}))
   [:div.title-2.canela.center.mt6.mb3
     (-> heading :copy :primary)]
    [:div.center.col-11.mx-auto
@@ -42,6 +54,7 @@
                                           "Braid down"
                                           "Sew-in and style"
                                           "Paid for by Mayvenn"]}
+   :video                  (when-let [video (get-in state adventure.keypaths/adventure-home-video)] video)
    :ctas                  {:upsell-button   {:target (utils/fake-href events/control-checkout-free-install-added {:query-params {:free-install-added true}})
                                              :label  "Add My Free Install"}
                            :continue-button {:target (utils/fake-href events/control-checkout-free-install-skipped)
