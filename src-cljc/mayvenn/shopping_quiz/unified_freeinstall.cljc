@@ -632,7 +632,7 @@
    :header/primary  "Hair Quiz"
 
    :action/id     "quiz-continue"
-   :action/label  "Continue"
+   :action/label  "Start"
    :action/target [e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-question]}]})
 
 ;;;
