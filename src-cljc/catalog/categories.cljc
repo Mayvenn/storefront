@@ -822,7 +822,7 @@
            :catalog/department    #{"hair"}
            :hair/family           #{"closure-wigs"}
            :selector/essentials   [:hair/family :catalog/department]
-           :selector/electives    [:hair/texture :hair/origin :hair.closure/area]
+           :selector/electives    [:hair/texture :hair/origin :hair.closure/area :hair/base-material]
            :page/title            "100% Virgin Hair Lace Closure Wig | Mayvenn"
            :page.meta/description (copy "Mayvenn’s Lace Closure Wigs come complete with 4x4 or 5x5 inches of parting space."
                                         "Crafted with HD Lace or Standard Lace and high-quality 100% virgin human hair.")
