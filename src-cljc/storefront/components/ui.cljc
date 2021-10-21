@@ -1143,11 +1143,6 @@
 
 
 (defn sku-card-secondary-text
-  "Quick and dirty way of putting HD Lace information on sku cards"
-  [{:as        item
-                                :join/keys [facets]}]
-  (let [color         (some-> facets :hair/color :option/name)
-        base-material (some-> facets :hair/base-material :option/name)]
-    (->> [base-material color]
-         (keep not-empty)
-         (string/join ", "))))
+  [{:as        _item
+    :join/keys [facets]}]
+  (some-> facets :hair/color :option/name))
