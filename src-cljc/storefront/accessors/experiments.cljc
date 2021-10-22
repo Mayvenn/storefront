@@ -135,3 +135,7 @@
 (defn fi-upsell-interstitial?
   [data]
   (display-feature? data "fi-upsell-interstitial"))
+
+(defn wigs-icp-v2?
+  [data]
+  (display-feature? data "wigs-icp-v2"))

@@ -44,14 +44,14 @@
              tmpl))
 
 (def texture-subsection-selectors
-  [#:subsection{:title "Straight"       :selector #:hair{:texture #{"straight"}}}
-   #:subsection{:title "Yaki Straight"  :selector #:hair{:texture #{"yaki-straight"}}}
+  [#:subsection{:title "Straight" :selector #:hair{:texture #{"straight"}}}
+   #:subsection{:title "Yaki Straight" :selector #:hair{:texture #{"yaki-straight"}}}
    #:subsection{:title "Kinky Straight" :selector #:hair{:texture #{"kinky-straight"}}}
-   #:subsection{:title "Body Wave"      :selector #:hair{:texture #{"body-wave"}}}
-   #:subsection{:title "Loose Wave"     :selector #:hair{:texture #{"loose-wave"}}}
-   #:subsection{:title "Water Wave"     :selector #:hair{:texture #{"water-wave"}}}
-   #:subsection{:title "Deep Wave"      :selector #:hair{:texture #{"deep-wave"}}}
-   #:subsection{:title "Curly"          :selector #:hair{:texture #{"curly"}}}])
+   #:subsection{:title "Body Wave" :selector #:hair{:texture #{"body-wave"}}}
+   #:subsection{:title "Loose Wave" :selector #:hair{:texture #{"loose-wave"}}}
+   #:subsection{:title "Water Wave" :selector #:hair{:texture #{"water-wave"}}}
+   #:subsection{:title "Deep Wave" :selector #:hair{:texture #{"deep-wave"}}}
+   #:subsection{:title "Curly" :selector #:hair{:texture #{"curly"}}}])
 
 (def clip-in-tape-in-templates
   {:page/title-template            [:computed/selected-facet-string " Virgin " :seo/title " | Mayvenn"]
@@ -204,7 +204,7 @@
            :subcategory/description          (copy "Virgin silk closures conceal the knots in the base to give you a beautiful,"
                                                    "natural-looking part without needing much customization.")
            :category/description             (copy "Virgin silk closures conceal the knots in the base to give you a beautiful,"
-                                                "natural-looking part without needing much customization.")
+                                                   "natural-looking part without needing much customization.")
            :catalog/department               #{"hair"}
            :hair/family                      #{"closures"}
            :hair/base-material               #{"silk"}
@@ -668,8 +668,10 @@
                                                    "30 Day Quality Guarantee, our Wigs can be customized to fit"
                                                    "your unique look using the built-in combs and adjustable strap.")
            :product-list/title               "Shop All Wigs"
-           :subcategories/ids                ["24" "26" "25" "40" "41"]
-           :subcategories/layout             :list
+           :spotlighting/title               "New Arrivals"
+           :spotlighting/category-ids        ["42" "40" "41"]
+           :subcategories/ids                ["42" "43" "40" "41" "26" "25"]
+           :subcategories/layout             :return-address-labels
            :subsections/subsection-selectors [{:subsection/title    "Lace Front Wigs"
                                                :subsection/selector {:hair/family #{"lace-front-wigs"}}}
                                               {:subsection/title    "360 Wigs"
@@ -767,6 +769,7 @@
 
            :category/description (copy "Ideal for ponytails, these wigs are denser & fuller."
                                        "360 wigs have lace around the entire crown of your head with a cap in the middle.")
+           :subcategory/title    "360 Lace Wigs"
            :subcategory/image-id "fe34e6e9-8927-4b62-94ac-91b37f0a137f"
 
            :contentful/faq-id   :category-virgin-360-wigs
@@ -788,6 +791,7 @@
            :category/description  (copy "Our 100% virgin hair Headband Wigs rank low on effort, but high on impact."
                                         "This quick protective style option is perfect for when you’re on the go.")
            :subcategory/image-id  "4208daf0-824d-4a4e-97be-40001b1635f5"
+           :subcategory/title     "Headband Wigs"
            :contentful/faq-id     :category-headband-wigs
            :catalog/department    #{"hair"}
            :hair/family           #{"headband-wigs"}
@@ -813,6 +817,7 @@
                                                    "our virgin hair Lace Closure Wigs are ​​crafted to provide more coverage and less stress."
                                                    "Take your pick of Standard or HD Lace and 4 classic textures.")
            :subcategory/image-id             "f48ead11-9482-43f4-ae9a-2f7715a9243e"
+           :subcategory/title                "Closure Wigs"
            :subsections/subsection-selectors [{:subsection/title    "4 x 4 Closure Wigs"
                                                :subsection/selector {:hair.closure/area #{"4x4"}}}
                                               {:subsection/title    "5 x 5 Closure Wigs"
@@ -832,103 +837,105 @@
            :category/image-url    "//ucarecdn.com/f48ead11-9482-43f4-ae9a-2f7715a9243e/"
            :seo/sitemap           true}
           wig-templates)
-   (merge {:catalog/category-id           "42"
-           :header/title                  "HD Lace Wigs"
+   (merge {:catalog/category-id "42"
+           :header/title        "HD Lace Wigs"
 
            :page/icp?            false
            :category/new?        true
            :category/description (copy "The same quality virgin hair wigs you love, now crafted with new and"
                                        "improved materials. Our HD wigs have transparent lace for seamless blending.")
-
+           :subcategory/image-id "e4266735-42fc-40b1-bd37-ce5a243fa681"
+           :subcategory/title    "HD Lace Wigs"
            :copy/title           "HD Lace Wigs"
            :page/slug            "hd-lace-wigs"
            :seo/title            "HD Lace Wigs"
            :seo/sitemap          true
 
-           :catalog/department               #{"hair"}
-           :hair/family                      #{"lace-front-wigs" "closure-wigs"}
-           :hair/base-material               #{"hd-lace"}
-           :selector/essentials              [:hair/family :catalog/department :hair/base-material]
-           :selector/electives               [:hair/family :hair/texture :hair/origin]
-           :page/title                       "HD Lace Wigs: Virgin Hair HD Lace Wigs | Mayvenn"
-           :page.meta/description            (copy "Mayvenn’s virgin human hair HD lace wigs allow you to achieve a new look in minutes"
-                                                   "& come in different variations such as Brazilian, Malaysian, straight,"
-                                                   "& deep wave.")
-           :opengraph/title                  (copy "Mayvenn HD Lace Wigs - Free shipping."
-                                                   "Free 30 day returns. Made with 100% virgin human hair.")
-           :opengraph/description            (copy "100% virgin human hair, machine-wefted and backed by our"
-                                                   "30 Day Quality Guarantee, our Wigs can be customized to fit"
-                                                   "your unique look using the built-in combs and adjustable strap.")
-           :product-list/title               "Shop All HD Lace Wigs"
-           :contentful/faq-id                :icp-wigs
-           :content-block/type               :about-attributes
-           :content-block/title              "Wigs 101:"
-           :content-block/header             "How to Choose"
-           :content-block/summary            (str "There are a few main factors to consider "
-                                                  "when you’re choosing a wig. When you have a "
-                                                  "good sense of the look you want to achieve, your "
-                                                  "lifestyle and your budget, the rest will fall "
-                                                  "into place. Ask yourself the density, lace color, "
-                                                  "length of hair you want, and if you prefer virgin "
-                                                  "hair or dyed hair.")
-           :content-block/sections           [{:title "Cap Size"
-                                               :body  [{:text "Cap size ranges between 20-21 inches. If for any reason your wig doesn’t fit, reach out to Customer Service for details to return or exchange your product."}]}
-                                              {:title "Density"
-                                               :body  [{:text "The fullest density clocks in at 200% - other measures are 180, 150 and 130. If the style you’re planning needs a lot of thickness, you should choose a higher density like 180 or 200. If you only need a little, consider 130 or 150."}]}
-                                              {:title "Lace Color"
-                                               :body  [{:text "For a wig that blends in and looks as natural as possible, you’ll want to choose a lace backing shade that most closely matches your skin tone."}]}
-                                              {:title "Length"
-                                               :body  [{:text "Short and sassy or drama down to your ankles? The choice is yours! Available in lengths ranging from 10” to 24”."}]}
-                                              {:title "Virgin & Dyed"
-                                               :body  [{:text "If you want to play with color, it helps to choose a wig that can be dyed—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it dyed the color you want."}]}]}
+           :catalog/department     #{"hair"}
+           :hair/family            #{"lace-front-wigs" "closure-wigs"}
+           :hair/base-material     #{"hd-lace"}
+           :selector/essentials    [:hair/family :catalog/department :hair/base-material]
+           :selector/electives     [:hair/family :hair/texture :hair/origin]
+           :page/title             "HD Lace Wigs: Virgin Hair HD Lace Wigs | Mayvenn"
+           :page.meta/description  (copy "Mayvenn’s virgin human hair HD lace wigs allow you to achieve a new look in minutes"
+                                         "& come in different variations such as Brazilian, Malaysian, straight,"
+                                         "& deep wave.")
+           :opengraph/title        (copy "Mayvenn HD Lace Wigs - Free shipping."
+                                         "Free 30 day returns. Made with 100% virgin human hair.")
+           :opengraph/description  (copy "100% virgin human hair, machine-wefted and backed by our"
+                                         "30 Day Quality Guarantee, our Wigs can be customized to fit"
+                                         "your unique look using the built-in combs and adjustable strap.")
+           :product-list/title     "Shop All HD Lace Wigs"
+           :contentful/faq-id      :icp-wigs
+           :content-block/type     :about-attributes
+           :content-block/title    "Wigs 101:"
+           :content-block/header   "How to Choose"
+           :content-block/summary  (str "There are a few main factors to consider "
+                                        "when you’re choosing a wig. When you have a "
+                                        "good sense of the look you want to achieve, your "
+                                        "lifestyle and your budget, the rest will fall "
+                                        "into place. Ask yourself the density, lace color, "
+                                        "length of hair you want, and if you prefer virgin "
+                                        "hair or dyed hair.")
+           :content-block/sections [{:title "Cap Size"
+                                     :body  [{:text "Cap size ranges between 20-21 inches. If for any reason your wig doesn’t fit, reach out to Customer Service for details to return or exchange your product."}]}
+                                    {:title "Density"
+                                     :body  [{:text "The fullest density clocks in at 200% - other measures are 180, 150 and 130. If the style you’re planning needs a lot of thickness, you should choose a higher density like 180 or 200. If you only need a little, consider 130 or 150."}]}
+                                    {:title "Lace Color"
+                                     :body  [{:text "For a wig that blends in and looks as natural as possible, you’ll want to choose a lace backing shade that most closely matches your skin tone."}]}
+                                    {:title "Length"
+                                     :body  [{:text "Short and sassy or drama down to your ankles? The choice is yours! Available in lengths ranging from 10” to 24”."}]}
+                                    {:title "Virgin & Dyed"
+                                     :body  [{:text "If you want to play with color, it helps to choose a wig that can be dyed—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it dyed the color you want."}]}]}
           wig-templates)
-   (merge {:catalog/category-id           "43"
-           :header/title                  "Standard Lace Wigs"
+   (merge {:catalog/category-id  "43"
+           :header/title         "Standard Lace Wigs"
            :page/icp?            false
            :category/new?        false
            :category/description (copy "With the lace base in front only, these are ideal for exploring new ways to part your hair."
                                        "Ours are made with virgin lace & real human hair.")
+           :subcategory/image-id "71dcdd17-f9cc-456f-b763-2c1c047c30b4"
            :copy/title           "Standard Lace Wigs"
            :page/slug            "standard-lace-wigs"
            :seo/title            "Standard Lace Wigs"
            :seo/sitemap          true
 
-           :catalog/department               #{"hair"}
-           :hair/family                      #{"lace-front-wigs" "closure-wigs"}
-           :hair/base-material               #{"lace"}
-           :selector/essentials              [:hair/family :catalog/department :hair/base-material]
-           :selector/electives               [:hair/family :hair/texture :hair/origin :hair/color]
-           :page/title                       "Standard Lace Wigs: 100% Human Hair Standard Lace Wigs | Mayvenn"
-           :page.meta/description            (copy "Mayvenn’s virgin human hair standard lace wigs allow you to achieve a new look in minutes"
-                                                   "& come in different variations such as Brazilian, Malaysian, straight,"
-                                                   "& deep wave.")
-           :opengraph/title                  (copy "Mayvenn Standard Lace Wigs - Free shipping."
-                                                   "Free 30 day returns. Made with 100% virgin human hair.")
-           :opengraph/description            (copy "100% virgin human hair, machine-wefted and backed by our"
-                                                   "30 Day Quality Guarantee, our Wigs can be customized to fit"
-                                                   "your unique look using the built-in combs and adjustable strap.")
-           :product-list/title               "Shop All Standard Lace Wigs"
-           :contentful/faq-id                :icp-wigs
-           :content-block/type               :about-attributes
-           :content-block/title              "Wigs 101:"
-           :content-block/header             "How to Choose"
-           :content-block/summary            (str "There are a few main factors to consider "
-                                                  "when you’re choosing a wig. When you have a "
-                                                  "good sense of the look you want to achieve, your "
-                                                  "lifestyle and your budget, the rest will fall "
-                                                  "into place. Ask yourself the density, lace color, "
-                                                  "length of hair you want, and if you prefer virgin "
-                                                  "hair or dyed hair.")
-           :content-block/sections           [{:title "Cap Size"
-                                               :body  [{:text "Cap size ranges between 20-21 inches. If for any reason your wig doesn’t fit, reach out to Customer Service for details to return or exchange your product."}]}
-                                              {:title "Density"
-                                               :body  [{:text "The fullest density clocks in at 200% - other measures are 180, 150 and 130. If the style you’re planning needs a lot of thickness, you should choose a higher density like 180 or 200. If you only need a little, consider 130 or 150."}]}
-                                              {:title "Lace Color"
-                                               :body  [{:text "For a wig that blends in and looks as natural as possible, you’ll want to choose a lace backing shade that most closely matches your skin tone."}]}
-                                              {:title "Length"
-                                               :body  [{:text "Short and sassy or drama down to your ankles? The choice is yours! Available in lengths ranging from 10” to 24”."}]}
-                                              {:title "Virgin & Dyed"
-                                               :body  [{:text "If you want to play with color, it helps to choose a wig that can be dyed—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it dyed the color you want."}]}]}
+           :catalog/department     #{"hair"}
+           :hair/family            #{"lace-front-wigs" "closure-wigs"}
+           :hair/base-material     #{"lace"}
+           :selector/essentials    [:hair/family :catalog/department :hair/base-material]
+           :selector/electives     [:hair/family :hair/texture :hair/origin :hair/color]
+           :page/title             "Standard Lace Wigs: 100% Human Hair Standard Lace Wigs | Mayvenn"
+           :page.meta/description  (copy "Mayvenn’s virgin human hair standard lace wigs allow you to achieve a new look in minutes"
+                                         "& come in different variations such as Brazilian, Malaysian, straight,"
+                                         "& deep wave.")
+           :opengraph/title        (copy "Mayvenn Standard Lace Wigs - Free shipping."
+                                         "Free 30 day returns. Made with 100% virgin human hair.")
+           :opengraph/description  (copy "100% virgin human hair, machine-wefted and backed by our"
+                                         "30 Day Quality Guarantee, our Wigs can be customized to fit"
+                                         "your unique look using the built-in combs and adjustable strap.")
+           :product-list/title     "Shop All Standard Lace Wigs"
+           :contentful/faq-id      :icp-wigs
+           :content-block/type     :about-attributes
+           :content-block/title    "Wigs 101:"
+           :content-block/header   "How to Choose"
+           :content-block/summary  (str "There are a few main factors to consider "
+                                        "when you’re choosing a wig. When you have a "
+                                        "good sense of the look you want to achieve, your "
+                                        "lifestyle and your budget, the rest will fall "
+                                        "into place. Ask yourself the density, lace color, "
+                                        "length of hair you want, and if you prefer virgin "
+                                        "hair or dyed hair.")
+           :content-block/sections [{:title "Cap Size"
+                                     :body  [{:text "Cap size ranges between 20-21 inches. If for any reason your wig doesn’t fit, reach out to Customer Service for details to return or exchange your product."}]}
+                                    {:title "Density"
+                                     :body  [{:text "The fullest density clocks in at 200% - other measures are 180, 150 and 130. If the style you’re planning needs a lot of thickness, you should choose a higher density like 180 or 200. If you only need a little, consider 130 or 150."}]}
+                                    {:title "Lace Color"
+                                     :body  [{:text "For a wig that blends in and looks as natural as possible, you’ll want to choose a lace backing shade that most closely matches your skin tone."}]}
+                                    {:title "Length"
+                                     :body  [{:text "Short and sassy or drama down to your ankles? The choice is yours! Available in lengths ranging from 10” to 24”."}]}
+                                    {:title "Virgin & Dyed"
+                                     :body  [{:text "If you want to play with color, it helps to choose a wig that can be dyed—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it dyed the color you want."}]}]}
           wig-templates)])
 
 (def mayvenn-install-eligible
@@ -1068,10 +1075,10 @@
            :hamburger/order      1
            :selector/electives   []
            :category/description (copy "Save your precious strands and top your look"
-                                          "off with the ultimate tool in protective weave"
-                                          "styling. Our collection of closures and frontals blend"
-                                          "seamlessly with our bundles and can be customized"
-                                          "to fit your unique look.")
+                                       "off with the ultimate tool in protective weave"
+                                       "styling. Our collection of closures and frontals blend"
+                                       "seamlessly with our bundles and can be customized"
+                                       "to fit your unique look.")
            :page/redirect?       true
            :seo/sitemap          false})])
 

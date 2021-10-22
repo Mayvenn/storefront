@@ -8,6 +8,8 @@
             [catalog.ui.content-box :as content-box]
             [catalog.ui.facet-filters :as facet-filters]
             [catalog.ui.product-card-listing :as product-card-listing]
+            [catalog.ui.spotlighting :as spotlighting]
+            [catalog.ui.return-address-labels :as return-address-labels]
             [homepage.ui.faq :as faq]
             [spice.maps :as maps]
             [storefront.accessors.categories :as accessors.categories]
@@ -180,7 +182,10 @@
            drill-category-list] :as queried-data} _ _]
   [:div
    (component/build category-hero/organism category-hero)
-   (vertical-squiggle-atom "-36px")
+   (when-let [data (:spotlighting queried-data)]
+     (component/build spotlighting/organism data {}))
+   (when-let [data (:return-address-labels queried-data)]
+     (component/build return-address-labels/organism data {}))
    [:div.mx-auto
     (component/build drill-category-list-organism drill-category-list)
     (component/build drill-category-grid-organism drill-category-grid)]
@@ -209,7 +214,11 @@
 
 (defn page
   [state _]
-  (let [interstitial-category               (accessors.categories/current-category state)
+  (let [ff-wigs-icp-v2?                     (experiments/wigs-icp-v2? state)
+        interstitial-category               (cond-> (accessors.categories/current-category state)
+                                              (not ff-wigs-icp-v2?) (assoc :subcategories/ids ["24" "26" "25" "40" "41"])
+                                              (not ff-wigs-icp-v2?) (assoc :subcategories/layout :list))
+
         facet-filtering-state               (assoc (get-in state catalog.keypaths/k-models-facet-filtering)
                                                    :facet-filtering/item-label "item")
         selections                          (:facet-filtering/filters facet-filtering-state)
@@ -218,7 +227,10 @@
                                                  (select (merge
                                                           (skuers/electives interstitial-category)
                                                           (skuers/essentials interstitial-category))))
-        subcategories                       (category->subcategories (get-in state keypaths/categories) interstitial-category)
+        categories                          (get-in state keypaths/categories)
+        subcategories                       (category->subcategories categories interstitial-category)
+        spotlight-subcategories             (map #(accessors.categories/id->category % categories)
+                                                 (:spotlighting/category-ids interstitial-category))
         category-products-matching-criteria (->> loaded-category-products
                                                  (select (merge
                                                           (skuers/essentials interstitial-category)
@@ -242,6 +254,18 @@
                                                    :list/sections      (for [{:keys [question answer]} question-answers]
                                                                          {:faq/title   (:text question)
                                                                           :faq/content answer})}))
+                       :spotlighting          (when ff-wigs-icp-v2?
+                                                {:title      (:spotlighting/title interstitial-category)
+                                                 :spotlights (map (fn [{:keys [:subcategory/image-id
+                                                                               :subcategory/title
+                                                                               :catalog/category-id
+                                                                               :page/slug]}]
+                                                                    {:image-src image-id
+                                                                     :title     title
+                                                                     :nav-event [events/navigate-category
+                                                                                 {:page/slug           slug
+                                                                                  :catalog/category-id category-id}]})
+                                                                  spotlight-subcategories)})
                        :product-card-listing  (product-card-listing/query state
                                                                           interstitial-category
                                                                           category-products-matching-criteria)}
@@ -267,4 +291,17 @@
                           {:drill-category-list {:drill-category-list/values                 values
                                                  :drill-category-list/showing-3-or-more?     (>= (count values) 3)
                                                  :drill-category-list/tablet-desktop-columns (max 1 (min 3 (count values)))}})
+                        :return-address-labels
+                        {:return-address-labels {:title "Shop by Category"
+                                                 :labels (map (fn [{:keys [:subcategory/image-id
+                                                                           :subcategory/title
+                                                                           :catalog/category-id
+                                                                           :page/slug]
+                                                                    :as subcategory}]
+                                                                {:image-src image-id
+                                                                 :title     (or title (:copy/title subcategory))
+                                                                 :nav-event [events/navigate-category
+                                                                             {:page/slug           slug
+                                                                              :catalog/category-id category-id}]})
+                                                              subcategories)}}
                         nil)))))

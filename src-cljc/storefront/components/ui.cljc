@@ -670,11 +670,13 @@
   [{:keys [width] :as attrs :or {width "4em"}} image-id]
   (component/html
    (let [width (spice/parse-int width)
-         size {:style {:height (str width "px") :width (str width "px")}}]
+         size  {:style {:height (str width "px") :width (str width "px")}}]
      [:div.circle.bg-cool-gray.overflow-hidden.relative
-      ^:attrs (merge size
-                     (dissoc attrs :width))
-      (ucare-img attrs (or image-id "9664879b-07e0-432e-9c09-b2cf4c899b10"))])))
+      ^:attrs size
+      (ucare-img (merge attrs
+                        {:max-size    (str width "px")
+                         :square-size width})
+                 (or image-id "9664879b-07e0-432e-9c09-b2cf4c899b10"))])))
 
 (defn circle-picture
   ([src] (circle-picture {} src))
