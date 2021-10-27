@@ -17,6 +17,6 @@
 
 (c/defcomponent organism
   [{:keys [title labels]} _ _]
-  [:div.my6.mx-auto.px2.col-10-on-tb-dt
+  [:div.my6.mx-auto.px2.col-10-on-tb.col-8-on-dt
    [:div.canela.title-2.center.mb4 title]
    (into [:div.grid.grid-cols-2-on-mb.grid-cols-3-on-tb-dt.gap-2] (map image-with-label) labels)])

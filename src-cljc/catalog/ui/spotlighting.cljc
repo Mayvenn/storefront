@@ -12,6 +12,6 @@
 
 (c/defcomponent organism
   [{:keys [title spotlights]} _ _]
-  [:div.flex.flex-column.items-stretch.col-8-on-tb-dt.mx-auto
+  [:div.flex.flex-column.items-stretch.col-8-on-tb.col-6-on-dt.mx-auto
    [:div.center.title-3.proxima.shout.my6 title]
    (into [:div.flex.justify-evenly] (map spotlight-with-caption) spotlights)])
