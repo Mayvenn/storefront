@@ -498,7 +498,7 @@
                            shop?
                            (concat
                             [{:header-menu-item/navigation-target [events/navigate-shopping-quiz-unified-freeinstall-intro
-                                                                   {:query-params {:location "desktop_heade"}}]
+                                                                   {:query-params {:location "desktop_header"}}]
                               :header-menu-item/id                "desktop-shop-quiz-unified-fi"
                               :header-menu-item/new-label?        true
                               :header-menu-item/content           "Start Hair Quiz"}
