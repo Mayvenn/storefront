@@ -1,5 +1,6 @@
 (ns storefront.accessors.experiments
   (:require [storefront.keypaths :as keypaths]
+            [spice.date :as date]
             [storefront.accessors.sites :as sites]))
 
 #_(defn bucketing-example
@@ -139,3 +140,10 @@
 (defn wigs-icp-v2?
   [data]
   (display-feature? data "wigs-icp-v2"))
+
+(defn early-access?
+  [data]
+  (or (and
+       (date/after? (date/date-time 2021 11 22 16 00 0) (date/now))
+       (date/after? (date/now) (date/date-time 2021 11 01 17 00 0)))
+      (display-feature? data "early-access")))
