@@ -214,10 +214,13 @@
 
 (defn page
   [state _]
-  (let [ff-wigs-icp-v2?                     (experiments/wigs-icp-v2? state)
+  (let [current-category                    (accessors.categories/current-category state)
+        ff-wigs-icp-v2?                     (experiments/wigs-icp-v2? state)
+        revert-wigs-icp?                    (and (= "13" (:catalog/category-id current-category))
+                                                 (not ff-wigs-icp-v2?))
         interstitial-category               (cond-> (accessors.categories/current-category state)
-                                              (not ff-wigs-icp-v2?) (assoc :subcategories/ids ["24" "26" "25" "40" "41"])
-                                              (not ff-wigs-icp-v2?) (assoc :subcategories/layout :list))
+                                               revert-wigs-icp? (assoc :subcategories/ids ["24" "26" "25" "40" "41"])
+                                               revert-wigs-icp?  (assoc :subcategories/layout :list))
 
         facet-filtering-state               (assoc (get-in state catalog.keypaths/k-models-facet-filtering)
                                                    :facet-filtering/item-label "item")
@@ -254,7 +257,7 @@
                                                    :list/sections      (for [{:keys [question answer]} question-answers]
                                                                          {:faq/title   (:text question)
                                                                           :faq/content answer})}))
-                       :spotlighting          (when ff-wigs-icp-v2?
+                       :spotlighting          (when (and (= "13" (:catalog/category-id current-category)) ff-wigs-icp-v2?)
                                                 {:title      (:spotlighting/title interstitial-category)
                                                  :spotlights (map (fn [{:keys [:subcategory/image-id
                                                                                :subcategory/title
