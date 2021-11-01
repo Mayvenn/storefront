@@ -150,7 +150,7 @@
     (ui/ucare-img {:style {:max-width "580px"}} "78759574-51d8-4982-b70f-61d469fe6a4d")
     [:div.absolute
      {:style {:top "1rem" :right "1rem"}}
-     (ui/modal-close {:data-test   "email-capture-modal-dismiss"
+     (ui/modal-close {:data-test   "email-capture-dismiss"
                       :class       "fill-white stroke-white"
                       :close-attrs (apply utils/fake-href [e/biz|email-capture|dismissed {:id "first-pageview-email-capture"}])})]]
    [:div.white.center.px6.mx-auto.mynp6
@@ -187,7 +187,7 @@
     (ui/ucare-img {:style {:max-width "580px"}} "4d9d1edb-cc49-4af9-900e-bef610e16675")
     [:div.absolute
      {:style {:top "1rem" :right "1rem"}}
-     (ui/modal-close {:data-test   "email-capture-modal-dismiss"
+     (ui/modal-close {:data-test   "email-capture-dismiss"
                       :class       "fill-black stroke-black"
                       :close-attrs (apply utils/fake-href [e/biz|email-capture|dismissed {:id "adv-quiz-email-capture"}])})]]
    [:div.white.center.px6.mx-auto.mynp6
