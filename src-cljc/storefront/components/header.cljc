@@ -464,7 +464,7 @@
                                  (concat
                                   [{:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug "wigs" :catalog/category-id "13"}]
                                     :slide-out-nav-menu-item/id          "menu-shop-wigs"
-                                    :slide-out-nav-menu-item/new-primary "SALE"
+                                    :slide-out-nav-menu-item/new-primary "NEW"
                                     :slide-out-nav-menu-item/nested?     false
                                     :slide-out-nav-menu-item/primary     "Wigs"}
                                    {:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug "human-hair-bundles" :catalog/category-id "27"}]
