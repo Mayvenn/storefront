@@ -623,9 +623,9 @@
   [undo-history step]
   {:title/icon      [:svg/heart {:style {:height "41px" :width "37px"}
                                  :class "fill-p-color"}]
-   :title/primary   ["Hair + Service" "One Price"]
-   :title/secondary (str "This short quiz (2-3 Min) will help you find the look "
-                         "and a stylist to perform the install in your area.")
+   :title/primary   ["New Look Loading"]
+   :title/secondary (str "Tell us how you want your hair done—we'll find "
+                         "you the best looks and stylists in your area.")
 
    :header/back     (not-empty (first undo-history))
    :header/target   [e/navigate-home]
