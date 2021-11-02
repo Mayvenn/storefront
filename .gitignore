@@ -9,7 +9,7 @@ pom.xml.asc
 .hgignore
 .hg/
 .repl
-.lsp
+.lsp/.cache
 .cljs_rhino_repl
 .DS_Store
 .clj-kondo/.cache
