@@ -3,4 +3,5 @@
                           storefront.handler-test.common/with-handler hooks.macros/with-handler
                           storefront.handler-test.common/with-services hooks.macros/with-services
                           storefront.component/defdynamic-component hooks.macros/defdynamic-component
-                          storefront.component/create-dynamic hooks.macros/create-dynamic}}}
+                          ;;storefront.component/create-dynamic hooks.macros/create-dynamic
+                          }}}

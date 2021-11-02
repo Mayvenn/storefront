@@ -48,7 +48,10 @@
                            fns))]
     {:node new-node}))
 
-(defn create-dynamic [{:keys [node]}]
+(defn create-dynamic
+  "Currently disabled as it is causing issues with some configurations"
+  [{:keys [node] :as input}]
+  (clojure.pprint/pprint input)
   (let [[name & methods] (rest (:children node))
         fns              (into {}
                                (comp
