@@ -147,7 +147,7 @@
 ;; Biz Domain: Looks
 
 (defn look<-
-  [skus-db looks-shared-carts-db facets-db look album-keyword index]
+  [skus-db looks-shared-carts-db facets-db look promotions album-keyword index]
   (when-let [shared-cart-id (contentful/shared-cart-id look)]
     (let [shared-cart              (get looks-shared-carts-db shared-cart-id)
           album-copy               (get ugc/album-copy album-keyword)
@@ -192,8 +192,11 @@
                                                         (mapv (fn [{:keys [catalog/sku-id sku/price]}]
                                                                 (* (get sku-id->quantity sku-id 0) price)))
                                                         (reduce + 0))
-          discounted-price                     (when-let [discountable-service-price (:product/essential-price discountable-service-sku)]
-                                                 (- total-price discountable-service-price))
+          discounted-price                     (let [discountable-service-price (:product/essential-price discountable-service-sku)]
+                                                 (cond-> total-price
+                                                   discountable-service-price (- discountable-service-price)
+                                                   ;; TODO: REMOVE AFTER BLACK FRIDAY SALE 11/30/21
+                                                   (first (filter (comp (partial = "holiday") :code) promotions)) (* 0.8)))
           look-id                              (:content/id look)]
       (merge tex-ori-col ;; TODO(corey) apply merge-with into
              {:look/title (clojure.string/join " " [origin-name
@@ -257,10 +260,11 @@
                               :looks
                               ;; *WARNING*, HACK: to limit how many items are
                               ;; *being rendered / fetched from the backend on this page
-                              (take 99))]
+                              (take 99))
+        promotions       (get-in state storefront.keypaths/promotions)]
     (->> contentful-looks
          (keep-indexed (fn [index look]
-                         (look<- skus-db looks-shared-carts-db facets-db look album-keyword index)))
+                         (look<- skus-db looks-shared-carts-db facets-db look promotions album-keyword index)))
          vec)))
 
 ;; Visual Domain: Page
