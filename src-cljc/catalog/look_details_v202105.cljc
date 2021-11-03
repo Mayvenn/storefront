@@ -592,6 +592,7 @@
         album-copy      (get ugc/album-copy album-keyword)
         back-event      (:default-back-event album-copy)
         shop?           (= :shop (sites/determine-site data))
+        promotion-codes (:promotion-codes shared-cart)
 
         ;; Looks query
         facets-db (facets/by-slug data)
@@ -614,13 +615,13 @@
                                                           (count skus-matching-selections))
 
         raw-order (api.orders/look-customization->order data
-                                                        {:line-items
-                                                         (->> (concat skus-matching-selections services)
-                                                              (group-by :catalog/sku-id)
-                                                              (maps/map-values (fn [skus]
-                                                                                 {:sku           (first skus)
-                                                                                  :item/quantity (count skus)}))
-                                                              vals)})
+                                                        {:line-items      (->> (concat skus-matching-selections services)
+                                                                               (group-by :catalog/sku-id)
+                                                                               (maps/map-values (fn [skus]
+                                                                                                  {:sku           (first skus)
+                                                                                                   :item/quantity (count skus)}))
+                                                                               vals)
+                                                         :promotion-codes promotion-codes})
 
         items                 (:order/items raw-order)
         discountable-services (select ?discountable items)
@@ -704,7 +705,8 @@
                                         {:look-id (:id contentful-look)
                                          :items   (into {} (map (fn [item]
                                                                   {(:catalog/sku-id item) (:item/quantity item)})
-                                                                items))}]
+                                                                items))
+                                         :promotion-codes promotion-codes}]
             :cta/disabled-content      (when unavailable-lengths-selected?
                                          "Unavailable")
             :cta/spinning?             (utils/requesting? data request-keys/new-order-from-sku-ids)
@@ -809,14 +811,16 @@
   (assoc-in app-state catalog.keypaths/detailed-look-picker-visible? false))
 
 (defmethod effects/perform-effects events/control-create-order-from-customized-look
-  [_ event {:keys [items look-id] :as args} _ app-state]
+  [_ event {:keys [items promotion-codes look-id] :as args} _ app-state]
   #?(:cljs
      (api/new-order-from-sku-ids (get-in app-state keypaths/session-id)
                                  {:store-stylist-id     (get-in app-state keypaths/store-stylist-id)
                                   :user-id              (get-in app-state keypaths/user-id)
                                   :user-token           (get-in app-state keypaths/user-token)
                                   :servicing-stylist-id (get-in app-state keypaths/order-servicing-stylist-id)
-                                  :sku-id->quantity     items}
+                                  :sku-id->quantity     items
+                                  :promotion-codes      promotion-codes
+                                  :ignore-promo-absence true}
                                  (fn [{:keys [order]}]
                                    (messages/handle-message
                                     events/api-success-update-order

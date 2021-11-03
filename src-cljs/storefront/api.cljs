@@ -957,7 +957,7 @@
                          :sku-id->quantity sku-id->quantity}))}))
 
 (defn new-order-from-sku-ids
-  [session-id {:keys [sku-id->quantity heat-feature-flags store-stylist-id servicing-stylist-id] :as params} handler]
+  [session-id {:keys [sku-id->quantity promotion-codes ignore-promo-absence heat-feature-flags store-stylist-id servicing-stylist-id] :as params} handler]
   (storeback-api-req
    POST
    "/v2/create-bag"
@@ -966,7 +966,9 @@
               {:stylist-id           store-stylist-id
                :servicing-stylist-id servicing-stylist-id
                :session-id           session-id
-               :sku-id->quantity     sku-id->quantity}
+               :sku-id->quantity     sku-id->quantity
+               :promotion-codes      promotion-codes
+               :ignore-promo-absence ignore-promo-absence}
               (select-keys params [:user-id :user-token])
               (when heat-feature-flags {:heat-feature-flags heat-feature-flags}))
     :handler (fn [order]
