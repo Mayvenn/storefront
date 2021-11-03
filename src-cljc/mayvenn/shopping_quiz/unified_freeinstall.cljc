@@ -623,7 +623,7 @@
   [undo-history step]
   {:title/icon      [:svg/heart {:style {:height "41px" :width "37px"}
                                  :class "fill-p-color"}]
-   :title/primary   ["New Look Loading"]
+   :title/primary   ["New Look Loading..."]
    :title/secondary (str "Tell us how you want your hair done—we'll find "
                          "you the best looks and stylists in your area.")
 
