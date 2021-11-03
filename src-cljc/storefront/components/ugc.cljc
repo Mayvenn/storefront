@@ -23,7 +23,7 @@
 
 (defcomponent social-image-card-component
   [{:keys                [desktop-aware?
-                          id description title]
+                          id description title price]
     :screen/keys         [seen?]
     [nav-event nav-args] :cta/navigation-message
     button-type          :cta/button-type
@@ -50,8 +50,8 @@
           [:div.flex.items-center.justify-between.mb2
            [:div.flex.items-center
             [:div.flex.flex-column
-             [:div.h3 title]
-             [:div.regular description]]]
+             [:div.h3 title ", " description]
+             [:div.regular price]]]
            [:div.m1.self-start {:style {:width  "21px"
                                         :height "21px"}}
             ^:inline (svg/instagram)]]]
@@ -63,4 +63,3 @@
              {:data-test (str "look-" id)})
             [:span.bold (:button-copy copy)]))]])
      [:div.bg-white {:style {:min-height "520px"}}])])
-

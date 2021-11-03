@@ -3,7 +3,8 @@
             [lambdaisland.uri :as uri]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.routes :as routes]))
+            [storefront.routes :as routes]
+            [storefront.components.money-formatters :as mf]))
 
 (def ^:private color-name->color-slug
   {"Natural Black"                           "black"
@@ -45,13 +46,14 @@
             texture
             :content/id
             description
-            social-media-platform]}]
+            social-media-platform
+            price]}]
    (let [color-detail (get color-details (color-name->color-slug color))
-         title (or (->> [origin texture]
-                        (remove nil?)
-                        (string/join " ")
-                        not-empty)
-                   "Check this out!")]
+         title        (or (->> [origin texture]
+                               (remove nil?)
+                               (string/join " ")
+                               not-empty)
+                          "Check this out!")]
      {:id                     id
       :image-url              photo-url
       :description            description
@@ -59,6 +61,7 @@
       :social-service         social-media-platform
       :icon-url               (:option/rectangle-swatch color-detail)
       :title                  title
+      :price                  (mf/as-money price)
       :cta/button-type        :underline-button
       :cta/navigation-message [events/navigate-shop-by-look-details
                                {:album-keyword album-keyword

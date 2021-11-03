@@ -333,18 +333,36 @@
        looks)]]))
 
 (defn query [data]
-  (let [selected-album-kw (get-in data storefront.keypaths/selected-album-keyword)
-        actual-album-kw   (ugc/determine-look-album data selected-album-kw)
-        looks             (-> data (get-in storefront.keypaths/cms-ugc-collection) actual-album-kw :looks)
-        color-details     (->> (get-in data storefront.keypaths/v2-facets)
-                               (filter #(= :hair/color (:facet/slug %)))
-                               first
-                               :facet/options
-                               (maps/index-by :option/slug))]
-    {:looks     (mapv (partial contentful/look->social-card
-                               selected-album-kw
-                               color-details)
-                      looks)
+  (let [selected-album-kw     (get-in data storefront.keypaths/selected-album-keyword)
+        actual-album-kw       (ugc/determine-look-album data selected-album-kw)
+        looks                 (-> data (get-in storefront.keypaths/cms-ugc-collection) actual-album-kw :looks)
+        skus-db               (get-in data storefront.keypaths/v2-skus)
+        looks-shared-carts-db (get-in data storefront.keypaths/v1-looks-shared-carts)
+        color-details         (->> (get-in data storefront.keypaths/v2-facets)
+                                   (filter #(= :hair/color (:facet/slug %)))
+                                   first
+                                   :facet/options
+                                   (maps/index-by :option/slug))
+        looks-with-price      (map (fn[look]
+                                     (let [shared-cart-id   (contentful/shared-cart-id look)
+                                           sku-id->quantity (->> (get looks-shared-carts-db shared-cart-id)
+                                                                 :line-items
+                                                                 (maps/index-by :catalog/sku-id)
+                                                                 (maps/map-values :item/quantity))
+                                           skus-in-look     (->> (select-keys skus-db (keys sku-id->quantity))
+                                                                     vals
+                                                                     vec)
+                                           price            (some->> skus-in-look
+                                                                     (mapv (fn [{:keys [catalog/sku-id sku/price]}]
+                                                                             (* (get sku-id->quantity sku-id 0) price)))
+                                                                     (reduce + 0))]
+                                       (assoc look :price price)))
+                                   looks)
+        looks-query           (map (partial contentful/look->social-card
+                                            selected-album-kw
+                                            color-details)
+                                   looks-with-price)]
+    {:looks     looks-query
      :copy      (actual-album-kw ugc/album-copy)
      :spinning? (empty? looks)}))
 
