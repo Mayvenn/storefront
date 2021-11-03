@@ -23,7 +23,8 @@
 
 (defcomponent social-image-card-component
   [{:keys                [desktop-aware?
-                          id description title price]
+                          id description title
+                          price discounted-price]
     :screen/keys         [seen?]
     [nav-event nav-args] :cta/navigation-message
     button-type          :cta/button-type
@@ -51,7 +52,10 @@
            [:div.flex.items-center
             [:div.flex.flex-column
              [:div.h3 title ", " description]
-             [:div.regular price]]]
+             (cond
+               (and price discounted-price) [:div.regular.strike price]
+               price                        [:div.regular price])
+             (when discounted-price [:div discounted-price])]]
            [:div.m1.self-start {:style {:width  "21px"
                                         :height "21px"}}
             ^:inline (svg/instagram)]]]

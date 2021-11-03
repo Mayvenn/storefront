@@ -343,25 +343,36 @@
                                    first
                                    :facet/options
                                    (maps/index-by :option/slug))
-        looks-with-price      (map (fn[look]
-                                     (let [shared-cart-id   (contentful/shared-cart-id look)
-                                           sku-id->quantity (->> (get looks-shared-carts-db shared-cart-id)
-                                                                 :line-items
-                                                                 (maps/index-by :catalog/sku-id)
-                                                                 (maps/map-values :item/quantity))
-                                           skus-in-look     (->> (select-keys skus-db (keys sku-id->quantity))
-                                                                     vals
-                                                                     vec)
-                                           price            (some->> skus-in-look
-                                                                     (mapv (fn [{:keys [catalog/sku-id sku/price]}]
-                                                                             (* (get sku-id->quantity sku-id 0) price)))
-                                                                     (reduce + 0))]
-                                       (assoc look :price price)))
+        promotions            (get-in data storefront.keypaths/promotions)
+        looks-with-prices     (map (fn[look]
+                                     (let [shared-cart-id           (contentful/shared-cart-id look)
+                                           sku-id->quantity         (->> (get looks-shared-carts-db shared-cart-id)
+                                                                         :line-items
+                                                                         (maps/index-by :catalog/sku-id)
+                                                                         (maps/map-values :item/quantity))
+                                           skus-in-look             (->> (select-keys skus-db (keys sku-id->quantity))
+                                                                         vals
+                                                                         vec)
+                                           price                    (some->> skus-in-look
+                                                                             (mapv (fn [{:keys [catalog/sku-id sku/price]}]
+                                                                                     (* (get sku-id->quantity sku-id 0) price)))
+                                                                             (reduce + 0))
+                                           discountable-service-sku (->> skus-in-look
+                                                                         (select ?discountable)
+                                                                         first)
+                                           discounted-price         (let [discountable-service-price (:product/essential-price discountable-service-sku)]
+                                                                      (cond-> price
+                                                                        discountable-service-price                                     (- discountable-service-price)
+                                                                        ;; TODO: REMOVE AFTER BLACK FRIDAY SALE 11/30/21
+                                                                        (first (filter (comp (partial = "holiday") :code) promotions)) (* 0.8)))
+                                           price-money              (when price (mf/as-money price))
+                                           discounted-money         (when discounted-price (mf/as-money discounted-price))]
+                                       (assoc look :price price-money :discounted-price (when (not= price-money discounted-money) discounted-money))))
                                    looks)
         looks-query           (map (partial contentful/look->social-card
                                             selected-album-kw
                                             color-details)
-                                   looks-with-price)]
+                                   looks-with-prices)]
     {:looks     looks-query
      :copy      (actual-album-kw ugc/album-copy)
      :spinning? (empty? looks)}))
