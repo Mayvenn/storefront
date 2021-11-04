@@ -580,19 +580,20 @@
     (->> picker-options :per-item (mapv :hair/length)))})
 
 (defn query [data]
-  (let [skus-db         (get-in data catalog.keypaths/detailed-look-skus-db)
-        shared-cart     (get-in data keypaths/shared-cart-current)
-        album-keyword   (get-in data keypaths/selected-album-keyword)
-        look            (get-in data (conj keypaths/cms-ugc-collection-all-looks
-                                           (get-in data keypaths/selected-look-id)))
-        contentful-look (contentful/look->look-detail-social-card album-keyword
-                                                                  (contentful/selected-look data))
-        faq             (-> (get-in data keypaths/cms) :faq :shop-by-look)
-        back            (first (get-in data keypaths/navigation-undo-stack))
-        album-copy      (get ugc/album-copy album-keyword)
-        back-event      (:default-back-event album-copy)
-        shop?           (= :shop (sites/determine-site data))
-        promotion-codes (:promotion-codes shared-cart)
+  (let [skus-db                     (get-in data catalog.keypaths/detailed-look-skus-db)
+        shared-cart                 (get-in data keypaths/shared-cart-current)
+        album-keyword               (get-in data keypaths/selected-album-keyword)
+        look                        (get-in data (conj keypaths/cms-ugc-collection-all-looks
+                                                       (get-in data keypaths/selected-look-id)))
+        contentful-look             (contentful/look->look-detail-social-card album-keyword
+                                                                              (contentful/selected-look data))
+        faq                         (-> (get-in data keypaths/cms) :faq :shop-by-look)
+        back                        (first (get-in data keypaths/navigation-undo-stack))
+        album-copy                  (get ugc/album-copy album-keyword)
+        back-event                  (:default-back-event album-copy)
+        shop?                       (= :shop (sites/determine-site data))
+        promotion-codes             (get-in data storefront.keypaths/promotions)
+        shared-cart-promotion-codes (:promotion-codes shared-cart)
 
         ;; Looks query
         facets-db (facets/by-slug data)
@@ -621,7 +622,7 @@
                                                                                                   {:sku           (first skus)
                                                                                                    :item/quantity (count skus)}))
                                                                                vals)
-                                                         :promotion-codes promotion-codes})
+                                                         :promotion-codes shared-cart-promotion-codes})
 
         items                 (:order/items raw-order)
         discountable-services (select ?discountable items)
@@ -635,6 +636,7 @@
            (let [total-price      (mf/as-money-or-dashes (when-not unavailable-lengths-selected? line-items-total))
                  discounted-price (mf/as-money-or-dashes (when-not unavailable-lengths-selected? total))
                  discounted?      (not= total-price discounted-price)
+                 applied-promo    (first (filter #(= (-> adjustments first :coupon-code) (:code %)) promotion-codes))
                  title            (clojure.string/join " " [(get-in facets-db
                                                                     [:hair/origin
                                                                      :facet/options
@@ -667,6 +669,9 @@
                                     (some (comp zero? :promo.mayvenn-install/hair-missing-quantity)
                                           discountable-services)
                                     "HAIR + FREE Install"
+
+                                    applied-promo
+                                    (:description applied-promo)
 
                                     :else
                                     (-> adjustments first :name))
@@ -702,11 +707,11 @@
                                            unavailable-lengths-selected?
                                            (utils/requesting? data request-keys/new-order-from-sku-ids))
             :cta/target                [events/control-create-order-from-customized-look
-                                        {:look-id (:id contentful-look)
-                                         :items   (into {} (map (fn [item]
-                                                                  {(:catalog/sku-id item) (:item/quantity item)})
-                                                                items))
-                                         :promotion-codes promotion-codes}]
+                                        {:look-id         (:id contentful-look)
+                                         :items           (into {} (map (fn [item]
+                                                                          {(:catalog/sku-id item) (:item/quantity item)})
+                                                                        items))
+                                         :promotion-codes shared-cart-promotion-codes}]
             :cta/disabled-content      (when unavailable-lengths-selected?
                                          "Unavailable")
             :cta/spinning?             (utils/requesting? data request-keys/new-order-from-sku-ids)
