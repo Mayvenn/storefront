@@ -667,7 +667,7 @@
 
               :look-total/primary (cond
                                     (= "holiday" (:code applied-promo))
-                                    "HOLIDAY"
+                                    (:description applied-promo)
 
                                     (some (comp zero? :promo.mayvenn-install/hair-missing-quantity)
                                           discountable-services)
