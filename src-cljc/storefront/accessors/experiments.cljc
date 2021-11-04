@@ -147,3 +147,7 @@
        (date/after? (date/date-time 2021 11 22 16 00 0) (date/now))
        (date/after? (date/now) (date/date-time 2021 11 01 17 00 0)))
       (display-feature? data "early-access")))
+
+(defn hide-delivery-date?
+  [data]
+  (display-feature? data "shipping-delay"))

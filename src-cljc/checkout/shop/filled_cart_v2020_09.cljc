@@ -454,7 +454,7 @@
    :cart-summary-line/action-target [events/control-checkout-remove-promotion {:code coupon-code}]})
 
 (defn shipping-method-summary-line-query
-  [shipping-method line-items-excluding-shipping]
+  [shipping-method line-items-excluding-shipping hide-delivery-date?]
   (let [free-shipping? (= "WAITER-SHIPPING-1" (:sku shipping-method))
         only-services? (every? line-items/service? line-items-excluding-shipping)
         drop-shipping? (->> (map :variant-attrs line-items-excluding-shipping)
@@ -463,7 +463,7 @@
     (when (and shipping-method (not (and free-shipping? only-services?)))
       {:cart-summary-line/id       "shipping"
        :cart-summary-line/label    "Shipping"
-       :cart-summary-line/sublabel (-> shipping-method :sku (shipping/timeframe drop-shipping?))
+       :cart-summary-line/sublabel (-> shipping-method :sku (shipping/timeframe drop-shipping? hide-delivery-date?))
        :cart-summary-line/value    (->> shipping-method
                                         vector
                                         (apply (juxt :quantity :unit-price))
@@ -472,7 +472,7 @@
 
 (defn regular-cart-summary-query
   "This is for carts that haven't entered an upsell (free install, wig customization, etc)"
-  [{:as order :keys [adjustments tax-total total]}]
+  [{:as order :keys [adjustments tax-total total]} hide-delivery-date?]
   (let [subtotal (orders/products-and-services-subtotal order)]
     {:cart-summary-total-line/id    "total"
      :cart-summary-total-line/label "Total"
@@ -486,7 +486,8 @@
                                  (when-let [shipping-method-summary-line
                                             (shipping-method-summary-line-query
                                              (orders/shipping-item order)
-                                             (orders/product-and-service-items order))]
+                                             (orders/product-and-service-items order)
+                                             hide-delivery-date?)]
                                    [shipping-method-summary-line])
 
                                  (for [{:keys [name price coupon-code] :as adjustment}
@@ -640,10 +641,10 @@
      :freeinstall-informational/secondary-link-label  "learn more"}))
 
 (defn cart-summary<-
-  [order items]
+  [order items hide-delivery-date?]
   (if-let [free-service (first (select ?discountable items))]
     (upsold-cart-summary-query order free-service)
-    (regular-cart-summary-query order)))
+    (regular-cart-summary-query order hide-delivery-date?)))
 
 (defn cta<-
   [no-items? hair-missing-quantity pending-requests?]
@@ -743,6 +744,7 @@
         remove-in-progress?       (utils/requesting? app-state request-keys/remove-servicing-stylist)
         adding-freeinstall?       (utils/requesting? app-state (conj request-keys/add-to-bag "SV2-LBI-X"))
         easy-booking?             (experiments/easy-booking? app-state)
+        hide-delivery-date?       (experiments/hide-delivery-date? app-state)
         booking                   (booking/<- app-state)
         update-line-item-requests (merge-with #(or %1 %2)
                                               (->> (map :catalog/sku-id items)
@@ -772,7 +774,7 @@
                                                                       (:appointment-time-slot waiter-order))
 
                                         :checkout-caption            (checkout-caption<- items easy-booking? booking)
-                                        :cart-summary                (merge (cart-summary<- waiter-order items)
+                                        :cart-summary                (merge (cart-summary<- waiter-order items hide-delivery-date?)
                                                                             (freeinstall-informational<- waiter-order items adding-freeinstall?)
                                                                             (promo-input<- app-state
                                                                                            waiter-order

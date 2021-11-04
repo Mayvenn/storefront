@@ -227,7 +227,7 @@
       (string/replace #"[^a-z]+" "-")))
 
 (defn shipping-method-summary-line-query
-  [shipping-method line-items-excluding-shipping]
+  [shipping-method line-items-excluding-shipping hide-delivery-date?]
   (let [free-shipping? (= "WAITER-SHIPPING-1" (:sku shipping-method))
         only-services? (every? line-items/service? line-items-excluding-shipping)
         drop-shipping? (->> (map :variant-attrs line-items-excluding-shipping)
@@ -236,7 +236,7 @@
     (when (and shipping-method (not (and free-shipping? only-services?)))
       {:cart-summary-line/id       "shipping"
        :cart-summary-line/label    "Shipping"
-       :cart-summary-line/sublabel (-> shipping-method :sku (shipping/timeframe drop-shipping?))
+       :cart-summary-line/sublabel (-> shipping-method :sku (shipping/timeframe drop-shipping? hide-delivery-date?))
        :cart-summary-line/value    (->> shipping-method
                                         vector
                                         (apply (juxt :quantity :unit-price))
@@ -248,7 +248,8 @@
    {:free-mayvenn-service/keys [service-item discounted]}
    free-service-sku
    addon-skus
-   available-store-credit]
+   available-store-credit
+   hide-delivery-date?]
   (when (seq order)
     (let [total               (-> order :total)
           tax                 (:tax-total order)
@@ -269,7 +270,8 @@
                                            (when-let [shipping-method-summary-line
                                                       (shipping-method-summary-line-query
                                                        (orders/shipping-item order)
-                                                       (orders/product-and-service-items order))]
+                                                       (orders/product-and-service-items order)
+                                                       hide-delivery-date?)]
                                              [shipping-method-summary-line])
 
                                            (for [{:keys [name price] :as adjustment}
@@ -456,7 +458,8 @@
         addon-service-line-items              (->> order
                                                    orders/service-line-items
                                                    (filter (comp boolean #{"addon"} :service/type :variant-attrs)))
-        addon-service-skus                    (map (fn [addon-service] (get skus (:sku addon-service))) addon-service-line-items)]
+        addon-service-skus                    (map (fn [addon-service] (get skus (:sku addon-service))) addon-service-line-items)
+        hide-delivery-date?                   (experiments/hide-delivery-date? data)]
     (merge
      {:order                        order
       :easy-booking?                (experiments/easy-booking? data)
@@ -479,7 +482,8 @@
                                                         free-mayvenn-service
                                                         (get skus (get-in free-mayvenn-service [:free-mayvenn-service/service-item :sku]))
                                                         addon-service-skus
-                                                        (orders/available-store-credit order user))}
+                                                        (orders/available-store-credit order user)
+                                                        hide-delivery-date?)}
      (within :servicing-stylist-banner.appointment-time-slot
              (:appointment-time-slot order))
 

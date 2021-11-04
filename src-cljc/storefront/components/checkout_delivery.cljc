@@ -4,6 +4,7 @@
             [spice.core :as spice]
             [spice.date :as date]
             [storefront.accessors.shipping :as shipping]
+            [storefront.accessors.experiments :as experiments]
             [storefront.component :as c :refer [defcomponent]]
             [storefront.components.formatters :as formatters]
             [storefront.components.money-formatters :as mf]
@@ -154,6 +155,7 @@
    east-coast-weekday
    in-window?
    drop-shipping?
+   hide-delivery-date?
    {:keys [sku price] :as shipping-method}]
   (let [{:keys [min-delivery
                 max-delivery
@@ -176,10 +178,11 @@
      :disabled/classes     (when disabled? "gray")
      :primary/data-test    (when selected? "selected-shipping-method")
      :primary/copy         (shipping/names-with-time-range sku drop-shipping?)
-     :secondary/copy       (str "Delivery Date: "
-                                (format-delivery-date (date/add-delta current-local-time {:days revised-min}))
-                                (when-not (= revised-min revised-max)
-                                  (str "–" (format-delivery-date (date/add-delta current-local-time {:days revised-max})))))
+     :secondary/copy       (when-not hide-delivery-date?
+                             (str "Delivery Date: "
+                                 (format-delivery-date (date/add-delta current-local-time {:days revised-min}))
+                                 (when-not (= revised-min revised-max)
+                                   (str "–" (format-delivery-date (date/add-delta current-local-time {:days revised-max}))))))
      :tertiary/copy        (shipping/shipping-note sku)
      :quaternary/copy      (when (and (not disabled?) drop-shipping?)
                              "This order contains items that are only eligible for Free Standard Shipping.")
@@ -234,7 +237,8 @@
         shipping       (orders/shipping-item order)
         free-shipping? (= "WAITER-SHIPPING-1" (:sku shipping))
         only-services? (every? line-items/service? (orders/product-and-service-items order))
-        drop-shipping? (boolean (select {:warehouse/slug #{"factory-cn"}} items))]
+        drop-shipping? (boolean (select {:warehouse/slug #{"factory-cn"}} items))
+        hide-delivery-date? (experiments/hide-delivery-date? data)]
     {:delivery/id        (when-not (and free-shipping? only-services?)
                            "shipping-method")
      :delivery/primary   "Shipping Method"
@@ -244,7 +248,8 @@
                                             now
                                             east-coast-weekday
                                             in-window?
-                                            drop-shipping?)))
+                                            drop-shipping?
+                                            hide-delivery-date?)))
      :delivery.note/id   (when in-window? "delivery-note")
      :delivery.note/copy (if friday?
                            "Order by 10am ET today to have the guaranteed delivery dates below"
