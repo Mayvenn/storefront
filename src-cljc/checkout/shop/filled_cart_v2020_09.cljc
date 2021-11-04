@@ -508,7 +508,7 @@
 
 (defn upsold-cart-summary-query
   "The cart has an upsell 'entered' because the customer has requested a service discount"
-  [{:as order :keys [adjustments]} free-mayvenn-service]
+  [{:as order :keys [adjustments]} free-mayvenn-service hide-delivery-date?]
   (let [wig-customization?  (orders/wig-customization? order)
         service-item-price  (- (* (:item/quantity free-mayvenn-service)
                                   (or
@@ -535,7 +535,8 @@
                                      (when-let [shipping-method-summary-line
                                                 (shipping-method-summary-line-query
                                                  (orders/shipping-item order)
-                                                 (orders/product-and-service-items order))]
+                                                 (orders/product-and-service-items order)
+                                                 hide-delivery-date?)]
                                        [shipping-method-summary-line])
 
                                      (for [{:keys [name price coupon-code] :as adjustment}
@@ -643,7 +644,7 @@
 (defn cart-summary<-
   [order items hide-delivery-date?]
   (if-let [free-service (first (select ?discountable items))]
-    (upsold-cart-summary-query order free-service)
+    (upsold-cart-summary-query order free-service hide-delivery-date?)
     (regular-cart-summary-query order hide-delivery-date?)))
 
 (defn cta<-
