@@ -299,20 +299,22 @@
                                                 (apply +))
         sku-id->quantity                   (into {}
                                                  (map (fn [[sku-id skus]] [sku-id (count skus)])
-                                                      (group-by :catalog/sku-id selected-skus)))]
+                                                      (group-by :catalog/sku-id selected-skus)))
+        hide-zip?                          (experiments/hide-zip app-state)]
     (merge
      {:cta/id    "add-to-cart"
       :cta/label "Add to Bag"
 
       ;; Fork here to use bulk add to cart
-      :cta/target                  [events/control-add-sku-to-bag
-                                    {:sku      selected-sku
-                                     :quantity (get-in app-state keypaths/browse-sku-quantity 1)}]
-      :cta/spinning?               (or (utils/requesting? app-state (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+      :cta/target    [events/control-add-sku-to-bag
+                      {:sku      selected-sku
+                       :quantity (get-in app-state keypaths/browse-sku-quantity 1)}]
+      :cta/spinning? (or (utils/requesting? app-state (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
                                        (utils/requesting? app-state (conj request-keys/add-to-bag (set (keys sku-id->quantity)))))
-      :cta/disabled?               (some #(not (:inventory/in-stock? %)) selected-skus)
-      :add-to-cart.quadpay/price   sku-price
-      :add-to-cart.quadpay/loaded? quadpay-loaded?}
+      :cta/disabled? (some #(not (:inventory/in-stock? %)) selected-skus)}
+     (when (not hide-zip?)
+       {:add-to-cart.quadpay/price   sku-price
+        :add-to-cart.quadpay/loaded? quadpay-loaded?})
      (when (and shop?
                 (mayvenn-install-incentive-families sku-family))
        {:add-to-cart.incentive-block/id          "add-to-cart-incentive-block"

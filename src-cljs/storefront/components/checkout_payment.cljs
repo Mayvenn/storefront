@@ -146,9 +146,9 @@
                               :data-test id})]) )
 
 (defcomponent component
-  [{:keys              [step-bar]
-    :store-credit/keys [fully-covered? can-use-store-credit?]
-    :as                data} _ _]
+  [{:keys                [step-bar]
+    :store-credit/keys   [fully-covered? can-use-store-credit?]
+    :as                  data} _ _]
   [:div.container.p2
    (component/build checkout-steps/component step-bar)
 
@@ -161,7 +161,9 @@
 
       (if (and fully-covered? can-use-store-credit?)
         (store-credit-note data)
-        (payment-method-selection data))
+        (if (:payment-method/suppress-zip? data)
+          (credit-card-entry data)
+          (payment-method-selection (spice.core/spy data))))
 
       (cta-submit data)]])])
 
@@ -210,7 +212,8 @@
 
      {:payment-method/show-quadpay-component?          (get-in data keypaths/loaded-quadpay)
       :payment-method/selected-stripe-or-store-credit? (some #{:stripe :store-credit} selected-payment-methods)
-      :payment-method/selected-quadpay?                selected-quadpay?}
+      :payment-method/selected-quadpay?                selected-quadpay?
+      :payment-method/suppress-zip?                    (experiments/hide-zip data)}
 
      {:cta/disabled? (or (and (utils/requesting? data request-keys/get-saved-cards)
                               ;; Requesting cards, no existing cards, or not fully covered

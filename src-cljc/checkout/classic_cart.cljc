@@ -106,6 +106,7 @@
                                       show-browser-pay?
                                       delete-line-item-requests
                                       loaded-quadpay?
+                                      hide-zip?
                                       cart-summary]} owner _]
   [:div.container.p2
    (component/build promo-banner/sticky-organism promo-banner nil)
@@ -127,7 +128,8 @@
      #?@(:cljs
          [(component/build quadpay/component
                            {:quadpay/order-total (:total order)
-                            :quadpay/show?       loaded-quadpay?
+                            :quadpay/show?       (and loaded-quadpay?
+                                                      (not hide-zip?))
                             :quadpay/directive   :just-select}
                            nil)])
      (ui/button-large-primary {:spinning? false
@@ -218,6 +220,7 @@
      :share-carts?              (stylists/own-store? data)
      :requesting-shared-cart?   (utils/requesting? data request-keys/create-shared-cart)
      :loaded-quadpay?           (get-in data keypaths/loaded-quadpay)
+     :hide-zip?                 (experiments/hide-zip data)
      :show-browser-pay?         (and (get-in data keypaths/loaded-stripe)
                                      (experiments/browser-pay? data)
                                      (seq (get-in data keypaths/shipping-methods))

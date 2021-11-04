@@ -151,3 +151,7 @@
 (defn hide-delivery-date?
   [data]
   (display-feature? data "shipping-delay"))
+
+(defn hide-zip
+  [data]
+  (display-feature? data "hide-zip"))

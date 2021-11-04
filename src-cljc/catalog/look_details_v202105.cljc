@@ -18,6 +18,7 @@
             [adventure.faq :as adv-faq]
             [spice.maps :as maps]
             [storefront.accessors.contentful :as contentful]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.images :as images]
             [storefront.accessors.shared-cart :as shared-cart]
             [storefront.accessors.sites :as sites]
@@ -729,7 +730,8 @@
                                          [events/navigate-shop-by-look {:album-keyword album-keyword}])
             :return-link/back          back}
 
-           {:quadpay/show?       (get-in data keypaths/loaded-quadpay)
+           {:quadpay/show?       (and (get-in data keypaths/loaded-quadpay)
+                                      (not (experiments/hide-zip data)))
             :quadpay/order-total total
             :quadpay/directive   :just-select}
 
