@@ -3,6 +3,7 @@
             [clojure.java.io :as io]
             [clojure.string :as string]
             [spice.maps :as maps]
+            [spice.date :as date]
             [storefront.assets :as assets]
             [storefront.platform.asset-mappings :as asset-mappings]))
 
@@ -104,7 +105,9 @@
   {:environment         (env :environment)
    :bugsnag-token       (env :bugsnag-token)
    :welcome-config      {:url (env :welcome-url)}
-   :contentful-config   {:cache-timeout              (* (if-dev-else env 60 4) minute)
+   :contentful-config   {:cache-timeout              (if (date/after? (date/now) (spice.date/date-time 2021 11 21 17 5))
+                                                       (* (if-dev-else env 3600 10) 1000)
+                                                       (* (if-dev-else env 60 4) minute))
                          :static-page-fetch-interval (* (if-dev-else env 60 5) minute)
                          :api-key                    (env :contentful-content-delivery-api-key)
                          :preview-api-key            (env :contentful-content-delivery-preview-api-key)
