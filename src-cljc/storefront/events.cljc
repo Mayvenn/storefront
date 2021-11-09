@@ -114,6 +114,8 @@
 (defpath navigate-account)
 (defpath navigate-account-manage)
 
+(defpath navigate-yourlooks-order-details)
+
 (defpath navigate-checkout)
 (defpath navigate-checkout-sign-in)
 (defpath navigate-checkout-returning-or-guest)
