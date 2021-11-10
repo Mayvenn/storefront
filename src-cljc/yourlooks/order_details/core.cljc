@@ -1,17 +1,18 @@
 (ns yourlooks.order-details.core
-  (:require   [spice.date :as date]
-              [storefront.component :as c]
-              [storefront.components.formatters :as f]
-              [storefront.components.ui :as ui]
-              [storefront.config :as config]
-              [storefront.keypaths :as k]
-              ))
+  (:require [clojure.string :as string]
+            [spice.core :as spice]
+            [storefront.component :as c]
+            [storefront.components.formatters :as f]
+            [storefront.components.ui :as ui]
+            [storefront.config :as config]
+            [storefront.keypaths :as k]))
 
 (c/defcomponent template
   [{:keys [order-number
            shipping-estimate
+           shipping-method
            placed-at
-           tracking-url] :as data} _ _]
+           tracking] :as data} _ _]
   [:div
    [:div.title-1.proxima.center "Your Next Look"]
    [:div
@@ -21,30 +22,51 @@
      [:div
       [:div.title-2.shout.proxima "Placed At"]
       [:div placed-at]])
-   (when shipping-estimate
+   (if shipping-estimate
      [:div
       [:div.title-2.shout.proxima "Estimated Delivery"]
-      [:div shipping-estimate]])
-   (when tracking-url
-     [:div "Tracking url" tracking-url])
+      [:div shipping-estimate]]
+     [:div
+      [:div.title-2.shout.proxima "Shipping Method"]
+      [:div shipping-method]])
+   [:div
+    [:div.title-2.shout.proxima "Tracking"]
+    [:div (if-let [{:keys [url carrier tracking-number]} tracking]
+            [:a {:href url} carrier " " tracking-number]
+            "Pending")]]
    [:div "If you need to edit or cancel your order, please contact our customer service at "
     (ui/link :link/email :a {} "help@mayvenn.com")
     " or "
     (ui/link :link/phone :a.inherit-color {} config/support-phone-number)
     "."]])
 
+(defn generate-tracking-url [carrier tracking-number]
+  (when tracking-number
+    (some-> carrier
+            clojure.string/lower-case
+            (case "ups"   "https://www.ups.com/track?loc=en_US&tracknum="
+                  "fedex" "https://www.fedex.com/fedextrack/?trknbr="
+                  "usps"  "https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1="
+                  "dhl"   "https://www.dhl.com/en/express/tracking.html?AWB="
+                  nil)
+            (str tracking-number))))
+
 (defn query
   [state]
-  (let [{:keys [tu pa se]} (get-in state k/navigation-query-params)
-        order-number       (:order-number (last (get-in state k/navigation-message)))
-        placed-at          (when pa
-                             (str (f/day->day-abbr pa) ", " #?(:cljs (f/long-date pa))))
-        shipping-estimate  (when se
-                             (str (f/day->day-abbr se) ", " #?(:cljs (f/long-date se))))]
+  (let [{:keys [sn c tn pa rs se]} (get-in state k/navigation-query-params)
+        order-number               (cond-> (:order-number (last (get-in state k/navigation-message)))
+                                     sn (str "-" sn))
+        shipping-estimate          (when se
+                                     (str (f/day->day-abbr se) ", " #?(:cljs (f/long-date se))))]
     {:order-number      order-number
-     :placed-at         placed-at
+     :placed-at         (when-let [pa (spice/parse-int pa)]
+                          (str (f/day->day-abbr pa) ", " #?(:cljs (f/long-date pa))))
      :shipping-estimate shipping-estimate
-     :tracking-url      tu}))
+     :shipping-method   rs
+     :tracking          (when-let [url (generate-tracking-url c tn)]
+                          {:url             url
+                           :carrier         c
+                           :tracking-number tn})}))
 
 (defn ^:export page
   [app-state]
