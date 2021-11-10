@@ -803,6 +803,7 @@
                      "Disallow: /content"
                      "Disallow: /policy/privacy"
                      "Disallow: /policy/tos"
+                     "Disallow: /your-looks/"
                      "Sitemap: https://shop.mayvenn.com/sitemap.xml"])
 
 (def server-render-pages
