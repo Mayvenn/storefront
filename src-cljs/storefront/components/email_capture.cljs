@@ -147,23 +147,22 @@
    {:style     {:max-width "580px"}
     :data-test "email-capture-modal"}
    [:div.relative
-    (ui/ucare-img {:style {:max-width "580px"}} "78759574-51d8-4982-b70f-61d469fe6a4d")
+    (ui/ucare-img {:style {:max-width "580px"}} "b3537c0c-a339-4cd1-9518-5ba1576b8b8c")
     [:div.absolute
      {:style {:top "1rem" :right "1rem"}}
      (ui/modal-close {:data-test   "email-capture-dismiss"
                       :class       "fill-white stroke-white"
                       :close-attrs (apply utils/fake-href [e/biz|email-capture|dismissed {:id "first-pageview-email-capture"}])})]]
-   [:div.white.center.px6.mx-auto.mynp6
+   [:div.white.center.px6.mx-auto.mynp6.pb8
     {:style {:background-image "url('//ucarecdn.com/bf5c99de-3829-465d-a066-231dcdc00ac9/-/format/auto/-/quality/lightest/-/resize/580x/')"}}
-    [:div.pt6.shout.bold.title-1 "Get it First"]
-    [:div.canela.title-1.py2.yellow "Black Friday"]
+    [:div.pt4.shout.bold.title-1 "Just for you"]
+    [:div.canela.title-1.pb2.yellow
+     "$20 Off &" [:br]
+     "Black Friday Deals"]
     [:div.shout.bold.title-1 "Early Subscriber Access"]
-    [:div.p3
-     [:div.content-2.left-align.px3
-      [:div.my2 "Join our email list to get exclusive early access to our Black Friday deals, can't-miss product drops, and so much more."]
-      [:div.my2 "Stock up on dreamy hair at our best prices."]]
+    [:div.m3
      (let [email (get-in app-state concept/textfield-keypath)]
-       [:form.px3
+       [:form
         {:on-submit (apply utils/send-event-callback [e/biz|email-capture|captured {:id    "first-pageview-email-capture"
                                                                                     :email email}])}
         (ui/text-field {:errors    (get (get-in app-state (conj k/field-errors ["email"])) ["email"])
@@ -177,6 +176,9 @@
                         :class     "col-12 bg-white"
                         :data-test "email-capture-input"})
         [:div.my2 (ui/submit-button-medium "Sign Up Now" {:data-test "email-capture-submit"})]])
+     [:div.content-2
+      [:div.my2 "Join our email list to get $20 off and exclusive early access to our Black Friday deals."]
+      [:div.my2 "Stock up on dreamy hair at our best prices."]]
      fine-print-3]]])
 
 (defn early-access-quiz [app-state]
@@ -184,23 +186,22 @@
    {:style     {:max-width "580px"}
     :data-test "email-capture-modal"}
    [:div.relative
-    (ui/ucare-img {:style {:max-width "580px"}} "4d9d1edb-cc49-4af9-900e-bef610e16675")
+    (ui/ucare-img {:style {:max-width "580px"}} "0400b18e-7b0a-4835-8e1a-4fc2c51ae604")
     [:div.absolute
      {:style {:top "1rem" :right "1rem"}}
      (ui/modal-close {:data-test   "email-capture-dismiss"
                       :class       "fill-black stroke-black"
                       :close-attrs (apply utils/fake-href [e/biz|email-capture|dismissed {:id "adv-quiz-email-capture"}])})]]
-   [:div.white.center.px6.mx-auto.mynp6
+   [:div.white.center.px6.mx-auto.mynp6.pb8
     {:style {:background-image "url('//ucarecdn.com/bf5c99de-3829-465d-a066-231dcdc00ac9/-/format/auto/-/quality/lightest/-/resize/580x/')"}}
-    [:div.pt6.shout.bold.title-1 "Get it First"]
-    [:div.canela.title-1.py2.yellow "Black Friday"]
+    [:div.pt4.shout.bold.title-1 "Just for you"]
+    [:div.canela.title-1.pb2.yellow
+     "$20 Off &" [:br]
+     "Black Friday Deals"]
     [:div.shout.bold.title-1 "Early Subscriber Access"]
-    [:div.p3
-     [:div.content-2.left-align.px3
-      [:div.my2 "Join our email list to get exclusive early access to our Black Friday deals, can't-miss product drops, and so much more."]
-      [:div.my2 "Stock up on dreamy hair at our best prices."]]
+    [:div.m3
      (let [email (get-in app-state concept/textfield-keypath)]
-       [:form.px3
+       [:form
         {:on-submit (apply utils/send-event-callback [e/biz|email-capture|captured {:id    "adv-quiz-email-capture"
                                                                                     :email email}])}
         (ui/text-field {:errors    (get (get-in app-state (conj k/field-errors ["email"])) ["email"])
@@ -214,6 +215,9 @@
                         :class     "col-12 bg-white"
                         :data-test "email-capture-input"})
         [:div.my2 (ui/submit-button-medium "Sign Up Now" {:data-test "email-capture-submit"})]])
+     [:div.content-2
+      [:div.my2 "Join our email list to get $20 off and exclusive early access to our Black Friday deals."]
+      [:div.my2 "Stock up on dreamy hair at our best prices."]]
      fine-print-3]]])
 
 (c/defdynamic-component template
