@@ -5,7 +5,14 @@
             [storefront.components.formatters :as f]
             [storefront.components.ui :as ui]
             [storefront.config :as config]
-            [storefront.keypaths :as k]))
+            [storefront.events :as e]
+            [storefront.keypaths :as k]
+            [storefront.platform.component-utils :as utils]))
+
+(defn titled-content [title content]
+  [:div.my2
+   [:div.title-2.shout.proxima title]
+   [:div content]])
 
 (c/defcomponent template
   [{:keys [order-number
@@ -13,28 +20,20 @@
            shipping-method
            placed-at
            tracking] :as data} _ _]
-  [:div
+  [:div.p3.max-960.mx-auto
    [:div.title-1.proxima.center "Your Next Look"]
-   [:div
-    [:div.title-2.shout.proxima "Order number"]
-    [:div order-number]]
+   (titled-content "Order number" order-number)
    (when placed-at
-     [:div
-      [:div.title-2.shout.proxima "Placed At"]
-      [:div placed-at]])
+     (titled-content "Placed At" placed-at))
    (if shipping-estimate
-     [:div
-      [:div.title-2.shout.proxima "Estimated Delivery"]
-      [:div shipping-estimate]]
-     [:div
-      [:div.title-2.shout.proxima "Shipping Method"]
-      [:div shipping-method]])
-   [:div
-    [:div.title-2.shout.proxima "Tracking"]
-    [:div (if-let [{:keys [url carrier tracking-number]} tracking]
-            [:a {:href url} carrier " " tracking-number]
-            "Pending")]]
-   [:div "If you need to edit or cancel your order, please contact our customer service at "
+     (titled-content "Estimated Delivery" shipping-estimate)
+     (titled-content "Shipping Method" shipping-method))
+   (titled-content "Tracking" (if-let [{:keys [url carrier tracking-number]} tracking]
+                                [:a
+                                 (utils/fake-href e/external-redirect-url {:url url})
+                                 carrier " " tracking-number]
+                                "Pending"))
+   [:p "If you need to edit or cancel your order, please contact our customer service at "
     (ui/link :link/email :a {} "help@mayvenn.com")
     " or "
     (ui/link :link/phone :a.inherit-color {} config/support-phone-number)
@@ -53,11 +52,18 @@
 
 (defn query
   [state]
-  (let [{:keys [sn c tn pa rs se]} (get-in state k/navigation-query-params)
-        order-number               (cond-> (:order-number (last (get-in state k/navigation-message)))
-                                     sn (str "-" sn))
-        shipping-estimate          (when se
-                                     (str (f/day->day-abbr se) ", " #?(:cljs (f/long-date se))))]
+  (let [{:keys [e  ; event (po=placedOrder, so=shippedOrder, sro=shippedReplacementOrder)
+                sn ; shipping number
+                c  ; carrier
+                tn ; tracking number
+                pa ; placed at (epoch ms)
+                rs ; requested shipping method
+                se]; shipping estimate (datetime string)
+         }                (get-in state k/navigation-query-params)
+        order-number      (cond-> (:order-number (last (get-in state k/navigation-message)))
+                            sn (str "-" sn))
+        shipping-estimate (when se
+                            (str (f/day->day-abbr se) ", " #?(:cljs (f/long-date se))))]
     {:order-number      order-number
      :placed-at         (when-let [pa (spice/parse-int pa)]
                           (str (f/day->day-abbr pa) ", " #?(:cljs (f/long-date pa))))

@@ -156,6 +156,12 @@
       (js/window.open url)
       (set! (.-location js/window) url))))
 
+(defmethod effects/perform-effects events/external-redirect-url
+  [_ _ {:keys [url open-in-new-tab?] :or {open-in-new-tab? true}} _ _]
+  (if open-in-new-tab?
+    (js/window.open url)
+    (set! (.-location js/window) url)))
+
 (defmethod effects/perform-effects events/control-navigate [_ event {:keys [navigation-message]} _ app-state]
   ;; A user has clicked a link
   ;; The URL has already changed. Save scroll position on the page they are

@@ -12,6 +12,7 @@
 (defpath order-remove-promotion)
 (defpath order-remove-freeinstall-line-item)
 
+(defpath external-redirect-url)
 (defpath external-redirect-welcome)
 (defpath external-redirect-info-page)
 (defpath external-redirect-sms)
