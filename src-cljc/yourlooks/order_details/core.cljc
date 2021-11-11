@@ -10,30 +10,30 @@
             [storefront.platform.component-utils :as utils]))
 
 (defn titled-content [title content]
-  [:div.my2
+  [:div.my6
    [:div.title-2.shout.proxima title]
-   [:div content]])
+   [:div.content-1.proxima content]])
 
 (c/defcomponent template
   [{:keys [order-number
            shipping-estimate
-           shipping-method
            placed-at
-           tracking] :as data} _ _]
-  [:div.p3.max-960.mx-auto
-   [:div.title-1.proxima.center "Your Next Look"]
-   (titled-content "Order number" order-number)
+           tracking]} _ _]
+  [:div.py6.px8.max-960.mx-auto
+   [:div.title-2.canela "Your Next Look"]
+   (titled-content "Order Number" order-number)
    (when placed-at
-     (titled-content "Placed At" placed-at))
-   (if shipping-estimate
-     (titled-content "Estimated Delivery" shipping-estimate)
-     (titled-content "Shipping Method" shipping-method))
-   (titled-content "Tracking" (if-let [{:keys [url carrier tracking-number]} tracking]
-                                [:a
-                                 (utils/fake-href e/external-redirect-url {:url url})
-                                 carrier " " tracking-number]
-                                "Pending"))
-   [:p "If you need to edit or cancel your order, please contact our customer service at "
+     (titled-content "Placed On" placed-at))
+   (titled-content "Estimated Delivery" (if-let [{:keys [url carrier tracking-number]} tracking]
+                                          [:div [:div shipping-estimate]
+                                           [:div
+                                            carrier
+                                            " Tracking: "
+                                            [:a
+                                             (utils/fake-href e/external-redirect-url {:url url})
+                                             tracking-number]]]
+                                          "Tracking: Waiting for Shipment"))
+   [:p.mt8 "If you need to edit or cancel your order, please contact our customer service at "
     (ui/link :link/email :a {} "help@mayvenn.com")
     " or "
     (ui/link :link/phone :a.inherit-color {} config/support-phone-number)
@@ -68,7 +68,7 @@
      :placed-at         (when-let [pa (spice/parse-int pa)]
                           (str (f/day->day-abbr pa) ", " #?(:cljs (f/long-date pa))))
      :shipping-estimate shipping-estimate
-     :shipping-method   rs
+     ;; :shipping-method   rs
      :tracking          (when-let [url (generate-tracking-url c tn)]
                           {:url             url
                            :carrier         c
