@@ -11,7 +11,7 @@
 
 (defn titled-content [title content]
   [:div.my6
-   [:div.title-2.shout.proxima title]
+   [:div.title-1.shout.proxima title]
    [:div.content-1.proxima content]])
 
 (c/defcomponent template
