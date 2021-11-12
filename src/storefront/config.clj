@@ -102,21 +102,23 @@
                      :logging           {:system-name "storefront.system"}})
 
 (defn env-config []
-  {:environment         (env :environment)
-   :bugsnag-token       (env :bugsnag-token)
-   :welcome-config      {:url (env :welcome-url)}
-   :contentful-config   {:cache-timeout              (if (date/after? (date/now) (spice.date/date-time 2021 11 21 17 5))
-                                                       (* (if-dev-else env 3600 10) 1000)
-                                                       (* (if-dev-else env 60 4) minute))
-                         :static-page-fetch-interval (* (if-dev-else env 60 5) minute)
-                         :api-key                    (env :contentful-content-delivery-api-key)
-                         :preview-api-key            (env :contentful-content-delivery-preview-api-key)
-                         :space-id                   (env :contentful-space-id)}
-   :launchdarkly-config {:sdk-key (env :launchdarkly-sdk-key)}
-   :storeback-config    {:endpoint          (env :storeback-endpoint)
-                         :internal-endpoint (or
-                                             (env :storeback-v2-internal-endpoint)
-                                             (env :storeback-internal-endpoint))}})
+  (let [now (date/now)]
+    {:environment         (env :environment)
+     :bugsnag-token       (env :bugsnag-token)
+     :welcome-config      {:url (env :welcome-url)}
+     :contentful-config   {:cache-timeout              (if (and (date/after? now (spice.date/date-time 2021 11 21 16 55))
+                                                                (date/after? (spice.date/date-time 2021 11 21 17 5) now))
+                                                         (* (if-dev-else env 3600 10) 1000)
+                                                         (* (if-dev-else env 60 4) minute))
+                           :static-page-fetch-interval (* (if-dev-else env 60 5) minute)
+                           :api-key                    (env :contentful-content-delivery-api-key)
+                           :preview-api-key            (env :contentful-content-delivery-preview-api-key)
+                           :space-id                   (env :contentful-space-id)}
+     :launchdarkly-config {:sdk-key (env :launchdarkly-sdk-key)}
+     :storeback-config    {:endpoint          (env :storeback-endpoint)
+                           :internal-endpoint (or
+                                               (env :storeback-v2-internal-endpoint)
+                                               (env :storeback-internal-endpoint))}}))
 
 (defn deep-merge
   [& maps]
