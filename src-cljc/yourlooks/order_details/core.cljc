@@ -11,7 +11,7 @@
 
 (defn titled-content [title content]
   [:div.my6
-   [:div.title-1.shout.proxima title]
+   [:div.title-2.shout.proxima title]
    [:div.content-1.proxima content]])
 
 (c/defcomponent template
@@ -20,7 +20,7 @@
            placed-at
            tracking]} _ _]
   [:div.py6.px8.max-960.mx-auto
-   [:div.title-2.canela "Your Next Look"]
+   [:div.title-1.canela "Your Next Look"]
    (titled-content "Order Number" order-number)
    (when placed-at
      (titled-content "Placed On" placed-at))
