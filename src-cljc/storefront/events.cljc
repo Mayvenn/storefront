@@ -340,6 +340,7 @@
 (defpath api-success-suggested-add-to-bag)
 (defpath api-success-remove-from-bag)
 (defpath api-success-get-order)
+(defpath api-success-get-orders)
 (defpath api-success-get-completed-order)
 (defpath api-success-get-saved-cards)
 (defpath api-success-sms-number)

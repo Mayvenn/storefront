@@ -155,3 +155,7 @@
 (defn hide-zip
   [data]
   (display-feature? data "hide-zip"))
+
+(defn order-details
+  [data]
+  (display-feature? data "order-details"))
