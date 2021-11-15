@@ -274,7 +274,7 @@
                                            (assoc m :all-looks)))
                                     :latest?          false}]]
       (doseq [content-params content-type-parameters]
-        (scheduler/every scheduler cache-timeout
+        (scheduler/every scheduler (cache-timeout)
                          (str "poller for " (:content-type content-params))
                          #(do-fetch-entries (assoc c :cache cache :env-param env-param) content-params)))
       (assoc c :cache cache)))
