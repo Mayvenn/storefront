@@ -34,12 +34,13 @@
    (titled-content "Estimated Delivery" (if (seq fulfillments)
                                           (for [{:keys [url carrier tracking-number shipping-estimate]} fulfillments]
                                             [:div [:div shipping-estimate]
-                                             [:div
-                                              carrier
-                                              " Tracking: "
-                                              [:a
-                                               (utils/fake-href e/external-redirect-url {:url url})
-                                               tracking-number]]])
+                                             (when url
+                                               [:div
+                                                carrier
+                                                " Tracking: "
+                                                [:a
+                                                 (utils/fake-href e/external-redirect-url {:url url})
+                                                 tracking-number]])])
                                           "Tracking: Waiting for Shipment"))
    [:p.mt8 "If you need to edit or cancel your order, please contact our customer service at "
     (ui/link :link/email :a {} "help@mayvenn.com")
@@ -75,12 +76,11 @@
     {:order-number order-number
      :placed-at    (when (seq pa)
                           (str (f/day->day-abbr pa) ", " #?(:cljs (f/long-date pa))))
-     ;; :shipping-method   rs
-     :fulfillments    [(when-let [url (generate-tracking-url c tn)]
-                      {:url               url
-                       :shipping-estimate shipping-estimate
-                       :carrier           c
-                       :tracking-number   tn})]}))
+     :fulfillments    (when-let [url (generate-tracking-url c tn)]
+                        [{:url               url
+                          :shipping-estimate shipping-estimate
+                          :carrier           c
+                          :tracking-number   tn}])}))
 
 (defn ->shipping-days-estimate [drop-shipping?
                                 shipping-sku
@@ -117,8 +117,7 @@
 (defn long-date [dt]
   (str (f/day->day-abbr dt) ", " #?(:cljs (f/long-date dt))))
 
-;; TODO better name
-(defn real-query [app-state]
+(defn non-facade-query [app-state]
   (let [order-number        (:order-number (last (get-in app-state k/navigation-message)))
         {:as   order
          :keys [fulfillments
@@ -129,19 +128,19 @@
     (when order
       {:order-number order-number
        :placed-at    (long-date placed-at)
-       :fulfillments    (for [{:keys [carrier
+       :fulfillments (for [{:keys [carrier
                                    tracking-number
                                    shipment-number]
                             :as   fulfillment} fulfillments
-                           :let              [shipment (->> shipments
-                                                            (filter (fn [s] (= shipment-number (:number s))))
-                                                            first)
-                                              drop-shipping? (->> (map :variant-attrs (:line-items shipment))
-                                                                  (catalog/select {:warehouse/slug #{"factory-cn"}})
-                                                                  boolean)
-                                              shipping-sku (->> shipment :line-items first :sku)]
-                           :when             (and shipping-sku (= "physical" (:type fulfillment)))]
-                       (when-let [url (generate-tracking-url carrier tracking-number)]
+                           :let                [shipment (->> shipments
+                                                              (filter (fn [s] (= shipment-number (:number s))))
+                                                              first)
+                                                shipping-sku (->> shipment :line-items first :sku)]
+                           :when               (and shipping-sku (= "physical" (:type fulfillment)))]
+                       (let [drop-shipping? (->> (map :variant-attrs (:line-items shipment))
+                                                 (catalog/select {:warehouse/slug #{"factory-cn"}})
+                                                 boolean)
+                             url            (generate-tracking-url carrier tracking-number)]
                          {:shipping-estimate (-> placed-at
                                                  spice.date/to-datetime
                                                  (spice.date/add-delta {:days (->shipping-days-estimate drop-shipping? shipping-sku placed-at)})
@@ -152,7 +151,7 @@
 
 (defn query [app-state]
   (or (when (experiments/order-details app-state)
-        (real-query app-state))
+        (non-facade-query app-state))
       (facade-query app-state)))
 
 (defn ^:export page
@@ -171,4 +170,4 @@
 
 (defmethod transitions/transition-state e/api-success-get-orders
   [_ _ {:keys [orders]} app-state]
-  (assoc-in app-state k/order-history orders)) ;; TODO for gods sake don't leave this here
+  (assoc-in app-state k/order-history orders))
