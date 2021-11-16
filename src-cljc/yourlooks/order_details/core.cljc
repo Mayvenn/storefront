@@ -110,11 +110,12 @@
 (defmethod effects/perform-effects e/navigate-yourlooks-order-details
   [_ _ _ _ app-state]
   #?(:cljs
-     (api/get-order {:number     (:order-number (last (get-in app-state k/navigation-message)))
-                     :user-id    (get-in app-state k/user-id)
-                     :user-token (get-in app-state k/user-token)}
-                    #(messages/handle-message e/api-success-get-orders
-                                              {:orders [%]}))))
+     (when-let [user-id (get-in app-state k/user-id)]
+       (api/get-order {:number     (:order-number (last (get-in app-state k/navigation-message)))
+                       :user-id    (get-in app-state user-id)
+                       :user-token (get-in app-state k/user-token)}
+                      #(messages/handle-message e/api-success-get-orders
+                                                {:orders [%]})))))
 
 (defmethod transitions/transition-state e/api-success-get-orders
   [_ _ {:keys [orders]} app-state]
