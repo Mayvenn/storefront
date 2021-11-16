@@ -67,6 +67,8 @@
 (def completed-order-token (conj completed-order :token))
 (def completed-order-servicing-stylist-id (conj completed-order :servicing-stylist-id))
 
+(def order-history [:order-history])
+
 (def pending-promo-code [:pending-promo-code])
 (def promotions [:promotions])
 
