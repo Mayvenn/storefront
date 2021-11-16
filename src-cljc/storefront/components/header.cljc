@@ -223,6 +223,7 @@
                             href
                             content
                             new-label?
+                            label-icon
                             flyout-menu-path]
     :as data} _ _]
   [:div.inline.relative.flyout
@@ -234,11 +235,16 @@
     ^:attrs
     (cond-> {:style {:padding-left "24px" :padding-right "24px"}}
 
-      navigation-target
+      (and navigation-target (not (:href navigation-target)))
       (merge (apply utils/route-to navigation-target))
+
+      (and navigation-target (:href navigation-target))
+      (merge navigation-target)
 
       href
       (merge {:href href}))
+    (when label-icon
+      (svg/symbolic->html [label-icon {:style {:width "0.7em" :height "0.7em"} :class "mx1"}]))
     (when new-label?
       [:span.p-color.pr1 "NEW"])
     content]
@@ -389,11 +395,11 @@
                                         "shop-bundle-sets-menu-expanded")})
 
 (defn basic-query [data]
-  (let [store       (marquee/query data)
-        site        (sites/determine-site data)
-        shop?       (= :shop site)
-        classic?    (= :classic site)
-        signed-in   (auth/signed-in data)]
+  (let [store     (marquee/query data)
+        site      (sites/determine-site data)
+        shop?     (= :shop site)
+        classic?  (= :classic site)
+        signed-in (auth/signed-in data)]
     {:signed-in                   signed-in
      :on-taxon?                   (get-in data keypaths/current-traverse-nav)
      :promo-banner                (promo-banner/query data)
@@ -440,10 +446,15 @@
                                                                           {:query-params {:location "hamburger"}}]
                                     :slide-out-nav-menu-item/id          "menu-shop-quiz-unified-fi"
                                     :slide-out-nav-menu-item/new-primary "NEW"
-                                    :slide-out-nav-menu-item/primary     "Start Hair Quiz"}
-                                   {:slide-out-nav-menu-item/target      [events/navigate-adventure-find-your-stylist]
-                                    :slide-out-nav-menu-item/id          "menu-shop-find-stylist"
-                                    :slide-out-nav-menu-item/primary     "Browse Stylists"}
+                                    :slide-out-nav-menu-item/primary     "Start Hair Quiz"}]
+                                  (when (experiments/holiday-shop? data)
+                                    [{:slide-out-nav-menu-item/target     {:href "https://looks.mayvenn.com/black-friday-2021"}
+                                      :slide-out-nav-menu-item/id         "menu-shop-holiday-shop"
+                                      :slide-out-nav-menu-item/label-icon :svg/snowflake
+                                      :slide-out-nav-menu-item/primary    "Holiday Shop"}])
+                                  [{:slide-out-nav-menu-item/target  [events/navigate-adventure-find-your-stylist]
+                                    :slide-out-nav-menu-item/id      "menu-shop-find-stylist"
+                                    :slide-out-nav-menu-item/primary "Browse Stylists"}
                                    {:slide-out-nav-menu-item/target  [events/navigate-shop-by-look {:album-keyword :look}]
                                     :slide-out-nav-menu-item/nested? false
                                     :slide-out-nav-menu-item/id      "menu-shop-by-look"
@@ -501,8 +512,13 @@
                                                                    {:query-params {:location "desktop_header"}}]
                               :header-menu-item/id                "desktop-shop-quiz-unified-fi"
                               :header-menu-item/new-label?        true
-                              :header-menu-item/content           "Start Hair Quiz"}
-                             {:header-menu-item/navigation-target [events/navigate-adventure-find-your-stylist]
+                              :header-menu-item/content           "Start Hair Quiz"}]
+                            (when (experiments/holiday-shop? data)
+                              [{:header-menu-item/navigation-target {:href "https://looks.mayvenn.com/black-friday-2021"}
+                                :header-menu-item/id                "menu-shop-holiday-shop"
+                                :header-menu-item/label-icon        :svg/snowflake
+                                :header-menu-item/content           "Holiday Shop"}])
+                            [{:header-menu-item/navigation-target [events/navigate-adventure-find-your-stylist]
                               :header-menu-item/id                "desktop-shop-find-stylist"
                               :header-menu-item/content           "Browse Stylists"}
 
@@ -519,11 +535,12 @@
                             [(shop-a-la-carte-flyout-query data)
                              {:header-menu-item/navigation-target [events/navigate-content-guarantee]
                               :header-menu-item/id                "desktop-our-guarantee"
-                              :header-menu-item/content           "Our Guarantee"}
-                             {:header-menu-item/navigation-target [events/navigate-content-our-hair]
-                              :header-menu-item/id                "desktop-our-hair"
-                              :header-menu-item/content           "Our hair"}
-                             {:header-menu-item/href    wigs-101-url
+                              :header-menu-item/content           "Our Guarantee"}]
+                            (when-not (experiments/holiday-shop? data)
+                              [{:header-menu-item/navigation-target [events/navigate-content-our-hair]
+                                :header-menu-item/id                "desktop-our-hair"
+                                :header-menu-item/content           "Our hair"}])
+                            [{:header-menu-item/href    wigs-101-url
                               :header-menu-item/id      "desktop-wigs-101"
                               :header-menu-item/content "Wigs 101"}
                              {:header-menu-item/href    blog-url

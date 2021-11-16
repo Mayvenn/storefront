@@ -520,6 +520,13 @@
    [:svg opts
     ^:inline (svg-xlink "chat-bug")]))
 
+(defn snowflake
+  "A snowflake for the holiday shop"
+  [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "snowflake")]))
+
 (defn symbolic->html
   "Converts a data from query that describes an svg to the appropriate html.
 
@@ -550,5 +557,6 @@
        :svg/shaded-shipping-package         ^:inline (shaded-shipping-package attrs)
        :svg/whole-star                      ^:inline (whole-star attrs)
        :svg/worry-free                      ^:inline (worry-free attrs)
+       :svg/snowflake                       ^:inline (snowflake attrs)
        [:div])
      [:div])))

@@ -159,3 +159,7 @@
 (defn order-details
   [data]
   (display-feature? data "order-details"))
+
+(defn holiday-shop?
+  [data]
+  (display-feature? data "holiday-shop"))
