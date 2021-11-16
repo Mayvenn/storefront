@@ -74,7 +74,7 @@
         shipping-estimate (when se
                             (str (f/day->day-abbr se) ", " #?(:cljs (f/long-date se))))]
     {:order-number      order-number
-     :placed-at         (when-let [pa (spice/parse-int pa)]
+     :placed-at         (when  pa
                           (str (f/day->day-abbr pa) ", " #?(:cljs (f/long-date pa))))
      :shipping-estimate shipping-estimate
      ;; :shipping-method   rs
