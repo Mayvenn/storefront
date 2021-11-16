@@ -75,7 +75,8 @@
                              stylist-id)
 
       (and order-number order-token)
-      (api/get-order order-number order-token))))
+      (api/get-order {:number order-number
+                      :token  order-token}))))
 
 (defn scroll-promo-field-to-top []
   ;; In a timeout so that changes to the advertised promo aren't changing the scroll too.

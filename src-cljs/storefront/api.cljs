@@ -850,15 +850,20 @@
                  (assoc :session-id session-id))
      :handler (comp success-handler orders/TEMP-pretend-service-items-do-not-exist)})))
 
-(defn get-order [number token]
-  (storeback-api-req
-   GET
-   (str "/v2/orders/" number)
-   request-keys/get-order
-   {:params
-    {:token token}
-    :handler
-    #(messages/handle-message events/api-success-get-order (orders/TEMP-pretend-service-items-do-not-exist %))}))
+(defn get-order
+  ([params]
+   (get-order params #(messages/handle-message events/api-success-get-order (orders/TEMP-pretend-service-items-do-not-exist %))))
+  ([{:keys [number token user-id user-token]} handler]
+   (storeback-api-req
+    GET
+    (str "/v2/orders/" number)
+    request-keys/get-order
+    {:params
+     (if token
+       {:token token}
+       {:user-id user-id
+        :user-token user-token})
+     :handler handler})))
 
 (defn confirm-order-was-placed
   [session-id order utm-params success-handler error-handler]

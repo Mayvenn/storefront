@@ -71,10 +71,10 @@
          }                (get-in app-state k/navigation-query-params)
         order-number      (cond-> (:order-number (last (get-in app-state k/navigation-message)))
                             sn (str "-" sn))
-        shipping-estimate (when se
+        shipping-estimate (when (seq se)
                             (str (f/day->day-abbr se) ", " #?(:cljs (f/long-date se))))]
     {:order-number      order-number
-     :placed-at         (when  pa
+     :placed-at         (when (seq pa)
                           (str (f/day->day-abbr pa) ", " #?(:cljs (f/long-date pa))))
      :shipping-estimate shipping-estimate
      ;; :shipping-method   rs
