@@ -108,13 +108,12 @@
    :business-hours "Monday - Friday, 11am - 8pm ET"
    :contact-email "help@mayvenn.com"})
 
-(defn dtc-link [{:keys [title new-link? nav-message nav-href id]}]
+(defn dtc-link [{:keys [title new-link? nav-message id]}]
   (component/html
    [:a.inherit-color.block.py2.light.pointer
     ^:attrs (merge {:data-test (str id "-footer-link")
                     :key       (str id "-footer-link")}
-                   (when nav-message (apply utils/route-to nav-message))
-                   (when nav-href {:href nav-href}))
+                   (apply utils/route-to nav-message))
     (when new-link?
       [:span.p-color "NEW "])
     (str title)]))
@@ -175,11 +174,6 @@
                                        :id          "quiz-unified-fi"
                                        :new-link?   true
                                        :nav-message [events/navigate-shopping-quiz-unified-freeinstall-intro {:query-params {:location "footer"}}]}
-                                      {:title      "Holiday Shop"
-                                       :sort-order 1
-                                       :id         "holiday-shop"
-                                       :new-link?  false
-                                       :nav-href   "https://looks.mayvenn.com/black-friday-2021"}
                                       {:title       "Find a Stylist"
                                        :sort-order  1
                                        :id          "find-a-stylist"
