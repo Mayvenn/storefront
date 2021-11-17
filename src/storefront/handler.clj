@@ -489,11 +489,15 @@
                             (or (first (get-in-req-state req keypaths/order-promotion-codes))
                                 (get-in-req-state req keypaths/pending-promo-code)))))))
 
-(defn wrap-add-feature-flags [h launch-darkly]
+(defn wrap-add-feature-flags [h ld]
   (fn [req]
-    (h (cond-> req
-         (feature-flags/retrieve-flag launch-darkly "stylist-results-test" false)
-         (assoc-in-req-state keypaths/features ["stylist-results-test"])))))
+    (as-> {} _
+      (assoc _ :stylist-results-test (feature-flags/retrieve-flag ld "stylist-results-test" :bool false))
+      (assoc _ :first-pageview-email-capture (feature-flags/retrieve-flag ld "first-pageview-email-capture" :string "off"))
+      (assoc _ :adv-quiz-email-capture (feature-flags/retrieve-flag ld "adv-quiz-email-capture" :string "off"))
+      (assoc-in-req-state req keypaths/features _)
+      (h _))))
+
 
 ;;TODO Have all of these middleswarez perform event transitions, just like the frontend
 (defn wrap-state [routes {:keys [storeback-config welcome-config contentful static-pages-repo launchdarkly environment]}]

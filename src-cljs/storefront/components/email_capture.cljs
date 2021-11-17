@@ -74,7 +74,7 @@
   [:div.mb5 (ui/submit-button-medium value {:data-test id})])
 
 ;; TODO consider using c/build and c/html and stuff
-(defn design-1 [{:keys [id]
+(defn design-first-pageview-email-capture-2021-non-bf [{:keys [id]
                  :as   data}]
   [:div.flex.flex-column
    {:data-test (str id "-modal")}
@@ -106,7 +106,7 @@
    [:a.p-color (utils/route-to e/navigate-content-privacy) "Privacy Policy"]
    ". Unsubscribe anytime."])
 
-(defn design-2 [{:keys [id] :as data}]
+(defn design-adv-quiz-email-capture-2021-non-bf [{:keys [id] :as data}]
   [:div.bg-pale-purple.p4
    {:data-test (str id "-modal")}
    [:div.flex.justify-end
@@ -142,7 +142,7 @@
    [:a.yellow (utils/route-to e/navigate-content-privacy) "Privacy Policy"]
    ". Unsubscribe anytime."])
 
-(defn early-access-main [app-state]
+(defn design-first-pageview-email-capture-2021-pre-bf-lower-text [app-state]
   [:div
    {:style     {:max-width "580px"}
     :data-test "email-capture-modal"}
@@ -181,7 +181,7 @@
       [:div.my2 "Stock up on dreamy hair at our best prices."]]
      fine-print-3]]])
 
-(defn early-access-quiz [app-state]
+(defn design-adv-quiz-email-capture-2021-pre-bf-lower-text [app-state]
   [:div
    {:style     {:max-width "580px"}
     :data-test "email-capture-modal"}
@@ -231,15 +231,19 @@
    (scroll/enable-body-scrolling))
   (render
    [this]
-   (let [{:keys [capture-modal-id]
-          :as   data} (c/get-props this)]
+   (let [{:keys               [capture-modal-id]
+          :email-capture/keys [variant]
+          :as                 data} (c/get-props this)]
      (ui/modal
       {:close-attrs (apply utils/fake-href (:email-capture.dismiss/target data))
        :col-class   "col-12 col-5-on-tb col-4-on-dt flex justify-center"
        :bg-class    "bg-darken-4"}
-      ((case capture-modal-id
-         "first-pageview-email-capture" design-1
-         "adv-quiz-email-capture"       design-2) data)))))
+      ((case [capture-modal-id variant]
+         ["first-pageview-email-capture" "2021-pre-bf-lower-text"] design-first-pageview-email-capture-2021-pre-bf-lower-text
+         ["adv-quiz-email-capture"       "2021-pre-bf-lower-text"] design-adv-quiz-email-capture-2021-pre-bf-lower-text
+         ["first-pageview-email-capture" "2021-non-bf"]            design-first-pageview-email-capture-2021-non-bf
+         ["adv-quiz-email-capture"       "2021-non-bf"]            design-adv-quiz-email-capture-2021-non-bf)
+       data)))))
 
 (defn query [app-state]
   (let [nav-event              (get-in app-state k/navigation-event)
@@ -248,69 +252,43 @@
         errors                 (get-in app-state (conj k/field-errors ["email"]))
         focused                (get-in app-state k/ui-focus)
         textfield-keypath      concept/textfield-keypath
-        email                  (get-in app-state textfield-keypath)]
+        email                  (get-in app-state textfield-keypath)
+        variant                (get-in app-state (conj k/features (keyword capture-modal-id)))]
     (when displayable?
-      (merge {:id                                   "email-capture"
-              :capture-modal-id                     capture-modal-id
-              :email-capture.dismiss/target         [e/biz|email-capture|dismissed {:id capture-modal-id}]
-              :email-capture.submit/target          [e/biz|email-capture|captured {:id    capture-modal-id
-                                                                                   :email email}]
-              :email-capture.cta/id                 "email-capture-submit"
-              :email-capture.text-field/id          "email-capture-input"
-              :email-capture.text-field/placeholder "Enter Email Address"
-              :email-capture.text-field/focused     focused
-              :email-capture.text-field/keypath     textfield-keypath
-              :email-capture.text-field/errors      errors
-              :email-capture.text-field/email       email}
-             (case capture-modal-id
+      (when-not (= "off" variant)
+        (merge {:id                                   "email-capture"
+                :capture-modal-id                     capture-modal-id
+                :email-capture/variant                variant
+                :email-capture.dismiss/target         [e/biz|email-capture|dismissed {:id capture-modal-id}]
+                :email-capture.submit/target          [e/biz|email-capture|captured {:id    capture-modal-id
+                                                                                     :email email}]
+                :email-capture.cta/id                 "email-capture-submit"
+                :email-capture.text-field/id          "email-capture-input"
+                :email-capture.text-field/placeholder "Enter Email Address"
+                :email-capture.text-field/focused     focused
+                :email-capture.text-field/keypath     textfield-keypath
+                :email-capture.text-field/errors      errors
+                :email-capture.text-field/email       email}
+               (case capture-modal-id
 
-               "first-pageview-email-capture"
-               {:email-capture.photo/uuid-mob "ef2a5a8b-6da2-4abd-af99-c33d485ac275"
-                :email-capture.photo/uuid-dsk "1ba0870d-dad8-466a-adc9-0d5ec77c9944"
-                :email-capture.title/primary  [:span "Join our email list and get "
-                                               [:span.p-color "$35 OFF"]
-                                               " your first order"]
-                :email-capture.cta/value      "Sign Up"}
+                 "first-pageview-email-capture"
+                 {:email-capture.photo/uuid-mob "ef2a5a8b-6da2-4abd-af99-c33d485ac275"
+                  :email-capture.photo/uuid-dsk "1ba0870d-dad8-466a-adc9-0d5ec77c9944"
+                  :email-capture.title/primary  [:span "Join our email list and get "
+                                                 [:span.p-color "$35 OFF"]
+                                                 " your first order"]
+                  :email-capture.cta/value      "Sign Up"}
 
-               "adv-quiz-email-capture"
-               {:email-capture.cta/value "Sign Up"}
+                 "adv-quiz-email-capture"
+                 {:email-capture.cta/value "Sign Up"}
 
-               ;; ENGINEER: Are you adding or altering an email capture modal design? Be sure to let Roman
-               ;; know, as he'd like to mirror design changes on OptinMonster (which still show on the Instapages)
+                 ;; ENGINEER: Are you adding or altering an email capture modal design? Be sure to let Roman
+                 ;; know, as he'd like to mirror design changes on OptinMonster (which still show on the Instapages)
 
-               ;; ELSE
-               nil)))))
+                 ;; ELSE
+                 nil))))))
 
-(defn early-access-query [app-state]
-  (let [nav-event                (get-in app-state k/navigation-event)
-        capture-modal-id         (concept/location->email-capture-id nav-event)]
-    {:capture-modal-id capture-modal-id}))
-
-(c/defdynamic-component early-access-template
-  (did-mount
-   [this]
-   (scroll/disable-body-scrolling)
-   (publish e/control-menu-collapse-all)
-   (publish e/biz|email-capture|deployed {:id (:capture-modal-id (c/get-props this))}))
-  (will-unmount
-   [this]
-   (scroll/enable-body-scrolling))
-  (render
-   [this]
-   (let [{:keys [capture-modal-id]
-          :as   data} (c/get-props this)]
-     (ui/modal
-      {:close-attrs (apply utils/fake-href [e/biz|email-capture|dismissed {:id capture-modal-id}])
-       :col-class   "col-12 col-5-on-tb col-4-on-dt flex justify-center"
-       :bg-class    "bg-darken-4"}
-      ((case capture-modal-id
-         "first-pageview-email-capture" early-access-main
-         "adv-quiz-email-capture"       early-access-quiz) data)))))
 
 (defn ^:export built-component [app-state opts]
   (when-let [data (query app-state)]
-    (if (experiments/early-access? app-state)
-      (c/build early-access-template
-               (early-access-query app-state)
-               opts)
-      (c/build template data opts))))
+    (c/build template data opts)))
