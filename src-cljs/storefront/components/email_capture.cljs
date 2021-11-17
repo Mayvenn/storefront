@@ -265,12 +265,59 @@
    [:div.bg-white.p4.center
     (svg/mayvenn-logo {:style {:width "50px" :height "30px"}})]])
 
+(defn design-adv-quiz-email-capture-2021-bf [discount-amount app-state]
+  [:div
+   {:style     {:max-width "580px"}
+    :data-test "email-capture-modal"}
+   [:div.relative
+    (ui/ucare-img {:style {:max-width "580px"}} "3a24b338-b84e-410a-913f-5416d3c95ad6")
+    [:div.absolute
+     {:style {:top "1rem" :right "1rem"}}
+     (ui/modal-close {:data-test   "email-capture-dismiss"
+                      :class       "fill-white stroke-white"
+                      :close-attrs (apply utils/fake-href [e/biz|email-capture|dismissed {:id "first-pageview-email-capture"}])})]]
+   [:div.white.center.mx-auto.mynp6.py8.px3
+    {:style {:background-image "url('//ucarecdn.com/bf5c99de-3829-465d-a066-231dcdc00ac9/-/format/auto/-/quality/lightest/-/resize/580x/')"}}
+    [:div.canela.title-1.pb2.yellow
+     (str "Enjoy $" discount-amount " Off")]
+    [:div.shout.proxima.title-3.mb6 "and get access to exclusive offers!"]
+    [:div.m3
+     (let [email (get-in app-state concept/textfield-keypath)]
+       [:form
+        {:on-submit (apply utils/send-event-callback [e/biz|email-capture|captured {:id    "first-pageview-email-capture"
+                                                                                    :email email}])}
+        (ui/text-field {:errors    (get (get-in app-state (conj k/field-errors ["email"])) ["email"])
+                        :keypath   concept/textfield-keypath
+                        :focused   (get-in app-state k/ui-focus)
+                        :label     "Enter Your Email"
+                        :name      "email"
+                        :required  true
+                        :type      "email"
+                        :value     email
+                        :class     "col-12 bg-white"
+                        :data-test "email-capture-input"})
+        [:div.my2 (ui/submit-button-medium "Sign Up Now" {:data-test "email-capture-submit"})]])]
+    [:div.pt4
+     {:style {:color "white"
+              :font  "10px/16px 'Proxima Nova', Arial, sans-serif"}}
+     "Early access to our Black Friday deals."
+     "*I consent to receive Mayvenn marketing content via email. "
+     "For further information, please read our "
+     [:a.yellow (utils/route-to e/navigate-content-tos) "Terms"]
+     " and "
+     [:a.yellow (utils/route-to e/navigate-content-privacy) "Privacy Policy"]
+     ". Unsubscribe anytime."]]
+   [:div.bg-white.p4.center
+    (svg/mayvenn-logo {:style {:width "50px" :height "30px"}})]])
+
 (c/defdynamic-component template
   (did-mount
    [this]
+   (let [])
    (scroll/disable-body-scrolling)
    (publish e/control-menu-collapse-all)
-   (publish e/biz|email-capture|deployed {:id (:capture-modal-id (c/get-props this))}))
+   (publish e/biz|email-capture|deployed {:id      (:capture-modal-id (c/get-props this))
+                                          :variant (:email-capture/variant (c/get-props this))}))
   (will-unmount
    [this]
    (scroll/enable-body-scrolling))
@@ -290,7 +337,10 @@
          ["adv-quiz-email-capture"       "2021-non-bf"]            design-adv-quiz-email-capture-2021-non-bf
          ["first-pageview-email-capture" "2021-bf-20"]             (partial design-first-pageview-email-capture-2021-bf 20)
          ["first-pageview-email-capture" "2021-bf-25"]             (partial design-first-pageview-email-capture-2021-bf 25)
-         ["first-pageview-email-capture" "2021-bf-30"]             (partial design-first-pageview-email-capture-2021-bf 30))
+         ["first-pageview-email-capture" "2021-bf-30"]             (partial design-first-pageview-email-capture-2021-bf 30)
+         ["adv-quiz-email-capture" "2021-bf-20"]                   (partial design-adv-quiz-email-capture-2021-bf 20)
+         ["adv-quiz-email-capture" "2021-bf-25"]                   (partial design-adv-quiz-email-capture-2021-bf 25)
+         ["adv-quiz-email-capture" "2021-bf-30"]                   (partial design-adv-quiz-email-capture-2021-bf 30))
        data)))))
 
 (defn query [app-state]
