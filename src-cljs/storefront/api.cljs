@@ -852,18 +852,19 @@
 
 (defn get-order
   ([params]
-   (get-order params #(messages/handle-message events/api-success-get-order (orders/TEMP-pretend-service-items-do-not-exist %))))
-  ([{:keys [number token user-id user-token]} handler]
+   (get-order params
+              {:handler #(messages/handle-message events/api-success-get-order (orders/TEMP-pretend-service-items-do-not-exist %))}))
+  ([{:keys [number token user-id user-token]} opts]
    (storeback-api-req
     GET
     (str "/v2/orders/" number)
     request-keys/get-order
-    {:params
-     (if token
-       {:token token}
-       {:user-id user-id
-        :user-token user-token})
-     :handler handler})))
+    (merge opts
+           {:params
+            (if token
+              {:token token}
+              {:user-id user-id
+               :user-token user-token})}))))
 
 (defn confirm-order-was-placed
   [session-id order utm-params success-handler error-handler]

@@ -165,8 +165,12 @@
        (api/get-order {:number     (:order-number (last (get-in app-state k/navigation-message)))
                        :user-id    user-id
                        :user-token (get-in app-state k/user-token)}
-                      #(messages/handle-message e/api-success-get-orders
-                                                {:orders [%]})))))
+                      {:handler #(messages/handle-message e/api-success-get-orders
+                                                          {:orders [%]})
+                       ;; Swallow the error rather than displaying it, so a logged-in user
+                       ;; doesn't see "no order found" when facade is displayed.
+                       ;; We will likely want to change this.
+                       :error-handler (constantly nil)}))))
 
 (defmethod transitions/transition-state e/api-success-get-orders
   [_ _ {:keys [orders]} app-state]
