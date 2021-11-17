@@ -152,7 +152,8 @@
      {:style {:top "1rem" :right "1rem"}}
      (ui/modal-close {:data-test   "email-capture-dismiss"
                       :class       "fill-white stroke-white"
-                      :close-attrs (apply utils/fake-href [e/biz|email-capture|dismissed {:id "first-pageview-email-capture"}])})]]
+                      :close-attrs (apply utils/fake-href [e/biz|email-capture|dismissed {:id      "first-pageview-email-capture"
+                                                                                          :variant "2021-pre-bf-lower-text"}])})]]
    [:div.white.center.px6.mx-auto.mynp6.pb8
     {:style {:background-image "url('//ucarecdn.com/bf5c99de-3829-465d-a066-231dcdc00ac9/-/format/auto/-/quality/lightest/-/resize/580x/')"}}
     [:div.pt4.shout.bold.title-1 "Just for you"]
@@ -163,8 +164,9 @@
     [:div.m3
      (let [email (get-in app-state concept/textfield-keypath)]
        [:form
-        {:on-submit (apply utils/send-event-callback [e/biz|email-capture|captured {:id    "first-pageview-email-capture"
-                                                                                    :email email}])}
+        {:on-submit (apply utils/send-event-callback [e/biz|email-capture|captured {:id      "first-pageview-email-capture"
+                                                                                    :variant "2021-pre-bf-lower-text"
+                                                                                    :email   email}])}
         (ui/text-field {:errors    (get (get-in app-state (conj k/field-errors ["email"])) ["email"])
                         :keypath   concept/textfield-keypath
                         :focused   (get-in app-state k/ui-focus)
@@ -191,7 +193,8 @@
      {:style {:top "1rem" :right "1rem"}}
      (ui/modal-close {:data-test   "email-capture-dismiss"
                       :class       "fill-black stroke-black"
-                      :close-attrs (apply utils/fake-href [e/biz|email-capture|dismissed {:id "adv-quiz-email-capture"}])})]]
+                      :close-attrs (apply utils/fake-href [e/biz|email-capture|dismissed {:id      "adv-quiz-email-capture"
+                                                                                          :variant "2021-pre-bf-lower-text"}])})]]
    [:div.white.center.px6.mx-auto.mynp6.pb8
     {:style {:background-image "url('//ucarecdn.com/bf5c99de-3829-465d-a066-231dcdc00ac9/-/format/auto/-/quality/lightest/-/resize/580x/')"}}
     [:div.pt4.shout.bold.title-1 "Just for you"]
@@ -202,8 +205,9 @@
     [:div.m3
      (let [email (get-in app-state concept/textfield-keypath)]
        [:form
-        {:on-submit (apply utils/send-event-callback [e/biz|email-capture|captured {:id    "adv-quiz-email-capture"
-                                                                                    :email email}])}
+        {:on-submit (apply utils/send-event-callback [e/biz|email-capture|captured {:id      "adv-quiz-email-capture"
+                                                                                    :variant "2021-pre-bf-lower-text"
+                                                                                    :email   email}])}
         (ui/text-field {:errors    (get (get-in app-state (conj k/field-errors ["email"])) ["email"])
                         :keypath   concept/textfield-keypath
                         :focused   (get-in app-state k/ui-focus)
@@ -230,7 +234,8 @@
      {:style {:top "1rem" :right "1rem"}}
      (ui/modal-close {:data-test   "email-capture-dismiss"
                       :class       "fill-white stroke-white"
-                      :close-attrs (apply utils/fake-href [e/biz|email-capture|dismissed {:id "first-pageview-email-capture"}])})]]
+                      :close-attrs (apply utils/fake-href [e/biz|email-capture|dismissed {:id      "first-pageview-email-capture"
+                                                                                          :variant "2021-bf"}])})]]
    [:div.white.center.mx-auto.mynp6.py8.px3
     {:style {:background-image "url('//ucarecdn.com/bf5c99de-3829-465d-a066-231dcdc00ac9/-/format/auto/-/quality/lightest/-/resize/580x/')"}}
     [:div.canela.title-1.pb2.yellow
@@ -239,8 +244,9 @@
     [:div.m3
      (let [email (get-in app-state concept/textfield-keypath)]
        [:form
-        {:on-submit (apply utils/send-event-callback [e/biz|email-capture|captured {:id    "first-pageview-email-capture"
-                                                                                    :email email}])}
+        {:on-submit (apply utils/send-event-callback [e/biz|email-capture|captured {:id      "first-pageview-email-capture"
+                                                                                    :variant "2021-bf"
+                                                                                    :email   email}])}
         (ui/text-field {:errors    (get (get-in app-state (conj k/field-errors ["email"])) ["email"])
                         :keypath   concept/textfield-keypath
                         :focused   (get-in app-state k/ui-focus)
@@ -275,7 +281,8 @@
      {:style {:top "1rem" :right "1rem"}}
      (ui/modal-close {:data-test   "email-capture-dismiss"
                       :class       "fill-white stroke-white"
-                      :close-attrs (apply utils/fake-href [e/biz|email-capture|dismissed {:id "first-pageview-email-capture"}])})]]
+                      :close-attrs (apply utils/fake-href [e/biz|email-capture|dismissed {:id      "first-pageview-email-capture"
+                                                                                          :variant "2021-bf"}])})]]
    [:div.white.center.mx-auto.mynp6.py8.px3
     {:style {:background-image "url('//ucarecdn.com/bf5c99de-3829-465d-a066-231dcdc00ac9/-/format/auto/-/quality/lightest/-/resize/580x/')"}}
     [:div.canela.title-1.pb2.yellow
@@ -284,8 +291,9 @@
     [:div.m3
      (let [email (get-in app-state concept/textfield-keypath)]
        [:form
-        {:on-submit (apply utils/send-event-callback [e/biz|email-capture|captured {:id    "first-pageview-email-capture"
-                                                                                    :email email}])}
+        {:on-submit (apply utils/send-event-callback [e/biz|email-capture|captured {:id      "first-pageview-email-capture"
+                                                                                    :variant "2021-bf"
+                                                                                    :email   email}])}
         (ui/text-field {:errors    (get (get-in app-state (conj k/field-errors ["email"])) ["email"])
                         :keypath   concept/textfield-keypath
                         :focused   (get-in app-state k/ui-focus)
@@ -357,9 +365,11 @@
         (merge {:id                                   "email-capture"
                 :capture-modal-id                     capture-modal-id
                 :email-capture/variant                variant
-                :email-capture.dismiss/target         [e/biz|email-capture|dismissed {:id capture-modal-id}]
-                :email-capture.submit/target          [e/biz|email-capture|captured {:id    capture-modal-id
-                                                                                     :email email}]
+                :email-capture.dismiss/target         [e/biz|email-capture|dismissed {:id      capture-modal-id
+                                                                                      :variant variant}]
+                :email-capture.submit/target          [e/biz|email-capture|captured {:id      capture-modal-id
+                                                                                     :variant variant
+                                                                                     :email   email}]
                 :email-capture.cta/id                 "email-capture-submit"
                 :email-capture.text-field/id          "email-capture-input"
                 :email-capture.text-field/placeholder "Enter Email Address"

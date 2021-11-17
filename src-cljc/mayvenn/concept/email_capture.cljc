@@ -120,12 +120,13 @@
 ;;; TRACKING
 
 (defmethod trk/perform-track e/biz|email-capture|deployed
-  [_ events {:keys [id]} app-state]
+  [_ events {:keys [id variant]} app-state]
   #?(:cljs
-     (stringer/track-event "email_capture-deploy" {:email-capture-id id})))
+     (stringer/track-event "email_capture-deploy" {:email-capture-id id
+                                                   :variant          variant})))
 
 (defmethod trk/perform-track e/biz|email-capture|captured
-  [_ event {:keys [id]} app-state]
+  [_ event {:keys [id variant]} app-state]
   #?(:cljs
      (let [no-errors?     (empty? (get-in app-state k/errors))
            captured-email (get-in app-state textfield-keypath)]
@@ -137,11 +138,13 @@
          (stringer/track-event "email_capture-capture"
                                {:email            captured-email
                                 :email-capture-id id
+                                :variant          variant
                                 :test-variations  (get-in app-state k/features)
                                 :store-slug       (get-in app-state k/store-slug)
                                 :store-experience (get-in app-state k/store-experience)})))))
 
 (defmethod trk/perform-track e/biz|email-capture|dismissed
-  [_ events {:keys [id]} app-state]
+  [_ events {:keys [id variant]} app-state]
   #?(:cljs
-     (stringer/track-event "email_capture-dismiss" {:email-capture-id id})))
+     (stringer/track-event "email_capture-dismiss" {:email-capture-id id
+                                                    :variant          variant})))
