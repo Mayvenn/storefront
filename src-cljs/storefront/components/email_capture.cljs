@@ -142,7 +142,7 @@
    [:a.yellow (utils/route-to e/navigate-content-privacy) "Privacy Policy"]
    ". Unsubscribe anytime."])
 
-(defn design-first-pageview-email-capture-2021-pre-bf-lower-text [app-state]
+(defn design-first-pageview-email-capture-2021-pre-bf-lower-text [data]
   [:div
    {:style     {:max-width "580px"}
     :data-test "email-capture-modal"}
@@ -152,8 +152,7 @@
      {:style {:top "1rem" :right "1rem"}}
      (ui/modal-close {:data-test   "email-capture-dismiss"
                       :class       "fill-white stroke-white"
-                      :close-attrs (apply utils/fake-href [e/biz|email-capture|dismissed {:id      "first-pageview-email-capture"
-                                                                                          :variant "2021-pre-bf-lower-text"}])})]]
+                      :close-attrs (apply utils/fake-href (:email-capture.dismiss/target data))})]]
    [:div.white.center.px6.mx-auto.mynp6.pb8
     {:style {:background-image "url('//ucarecdn.com/bf5c99de-3829-465d-a066-231dcdc00ac9/-/format/auto/-/quality/lightest/-/resize/580x/')"}}
     [:div.pt4.shout.bold.title-1 "Just for you"]
@@ -162,28 +161,16 @@
      "Black Friday Deals"]
     [:div.shout.bold.title-1 "Early Subscriber Access"]
     [:div.m3
-     (let [email (get-in app-state concept/textfield-keypath)]
-       [:form
-        {:on-submit (apply utils/send-event-callback [e/biz|email-capture|captured {:id      "first-pageview-email-capture"
-                                                                                    :variant "2021-pre-bf-lower-text"
-                                                                                    :email   email}])}
-        (ui/text-field {:errors    (get (get-in app-state (conj k/field-errors ["email"])) ["email"])
-                        :keypath   concept/textfield-keypath
-                        :focused   (get-in app-state k/ui-focus)
-                        :label     "Enter Your Email"
-                        :name      "email"
-                        :required  true
-                        :type      "email"
-                        :value     email
-                        :class     "col-12 bg-white"
-                        :data-test "email-capture-input"})
-        [:div.my2 (ui/submit-button-medium "Sign Up Now" {:data-test "email-capture-submit"})]])
+     [:form
+      {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
+      (text-field data)
+      [:div.my2 (ui/submit-button-medium "Sign Up Now" {:data-test "email-capture-submit"})]]
      [:div.content-2
       [:div.my2 "Join our email list to get $20 off and exclusive early access to our Black Friday deals."]
       [:div.my2 "Stock up on dreamy hair at our best prices."]]
      fine-print-3]]])
 
-(defn design-adv-quiz-email-capture-2021-pre-bf-lower-text [app-state]
+(defn design-adv-quiz-email-capture-2021-pre-bf-lower-text [data]
   [:div
    {:style     {:max-width "580px"}
     :data-test "email-capture-modal"}
@@ -193,8 +180,7 @@
      {:style {:top "1rem" :right "1rem"}}
      (ui/modal-close {:data-test   "email-capture-dismiss"
                       :class       "fill-black stroke-black"
-                      :close-attrs (apply utils/fake-href [e/biz|email-capture|dismissed {:id      "adv-quiz-email-capture"
-                                                                                          :variant "2021-pre-bf-lower-text"}])})]]
+                      :close-attrs (apply utils/fake-href (:email-capture.dismiss/target data))})]]
    [:div.white.center.px6.mx-auto.mynp6.pb8
     {:style {:background-image "url('//ucarecdn.com/bf5c99de-3829-465d-a066-231dcdc00ac9/-/format/auto/-/quality/lightest/-/resize/580x/')"}}
     [:div.pt4.shout.bold.title-1 "Just for you"]
@@ -203,28 +189,16 @@
      "Black Friday Deals"]
     [:div.shout.bold.title-1 "Early Subscriber Access"]
     [:div.m3
-     (let [email (get-in app-state concept/textfield-keypath)]
-       [:form
-        {:on-submit (apply utils/send-event-callback [e/biz|email-capture|captured {:id      "adv-quiz-email-capture"
-                                                                                    :variant "2021-pre-bf-lower-text"
-                                                                                    :email   email}])}
-        (ui/text-field {:errors    (get (get-in app-state (conj k/field-errors ["email"])) ["email"])
-                        :keypath   concept/textfield-keypath
-                        :focused   (get-in app-state k/ui-focus)
-                        :label     "Enter Your Email"
-                        :name      "email"
-                        :required  true
-                        :type      "email"
-                        :value     email
-                        :class     "col-12 bg-white"
-                        :data-test "email-capture-input"})
-        [:div.my2 (ui/submit-button-medium "Sign Up Now" {:data-test "email-capture-submit"})]])
+     [:form
+      {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
+      (text-field data)
+      [:div.my2 (ui/submit-button-medium "Sign Up Now" {:data-test "email-capture-submit"})]]
      [:div.content-2
       [:div.my2 "Join our email list to get $20 off and exclusive early access to our Black Friday deals."]
       [:div.my2 "Stock up on dreamy hair at our best prices."]]
      fine-print-3]]])
 
-(defn design-first-pageview-email-capture-2021-bf [discount-amount app-state]
+(defn design-first-pageview-email-capture-2021-bf [discount-amount data]
   [:div
    {:style     {:max-width "580px"}
     :data-test "email-capture-modal"}
@@ -234,30 +208,17 @@
      {:style {:top "1rem" :right "1rem"}}
      (ui/modal-close {:data-test   "email-capture-dismiss"
                       :class       "fill-white stroke-white"
-                      :close-attrs (apply utils/fake-href [e/biz|email-capture|dismissed {:id      "first-pageview-email-capture"
-                                                                                          :variant "2021-bf"}])})]]
+                      :close-attrs (apply utils/fake-href (:email-capture.dismiss/target data))})]]
    [:div.white.center.mx-auto.mynp6.py8.px3
     {:style {:background-image "url('//ucarecdn.com/bf5c99de-3829-465d-a066-231dcdc00ac9/-/format/auto/-/quality/lightest/-/resize/580x/')"}}
     [:div.canela.title-1.pb2.yellow
      (str "Enjoy $" discount-amount " Off")]
     [:div.shout.proxima.title-3.mb6 "and get access to exclusive offers!"]
     [:div.m3
-     (let [email (get-in app-state concept/textfield-keypath)]
-       [:form
-        {:on-submit (apply utils/send-event-callback [e/biz|email-capture|captured {:id      "first-pageview-email-capture"
-                                                                                    :variant "2021-bf"
-                                                                                    :email   email}])}
-        (ui/text-field {:errors    (get (get-in app-state (conj k/field-errors ["email"])) ["email"])
-                        :keypath   concept/textfield-keypath
-                        :focused   (get-in app-state k/ui-focus)
-                        :label     "Enter Your Email"
-                        :name      "email"
-                        :required  true
-                        :type      "email"
-                        :value     email
-                        :class     "col-12 bg-white"
-                        :data-test "email-capture-input"})
-        [:div.my2 (ui/submit-button-medium "Sign Up Now" {:data-test "email-capture-submit"})]])]
+     [:form
+      {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
+      (text-field data)
+      [:div.my2 (ui/submit-button-medium "Sign Up Now" {:data-test "email-capture-submit"})]]]
     [:div.pt4
      {:style {:color "white"
               :font  "10px/16px 'Proxima Nova', Arial, sans-serif"}}
@@ -271,7 +232,7 @@
    [:div.bg-white.p4.center
     (svg/mayvenn-logo {:style {:width "50px" :height "30px"}})]])
 
-(defn design-adv-quiz-email-capture-2021-bf [discount-amount app-state]
+(defn design-adv-quiz-email-capture-2021-bf [discount-amount data]
   [:div
    {:style     {:max-width "580px"}
     :data-test "email-capture-modal"}
@@ -281,30 +242,17 @@
      {:style {:top "1rem" :right "1rem"}}
      (ui/modal-close {:data-test   "email-capture-dismiss"
                       :class       "fill-white stroke-white"
-                      :close-attrs (apply utils/fake-href [e/biz|email-capture|dismissed {:id      "first-pageview-email-capture"
-                                                                                          :variant "2021-bf"}])})]]
+                      :close-attrs (apply utils/fake-href (:email-capture.dismiss/target data))})]]
    [:div.white.center.mx-auto.mynp6.py8.px3
     {:style {:background-image "url('//ucarecdn.com/bf5c99de-3829-465d-a066-231dcdc00ac9/-/format/auto/-/quality/lightest/-/resize/580x/')"}}
     [:div.canela.title-1.pb2.yellow
      (str "Enjoy $" discount-amount " Off")]
     [:div.shout.proxima.title-3.mb6 "and get access to exclusive offers!"]
     [:div.m3
-     (let [email (get-in app-state concept/textfield-keypath)]
-       [:form
-        {:on-submit (apply utils/send-event-callback [e/biz|email-capture|captured {:id      "first-pageview-email-capture"
-                                                                                    :variant "2021-bf"
-                                                                                    :email   email}])}
-        (ui/text-field {:errors    (get (get-in app-state (conj k/field-errors ["email"])) ["email"])
-                        :keypath   concept/textfield-keypath
-                        :focused   (get-in app-state k/ui-focus)
-                        :label     "Enter Your Email"
-                        :name      "email"
-                        :required  true
-                        :type      "email"
-                        :value     email
-                        :class     "col-12 bg-white"
-                        :data-test "email-capture-input"})
-        [:div.my2 (ui/submit-button-medium "Sign Up Now" {:data-test "email-capture-submit"})]])]
+     [:form
+      {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
+      (text-field data)
+      [:div.my2 (ui/submit-button-medium "Sign Up Now" {:data-test "email-capture-submit"})]]]
     [:div.pt4
      {:style {:color "white"
               :font  "10px/16px 'Proxima Nova', Arial, sans-serif"}}
