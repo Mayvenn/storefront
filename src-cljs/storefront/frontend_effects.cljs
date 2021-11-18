@@ -751,7 +751,7 @@
                          :promo.mayvenn-install/discountable true}
     :quantity           1
     :stylist-id         (get-in app-state keypaths/store-stylist-id)
-    :heat-feature-flags (get-in app-state keypaths/features)}
+    :heat-feature-flags (keys (get-in app-state keypaths/features))}
    #(messages/handle-message events/api-success-add-sku-to-bag
                              {:order    %
                               :quantity 1

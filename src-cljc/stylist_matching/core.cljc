@@ -297,7 +297,7 @@
      (do
        (cookie-jar/save-adventure (get-in state storefront.keypaths/cookie)
                                   (get-in state adventure.keypaths/adventure))
-       (let [features               (get-in state storefront.keypaths/features)
+       (let [features               (keys (get-in state storefront.keypaths/features))
              waiter-order           (:waiter/order (api.orders/current state))
              {:keys [number token]} waiter-order]
          (api/assign-servicing-stylist

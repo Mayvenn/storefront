@@ -67,7 +67,7 @@
                             :token              (:token order)
                             :number             (:number order)
                             :quantity           quantity
-                            :heat-feature-flags (get-in app-state keypaths/features)}
+                            :heat-feature-flags (keys (get-in app-state keypaths/features))}
                            #(messages/handle-message events/api-success-add-sku-to-bag
                                                      {:order    %
                                                       :quantity quantity

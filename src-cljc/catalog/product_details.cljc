@@ -761,7 +761,7 @@
          :number             (get-in app-state keypaths/order-number)
          :user-id            (get-in app-state keypaths/user-id)
          :user-token         (get-in app-state keypaths/user-token)
-         :heat-feature-flags (get-in app-state keypaths/features)}
+         :heat-feature-flags (keys (get-in app-state keypaths/features))}
         #(do
            (messages/handle-message events/api-success-add-sku-to-bag
                                     {:order         %
@@ -785,7 +785,7 @@
                  :stylist-id         (get-in state keypaths/store-stylist-id)
                  :user-id            (get-in state keypaths/user-id)
                  :user-token         (get-in state keypaths/user-token)
-                 :heat-feature-flags (get-in state keypaths/features)}
+                 :heat-feature-flags (keys (get-in state keypaths/features))}
           (and token number)
           (merge {:token  token
                   :number number}))

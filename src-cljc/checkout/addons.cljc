@@ -127,7 +127,7 @@
         (merge order-creds
                {:user-id            (get-in state k/user-id)
                 :user-token         (get-in state k/user-token)
-                :heat-feature-flags (get-in state k/features)
+                :heat-feature-flags (keys (get-in state k/features))
                 :sku                sku
                 :quantity           1})
         (fn added [order]
