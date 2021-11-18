@@ -531,8 +531,13 @@
 
 (defmethod transition-state events/enable-feature [_ event {:keys [feature]} app-state]
   (cond-> app-state
-    (not (contains? (set (get-in app-state keypaths/features)) feature))
-    (update-in keypaths/features conj feature)))
+    (and (string? feature)
+         (not (contains? (set (get-in app-state keypaths/features)) feature)))
+    (assoc-in (conj keypaths/features (keyword feature)) true)
+
+    (and (vector? feature)
+         (->> (get-in app-state keypaths/features) keys (some (partial = (first feature))) not))
+    (assoc-in (conj keypaths/features (first feature)) (last feature))))
 
 (defmethod transition-state events/clear-features [_ event _ app-state]
   (assoc-in app-state keypaths/features []))
