@@ -37,13 +37,14 @@
    (titled-content "Estimated Delivery" (if (seq fulfillments)
                                           (for [{:keys [url carrier tracking-number shipping-estimate]} fulfillments]
                                             [:div [:div shipping-estimate]
-                                             (when url
+                                             (if url
                                                [:div
                                                 carrier
                                                 " Tracking: "
                                                 [:a
                                                  (utils/fake-href e/external-redirect-url {:url url})
-                                                 tracking-number]])])
+                                                 tracking-number]]
+                                               "Tracking: Waiting for Shipment")])
                                           "Tracking: Waiting for Shipment"))
    [:p.mt8 "If you need to edit or cancel your order, please contact our customer service at "
     (ui/link :link/email :a {} "help@mayvenn.com")
@@ -62,10 +63,22 @@
                   nil)
             (str tracking-number))))
 
+;; TODO Switch to using spice.date/date?
+(defn date? [value]
+  (try
+    (some? (spice.date/to-iso value))
+    (catch #?(:clj Throwable
+              :cljs :default) _
+      false)))
+
+(defn long-date [dt]
+  (when (date? dt)
+    (str (f/day->day-abbr dt) ", " #?(:cljs (f/long-date dt)))))
+
 (defn facade-query
   [app-state]
   (let [{:keys [e  ; event (po=placedOrder, so=shippedOrder, sro=shippedReplacementOrder)
-                sn ; shipping number
+                sn ; shipment number
                 c  ; carrier
                 tn ; tracking number
                 pa ; placed at (epoch ms)
@@ -74,11 +87,9 @@
          } (get-in app-state k/navigation-query-params)
         order-number      (cond-> (:order-number (last (get-in app-state k/navigation-message)))
                             sn (str "-" sn))
-        shipping-estimate (when (seq se)
-                            (str (f/day->day-abbr se) ", " #?(:cljs (f/long-date se))))]
+        shipping-estimate (long-date se)]
     {:order-number order-number
-     :placed-at    (when (seq pa)
-                     (str (f/day->day-abbr pa) ", " #?(:cljs (f/long-date pa))))
+     :placed-at    (long-date pa)
      :fulfillments    (when-let [url (generate-tracking-url c tn)]
                         [{:url               url
                           :shipping-estimate shipping-estimate
@@ -117,9 +128,6 @@
      saturday-delivery?
      max-delivery)))
 
-(defn long-date [dt]
-  (str (f/day->day-abbr dt) ", " #?(:cljs (f/long-date dt))))
-
 (defn non-facade-query [app-state]
   (let [order-number        (:order-number (last (get-in app-state k/navigation-message)))
         {:as   order
@@ -144,10 +152,11 @@
                                                  (catalog/select {:warehouse/slug #{"factory-cn"}})
                                                  boolean)
                              url            (generate-tracking-url carrier tracking-number)]
-                         {:shipping-estimate (-> placed-at
-                                                 spice.date/to-datetime
-                                                 (spice.date/add-delta {:days (->shipping-days-estimate drop-shipping? shipping-sku placed-at)})
-                                                 long-date)
+                         {:shipping-estimate (when (date? placed-at)
+                                               (-> placed-at
+                                                   spice.date/to-datetime
+                                                   (spice.date/add-delta {:days (->shipping-days-estimate drop-shipping? shipping-sku placed-at)})
+                                                   long-date))
                           :url               url
                           :carrier           carrier
                           :tracking-number   tracking-number}))})))
