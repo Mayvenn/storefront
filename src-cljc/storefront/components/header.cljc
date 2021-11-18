@@ -409,6 +409,7 @@
      :vouchers?                   (experiments/dashboard-with-vouchers? data)
      :stylist-experience          (get-in data keypaths/user-stylist-experience)
      :past-appointments?          (experiments/past-appointments? data)
+     :order-details?              (experiments/order-details? data)
      :site                        site
      :slide-out-nav/content-items [{:slide-out-nav-content-item/target  [events/navigate-content-guarantee]
                                     :slide-out-nav-content-item/id      "content-guarantee"

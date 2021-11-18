@@ -110,7 +110,7 @@
    events/navigate-gallery-edit            #(ui/lazy-load-component :dashboard 'storefront.components.gallery-v202105/built-component events/navigate-gallery-edit)
    events/navigate-gallery-appointments    #(ui/lazy-load-component :dashboard 'storefront.components.gallery-v202105/built-component events/navigate-gallery-appointments)
    events/navigate-gallery-photo           (constantly gallery-photo/built-component)
-   events/navigate-yourlooks-order-details #(ui/lazy-load-component :dashboard 'yourlooks.order-details.core/page events/navigate-yourlooks-order-details)
+   events/navigate-yourlooks-order-details #(ui/lazy-load-component :dashboard 'order-details.core/page events/navigate-yourlooks-order-details)
 
    events/navigate-info-certified-stylists (constantly adventure.informational.certified-stylists/built-component)
    events/navigate-info-about-our-hair     (constantly adventure.informational.about-our-hair/built-component)

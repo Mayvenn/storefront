@@ -1,5 +1,6 @@
 (ns storefront.components.slideout-nav
-  (:require [catalog.menu :as menu]
+  (:require #?(:cljs [storefront.api :as api])
+            [catalog.menu :as menu]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.orders :as orders]
             [storefront.component :as component :refer [defcomponent]]
@@ -78,7 +79,7 @@
         email]]])))
 
 (defn ^:private stylist-actions
-  [vouchers?]
+  [vouchers? order-details?]
   (component/html
    [:div
     (when vouchers?
@@ -86,6 +87,10 @@
                                        :data-test    "redeem-voucher"
                                        :class "mb2")
                                 "Redeem Client Voucher"))
+    (when order-details?
+      (ui/button-medium-secondary (assoc (utils/fake-href events/control-orderdetails-submit)
+                                         :data-test "my-next-look")
+                                  "My Next Look"))
     [:div.flex.flex-wrap
      (ui/button-small-secondary (assoc (utils/route-to events/navigate-stylist-account-profile)
                                        :data-test "account-settings"
@@ -96,11 +101,18 @@
                                        :class "mr2 mt2")
                                 "Dashboard")]]))
 
-(def ^:private user-actions
+(defn ^:private user-actions
+  [order-details?]
   (component/html
-   (ui/button-large-secondary (assoc (utils/route-to events/navigate-account-manage)
-                                     :data-test "account-settings")
-                              "Account")))
+   [:div
+    (ui/button-medium-secondary (assoc (utils/route-to events/navigate-account-manage)
+                                      :data-test "account-settings")
+                               "Account")
+    (when order-details?
+      (ui/button-medium-secondary (assoc (utils/fake-href events/control-orderdetails-submit)
+                                        :data-test "my-next-look"
+                                        :class "mt2")
+                                 "My Next Look"))]))
 
 (def ^:private guest-actions
   (component/html
@@ -116,10 +128,10 @@
       "Or sign up now, get offers!")]]))
 
 (defn ^:private actions-marquee
-  [signed-in vouchers?]
+  [signed-in vouchers? order-details?]
   (case (-> signed-in ::auth/as)
-    :stylist (stylist-actions vouchers?)
-    :user    user-actions
+    :stylist (stylist-actions vouchers? order-details?)
+    :user    (user-actions order-details?)
     :guest   guest-actions))
 
 (defn ^:private caretize-content
@@ -197,14 +209,14 @@
      "Edit Gallery")]))
 
 (defcomponent ^:private root-menu
-  [{:keys [user signed-in vouchers? stylist-experience past-appointments?] :as data} owner opts]
+  [{:keys [user signed-in vouchers? stylist-experience past-appointments? order-details?] :as data} owner opts]
   [:div
    [:div.bg-cool-gray.p4
     (when (auth/stylist? signed-in)
       [:div.flex.items-center (stylist-portrait user) (gallery-link stylist-experience past-appointments?)])
     (account-info-marquee signed-in user)
     [:div.my3
-     (actions-marquee signed-in vouchers?)]]
+     (actions-marquee signed-in vouchers? order-details?)]]
    [:div.px3
     (menu-area data)]
    (when (-> signed-in ::auth/at-all)
@@ -212,9 +224,7 @@
       sign-out-area])])
 
 (defcomponent component
-  [{:keys [cart on-taxon? menu-data promo-banner] :as data}
-   _
-   _]
+  [{:keys [cart on-taxon? menu-data promo-banner] :as data} _ _]
   [:div
    (promo-banner/static-organism promo-banner nil nil)
 

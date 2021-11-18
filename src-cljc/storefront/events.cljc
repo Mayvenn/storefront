@@ -166,6 +166,9 @@
 (defpath control-install-landing-page-toggle-accordion)
 (defpath control-install-consult-stylist-sms)
 
+(defpath control-orderdetails-submit)
+(defpath flow--orderdetails--resulted)
+
 (defpath poll-stylist-portrait)
 (defpath poll-gallery)
 

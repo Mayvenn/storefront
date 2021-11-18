@@ -50,6 +50,7 @@
 (def add-promotion-code [:add-promo-code])
 (def remove-promotion-code [:remove-promo-code])
 (def get-order [:get-order])
+(def get-orders [:get-orders])
 (def add-to-bag [:add-to-bag])
 (def create-bag [:create-bag])
 (def place-order [:place-order])

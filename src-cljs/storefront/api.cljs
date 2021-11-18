@@ -866,6 +866,17 @@
               {:user-id user-id
                :user-token user-token})}))))
 
+(defn get-orders
+  [{:keys [user-id user-token limit]}]
+  (storeback-api-req
+   GET
+   "/v2/orders"
+   request-keys/get-orders
+   {:params {:user-id    user-id
+             :user-token user-token
+             :limit      limit}
+    :handler #(messages/handle-message events/api-success-get-orders %)}))
+
 (defn confirm-order-was-placed
   [session-id order utm-params success-handler error-handler]
   (storeback-api-req
