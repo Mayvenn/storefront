@@ -443,13 +443,25 @@
 
 (def bf-looks-discount-looks
   ;; TODO: get the complete final list
-  ["3mWJcCOlSZ"
-   "wwLjtN7qMf"
-   "j4ytFCJYrz"
-   "qhsGHBripE"
-   "3CDdiO0H5P"
-   "Ckt8CxS2mw"
-   "DHdMrzsSOC"])
+  #{"3mWJcCOlSZ"
+    "wwLjtN7qMf"
+    "j4ytFCJYrz"
+    "qhsGHBripE"
+    "3CDdiO0H5P"
+    "Ckt8CxS2mw"
+    "DHdMrzsSOC"
+    "MM7ipO5Jde"
+    "M3ONgDxNMS"
+    "X8QsabhsDd"
+    "oFve8FEan4"
+    "YhWHdw1MKP"
+    "XfONm806Fd"
+    "x456sjle8J"
+    "voI48yBIiH"
+    "0eCbz8ma3F"
+    "l9fWmZF0oc"
+    "J2mBgngKjR"
+    "bGZw2Ij8uE"})
 
 (defn apply-promos
   [holiday-promo? shared-cart]

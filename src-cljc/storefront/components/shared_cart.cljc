@@ -220,7 +220,7 @@
                                         {:cart-summary-line/id    "bf-looks-adjustment"
                                          :cart-summary-line/icon  [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
                                                                                       :height "2em" :width "2em"}]
-                                         :cart-summary-line/label "Black Friday Sale" ;; TODO: check on verbase
+                                         :cart-summary-line/label "30% OFF Holiday Looks"
                                          :cart-summary-line/value (some-> bf-looks-promotion :price mf/as-money-or-free)})
                                       (when explicit-promotion
                                         {:cart-summary-line/id    (str (text->data-test-name (:coupon-code explicit-promotion)) "-adjustment")
