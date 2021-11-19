@@ -53,7 +53,7 @@
   (:feature (variation-for data experiment)))
 
 (defn ^:private display-feature? [data feature]
-  (contains? (set (get-in data keypaths/features)) feature))
+  (get-in data (conj keypaths/features (keyword feature))))
 
 (defn dashboard-with-vouchers? [data]
   (= "aladdin" (get-in data keypaths/user-stylist-experience)))
