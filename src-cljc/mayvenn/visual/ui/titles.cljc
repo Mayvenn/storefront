@@ -42,12 +42,20 @@
    :primary/flex        {:primary/flex "flex"}
    :primary/flex-auto   {:primary/flex-args "flex-auto"}
    :primary/myj1        {:primary/padding "myj1"}
+   :primary/strike      {:primary/strike "strike"}
    :secondary/proxima   {:secondary/font "proxima"}
    :secondary/content-2 {:secondary/size "content-2"}
    :secondary/content-3 {:secondary/size "content-3"}
    :secondary/content-4 {:secondary/size "content-4"}
    :secondary/mt2       {:secondary/padding "mt2"}
    :secondary/myj1      {:secondary/padding "myj1"}
+   :green/proxima       {:green/font "proxima"}
+   :green/color         {:green/color "s-color"}
+   :green/content-2     {:green/size "content-2"}
+   :green/content-3     {:green/size "content-3"}
+   :green/content-4     {:green/size "content-4"}
+   :green/mt2           {:green/padding "mt2"}
+   :green/myj1          {:green/padding "myj1"}
    :tertiary/content-3  {:tertiary/size "content-3"}})
 
 
@@ -98,7 +106,7 @@
     (should-interpose? value) [tag attr (interpose [:br] value)]
     :else [tag attr value]))
 
-(defn ^:private title [style-kws {:keys [id icon primary secondary tertiary]}]
+(defn ^:private title [style-kws {:keys [id icon primary secondary tertiary green]}]
   (let [styling (styling< style-kws)]
     (c/html
      [:div {:class (class< :align styling)}
@@ -112,10 +120,10 @@
                primary)]
       (build-if-value :div {:class (class< :secondary styling)}
               secondary)
+      (build-if-value :div {:class (class< :green styling)}
+                      green)
       (build-if-value :div {:class (class< :tertiary styling)}
               tertiary)])))
-
-
 
 (defn
   ^{:usages [:call-out-boxs]}
@@ -188,7 +196,10 @@
           :primary/content-2
           :primary/proxima
           :secondary/proxima
-          :secondary/content-4]
+          :secondary/content-4
+          :green/color
+          (when (:strike text)
+            :primary/strike)]
          text))
 (defn
   ^{:usages [:cart-item-card]}

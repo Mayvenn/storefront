@@ -72,7 +72,6 @@
        (ui.molecules/stars-rating-molecule (with :stylist data))]
       (ui.molecules/stylist-appointment-time (with :booking.appointment-time-slot data))]
 
-
      ;; price group
      [:div.flex.flex-column.self-stretch.items-end
       {:style {:min-width "67px"}}

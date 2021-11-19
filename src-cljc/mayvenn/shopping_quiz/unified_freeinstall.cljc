@@ -229,21 +229,25 @@
                   :thumbnail/sticker-label (some-> length
                                                    first
                                                    (str "”"))
-                  :thumbnail/ucare-id      (hacky-cart-image item)})))
+                  :thumbnail/ucare-id      (hacky-cart-image item)}
+                 (when (:item/service-attrs item)
+                   {:price-title/strike    true
+                    :price-title/secondary nil
+                    :price-title/green     "Free"}))))
              items)
        (let [{:stylist/keys [id name]} current-stylist
              appointment-time-slot     (:appointment-time-slot waiter-order)
              idx                       (count items)]
          (merge
-          {:id                            (str idx "-cart-item-stylist-" id)
-           :idx                           idx
-           :title/id                      "line-item-title-stylist"
-           :title/primary                 name
-           :title/secondary               "Your Certified Mayvenn Stylist"
-           :thumbnail/id                  id
-           :thumbnail/ucare-id            (hacky-stylist-image current-stylist)
-           :stylist.rating/id             id
-           :stylist.rating/value          (:stylist.rating/score current-stylist)}
+          {:id                   (str idx "-cart-item-stylist-" id)
+           :idx                  idx
+           :title/id             "line-item-title-stylist"
+           :title/primary        name
+           :title/secondary      "Your Certified Mayvenn Stylist"
+           :thumbnail/id         id
+           :thumbnail/ucare-id   (hacky-stylist-image current-stylist)
+           :stylist.rating/id    id
+           :stylist.rating/value (:stylist.rating/score current-stylist)}
           (within :booking.appointment-time-slot appointment-time-slot))))})))
 
 ;; Template: 3/Stylist Results
