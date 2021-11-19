@@ -391,7 +391,7 @@
        (<= rule-quantity)))
 
 (defn ^:private add-discounts-to-line-items
-  [holiday-promo? promotion-code items]
+  [holiday-promo? bf-looks-discount-look? promotion-code items]
   (for [{:keys [sku item/quantity] :as item} items
         :let [freeinstall-rules-for-item (or (get SV2-rules (:product/sku-part sku))
                                              (get rules     (:catalog/sku-id sku)))  ;; GROT SRV
@@ -404,6 +404,11 @@
            (every? (partial meets-discount-criterion? items) freeinstall-rules-for-item))
       (update :discounts (fn [discounts] (conj discounts {:promotion       :freeinstall
                                                           :discount-amount line-item-base-price})))
+
+      (and (not freeinstall-rules-for-item)
+           bf-looks-discount-look?)
+      (update :discounts (fn [discounts] (conj discounts {:promotion       :bf-looks
+                                                          :discount-amount (* 0.30 line-item-base-price)})))
 
       (and promotion-code
            (not freeinstall-rules-for-item)) ;; is not a freeinstall discountable service line item
@@ -436,11 +441,22 @@
                  (+ acc discount-amount)) 0)
        (assoc shared-cart :total-discounted-amount)))
 
+(def bf-looks-discount-looks
+  ;; TODO: get the complete final list
+  ["3mWJcCOlSZ"
+   "wwLjtN7qMf"
+   "j4ytFCJYrz"
+   "qhsGHBripE"
+   "3CDdiO0H5P"
+   "Ckt8CxS2mw"
+   "DHdMrzsSOC"])
+
 (defn apply-promos
   [holiday-promo? shared-cart]
-  (let [promotion-code (first (:promotion-codes shared-cart))]
+  (let [promotion-code (first (:promotion-codes shared-cart))
+        bf-looks-discount-look? (some #{(:number shared-cart)} bf-looks-discount-looks)]
     (-> shared-cart
-        (update :line-items (partial add-discounts-to-line-items holiday-promo? promotion-code))
+        (update :line-items (partial add-discounts-to-line-items holiday-promo? bf-looks-discount-look? promotion-code))
         add-discounts-roll-up
         add-total-discounted-amount)))
 
@@ -477,12 +493,16 @@
      :total            (- subtotal total-discounted-amount)}))
 
 (defn shared-cart->order [state sku-db shared-cart]
-  (let [holiday-promo? (->> (get-in state storefront.keypaths/promotions)
+  (let [holiday-promo (->> (get-in state storefront.keypaths/promotions)
                             (filter #(= "holiday" (:code %)))
-                            first)]
+                            first)
+        bf-look-promo {:advertised false
+                       :code nil,
+                       :description "foo",
+                       :id 13}]
     (some->> shared-cart
              (enrich-line-items-with-sku-data sku-db)
-             (apply-promos holiday-promo?)
+             (apply-promos holiday-promo)
              shared-cart->waiter-order
              (->order state))))
 
