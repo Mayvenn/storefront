@@ -176,16 +176,15 @@
 
 (defn matched-success<
   [quiz-progression items waiter-order current-stylist undo-history quadpay-loaded? paypal-redirect?]
-  (let [order-total (some-> waiter-order orders/products-subtotal)
-        step        (apply max quiz-progression)]
+  (let [step (apply max quiz-progression)]
     (merge
      (progress< quiz-progression)
      (header< undo-history step)
      {:title/primary              "You're All Set"
       :summary/icon               [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
                                                       :height "2em" :width "2em"}]
-      :summary-subtotal/primary   "Hair + Install"
-      :summary-slash/primary      (some-> waiter-order :total mf/as-money)
+      :summary-subtotal/primary   (if (some (partial = "holiday") (:promotion-codes waiter-order)) "20% + Free Install" "Hair + Install")
+      :summary-slash/primary      (some-> waiter-order :line-items-total mf/as-money)
       :or/primary                 "or"
       :escape-hatch.title/primary "Wanna explore more options?"
       :escape-hatch.action/id     "quiz-result-alternative"
@@ -193,7 +192,7 @@
                                    {:page/slug           "mayvenn-install"
                                     :catalog/category-id "23"}]
       :escape-hatch.action/label  "Browse Hair"
-      :summary-total/primary      (mf/as-money order-total)
+      :summary-total/primary      (some-> waiter-order :total mf/as-money)
 
       :checkout/label  "Checkout"
       :checkout/target [e/control-checkout-cart-submit]
@@ -205,7 +204,7 @@
       :paypal/id        "paypal-checkout"
 
       :quadpay.quadpay/show?       quadpay-loaded?
-      :quadpay.quadpay/order-total order-total
+      :quadpay.quadpay/order-total (:total waiter-order)
       :quadpay.quadpay/directive   :just-select
       :card/cart-items
       (conj

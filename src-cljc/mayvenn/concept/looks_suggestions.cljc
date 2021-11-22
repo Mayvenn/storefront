@@ -26,6 +26,7 @@
             [storefront.keypaths :as k]
             [storefront.trackings :as trk]
             [storefront.transitions :as t]
+            [storefront.accessors.experiments :as experiments]
             [storefront.platform.messages
              :as messages
              :refer [handle-message]
@@ -582,7 +583,8 @@
                                     :user-token           (get-in state k/user-token)
                                     :sku-id->quantity     (->> (conj product-sku-ids service-sku-id)
                                                                (map (fn [s] [s 1]))
-                                                               (into {}))}
+                                                               (into {}))
+                                    :promotion-codes      (when (experiments/quiz-always-adds-holiday-promo? state) ["holiday"])}
                                    ;; TODO: more specific handler
                                    (fn [{:keys [order]}]
                                      (messages/handle-message
