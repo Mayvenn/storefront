@@ -308,7 +308,7 @@
         textfield-keypath      concept/textfield-keypath
         email                  (get-in app-state textfield-keypath)
         variant                (get-in app-state (conj k/features (keyword capture-modal-id)))]
-    (when displayable?
+    (when (and displayable? capture-modal-id variant)
       (when-not (= "off" variant)
         (merge {:id                                   "email-capture"
                 :capture-modal-id                     capture-modal-id
