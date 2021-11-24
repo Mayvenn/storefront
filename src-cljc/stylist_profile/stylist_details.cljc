@@ -55,6 +55,13 @@
   (if (not= :shop (sites/determine-site state))
     (fx/redirect e/navigate-home)
     (do
+      (handle-message e/biz|follow|defined
+                      {:follow/after-id e/flow|stylist-matching|matched
+                       :follow/then     [e/post-stylist-matched-navigation-decided
+                                         {:decision
+                                          {:booking e/navigate-adventure-appointment-booking
+                                           :cart    e/navigate-cart
+                                           :success e/navigate-adventure-match-success}}]})
       (handle-message e/cache|product|requested
                       {:query ?service})
       (let [cache (get-in state storefront.keypaths/api-cache)]
