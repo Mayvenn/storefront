@@ -448,11 +448,6 @@
                                     :slide-out-nav-menu-item/id          "menu-shop-quiz-unified-fi"
                                     :slide-out-nav-menu-item/new-primary "NEW"
                                     :slide-out-nav-menu-item/primary     "Start Hair Quiz"}]
-                                  (when (experiments/holiday-shop? data)
-                                    [{:slide-out-nav-menu-item/target     {:href "https://looks.mayvenn.com/black-friday-2021"}
-                                      :slide-out-nav-menu-item/id         "menu-shop-holiday-shop"
-                                      :slide-out-nav-menu-item/label-icon :svg/snowflake
-                                      :slide-out-nav-menu-item/primary    "Holiday Shop"}])
                                   [{:slide-out-nav-menu-item/target  [events/navigate-adventure-find-your-stylist]
                                     :slide-out-nav-menu-item/id      "menu-shop-find-stylist"
                                     :slide-out-nav-menu-item/primary "Browse Stylists"}
@@ -514,11 +509,6 @@
                               :header-menu-item/id                "desktop-shop-quiz-unified-fi"
                               :header-menu-item/new-label?        true
                               :header-menu-item/content           "Start Hair Quiz"}]
-                            (when (experiments/holiday-shop? data)
-                              [{:header-menu-item/navigation-target {:href "https://looks.mayvenn.com/black-friday-2021"}
-                                :header-menu-item/id                "menu-shop-holiday-shop"
-                                :header-menu-item/label-icon        :svg/snowflake
-                                :header-menu-item/content           "Holiday Shop"}])
                             [{:header-menu-item/navigation-target [events/navigate-adventure-find-your-stylist]
                               :header-menu-item/id                "desktop-shop-find-stylist"
                               :header-menu-item/content           "Browse Stylists"}
@@ -537,10 +527,6 @@
                              {:header-menu-item/navigation-target [events/navigate-content-guarantee]
                               :header-menu-item/id                "desktop-our-guarantee"
                               :header-menu-item/content           "Our Guarantee"}]
-                            (when-not (experiments/holiday-shop? data)
-                              [{:header-menu-item/navigation-target [events/navigate-content-our-hair]
-                                :header-menu-item/id                "desktop-our-hair"
-                                :header-menu-item/content           "Our hair"}])
                             [{:header-menu-item/href    wigs-101-url
                               :header-menu-item/id      "desktop-wigs-101"
                               :header-menu-item/content "Wigs 101"}

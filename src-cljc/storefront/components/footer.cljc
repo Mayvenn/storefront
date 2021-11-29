@@ -175,12 +175,6 @@
                                        :id          "quiz-unified-fi"
                                        :new-link?   true
                                        :nav-message [events/navigate-shopping-quiz-unified-freeinstall-intro {:query-params {:location "footer"}}]}
-                                      (when (experiments/holiday-shop? data)
-                                          {:title      "Holiday Shop"
-                                           :sort-order 1
-                                           :id         "holiday-shop"
-                                           :new-link?  false
-                                           :nav-href   "https://looks.mayvenn.com/black-friday-2021"})
                                       {:title       "Find a Stylist"
                                        :sort-order  1
                                        :id          "find-a-stylist"
