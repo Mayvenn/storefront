@@ -191,8 +191,7 @@
                                        first
                                        :amount)
         service-is-discounted?    (neg? discounted-service-amount)
-        bf-looks-promotion        (->> order-adjustments (filter #(= :bf-looks (:coupon-code %))) first)
-        explicit-promotion        (->> order-adjustments (remove #(#{:freeinstall :bf-looks} (:coupon-code %))) first)
+        explicit-promotion        (->> order-adjustments (remove #(#{:freeinstall} (:coupon-code %))) first)
         total-savings             (->> order-adjustments (reduce (fn [acc adj] (+ acc (:price adj))) 0))]
     (cond->
         {:cart-summary/id               "shared-cart-summary"
@@ -216,12 +215,6 @@
                                          :cart-summary-line/label (str "Free " (or (:product/essential-title discountable-item)
                                                                                    (:sku/title discountable-item)))
                                          :cart-summary-line/value (some-> discounted-service-amount mf/as-money-or-free)})
-                                      (when bf-looks-promotion
-                                        {:cart-summary-line/id    "bf-looks-adjustment"
-                                         :cart-summary-line/icon  [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
-                                                                                      :height "2em" :width "2em"}]
-                                         :cart-summary-line/label "30% OFF Holiday Looks"
-                                         :cart-summary-line/value (some-> bf-looks-promotion :price mf/as-money-or-free)})
                                       (when explicit-promotion
                                         {:cart-summary-line/id    (str (text->data-test-name (:coupon-code explicit-promotion)) "-adjustment")
                                          :cart-summary-line/icon  [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
