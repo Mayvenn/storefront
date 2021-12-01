@@ -25,7 +25,6 @@
       nil)))
 
 (defn query [contentful-ctx file variables]
-  (prn "contentful" contentful-ctx)
   (if-not (= (env :environment) "development")
     (tracer/trace
      "query"
