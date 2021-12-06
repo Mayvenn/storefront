@@ -616,6 +616,7 @@
 (defpath flow|stylist-matching|presearch-cleared)
 (defpath flow|stylist-matching|set-address-field)
 (defpath flow|stylist-matching|selected-for-inspection)
+(defpath flow|stylist-matching|search-decided)
 
 ; set search params for stylist matching
 (defpath flow|stylist-matching|param-ids-constrained)

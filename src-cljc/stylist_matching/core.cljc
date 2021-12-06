@@ -247,6 +247,7 @@
               (matches-preferences? service-params %))
         stylists))
 
+;; Stylists: Resulted
 (defmethod fx/perform-effects e/flow|stylist-matching|resulted
   [_ event {:as args :keys [results]} state state']
   (follow/publish-all state event args)
@@ -257,7 +258,6 @@
                                    {:query-params (->> (stylist-matching<- state')
                                                        (query-params<- {}))})))))
 
-;; Stylists: Resulted
 (defmethod t/transition-state e/flow|stylist-matching|resulted
   [_ event {:keys [results]} state]
   (let [stylist-models (->> results
@@ -269,6 +269,11 @@
         (update-in storefront.keypaths/models-stylists merge stylist-models)
         (assoc-in k/stylist-results results)
         (update-in k/status clojure.set/union #{:results/stylists}))))
+
+(defmethod fx/perform-effects e/flow|stylist-matching|search-decided
+  [_ _ _ _ _]
+  #?(:cljs
+     (history/enqueue-navigate e/navigate-adventure-stylist-results)))
 
 ;; ------------------ Stylist selected for inspection
 (defmethod fx/perform-effects e/flow|stylist-matching|selected-for-inspection

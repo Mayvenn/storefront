@@ -335,7 +335,7 @@
           [e/biz|follow|defined
            {:follow/start    [e/control-adventure-location-submit]
             :follow/after-id e/flow|stylist-matching|resulted
-            :follow/then     [e/navigate-shopping-quiz-unified-freeinstall-stylist-results]}]}))
+            :follow/then     [e/flow|stylist-matching|search-decided]}]}))
 
 ;; Template: 2/Summary
 
