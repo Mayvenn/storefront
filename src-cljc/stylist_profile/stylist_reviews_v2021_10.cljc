@@ -32,7 +32,7 @@
       :style {:height "70px"}}
      (when close-id
        (c/html
-        [:a.block.flex.items-center
+        [:a.block.flex.items-center.black
          (merge {:data-test close-id}
                 (apply utils/route-to close-route))
          (svg/left-arrow {:width  "20"
