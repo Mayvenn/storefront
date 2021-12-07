@@ -57,7 +57,7 @@
      {:class "border-bottom border-gray bg-white black"
       :style {:height "70px"}}
      nil
-     (component/html [:div.h4.medium title])
+     (component/html [:div.h4.medium.center title])
      (component/html
       (when close-id
         [:div.ml-auto.flex.items-center.justify-around
