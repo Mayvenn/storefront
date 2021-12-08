@@ -106,15 +106,19 @@
 
 (defn top-stylist-information-points-molecule
   [{:keys [points]}]
-  [:div.px2.pt3
+  [:div.pt3.mx-auto
    {:style {:display               "grid"
-            :grid-template-columns "auto auto"}}
-   (for [{:keys [id icon primary]} points]
-     [:div.pb1.proxima.content-3.flex
-      [:div.flex.items-center.justify-center {:style {:width "25px"}}
-       (when icon
-         (svg/symbolic->html icon))]
-      [:div (when id {:data-test id}) primary]])])
+            :grid-template-columns "auto 10px auto"
+            :max-width             "300px"}}
+   (interleave
+    (for [{:keys [id icon primary]} points]
+      [:div.pb1.proxima.content-3.flex
+       {:style {:max-width "150px"}}
+       [:div.flex.items-center.justify-center {:style {:width "25px"}}
+        (when icon
+          (svg/symbolic->html icon))]
+       [:div (when id {:data-test id}) primary]])
+    (cycle [[:div] nil]))])
 
 (defn stylist-card-header-molecule
   [{:stylist-card.header/keys [target id] :as data}]
