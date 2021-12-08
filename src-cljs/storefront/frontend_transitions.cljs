@@ -540,7 +540,7 @@
     (assoc-in (conj keypaths/features (first feature)) (last feature))))
 
 (defmethod transition-state events/clear-features [_ event _ app-state]
-  (assoc-in app-state keypaths/features []))
+  (update-in app-state keypaths/features empty))
 
 (defmethod transition-state events/inserted-google-maps [_ event args app-state]
   (assoc-in app-state keypaths/loaded-google-maps true))
