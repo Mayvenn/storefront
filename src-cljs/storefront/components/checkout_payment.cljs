@@ -163,7 +163,7 @@
         (store-credit-note data)
         (if (:payment-method/suppress-zip? data)
           (credit-card-entry data)
-          (payment-method-selection (spice.core/spy data))))
+          (payment-method-selection data)))
 
       (cta-submit data)]])])
 
