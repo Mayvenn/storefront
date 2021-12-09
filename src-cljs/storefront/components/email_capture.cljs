@@ -203,7 +203,7 @@
    {:style     {:max-width "580px"}
     :data-test "email-capture-modal"}
    [:div.relative
-    (ui/ucare-img {:style {:max-width "580px"}} "7352c0fa-0cda-4dbf-8ddf-d5ebeb1b2f98")
+    (ui/ucare-img {:style {:max-width "580px"}} "e24dbb4a-7cbf-4479-8bb4-57bebe180c29")
     [:div.absolute
      {:style {:top "1rem" :right "1rem"}}
      (ui/modal-close {:data-test   "email-capture-dismiss"
@@ -211,15 +211,14 @@
                       :close-attrs (apply utils/fake-href (:email-capture.dismiss/target data))})]]
    [:div.white.center.mx-auto.mynp6.py8.px3
     {:style {:background-image "url('//ucarecdn.com/bf5c99de-3829-465d-a066-231dcdc00ac9/-/format/auto/-/quality/lightest/-/resize/580x/')"}}
-    [:div.shout.proxima.title-3 "Stay in the know"]
     [:div.canela.title-1.pb2.yellow
-     (str "Sign Up For $" discount-amount " Off")]
-    [:div.proxima.title-3.mb6 "and get the latest holiday offers!"]
+     (str "Enjoy $" discount-amount " Off")]
+    [:div.shout.proxima.title-3.mb6 "and get access to exclusive offers!"]
     [:div.m3
      [:form
       {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
       (text-field data)
-      [:div.my2 (ui/submit-button-medium "Subscribe Now" {:data-test "email-capture-submit"})]]]
+      [:div.my2 (ui/submit-button-medium "Sign Up Now" {:data-test "email-capture-submit"})]]]
     [:div.pt4
      {:style {:color "white"
               :font  "10px/16px 'Proxima Nova', Arial, sans-serif"}}
@@ -238,7 +237,7 @@
    {:style     {:max-width "580px"}
     :data-test "email-capture-modal"}
    [:div.relative
-    (ui/ucare-img {:style {:max-width "580px"}} "cfeaed5f-d79a-409d-bd5b-842a98820423")
+    (ui/ucare-img {:style {:max-width "580px"}} "3a24b338-b84e-410a-913f-5416d3c95ad6")
     [:div.absolute
      {:style {:top "1rem" :right "1rem"}}
      (ui/modal-close {:data-test   "email-capture-dismiss"
@@ -248,7 +247,7 @@
     {:style {:background-image "url('//ucarecdn.com/bf5c99de-3829-465d-a066-231dcdc00ac9/-/format/auto/-/quality/lightest/-/resize/580x/')"}}
     [:div.canela.title-1.pb2.yellow
      (str "Enjoy $" discount-amount " Off")]
-    [:div.proxima.title-3.mb6 "and get access to exclusive holiday offers!"]
+    [:div.shout.proxima.title-3.mb6 "and get access to exclusive offers!"]
     [:div.m3
      [:form
       {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
