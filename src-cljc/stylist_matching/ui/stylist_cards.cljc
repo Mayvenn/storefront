@@ -109,7 +109,7 @@
   [:div.pt3.mx-auto
    {:style {:display               "grid"
             :grid-template-columns "auto 10px auto"
-            :max-width             "300px"}}
+            :max-width             "305px"}}
    (interleave
     (for [{:keys [id icon primary]} points]
       [:div.pb1.proxima.content-3.flex
