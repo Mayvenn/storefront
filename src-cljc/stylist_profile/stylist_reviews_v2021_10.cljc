@@ -24,7 +24,7 @@
    "wig-customization" "Wig Customization"})
 
 (defn header
-  [{:keys [title close-id close-route]}]
+  [{:keys [title close-id close-back close-route]}]
   [:div
    [:div.fixed.z4.top-0.left-0.right-0
     (header/mobile-nav-header
@@ -34,7 +34,7 @@
        (c/html
         [:a.block.flex.items-center.black
          (merge {:data-test close-id}
-                (apply utils/route-to close-route))
+                (apply utils/route-back-or-to close-back close-route))
          (svg/left-arrow {:width  "20"
                           :height "20"})]))
      (c/html [:div.center.content-2.proxima title])
@@ -148,6 +148,7 @@
           :reviews/cta-label  "View More"})
        (within :reviews.header {:title       "Ratings"
                                 :close-id    "header-back-to-profile"
+                                :close-back  (first (get-in state storefront.keypaths/navigation-undo-stack))
                                 :close-route [e/navigate-adventure-stylist-profile {:stylist-id stylist-id
                                                                                     :store-slug slug}]})
        (within :reviews.back-cta
