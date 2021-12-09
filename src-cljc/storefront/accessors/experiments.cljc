@@ -152,6 +152,10 @@
   [data]
   (display-feature? data "shipping-delay"))
 
+(defn inventory-count-shipping-halt?
+  [data]
+  (display-feature? data "inventory-count-shipping-halt"))
+
 (defn hide-zip
   [data]
   (display-feature? data "hide-zip"))

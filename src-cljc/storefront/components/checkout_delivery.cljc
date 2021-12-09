@@ -16,12 +16,14 @@
             [storefront.accessors.orders :as orders]))
 
 (defn delivery-note-box
-  [{:delivery.note/keys [id copy]}]
+  [{:delivery.note/keys [severity id copy]}]
   (c/html
    (if id
      [:div.pt2
       (ui/note-box {:data-test id
-                    :color     "s-color"}
+                    :color     (if (= :warning severity)
+                                 "yellow"
+                                 "s-color")}
                    [:div.proxima.content-3.px4.py2 copy])]
      [:div])))
 
@@ -238,19 +240,25 @@
         free-shipping? (= "WAITER-SHIPPING-1" (:sku shipping))
         only-services? (every? line-items/service? (orders/product-and-service-items order))
         drop-shipping? (boolean (select {:warehouse/slug #{"factory-cn"}} items))
-        hide-delivery-date? (experiments/hide-delivery-date? data)]
-    {:delivery/id        (when-not (and free-shipping? only-services?)
-                           "shipping-method")
-     :delivery/primary   "Shipping Method"
-     :delivery/options   (->> shipping-methods
-                              (map (partial shipping-method->shipping-method-option
-                                            selected-sku
-                                            now
-                                            east-coast-weekday
-                                            in-window?
-                                            drop-shipping?
-                                            hide-delivery-date?)))
-     :delivery.note/id   (when in-window? "delivery-note")
-     :delivery.note/copy (if friday?
-                           "Order by 10am ET today to have the guaranteed delivery dates below"
-                           "Order by 1pm ET today to have the guaranteed delivery dates below")}))
+        hide-delivery-date? (experiments/hide-delivery-date? data)
+        inventory-count-shipping-halt? (experiments/inventory-count-shipping-halt? data)]
+    (merge
+     {:delivery/id        (when-not (and free-shipping? only-services?)
+                            "shipping-method")
+      :delivery/primary   "Shipping Method"
+      :delivery/options   (->> shipping-methods
+                               (map (partial shipping-method->shipping-method-option
+                                             selected-sku
+                                             now
+                                             east-coast-weekday
+                                             in-window?
+                                             drop-shipping?
+                                             hide-delivery-date?)))}
+     (if inventory-count-shipping-halt?
+       {:delivery.note/id   "inventory-warning"
+        :delivery.note/copy "Due to our annual year-end inventory count, Mayvenn will not be shipping new orders until Monday, December 13."
+        :delivery.note/severity :warning}
+       {:delivery.note/id   (when in-window? "delivery-note")
+        :delivery.note/copy (if friday?
+                              "Order by 10am ET today to have the guaranteed delivery dates below"
+                              "Order by 1pm ET today to have the guaranteed delivery dates below")}))))
