@@ -266,6 +266,75 @@
    [:div.bg-white.p4.center
     (svg/mayvenn-logo {:style {:width "50px" :height "30px"}})]])
 
+(defn design-first-pageview-email-capture-2021-hol [discount-amount data]
+  [:div
+   {:style     {:max-width "580px"}
+    :data-test "email-capture-modal"}
+   [:div.relative
+    (ui/ucare-img {:style {:max-width "580px"}} "7352c0fa-0cda-4dbf-8ddf-d5ebeb1b2f98")
+    [:div.absolute
+     {:style {:top "1rem" :right "1rem"}}
+     (ui/modal-close {:data-test   "email-capture-dismiss"
+                      :class       "fill-white stroke-white"
+                      :close-attrs (apply utils/fake-href (:email-capture.dismiss/target data))})]]
+   [:div.white.center.mx-auto.mynp6.py8.px3
+    {:style {:background-image "url('//ucarecdn.com/bf5c99de-3829-465d-a066-231dcdc00ac9/-/format/auto/-/quality/lightest/-/resize/580x/')"}}
+    [:div.shout.proxima.title-3 "Stay in the know"]
+    [:div.canela.title-1.pb2.yellow
+     (str "Sign Up For $" discount-amount " Off")]
+    [:div.proxima.title-3.mb6 "and get the latest holiday offers!"]
+    [:div.m3
+     [:form
+      {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
+      (text-field data)
+      [:div.my2 (ui/submit-button-medium "Subscribe Now" {:data-test "email-capture-submit"})]]]
+    [:div.pt4
+     {:style {:color "white"
+              :font  "10px/16px 'Proxima Nova', Arial, sans-serif"}}
+     "Early access to our Black Friday deals."
+     "*I consent to receive Mayvenn marketing content via email. "
+     "For further information, please read our "
+     [:a.yellow (utils/route-to e/navigate-content-tos) "Terms"]
+     " and "
+     [:a.yellow (utils/route-to e/navigate-content-privacy) "Privacy Policy"]
+     ". Unsubscribe anytime."]]
+   [:div.bg-white.p4.center
+    (svg/mayvenn-logo {:style {:width "50px" :height "30px"}})]])
+
+(defn design-adv-quiz-email-capture-2021-hol [discount-amount data]
+  [:div
+   {:style     {:max-width "580px"}
+    :data-test "email-capture-modal"}
+   [:div.relative
+    (ui/ucare-img {:style {:max-width "580px"}} "cfeaed5f-d79a-409d-bd5b-842a98820423")
+    [:div.absolute
+     {:style {:top "1rem" :right "1rem"}}
+     (ui/modal-close {:data-test   "email-capture-dismiss"
+                      :class       "fill-white stroke-white"
+                      :close-attrs (apply utils/fake-href (:email-capture.dismiss/target data))})]]
+   [:div.white.center.mx-auto.mynp6.py8.px3
+    {:style {:background-image "url('//ucarecdn.com/bf5c99de-3829-465d-a066-231dcdc00ac9/-/format/auto/-/quality/lightest/-/resize/580x/')"}}
+    [:div.canela.title-1.pb2.yellow
+     (str "Enjoy $" discount-amount " Off")]
+    [:div.proxima.title-3.mb6 "and get access to exclusive holiday offers!"]
+    [:div.m3
+     [:form
+      {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
+      (text-field data)
+      [:div.my2 (ui/submit-button-medium "Sign Up Now" {:data-test "email-capture-submit"})]]]
+    [:div.pt4
+     {:style {:color "white"
+              :font  "10px/16px 'Proxima Nova', Arial, sans-serif"}}
+     "Early access to our Black Friday deals."
+     "*I consent to receive Mayvenn marketing content via email. "
+     "For further information, please read our "
+     [:a.yellow (utils/route-to e/navigate-content-tos) "Terms"]
+     " and "
+     [:a.yellow (utils/route-to e/navigate-content-privacy) "Privacy Policy"]
+     ". Unsubscribe anytime."]]
+   [:div.bg-white.p4.center
+    (svg/mayvenn-logo {:style {:width "50px" :height "30px"}})]])
+
 (c/defdynamic-component template
   (did-mount
    [this]
@@ -294,9 +363,11 @@
          ["first-pageview-email-capture" "2021-bf-20"]             (partial design-first-pageview-email-capture-2021-bf 20)
          ["first-pageview-email-capture" "2021-bf-25"]             (partial design-first-pageview-email-capture-2021-bf 25)
          ["first-pageview-email-capture" "2021-bf-30"]             (partial design-first-pageview-email-capture-2021-bf 30)
+         ["first-pageview-email-capture" "2021-hol-20"]            (partial design-first-pageview-email-capture-2021-hol 20)
          ["adv-quiz-email-capture" "2021-bf-20"]                   (partial design-adv-quiz-email-capture-2021-bf 20)
          ["adv-quiz-email-capture" "2021-bf-25"]                   (partial design-adv-quiz-email-capture-2021-bf 25)
-         ["adv-quiz-email-capture" "2021-bf-30"]                   (partial design-adv-quiz-email-capture-2021-bf 30))
+         ["adv-quiz-email-capture" "2021-bf-30"]                   (partial design-adv-quiz-email-capture-2021-bf 30)
+         ["adv-quiz-email-capture" "2021-hol-20"]                  (partial design-adv-quiz-email-capture-2021-hol 20))
        data)))))
 
 (defn query [app-state]
