@@ -114,6 +114,7 @@
               ["/c/" :shared-cart-id]                             (edn->bidi events/navigate-shared-cart)
               "/account/edit"                                     (edn->bidi events/navigate-account-manage)
               ["/your-looks/order/" :order-number]                (edn->bidi events/navigate-yourlooks-order-details)
+              ["/your-looks/"]                                    (edn->bidi events/navigate-yourlooks-order-details)
               "/cart"                                             (edn->bidi events/navigate-cart)
               "/added-to-cart"                                    (edn->bidi events/navigate-added-to-cart)
               "/checkout/add"                                     (edn->bidi events/navigate-checkout-add)

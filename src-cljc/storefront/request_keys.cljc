@@ -77,3 +77,6 @@
 (def fetch-matched-stylists [:fetch-matched-stylists])
 (def fetch-stylist-reviews [:fetch-matched-stylist])
 (def new-order-from-sku-ids [:new-order-from-sku-ids])
+
+(def email-verification-initiate [:email-verification-initiate])
+(def email-verification-verify [:email-verification-verify])

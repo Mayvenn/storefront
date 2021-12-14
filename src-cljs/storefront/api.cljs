@@ -867,15 +867,16 @@
                :user-token user-token})}))))
 
 (defn get-orders
-  [{:keys [user-id user-token limit]}]
+  [{:keys [user-id user-token limit]} handler error-handler]
   (storeback-api-req
    GET
    "/v2/orders"
    request-keys/get-orders
-   {:params {:user-id    user-id
-             :user-token user-token
-             :limit      limit}
-    :handler #(messages/handle-message events/api-success-get-orders %)}))
+   {:params        {:user-id    user-id
+                    :user-token user-token
+                    :limit      limit}
+    :handler       handler
+    :error-handler error-handler}))
 
 (defn confirm-order-was-placed
   [session-id order utm-params success-handler error-handler]
@@ -1205,3 +1206,26 @@
     :handler       (comp #(messages/handle-message events/api-success-remove-appointment-time-slot {:order %})
                          orders/TEMP-pretend-service-items-do-not-exist)
     :error-handler #(messages/handle-message events/api-failure-remove-appointment-time-slot {:response %})}))
+
+(defn email-verification-initiate [user-token user-id]
+  (storeback-api-req
+   POST
+   "/v1/email-verification/initiate"
+   request-keys/email-verification-initiate
+   {:params        {:token   user-token
+                    :user-id user-id}
+    ;; TODO: anything from the response we need?
+    :handler       #(messages/handle-message events/api-success-email-verification-initiate %)
+    :error-handler #(messages/handle-message events/api-failure-email-verification-initiate %)}))
+
+(defn email-verification-verify [user-token user-id evt]
+  (storeback-api-req
+   POST
+   "/v1/email-verification/verify"
+   request-keys/email-verification-verify
+   {:params        {:token   user-token
+                    :user-id user-id
+                    :evt     evt}
+    ;; TODO: anything from the response we need?
+    :handler       #(messages/handle-message events/api-success-email-verification-verify %)
+    :error-handler #(messages/handle-message events/api-failure-email-verification-verify %)}))

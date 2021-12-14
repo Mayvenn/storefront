@@ -17,8 +17,10 @@
             [storefront.transitions :as transitions]
             [storefront.keypaths :as k]
             [storefront.platform.component-utils :as utils]
-            [storefront.accessors.experiments :as experiments]
-            [mayvenn.concept.follow :as follow]))
+            [mayvenn.concept.follow :as follow]
+            [email-verification.core :as email-verification]
+            [storefront.keypaths :as keypaths]
+            [storefront.accessors.auth :as auth]))
 
 (defn titled-content [title content]
   [:div.my6
@@ -26,31 +28,36 @@
    [:div.content-1.proxima content]])
 
 (c/defcomponent template
-  [{:keys [order-number
-           placed-at
-           fulfillments]} _ _]
-  [:div.py6.px8.max-960.mx-auto
-   [:div.title-1.canela "My Next Look"]
-   (titled-content "Order Number" order-number)
-   (when placed-at
-     (titled-content "Placed On" placed-at))
-   (titled-content "Estimated Delivery" (if (seq fulfillments)
-                                          (for [{:keys [url carrier tracking-number shipping-estimate]} fulfillments]
-                                            [:div [:div shipping-estimate]
-                                             (if url
-                                               [:div
-                                                carrier
-                                                " Tracking: "
-                                                [:a
-                                                 (utils/fake-href e/external-redirect-url {:url url})
-                                                 tracking-number]]
-                                               "Tracking: Waiting for Shipment")])
-                                          "Tracking: Waiting for Shipment"))
-   [:p.mt8 "If you need to edit or cancel your order, please contact our customer service at "
-    (ui/link :link/email :a {} "help@mayvenn.com")
-    " or "
-    (ui/link :link/phone :a.inherit-color {} config/support-phone-number)
-    "."]])
+  [{:order-details/keys [id
+                         order-number
+                         placed-at
+                         fulfillments]
+    :as data} _ _]
+  (when id
+    [:div.py6.px8.max-960.mx-auto
+     {:key id}
+     [:div.title-1.canela "My Next Look"]
+     (titled-content "Order Number" order-number)
+     (when placed-at
+       (titled-content "Placed On" placed-at))
+     (titled-content "Estimated Delivery"
+                     (if (seq fulfillments)
+                       (for [{:keys [url carrier tracking-number shipping-estimate]} fulfillments]
+                         [:div [:div shipping-estimate]
+                          (if url
+                            [:div
+                             carrier
+                             " Tracking: "
+                             [:a
+                              (utils/fake-href e/external-redirect-url {:url url})
+                              tracking-number]]
+                            "Tracking: Waiting for Shipment")])
+                       "Tracking: Waiting for Shipment"))
+     [:p.mt8 "If you need to edit or cancel your order, please contact our customer service at "
+      (ui/link :link/email :a {} "help@mayvenn.com")
+      " or "
+      (ui/link :link/phone :a.inherit-color {} config/support-phone-number)
+      "."]]))
 
 (defn generate-tracking-url [carrier tracking-number]
   (when tracking-number
@@ -74,27 +81,6 @@
 (defn long-date [dt]
   (when (date? dt)
     (str (f/day->day-abbr dt) ", " #?(:cljs (f/long-date dt)))))
-
-(defn facade-query
-  [app-state]
-  (let [{:keys [e  ; event (po=placedOrder, so=shippedOrder, sro=shippedReplacementOrder)
-                sn ; shipment number
-                c  ; carrier
-                tn ; tracking number
-                pa ; placed at (epoch ms)
-                rs ; requested shipping method
-                se] ; shipping estimate (datetime string)
-         } (get-in app-state k/navigation-query-params)
-        order-number      (cond-> (:order-number (last (get-in app-state k/navigation-message)))
-                            sn (str "-" sn))
-        shipping-estimate (long-date se)]
-    {:order-number order-number
-     :placed-at    (long-date pa)
-     :fulfillments    (when-let [url (generate-tracking-url c tn)]
-                        [{:url               url
-                          :shipping-estimate shipping-estimate
-                          :carrier           c
-                          :tracking-number   tn}])}))
 
 (defn ->shipping-days-estimate [drop-shipping?
                                 shipping-sku
@@ -128,76 +114,93 @@
      saturday-delivery?
      max-delivery)))
 
-(defn non-facade-query [app-state]
-  (let [order-number        (:order-number (last (get-in app-state k/navigation-message)))
-        {:as   order
-         :keys [fulfillments
-                placed-at
-                shipments]} (->> (get-in app-state k/order-history)
-                                 (filter (fn [o] (= order-number (:number o))))
-                                 first)]
-    (when order
-      {:order-number order-number
-       :placed-at    (long-date placed-at)
-       :fulfillments (for [{:keys [carrier
-                                   tracking-number
-                                   shipment-number]
-                            :as   fulfillment} fulfillments
-                           :let                [shipment (->> shipments
-                                                              (filter (fn [s] (= shipment-number (:number s))))
-                                                              first)
-                                                shipping-sku (->> shipment :line-items first :sku)]
-                           :when               (and shipping-sku (= "physical" (:type fulfillment)))]
-                       (let [drop-shipping? (->> (map :variant-attrs (:line-items shipment))
-                                                 (catalog/select {:warehouse/slug #{"factory-cn"}})
-                                                 boolean)
-                             url            (generate-tracking-url carrier tracking-number)]
-                         {:shipping-estimate (when (date? placed-at)
-                                               (-> placed-at
-                                                   spice.date/to-datetime
-                                                   (spice.date/add-delta {:days (->shipping-days-estimate drop-shipping? shipping-sku placed-at)})
-                                                   long-date))
-                          :url               url
-                          :carrier           carrier
-                          :tracking-number   tracking-number}))})))
-
 (defn query [app-state]
-  (or (when (experiments/order-details? app-state)
-        (non-facade-query app-state))
-      (facade-query app-state)))
+  (when (get-in app-state k/user-verified-at) ; Only verified users allowed.
+        (let [order-number        (or (:order-number (last (get-in app-state k/navigation-message)))
+                                      (-> app-state (get-in k/order-history) first :number))
+          {:as   order
+           :keys [fulfillments
+                  placed-at
+                  shipments]} (spice.core/spy (->> (get-in app-state k/order-history)
+                                                    (filter (fn [o] (= order-number (:number o))))
+                                                    first))]
+      (when order
+        #:order-details
+        {:id           "order-details"
+         :order-number order-number
+         :placed-at    (long-date placed-at)
+         :fulfillments
+         (for [{:keys [carrier
+                       tracking-number
+                       shipment-number]
+                :as   fulfillment} fulfillments
+               :let                [shipment (->> shipments
+                                                  (filter (fn [s] (= shipment-number (:number s))))
+                                                  first)
+                                    shipping-sku (->> shipment :line-items first :sku)]
+               :when               (and shipping-sku (= "physical" (:type fulfillment)))]
+           (let [drop-shipping? (->> (map :variant-attrs (:line-items shipment))
+                                     (catalog/select {:warehouse/slug #{"factory-cn"}})
+                                     boolean)
+                 url            (generate-tracking-url carrier tracking-number)]
+             {:shipping-estimate (when (date? placed-at)
+                                   (-> placed-at
+                                       spice.date/to-datetime
+                                       (spice.date/add-delta {:days (->shipping-days-estimate drop-shipping? shipping-sku placed-at)})
+                                       long-date))
+              :url               url
+              :carrier           carrier
+              :tracking-number   tracking-number}))}))))
 
 (defn ^:export page
   [app-state]
-  (c/build template (query app-state)))
+  [(c/build email-verification/template (email-verification/query app-state))
+   (c/build template (query app-state))])
 
 (defmethod effects/perform-effects e/navigate-yourlooks-order-details
-  [_ _ args _ app-state]
-  #?(:cljs
-     (when-let [user-id (get-in app-state k/user-id)]
-       (api/get-order {:number     (:order-number args)
-                       :user-id    user-id
-                       :user-token (get-in app-state k/user-token)}
-                      {:handler #(messages/handle-message e/api-success-get-orders
-                                                          {:orders [%]})
-                       ;; Swallow the error rather than displaying it, so a logged-in user
-                       ;; doesn't see "no order found" when facade is displayed.
-                       ;; We will likely want to change this.
-                       :error-handler (constantly nil)}))))
+  ;; evt = email validation token
+  [_ event {:keys [order-number query-params] :as args} _ app-state]
+  (let [user-verified-at (get-in app-state k/user-verified-at)
+        evt              (:evt query-params)]
+    (cond
+      (-> app-state auth/signed-in :storefront.accessors.auth/at-all not)
+      (effects/redirect e/navigate-sign-in)
+
+      (and (not user-verified-at)
+           evt)
+      (messages/handle-message e/biz|email-verification|verified {:evt evt})
+
+      user-verified-at
+      #?(:cljs (if order-number
+                 (api/get-order {:number     order-number
+                                 :user-id    (get-in app-state k/user-id)
+                                 :user-token (get-in app-state k/user-token)}
+                                {:handler       #(messages/handle-message e/api-success-get-orders {:orders [%]})
+                                 :error-handler #(messages/handle-message e/flash-show-failure
+                                                                          {:message (str "Unable to retrieve order " order-number ". Please contact support.")})})
+                 (api/get-orders {:limit      1
+                                  :user-id    (get-in app-state k/user-id)
+                                  :user-token (get-in app-state k/user-token)}
+                                 #(messages/handle-message e/api-success-get-orders {:orders (:results %)})
+                                 #(messages/handle-message e/flash-show-failure
+                                                           {:message (str "Unable to retrieve order. Please contact support.")})))
+         :clj nil))))
 
 (defmethod transitions/transition-state e/api-success-get-orders
-  [_ _ {:keys [results]} app-state]
+  [_ _ {:keys [orders]} app-state]
   (let [old-orders (maps/index-by :number (get-in app-state k/order-history))
-        new-orders (maps/index-by :number results)]
+        new-orders (maps/index-by :number orders)]
     (assoc-in app-state k/order-history (->> (merge old-orders new-orders)
-                                          vals
-                                          (sort-by :placed-at >)))))
+                                             vals
+                                             (sort-by :placed-at >)))))
 
 (defmethod effects/perform-effects e/api-success-get-orders
   [_ _ args _ app-state]
   (let [most-recent-open-order (first (get-in app-state k/order-history))]
     (follow/publish-all app-state e/api-success-get-orders {:order-number (:number most-recent-open-order) })))
 
-(defmethod effects/perform-effects e/control-orderdetails-submit
+;; TODO: fix the menu button
+#_(defmethod effects/perform-effects e/control-orderdetails-submit
   [_ _ _ _ app-state]
   (let [user-id    (get-in app-state k/user-id)
         user-token (get-in app-state k/user-token)]

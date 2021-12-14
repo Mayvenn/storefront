@@ -388,6 +388,9 @@
 
 (defpath api-success-shared-stylist)
 
+(defpath api-success-email-verification-initiate)
+(defpath api-success-email-verification-verify)
+
 (defpath api-failure)
 (defpath api-failure-no-network-connectivity)
 (defpath api-failure-bad-server-response)
@@ -398,6 +401,8 @@
 (defpath api-failure-shared-stylist)
 (defpath api-failure-voucher-redemption)
 (defpath api-failure-shared-cart)
+(defpath api-failure-email-verification-initiate)
+(defpath api-failure-email-verification-verify)
 
 (defpath flash)
 (defpath flash-show)
@@ -801,3 +806,7 @@
 (defpath navigate-adventure-appointment-booking)
 
 (defpath user-identified)
+
+;; Email verification
+(defpath biz|email-verification|initiated)
+(defpath biz|email-verification|verified)

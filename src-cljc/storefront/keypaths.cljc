@@ -28,6 +28,7 @@
 (def user-token (conj user :user-token))
 (def user-store-slug (conj user :store-slug))
 (def user-store-id (conj user :store-id))
+(def user-verified-at (conj user :verified-at))
 (def user-stylist-experience (conj user :stylist-experience))
 (def user-stylist-service-menu (conj user :service-menu))
 (def user-stylist-offered-services (conj user :offered-services))
