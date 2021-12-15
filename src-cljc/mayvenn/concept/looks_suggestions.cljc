@@ -562,15 +562,14 @@
                                                       (select-keys [:legacy/variant-id :catalog/sku-id]))))))))}
          #?(:cljs (stringer/track-event "quiz_submitted")))))
 
-;; Selected
-(defmethod t/transition-state e/biz|looks-suggestions|selected
+(defmethod t/transition-state e/biz|looks-suggestions|confirmed
   [_ _ {:keys [id selected-look]} state]
   (assoc-in state
             (conj k/models-look-selected id)
             selected-look))
 
 (defmethod fx/perform-effects e/biz|looks-suggestions|selected
-  [_ _ {:keys [selected-look] success :on/success} _ state]
+  [_ _ {:keys [selected-look id] success :on/success} _ state]
   (let [{product-sku-ids :product/sku-ids
          service-sku-id  :service/sku-id}                   selected-look
         {servicing-stylist-id :services/stylist-id}         (api.orders/services state (get-in state k/order))
@@ -587,6 +586,9 @@
                                     :promotion-codes      (when (experiments/quiz-always-adds-holiday-promo? state) ["holiday"])}
                                    ;; TODO: more specific handler
                                    (fn [{:keys [order]}]
+                                     (messages/handle-message e/biz|looks-suggestions|confirmed
+                                                              {:id id
+                                                               :selected-look selected-look})
                                      (messages/handle-message
                                       e/api-success-update-order
                                       (merge

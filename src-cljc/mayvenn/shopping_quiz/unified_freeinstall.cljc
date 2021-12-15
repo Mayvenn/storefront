@@ -39,6 +39,7 @@
    [storefront.accessors.sites :as accessors.sites]
    [storefront.component :as c]
    [storefront.components.money-formatters :as mf]
+   [storefront.components.flash :as flash]
    [storefront.components.formatters :as formatters]
    [storefront.components.svg :as svg]
    [storefront.components.ui :as ui]
@@ -441,6 +442,7 @@
    [:div.bg-white
     (quiz-header (with :header data))]
    (c/build progress-bar/variation-1 (with :progress data))
+   (c/build flash/component (:flash data) nil)
    [:div.flex.flex-column.mbj2
     (titles/canela-huge {:primary "Our picks for you"})
     (c/elements card-look-2-suggestion-wrapper
@@ -464,11 +466,12 @@
             (with :escape-hatch data))])
 
 (defn suggestions<
-  [products-db skus-db images-db quiz-progression looks-suggestions undo-history]
+  [products-db skus-db images-db quiz-progression looks-suggestions undo-history flash]
   (merge
    (progress< quiz-progression)
    (header< undo-history (apply max quiz-progression))
-   {:escape-hatch.title/primary "Wanna explore more options?"
+   {:flash                      flash
+    :escape-hatch.title/primary "Wanna explore more options?"
     :escape-hatch.action/id     "quiz-result-alternative"
     :escape-hatch.action/target [e/navigate-category
                                  {:page/slug           "mayvenn-install"
@@ -748,7 +751,10 @@
               selected-look     (looks-suggestions/selected<- state shopping-quiz-id)
               products-db       (get-in state k/v2-products)
               skus-db           (get-in state k/v2-skus)
-              images-db         (get-in state k/v2-images)]
+              images-db         (get-in state k/v2-images)
+              flash             (when (flash/query state)
+                                  {:errors {:error-code "generic-error"
+                                            :error-message "Sorry, but we don't have this look in stock. Please try a different look."}})]
           (cond
             (utils/requesting? state request-keys/new-order-from-sku-ids)
             (c/build loading-template)
@@ -767,11 +773,11 @@
 
             (experiments/shopping-quiz-v2? state)
             (c/build suggestions-template-v2
-                     (suggestions< products-db skus-db images-db quiz-progression looks-suggestions undo-history))
+                     (suggestions< products-db skus-db images-db quiz-progression looks-suggestions undo-history flash))
 
             :else
             (c/build suggestions-template
-                     (suggestions< products-db skus-db images-db quiz-progression looks-suggestions undo-history))))
+                     (suggestions< products-db skus-db images-db quiz-progression looks-suggestions undo-history flash))))
       ;; STEP 1: Taking the quiz
       1 (let [{:keys [questions answers progression]} (questioning/<- state shopping-quiz-id)
               wait                                    (wait/<- state shopping-quiz-id)]

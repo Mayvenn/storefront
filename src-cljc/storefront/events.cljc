@@ -729,6 +729,7 @@
 (defpath biz|looks-suggestions|queried)
 (defpath biz|looks-suggestions|resulted)
 (defpath biz|looks-suggestions|selected)
+(defpath biz|looks-suggestions|confirmed)
 
 ;; generalized concept of progress
 (defpath biz|progression|reset)
