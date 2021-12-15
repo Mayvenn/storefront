@@ -4,6 +4,7 @@
                        [storefront.accessors.auth :as auth]
                        [storefront.browser.cookie-jar :as cookie-jar]])
             [storefront.components.ui :as ui]
+            [storefront.config :as config]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.effects :as effects]
@@ -24,7 +25,11 @@
      ;; TODO: should have spinner
      [:div.mb4 (ui/button-medium-primary (utils/fake-href events/biz|email-verification|initiated {}) "Send verification email")]
      ;; TODO: finish or remove
-     [:div.center.mb10 "Having Trouble? Deal with it!"]]))
+     [:p.my8.center "Having Trouble? Contact us at "
+      (ui/link :link/email :a {} "help@mayvenn.com")
+      " or "
+      (ui/link :link/phone :a.inherit-color {} config/support-phone-number)
+      "."]]))
 
 (defn query [app-state]
   (let [user (get-in app-state keypaths/user)]
