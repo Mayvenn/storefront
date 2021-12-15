@@ -1,7 +1,8 @@
 (ns email-verification.core
   (:require #?@(:cljs [[storefront.api :as api]
                        [storefront.history :as history]
-                       [storefront.accessors.auth :as auth]])
+                       [storefront.accessors.auth :as auth]
+                       [storefront.browser.cookie-jar :as cookie-jar]])
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
@@ -61,3 +62,8 @@
   (-> app-state
       (assoc-in keypaths/flash-now-success-message "Email address verified!")
       (assoc-in keypaths/user-verified-at (:verified-at user))))
+
+(defmethod effects/perform-effects events/api-success-email-verification-verify
+  [_ _ user _ app-state]
+  #?(:cljs (cookie-jar/save-user (get-in app-state keypaths/cookie)
+                                 (get-in app-state keypaths/user))))

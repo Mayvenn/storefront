@@ -253,7 +253,8 @@
                 :is-new-user
                 :must-set-password
                 :store-id
-                :stylist-experience]))
+                :stylist-experience
+                :verified-at]))
 
 (defn select-auth-keys [args]
   (-> args

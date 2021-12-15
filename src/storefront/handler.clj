@@ -478,7 +478,8 @@
            (assoc-in-req-state keypaths/user-store-slug (cookies/get req "store-slug"))
            (assoc-in-req-state keypaths/user-store-id (str->int (cookies/get req "store-id")))
            (assoc-in-req-state keypaths/user-stylist-experience (cookies/get req "stylist-experience"))
-           (assoc-in-req-state keypaths/user-email (cookies/get-and-attempt-parsing-poorly-encoded req "email"))))))
+           (assoc-in-req-state keypaths/user-email (cookies/get-and-attempt-parsing-poorly-encoded req "email"))
+           (assoc-in-req-state keypaths/user-verified-at (cookies/get req "verified-at"))))))
 
 (defn wrap-fetch-promotions
   [h storeback-config]
