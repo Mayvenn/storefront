@@ -287,9 +287,10 @@
 
 (defmethod transition-state events/control-menu-expand
   [_ event {keypath :keypath} app-state]
-  (reduce (fn [state menu] (assoc-in state menu (= menu keypath)))
-          app-state
-          keypaths/menus))
+  (-> (reduce (fn [state menu] (assoc-in state menu (= menu keypath)))
+              app-state
+              keypaths/menus)
+      (assoc-in keypaths/slideout-nav-selected-tab :menu)))
 
 (defmethod transition-state events/control-menu-collapse-all
   [_ _ {:keys [menus]} app-state]
