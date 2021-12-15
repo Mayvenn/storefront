@@ -752,7 +752,7 @@
               products-db       (get-in state k/v2-products)
               skus-db           (get-in state k/v2-skus)
               images-db         (get-in state k/v2-images)
-              flash             (when (flash/query state)
+              flash             (when (seq (get-in state k/errors))
                                   {:errors {:error-code "generic-error"
                                             :error-message "Sorry, but we don't have this look in stock. Please try a different look."}})]
           (cond
