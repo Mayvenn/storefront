@@ -140,9 +140,9 @@
         {:as   order
          :keys [fulfillments
                 placed-at
-                shipments]} (spice.core/spy (->> (get-in app-state k/order-history)
-                                                 (filter (fn [o] (= order-number (:number o))))
-                                                 first))]
+                shipments]} (->> (get-in app-state k/order-history)
+                                 (filter (fn [o] (= order-number (:number o))))
+                                 first)]
     (cond-> {}
       (not user-verified?)
       (merge {:your-looks-title/id "verify-email-title"
