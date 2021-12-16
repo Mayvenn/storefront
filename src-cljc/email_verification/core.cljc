@@ -17,9 +17,7 @@
   [{:email-verification/keys [id email-address]
     :as data} _ _]
   (when id
-    [:div.col-10.mx-auto {:key id}
-     ;; TODO: this title obviously won't apply in other use-cases
-     [:div.title-2.canela.center.mt10.mb6 "Your Recent Order"]
+    [:div {:key id}
      [:div.center.mb4.content-3 "To continue, please verify your email address"]
      [:div.center.bold.mb6 email-address]
      ;; TODO: should have spinner
@@ -56,7 +54,9 @@
 
 (defmethod transitions/transition-state events/api-success-email-verification-initiate
   [_ _ _ app-state]
-  (assoc-in app-state keypaths/flash-now-success-message "Email sent. Please check your inbox and follow the link."))
+  (-> app-state
+      (assoc-in keypaths/flash-now-success-message "Email sent. Please check your inbox and follow the link.")
+      (assoc-in keypaths/flash-now-failure-message nil)))
 
 (defmethod transitions/transition-state events/api-failure-email-verification-verify
   [_ _ _ app-state]
@@ -66,6 +66,7 @@
   [_ _ {:keys [user] :as args} app-state]
   (-> app-state
       (assoc-in keypaths/flash-now-success-message "Email address verified!")
+      (assoc-in keypaths/flash-now-failure-message nil)
       (assoc-in keypaths/user-verified-at (:verified-at user))))
 
 (defmethod effects/perform-effects events/api-success-email-verification-verify

@@ -27,37 +27,56 @@
    [:div.title-2.shout.proxima title]
    [:div.content-1.proxima content]])
 
-(c/defcomponent template
+(defn your-looks-title-template
+  [{:your-looks-title/keys [id copy]}]
+  (when id
+    [:div.title-2.canela.center.mt10.mb6 {:key id} copy]))
+
+(defn order-details-template
   [{:order-details/keys [id
                          order-number
                          placed-at
-                         fulfillments]
-    :as data} _ _]
+                         fulfillments]}]
   (when id
-    [:div.py6.px8.max-960.mx-auto
-     {:key id}
-     [:div.title-1.canela "My Next Look"]
-     (titled-content "Order Number" order-number)
-     (when placed-at
-       (titled-content "Placed On" placed-at))
-     (titled-content "Estimated Delivery"
-                     (if (seq fulfillments)
-                       (for [{:keys [url carrier tracking-number shipping-estimate]} fulfillments]
-                         [:div [:div shipping-estimate]
-                          (if url
-                            [:div
-                             carrier
-                             " Tracking: "
-                             [:a
-                              (utils/fake-href e/external-redirect-url {:url url})
-                              tracking-number]]
-                            "Tracking: Waiting for Shipment")])
-                       "Tracking: Waiting for Shipment"))
-     [:p.mt8 "If you need to edit or cancel your order, please contact our customer service at "
-      (ui/link :link/email :a {} "help@mayvenn.com")
-      " or "
-      (ui/link :link/phone :a.inherit-color {} config/support-phone-number)
-      "."]]))
+       [:div.py6.px8.max-960.mx-auto
+        {:key id}
+        [:div.title-1.canela "My Next Look"]
+        (titled-content "Order Number" order-number)
+        (when placed-at
+          (titled-content "Placed On" placed-at))
+        (titled-content "Estimated Delivery"
+                        (if (seq fulfillments)
+                          (for [{:keys [url carrier tracking-number shipping-estimate]} fulfillments]
+                            [:div [:div shipping-estimate]
+                             (if url
+                               [:div
+                                carrier
+                                " Tracking: "
+                                [:a
+                                 (utils/fake-href e/external-redirect-url {:url url})
+                                 tracking-number]]
+                               "Tracking: Waiting for Shipment")])
+                          "Tracking: Waiting for Shipment"))
+        [:p.mt8 "If you need to edit or cancel your order, please contact our customer service at "
+         (ui/link :link/email :a {} "help@mayvenn.com")
+         " or "
+         (ui/link :link/phone :a.inherit-color {} config/support-phone-number)
+         "."]]))
+
+(defn no-orders-details-template
+  [{:no-orders-details/keys [id]}]
+  (when id
+    [[:div.center.mb4.content-3 "You have no recent orders"]
+     (ui/button-medium-primary (utils/route-to e/navigate-category {:page/slug "mayvenn-install" :catalog/category-id "23"}) "Browse Products")]))
+
+(c/defcomponent template
+  [data _ _]
+  [:div.py6.px8.max-960.mx-auto
+   {:key "your-look"}
+   (your-looks-title-template data)
+   (order-details-template data)
+   (no-orders-details-template data)
+   (c/build email-verification/template data)])
 
 (defn generate-tracking-url [carrier tracking-number]
   (when tracking-number
@@ -115,47 +134,59 @@
      max-delivery)))
 
 (defn query [app-state]
-  (when (get-in app-state k/user-verified-at) ; Only verified users allowed.
-        (let [order-number        (or (:order-number (last (get-in app-state k/navigation-message)))
-                                      (-> app-state (get-in k/order-history) first :number))
-          {:as   order
-           :keys [fulfillments
-                  placed-at
-                  shipments]} (spice.core/spy (->> (get-in app-state k/order-history)
-                                                    (filter (fn [o] (= order-number (:number o))))
-                                                    first))]
-      (when order
-        #:order-details
-        {:id           "order-details"
-         :order-number order-number
-         :placed-at    (long-date placed-at)
-         :fulfillments
-         (for [{:keys [carrier
-                       tracking-number
-                       shipment-number]
-                :as   fulfillment} fulfillments
-               :let                [shipment (->> shipments
-                                                  (filter (fn [s] (= shipment-number (:number s))))
-                                                  first)
-                                    shipping-sku (->> shipment :line-items first :sku)]
-               :when               (and shipping-sku (= "physical" (:type fulfillment)))]
-           (let [drop-shipping? (->> (map :variant-attrs (:line-items shipment))
-                                     (catalog/select {:warehouse/slug #{"factory-cn"}})
-                                     boolean)
-                 url            (generate-tracking-url carrier tracking-number)]
-             {:shipping-estimate (when (date? placed-at)
-                                   (-> placed-at
-                                       spice.date/to-datetime
-                                       (spice.date/add-delta {:days (->shipping-days-estimate drop-shipping? shipping-sku placed-at)})
-                                       long-date))
-              :url               url
-              :carrier           carrier
-              :tracking-number   tracking-number}))}))))
+  (let [user-verified?      (boolean (get-in app-state k/user-verified-at))
+        order-number        (or (:order-number (last (get-in app-state k/navigation-message)))
+                                (-> app-state (get-in k/order-history) first :number))
+        {:as   order
+         :keys [fulfillments
+                placed-at
+                shipments]} (spice.core/spy (->> (get-in app-state k/order-history)
+                                                 (filter (fn [o] (= order-number (:number o))))
+                                                 first))]
+    (cond-> {}
+      (not user-verified?)
+      (merge {:your-looks-title/id "verify-email-title"
+              :your-looks-title/copy "Verify Your Email"})
+
+      (and user-verified?
+           (not order))
+      (merge {:no-orders-details/id  "no-orders-details"
+              :your-looks-title/id   "no-order-title"
+              :your-looks-title/copy "Your Recent Order"})
+
+      (and user-verified?
+           order)
+      (merge #:order-details
+             {:id           "order-details"
+              :order-number order-number
+              :placed-at    (long-date placed-at)
+              :fulfillments
+              (for [{:keys [carrier
+                            tracking-number
+                            shipment-number]
+                     :as   fulfillment} fulfillments
+                    :let                [shipment (->> shipments
+                                                       (filter (fn [s] (= shipment-number (:number s))))
+                                                       first)
+                                         shipping-sku (->> shipment :line-items first :sku)]
+                    :when               (and shipping-sku (= "physical" (:type fulfillment)))]
+                (let [drop-shipping? (->> (map :variant-attrs (:line-items shipment))
+                                          (catalog/select {:warehouse/slug #{"factory-cn"}})
+                                          boolean)
+                      url            (generate-tracking-url carrier tracking-number)]
+                  {:shipping-estimate (when (date? placed-at)
+                                        (-> placed-at
+                                            spice.date/to-datetime
+                                            (spice.date/add-delta {:days (->shipping-days-estimate drop-shipping? shipping-sku placed-at)})
+                                            long-date))
+                   :url               url
+                   :carrier           carrier
+                   :tracking-number   tracking-number}))}))))
 
 (defn ^:export page
   [app-state]
-  [(c/build email-verification/template (email-verification/query app-state))
-   (c/build template (query app-state))])
+  (c/build template (merge (query app-state)
+                           (email-verification/query app-state))))
 
 (defmethod effects/perform-effects e/navigate-yourlooks-order-details
   ;; evt = email validation token
