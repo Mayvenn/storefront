@@ -875,6 +875,7 @@
    request-keys/get-orders
    {:params        {:user-id    user-id
                     :user-token user-token
+                    :placed?    true
                     :limit      limit}
     :handler       handler
     :error-handler error-handler}))
