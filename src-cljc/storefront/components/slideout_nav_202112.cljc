@@ -61,7 +61,7 @@
                        :picture-classes "flex"}
                       "81bd063f-56ba-4e9c-9aef-19a1207fd422")]))))
 
-(defn ^:private account-info-marquee [signed-in {:keys [email store-credit]}]
+(defn ^:private account-info-marquee [signed-in {:keys [email store-credit] :as user}]
   (component/html
    (when (-> signed-in ::auth/at-all)
      [:div.my3.flex.flex-wrap
@@ -71,13 +71,16 @@
          [:div.content-2.proxima (as-money store-credit)]])
       [:div
        [:div.title-3.proxima.shout "Signed in with"]
-       [:a.inherit-color.content-2.proxima
-        (merge
-         {:data-test "signed-in-as"}
-         (utils/route-to (if (-> signed-in ::auth/as (= :stylist))
-                           events/navigate-stylist-account-profile
-                           events/navigate-account-manage)))
-        email]]])))
+       [:div.flex
+        (when (auth/stylist? signed-in)
+          [:div.items-center (stylist-portrait user)])
+        [:a.inherit-color.content-2.proxima.items-center
+         (merge
+          {:data-test "signed-in-as"}
+          (utils/route-to (if (-> signed-in ::auth/as (= :stylist))
+                            events/navigate-stylist-account-profile
+                            events/navigate-account-manage)))
+         email]]]])))
 
 (defn ^:private caretize-content
   [content]
@@ -147,18 +150,6 @@
           [:div.border-bottom.border-cool-gray.col-8.m-auto])
         (content-row row)])]]))
 
-(defn ^:private gallery-link
-  [stylist-experience past-appointments?]
-  (component/html
-   [:div
-    (ui/button-small-underline-primary
-     (merge
-      {:data-test "edit-gallery"}
-      (if (and past-appointments? (= stylist-experience "aladdin"))
-        (utils/route-to events/navigate-gallery-appointments)
-        (utils/route-to events/navigate-gallery-edit)))
-     "Edit Gallery")]))
-
 (def ^:private tabs
   [{:id                 :menu
     :title              "Menu"
@@ -192,8 +183,6 @@
      :account
      [:div.bg-white.p4
       (account-info-marquee signed-in user)
-      (when (auth/stylist? signed-in)
-        [:div.flex.items-center (stylist-portrait user) (gallery-link stylist-experience past-appointments?)])
       (account-area data)])])
 
 (defcomponent component
@@ -208,11 +197,16 @@
      (component/build root-menu data))])
 
 (defn query [data]
-  (let [selected-tab (get-in data keypaths/slideout-nav-selected-tab)
-        auth         (auth/signed-in data)
-        user-type    (-> auth ::auth/as)
-        signed-in?   (-> auth ::auth/at-all)
-        vouchers?    (experiments/dashboard-with-vouchers? data)]
+  (let [selected-tab       (get-in data keypaths/slideout-nav-selected-tab)
+        auth               (auth/signed-in data)
+        user-type          (-> auth ::auth/as)
+        signed-in?         (-> auth ::auth/at-all)
+        vouchers?          (experiments/dashboard-with-vouchers? data)
+        past-appointments? (experiments/past-appointments? data)
+        stylist-experience          (get-in data keypaths/user-stylist-experience)
+        gallery-edit-target (if (and past-appointments? (= stylist-experience "aladdin"))
+                              [events/navigate-gallery-appointments]
+                              [events/navigate-gallery-edit])]
     (merge
      (-> (header/basic-query data)
          (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))
@@ -235,19 +229,24 @@
                                         [{:slide-out-nav-menu-item/target  [events/navigate-account-manage]
                                           :slide-out-nav-menu-item/id      "account-settings"
                                           :slide-out-nav-menu-item/primary "Account"}
-                                         {:slide-out-nav-menu-item/target  [events/navigate-yourlooks-order-details]
-                                          :slide-out-nav-menu-item/id      "my-next-look"
-                                          :slide-out-nav-menu-item/primary "My Next Look"}])
+                                         {:slide-out-nav-menu-item/target      [events/navigate-yourlooks-order-details]
+                                          :slide-out-nav-menu-item/new-primary "NEW"
+                                          :slide-out-nav-menu-item/id          "my-next-look"
+                                          :slide-out-nav-menu-item/primary     "My Next Look"}])
                                       (when (= user-type :stylist)
                                         (when vouchers? [{:slide-out-nav-menu-item/target  [events/navigate-voucher-redeem]
                                                           :slide-out-nav-menu-item/id      "redeem-voucher"
                                                           :slide-out-nav-menu-item/primary "Redeem Client Voucher"}])
-                                        [{:slide-out-nav-menu-item/target  [events/navigate-yourlooks-order-details]
-                                          :slide-out-nav-menu-item/id      "my-next-look"
-                                          :slide-out-nav-menu-item/primary "My Next Look"}
+                                        [{:slide-out-nav-menu-item/target      [events/navigate-yourlooks-order-details]
+                                          :slide-out-nav-menu-item/new-primary "NEW"
+                                          :slide-out-nav-menu-item/id          "my-next-look"
+                                          :slide-out-nav-menu-item/primary     "My Next Look"}
                                          {:slide-out-nav-menu-item/target  [events/navigate-stylist-account-profile]
                                           :slide-out-nav-menu-item/id      "account-settings"
                                           :slide-out-nav-menu-item/primary "Settings"}
+                                         {:slide-out-nav-menu-item/target  gallery-edit-target
+                                          :slide-out-nav-menu-item/id      "edit-gallery"
+                                          :slide-out-nav-menu-item/primary "Edit gallery"}
                                          {:slide-out-nav-menu-item/target  [events/navigate-v2-stylist-dashboard-orders]
                                           :slide-out-nav-menu-item/id      "dashboard"
                                           :slide-out-nav-menu-item/primary "Dashboard"}])
