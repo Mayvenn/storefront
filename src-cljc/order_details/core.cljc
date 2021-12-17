@@ -2,7 +2,8 @@
   (:require #?@(:cljs [[storefront.api :as api]
                        [storefront.history :as history]])
             [api.catalog :as catalog]
-            [catalog.images :as images]
+            [catalog.images :as catalog-images]
+            [checkout.ui.cart-item-v202004 :as cart-item-v202004]
             [clojure.string :as string]
             [spice.core :as spice]
             [spice.maps :as maps]
@@ -32,6 +33,11 @@
    [:div.title-2.shout.proxima title]
    [:div.content-1.proxima content]])
 
+(defn titled-subcontent [title content]
+  [:div.my6
+   [:div.title-3.shout.proxima title]
+   [:div.content-2.proxima content]])
+
 (defn address-copy [{:keys [address1 city state zipcode address2]}]
   (str address1 ", " (when address2 address2 ",") city ", " state ", " zipcode))
 
@@ -43,13 +49,11 @@
 (defn order-details-template
   [{:order-details/keys [id
                          fulfillments
-                         images-catalog
                          order-number
                          placed-at
-                         shipments
                          shipping-address
-                         skus
-                         total]}]
+                         total
+                         pending-cart-items]}]
   (when id
        [:div.py6.px8.max-960.mx-auto
         {:key id}
@@ -57,30 +61,50 @@
         (titled-content "Order Number" order-number)
         (when placed-at
           (titled-content "Placed On" placed-at))
-        (for [{:keys [line-items] :as shipment} shipments]
-          [:div (titled-content "Shipment" nil)
-           (for [{:keys [variant-name quantity sku] :as item} (rest line-items)]
-             [:div.flex.my2
-              (ui/ucare-img {:width "48" :height "48" :class "block border border-cool-gray mr2"}
-                            (->> (get skus sku)
-                                 (images/image images-catalog "cart") :ucare/id))
-              [:div quantity " " variant-name]])])
-        (titled-content "Estimated Delivery"
-                        (if (seq fulfillments)
-                          (for [{:keys [url carrier tracking-number shipping-estimate]} fulfillments]
-                            [:div [:div shipping-estimate]
-                             (if url
-                               [:div
-                                carrier
-                                " Tracking: "
-                                [:a
-                                 (utils/fake-href e/external-redirect-url {:url url})
-                                 tracking-number]]
-                               "Tracking: Waiting for Shipment")])
-                          "Tracking: Waiting for Shipment"))
         (titled-content "Shipping Address" (address-copy shipping-address))
+        (if (seq fulfillments)
+          (for [{:keys [url carrier tracking-number shipping-estimate cart-items]} fulfillments]
+            [:div
+             [:div.title-2.shout.proxima "Shipment"]
+             (for [[index cart-item] (map-indexed vector cart-items)
+                   :let              [react-key (:react/key cart-item)]
+                   :when             react-key]
+               [:div
+                {:key (str index "-cart-item-" react-key)}
+                (when-not (zero? index)
+                  [:div.flex.bg-white
+                   [:div.ml2 {:style {:width "75px"}}]
+                   [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
+                (c/build cart-item-v202004/organism {:cart-item cart-item}
+                         (c/component-id (str index "-cart-item-" react-key)))])
+             (titled-subcontent "Shipping Estimate" shipping-estimate)
+             (if url
+               [:div
+                carrier
+                " Tracking: "
+                [:a
+                 (utils/fake-href e/external-redirect-url {:url url})
+                 tracking-number]]
+               (titled-subcontent "Tracking:" "Waiting for Shipment"))])
+          (titled-subcontent "Tracking:" "Waiting for Shipment"))
+
+        (when pending-cart-items
+          [:div
+           [:div.title-2.shout.proxima "Shipment"]
+           (for [[index cart-item] (map-indexed vector pending-cart-items)
+                 :let              [react-key (:react/key cart-item)]
+                 :when             react-key]
+             [:div
+              {:key (str index "-cart-item-" react-key)}
+              (when-not (zero? index)
+                [:div.flex.bg-white
+                 [:div.ml2 {:style {:width "75px"}}]
+                 [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
+              (c/build cart-item-v202004/organism {:cart-item cart-item}
+                       (c/component-id (str index "-cart-item-" react-key)))])
+           (titled-subcontent "Tracking:" "Waiting for Shipment")])
         (titled-content "Payment" nil)
-        (titled-content "Total" (mf/as-money total))
+        (titled-subcontent "Total" (mf/as-money total))
         [:p.mt8 "If you need to edit or cancel your order, please contact our customer service at "
          (ui/link :link/email :a {} "help@mayvenn.com")
          " or "
@@ -159,10 +183,61 @@
      saturday-delivery?
      max-delivery)))
 
+(defn fulfillment-items-query
+  [app-state line-item-ids shipments]
+  (let [images (get-in app-state keypaths/v2-images)
+        skus   (get-in app-state keypaths/v2-skus)]
+    (for [line-item-id line-item-ids
+          :let         [all-line-items (mapcat :line-items shipments)
+                        line-item (first (filter #(= line-item-id (:line-item-id %))
+                                                 all-line-items))]]
+      (when-not (line-items/shipping-method? line-item)
+        {:react/key                                (str line-item-id "-" (:sku line-item))
+         :cart-item-title/id                       (str line-item-id "-" (:sku line-item))
+         :cart-item-title/primary                  (or (:product-title line-item)
+                                                       (:product-name line-item))
+         :cart-item-copy/lines                     [{:id    (str "quantity-" line-item-id "-" (:sku line-item))
+                                                     :value (str "qty. " (:quantity line-item))}]
+         :cart-item-title/secondary                (ui/sku-card-secondary-text line-item)
+         :cart-item-floating-box/id                (str "line-item-price-ea-with-label-" line-item-id)
+         :cart-item-floating-box/contents          [{:text  (mf/as-money (:unit-price line-item))
+                                                     :attrs {:data-test (str "line-item-price-ea-" (:sku line-item))}}
+                                                    {:text " each" :attrs {:class "proxima content-4"}}]
+         :cart-item-square-thumbnail/id            line-item-id
+         :cart-item-square-thumbnail/sku-id        line-item-id
+         :cart-item-square-thumbnail/sticker-label (when-let [length-circle-value (-> (:sku line-item) :hair/length first)]
+                                                     (str length-circle-value "”"))
+         :cart-item-square-thumbnail/ucare-id      (->> (get skus (:sku line-item)) (catalog-images/image images "cart") :ucare/id)}))))
+
+(defn pending-fulfillment-query
+  [app-state shipments]
+  (let [images                    (get-in app-state keypaths/v2-images)
+        skus                      (get-in app-state keypaths/v2-skus)
+        all-line-items            (mapcat :line-items shipments)
+        pending-line-items        (remove #(some? (:line-item-id %)) all-line-items)]
+    (for [{:keys [sku] :as line-item} pending-line-items]
+      (when-not (line-items/shipping-method? line-item)
+        {:react/key                                (str "pending-" sku)
+         :cart-item-title/id                       (str "pending-" sku)
+         :cart-item-title/primary                  (or (:product-title line-item)
+                                                       (:product-name line-item))
+         :cart-item-copy/lines                     [{:id    (str "quantity-" sku)
+                                                     :value (str "qty. " (:quantity line-item))}]
+         :cart-item-title/secondary                (ui/sku-card-secondary-text line-item)
+         :cart-item-floating-box/id                (str "line-item-price-ea-with-label-" sku)
+         :cart-item-floating-box/contents          [{:text  (mf/as-money (:unit-price line-item))
+                                                     :attrs {:data-test (str "line-item-price-ea-" sku)}}
+                                                    {:text " each" :attrs {:class "proxima content-4"}}]
+         :cart-item-square-thumbnail/id            sku
+         :cart-item-square-thumbnail/sku-id        sku
+         :cart-item-square-thumbnail/sticker-label (when-let [length-circle-value (-> (:sku line-item) :hair/length first)]
+                                                     (str length-circle-value "”"))
+         :cart-item-square-thumbnail/ucare-id      (->> (get skus sku) (catalog-images/image images "cart") :ucare/id)}))))
+
 (defn query [app-state]
   (let [user-verified?       (boolean (get-in app-state k/user-verified-at))
         order-number         (or (:order-number (last (get-in app-state k/navigation-message)))
-                            (-> app-state (get-in k/order-history) first :number))
+                                 (-> app-state (get-in k/order-history) first :number))
         images-catalog       (get-in app-state keypaths/v2-images)
         skus                 (get-in app-state keypaths/v2-skus)
         {:as   order
@@ -171,8 +246,8 @@
                 shipments
                 shipping-address
                 total]}      (->> (get-in app-state k/order-history)
-                             (filter (fn [o] (= order-number (:number o))))
-                             first)
+                                  (filter (fn [o] (= order-number (:number o))))
+                                  first)
         verif-status-message (-> app-state (get-in keypaths/navigation-message) second :query-params :stsm)]
     (cond-> {}
       (not user-verified?)
@@ -188,36 +263,35 @@
       (and user-verified?
            order)
       (merge #:order-details
-             {:id               "order-details"
-              :order-number     order-number
-              :placed-at        (long-date placed-at)
-              :shipments        shipments
-              :shipping-address shipping-address
-              :total            total
-              :skus             skus
-              :images-catalog   images-catalog
-              :fulfillments
-              (for [{:keys [carrier
-                            tracking-number
-                            shipment-number]
-                     :as   fulfillment} fulfillments
-                    :let                [shipment (->> shipments
-                                                       (filter (fn [s] (= shipment-number (:number s))))
-                                                       first)
-                                         shipping-sku (->> shipment :line-items first :sku)]
-                    :when               (and shipping-sku (= "physical" (:type fulfillment)))]
-                (let [drop-shipping? (->> (map :variant-attrs (:line-items shipment))
-                                          (catalog/select {:warehouse/slug #{"factory-cn"}})
-                                          boolean)
-                      url            (generate-tracking-url carrier tracking-number)]
-                  {:shipping-estimate (when (date? placed-at)
-                                        (-> placed-at
-                                            spice.date/to-datetime
-                                            (spice.date/add-delta {:days (->shipping-days-estimate drop-shipping? shipping-sku placed-at)})
-                                            long-date))
-                   :url               url
-                   :carrier           carrier
-                   :tracking-number   tracking-number}))}
+             {:id                 "order-details"
+              :order-number       order-number
+              :placed-at          (long-date placed-at)
+              :shipments          shipments
+              :shipping-address   shipping-address
+              :total              total
+              :skus               skus
+              :images-catalog     images-catalog
+              :pending-cart-items (pending-fulfillment-query app-state shipments)
+              :fulfillments       (for [{:keys [carrier tracking-number
+                                                shipment-number
+                                                line-item-ids]} fulfillments
+                                        :let                    [shipment (->> shipments
+                                                                               (filter (fn [s] (= shipment-number (:number s))))
+                                                                               first)
+                                                                 shipping-sku (->> shipment :line-items first :sku)]]
+                                    (let [drop-shipping? (->> (map :variant-attrs (:line-items shipment))
+                                                              (catalog/select {:warehouse/slug #{"factory-cn"}})
+                                                              boolean)
+                                          url            (generate-tracking-url carrier tracking-number)]
+                                      {:shipping-estimate (when (date? placed-at)
+                                                             (-> placed-at
+                                                                 spice.date/to-datetime
+                                                                 (spice.date/add-delta {:days (->shipping-days-estimate drop-shipping? shipping-sku placed-at)})
+                                                                 long-date))
+                                       :url               url
+                                       :carrier           carrier
+                                       :tracking-number   tracking-number
+                                       :cart-items        (fulfillment-items-query app-state line-item-ids shipments)}))}
              {:verif-status-message/copy (when (= "verif-success" verif-status-message) "Your email was successfully verified.")}))))
 
 (defn ^:export page
