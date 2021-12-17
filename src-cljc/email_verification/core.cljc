@@ -50,9 +50,9 @@
                (not (:verified-at user)))
       {:email-verification/id                           "email-verification"
        :email-verification/email-address                (:email user)
-       :email-verification--status-message/fail-copy    (when (string/ends-with? status-message "fail")
+       :email-verification--status-message/fail-copy    (when (and status-message (string/ends-with? status-message "fail"))
                                                           (get status-messages status-message))
-       :email-verification--status-message/success-copy (when (string/ends-with? status-message "success")
+       :email-verification--status-message/success-copy (when (and status-message (string/ends-with? status-message "success"))
                                                           (get status-messages status-message))
        :email-verification--cta/spinning?               (utils/requesting? app-state request-keys/email-verification-initiate)
        :email-verification--cta/disabled?               (= "init-success" status-message)})))
