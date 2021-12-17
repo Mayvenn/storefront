@@ -21,7 +21,8 @@
             [email-verification.core :as email-verification]
             [storefront.keypaths :as keypaths]
             [storefront.accessors.auth :as auth]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            [storefront.components.flash :as flash]))
 
 (defn titled-content [title content]
   [:div.my6
@@ -74,6 +75,8 @@
   [data _ _]
   [:div.py6.px8.max-960.mx-auto
    {:key "your-look"}
+   (let [copy (:verif-status-message/copy data)]
+     (when copy (flash/success-box {} copy)))
    (your-looks-title-template data)
    (order-details-template data)
    (no-orders-details-template data)
@@ -135,18 +138,19 @@
      max-delivery)))
 
 (defn query [app-state]
-  (let [user-verified?      (boolean (get-in app-state k/user-verified-at))
-        order-number        (or (:order-number (last (get-in app-state k/navigation-message)))
-                                (-> app-state (get-in k/order-history) first :number))
+  (let [user-verified?       (boolean (get-in app-state k/user-verified-at))
+        order-number         (or (:order-number (last (get-in app-state k/navigation-message)))
+                                 (-> app-state (get-in k/order-history) first :number))
         {:as   order
          :keys [fulfillments
                 placed-at
-                shipments]} (->> (get-in app-state k/order-history)
-                                 (filter (fn [o] (= order-number (:number o))))
-                                 first)]
+                shipments]}  (->> (get-in app-state k/order-history)
+                                  (filter (fn [o] (= order-number (:number o))))
+                                  first)
+        verif-status-message (-> app-state (get-in keypaths/navigation-message) second :query-params :stsm)]
     (cond-> {}
       (not user-verified?)
-      (merge {:your-looks-title/id "verify-email-title"
+      (merge {:your-looks-title/id   "verify-email-title"
               :your-looks-title/copy "Verify Your Email"})
 
       (and user-verified?
@@ -182,7 +186,8 @@
                                             long-date))
                    :url               url
                    :carrier           carrier
-                   :tracking-number   tracking-number}))}))))
+                   :tracking-number   tracking-number}))}
+             {:verif-status-message/copy (when (= "verif-success" verif-status-message) "Your email was successfully verified.")}))))
 
 (defn ^:export page
   [app-state]

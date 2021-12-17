@@ -36,6 +36,7 @@
       (ui/link :link/phone :a.inherit-color {} config/support-phone-number)
       "."]]))
 
+;; NOTE: verification success should never land you on this page, so it doesn't need a message here
 (def status-messages
   {"init-fail"     "An error has occurred, please try again."
    "init-success"  "Great! Please check your email to verify your account."
