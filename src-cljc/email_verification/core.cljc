@@ -11,17 +11,19 @@
             [storefront.utils.query :as query]
             [storefront.keypaths :as keypaths]
             [storefront.transitions :as transitions]
-            [storefront.component :as component]))
+            [storefront.component :as component]
+            [storefront.request-keys :as request-keys]))
 
 (component/defcomponent template
   [{:email-verification/keys [id email-address]
+    :email-verification--cta/keys [spinning?]
     :as data} _ _]
   (when id
     [:div {:key id}
      [:div.center.mb4.content-3 "To continue, please verify your email address"]
      [:div.center.bold.mb6 email-address]
-     ;; TODO: should have spinner
-     [:div.mb4 (ui/button-medium-primary (utils/fake-href events/biz|email-verification|initiated {}) "Send verification email")]
+     [:div.mb4 (ui/button-medium-primary (merge (utils/fake-href events/biz|email-verification|initiated {})
+                                                {:spinning? spinning?}) "Send verification email")]
      ;; TODO: finish or remove
      [:p.my8.center "Having Trouble? Contact us at "
       (ui/link :link/email :a {} "help@mayvenn.com")
@@ -33,8 +35,10 @@
   (let [user (get-in app-state keypaths/user)]
     (when (and (:id user)
                (not (:verified-at user)))
-      #:email-verification{:id            "email-verification"
-                           :email-address (:email user)})))
+      (merge {:email-verification/id            "email-verification"
+              :email-verification/email-address (:email user)}
+             (when (utils/requesting? app-state request-keys/email-verification-initiate)
+               {:email-verification--cta/spinning? true})))))
 
 ;; TODO: make sure to debounce both the initiated and verified requests
 (defmethod effects/perform-effects events/biz|email-verification|initiated
