@@ -20,7 +20,8 @@
             [mayvenn.concept.follow :as follow]
             [email-verification.core :as email-verification]
             [storefront.keypaths :as keypaths]
-            [storefront.accessors.auth :as auth]))
+            [storefront.accessors.auth :as auth]
+            [storefront.request-keys :as request-keys]))
 
 (defn titled-content [title content]
   [:div.my6
@@ -198,7 +199,8 @@
       (effects/redirect e/navigate-sign-in)
 
       (and (not user-verified-at)
-           evt)
+           evt
+           (not (utils/requesting? app-state request-keys/email-verification-verify)))
       (messages/handle-message e/biz|email-verification|verified {:evt evt})
 
       user-verified-at
