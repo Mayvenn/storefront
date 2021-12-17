@@ -231,16 +231,16 @@
                                           :slide-out-nav-menu-item/primary "Account"}
                                          {:slide-out-nav-menu-item/target      [events/navigate-yourlooks-order-details]
                                           :slide-out-nav-menu-item/new-primary "NEW"
-                                          :slide-out-nav-menu-item/id          "my-next-look"
-                                          :slide-out-nav-menu-item/primary     "My Next Look"}])
+                                          :slide-out-nav-menu-item/id          "my-recent-order"
+                                          :slide-out-nav-menu-item/primary     "My Recent Order"}])
                                       (when (= user-type :stylist)
                                         (when vouchers? [{:slide-out-nav-menu-item/target  [events/navigate-voucher-redeem]
                                                           :slide-out-nav-menu-item/id      "redeem-voucher"
                                                           :slide-out-nav-menu-item/primary "Redeem Client Voucher"}])
                                         [{:slide-out-nav-menu-item/target      [events/navigate-yourlooks-order-details]
                                           :slide-out-nav-menu-item/new-primary "NEW"
-                                          :slide-out-nav-menu-item/id          "my-next-look"
-                                          :slide-out-nav-menu-item/primary     "My Next Look"}
+                                          :slide-out-nav-menu-item/id          "my-recent-order"
+                                          :slide-out-nav-menu-item/primary     "My Recent Order"}
                                          {:slide-out-nav-menu-item/target  [events/navigate-stylist-account-profile]
                                           :slide-out-nav-menu-item/id      "account-settings"
                                           :slide-out-nav-menu-item/primary "Settings"}

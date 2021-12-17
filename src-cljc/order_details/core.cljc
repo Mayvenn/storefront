@@ -2,13 +2,16 @@
   (:require #?@(:cljs [[storefront.api :as api]
                        [storefront.history :as history]])
             [api.catalog :as catalog]
+            [catalog.images :as images]
             [clojure.string :as string]
             [spice.core :as spice]
             [spice.maps :as maps]
             [spice.date]
+            [storefront.accessors.line-items :as line-items]
             [storefront.component :as c]
             [storefront.components.checkout-delivery :as checkout-delivery]
             [storefront.components.formatters :as f]
+            [storefront.components.money-formatters :as mf]
             [storefront.components.ui :as ui]
             [storefront.config :as config]
             [storefront.events :as e]
@@ -29,6 +32,9 @@
    [:div.title-2.shout.proxima title]
    [:div.content-1.proxima content]])
 
+(defn address-copy [{:keys [address1 city state zipcode address2]}]
+  (str address1 ", " (when address2 address2 ",") city ", " state ", " zipcode))
+
 (defn your-looks-title-template
   [{:your-looks-title/keys [id copy]}]
   (when id
@@ -36,16 +42,29 @@
 
 (defn order-details-template
   [{:order-details/keys [id
+                         fulfillments
+                         images-catalog
                          order-number
                          placed-at
-                         fulfillments]}]
+                         shipments
+                         shipping-address
+                         skus
+                         total]}]
   (when id
        [:div.py6.px8.max-960.mx-auto
         {:key id}
-        [:div.title-1.canela "My Next Look"]
+        [:div.title-1.canela "My Recent Order"]
         (titled-content "Order Number" order-number)
         (when placed-at
           (titled-content "Placed On" placed-at))
+        (for [{:keys [line-items] :as shipment} shipments]
+          [:div (titled-content "Shipment" nil)
+           (for [{:keys [variant-name quantity sku] :as item} (rest line-items)]
+             [:div.flex.my2
+              (ui/ucare-img {:width "48" :height "48" :class "block border border-cool-gray mr2"}
+                            (->> (get skus sku)
+                                 (images/image images-catalog "cart") :ucare/id))
+              [:div quantity " " variant-name]])])
         (titled-content "Estimated Delivery"
                         (if (seq fulfillments)
                           (for [{:keys [url carrier tracking-number shipping-estimate]} fulfillments]
@@ -59,6 +78,9 @@
                                  tracking-number]]
                                "Tracking: Waiting for Shipment")])
                           "Tracking: Waiting for Shipment"))
+        (titled-content "Shipping Address" (address-copy shipping-address))
+        (titled-content "Payment" nil)
+        (titled-content "Total" (mf/as-money total))
         [:p.mt8 "If you need to edit or cancel your order, please contact our customer service at "
          (ui/link :link/email :a {} "help@mayvenn.com")
          " or "
@@ -140,13 +162,17 @@
 (defn query [app-state]
   (let [user-verified?       (boolean (get-in app-state k/user-verified-at))
         order-number         (or (:order-number (last (get-in app-state k/navigation-message)))
-                                 (-> app-state (get-in k/order-history) first :number))
+                            (-> app-state (get-in k/order-history) first :number))
+        images-catalog       (get-in app-state keypaths/v2-images)
+        skus                 (get-in app-state keypaths/v2-skus)
         {:as   order
          :keys [fulfillments
                 placed-at
-                shipments]}  (->> (get-in app-state k/order-history)
-                                  (filter (fn [o] (= order-number (:number o))))
-                                  first)
+                shipments
+                shipping-address
+                total]}      (->> (get-in app-state k/order-history)
+                             (filter (fn [o] (= order-number (:number o))))
+                             first)
         verif-status-message (-> app-state (get-in keypaths/navigation-message) second :query-params :stsm)]
     (cond-> {}
       (not user-verified?)
@@ -162,9 +188,14 @@
       (and user-verified?
            order)
       (merge #:order-details
-             {:id           "order-details"
-              :order-number order-number
-              :placed-at    (long-date placed-at)
+             {:id               "order-details"
+              :order-number     order-number
+              :placed-at        (long-date placed-at)
+              :shipments        shipments
+              :shipping-address shipping-address
+              :total            total
+              :skus             skus
+              :images-catalog   images-catalog
               :fulfillments
               (for [{:keys [carrier
                             tracking-number
@@ -235,19 +266,12 @@
 (defmethod effects/perform-effects e/api-success-get-orders
   [_ _ args _ app-state]
   (let [most-recent-open-order (first (get-in app-state k/order-history))]
-    (follow/publish-all app-state e/api-success-get-orders {:order-number (:number most-recent-open-order) })))
-
-;; TODO: fix the menu button
-#_(defmethod effects/perform-effects e/control-orderdetails-submit
-  [_ _ _ _ app-state]
-  (let [user-id    (get-in app-state k/user-id)
-        user-token (get-in app-state k/user-token)]
-    #?(:cljs (api/get-orders {:limit      1
-                              :user-id    user-id
-                              :user-token user-token}))
-    (messages/handle-message e/biz|follow|defined
-                             {:follow/after-id e/api-success-get-orders
-                              :follow/then     [e/flow--orderdetails--resulted]})))
+    (follow/publish-all app-state e/api-success-get-orders {:order-number (:number most-recent-open-order) })
+    (messages/handle-message e/ensure-sku-ids {:sku-ids (->> most-recent-open-order
+                                                             :shipments
+                                                             (mapcat :line-items)
+                                                             (filter line-items/product-or-service?)
+                                                             (map :sku))})))
 
 (defmethod transitions/transition-state e/flow--orderdetails--resulted
   [_ _ _ app-state]
