@@ -1,10 +1,9 @@
-(ns stylist-profile.ui-v2021-10.stylist-reviews-cards
+(ns stylist-profile.ui-v2021-12.stylist-reviews-cards
   (:require [storefront.component :as c]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
             [storefront.platform.carousel :as carousel]
-            [storefront.platform.component-utils :as utils]
-            [ui.molecules :as molecules]))
+            [storefront.platform.component-utils :as utils]))
 
 ;; TODO(corey) molecularize
 ;; TODO(corey) reviews seem to be stuck in the past wrt to services, ask product
@@ -74,26 +73,41 @@
   [{:reviews/keys [rating cta-target cta-id cta-label id rating-count] :as data} _ _]
   (when id
     (c/html
-     [:div.border-top.border-cool-gray.pt6.mt2.mb8
-      [:div
-       {:key      id
-        :id       "reviews"
-        :data-ref "reviews"}
-       (avg-rating-and-rating-count rating rating-count)
-       (c/build
-        carousel/component
-        {}
-        {:opts {:settings {:edgePadding          10
-                           :preventScrollOnTouch "auto" ; https://github.com/ganlanyuan/tiny-slider/issues/370
-                           :nav                  false
-                           :controls             true
-                           :items                1.1
-                           :loop                 false
-                           :controls-classes     "hide-on-mb-tb"}
-                :slides   (c/elements review-card data :reviews/reviews)}})
-       (when cta-id
-         [:div.mx3.my4
-          (ui/button-small-secondary
-           (merge (apply utils/route-to cta-target)
-                  {:data-test cta-id})
-           cta-label)])]])))
+     [:div
+      [:div.border-top.border-cool-gray.my10.col-11.mx-auto.hide-on-mb
+       {:key      (str "desktop-" id)
+        :id       "desktop-reviews"
+        :data-ref "desktop-reviews"}
+       [:div.mt5.col-11.mx-auto
+        (avg-rating-and-rating-count rating rating-count)
+        [:div.grid.grid-cols-2.gap-y-6.gap-x-5
+         (c/elements review-card data :reviews/desktop)]
+        (when cta-id
+          [:div.mx3.my4.mx-auto.col-2.flex.justify-center
+           (ui/button-small-underline-primary
+            (merge (apply utils/route-to cta-target)
+                   {:data-test cta-id})
+            cta-label)])]]
+      [:div.border-top.border-cool-gray.pt6.mt2.mb8.hide-on-tb-dt
+       [:div
+        {:key      id
+         :id       "reviews"
+         :data-ref "reviews"}
+        (avg-rating-and-rating-count rating rating-count)
+        (c/build
+         carousel/component
+         {}
+         {:opts {:settings {:edgePadding          10
+                            :preventScrollOnTouch "auto" ; https://github.com/ganlanyuan/tiny-slider/issues/370
+                            :nav                  false
+                            :controls             true
+                            :items                1.1
+                            :loop                 false
+                            :controls-classes     "hide-on-mb-tb"}
+                 :slides   (c/elements review-card data :reviews/reviews)}})
+        (when cta-id
+          [:div.mx3.my4
+           (ui/button-small-secondary
+            (merge (apply utils/route-to cta-target)
+                   {:data-test cta-id})
+            cta-label)])]]])))

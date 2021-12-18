@@ -13,8 +13,13 @@
 
 (defn ^:private circle-portrait
   [{:circle-portrait/keys [portrait]}]
-  (ui/circle-picture {:width "78px"}
-                     (ui/square-image portrait 72)))
+  [:div
+   [:div.hide-on-mb
+    (ui/circle-picture {:width "160px"}
+                       (ui/square-image portrait 160))]
+   [:div.hide-on-tb-dt
+    (ui/circle-picture {:width "78px"}
+                       (ui/square-image portrait 72))]])
 
 (defn ^:private stylist-title
   [{:title/keys [primary id]}]
@@ -32,7 +37,7 @@
    [:div location]])
 
 (defn ^:private hero
-  [{:background/keys [ucare-id] :as data}]
+  [{:background/keys [ucare-id desktop-ucare-id] :as data}]
   [:div.relative
    [:div.absolute.z1.overlay.flex.flex-column.items-center.justify-center
     (circle-portrait data)
@@ -42,9 +47,15 @@
      (molecules/stars-rating-molecule (with :star-bar data))
      (rating-count data)]
     (salon (with :salon data))]
-   ^:inline (ui/img {:src   ucare-id
-                     :class "block col-12"
-                     :height 196})])
+   [:div
+    [:div.hide-on-mb
+     ^:inline (ui/img {:src   desktop-ucare-id
+                       :class "block col-12"
+                       :height 410})]
+    [:div.hide-on-tb-dt
+     ^:inline (ui/img {:src   ucare-id
+                       :class "block col-12"
+                       :height 196})]]])
 
 (defn ^:private star-rating
   [{:keys [id value]}]
@@ -60,8 +71,41 @@
 
 (defn ^:private cta
   [{:keys [id primary target]}]
-  [:div.mx3.mt3.mb7#nonsticky-select-stylist {:data-test id}
-   (ui/button-medium-primary (apply utils/fake-href target) primary)])
+  [:div
+   [:div.mx-auto.col-3.mx3.mt3.mb7#nonsticky-select-stylist-1.hide-on-mb
+    {:data-test id}
+    (ui/button-medium-primary (apply utils/fake-href target) primary)]
+   [:div.mx3.mt3.mb7#nonsticky-select-stylist-2.hide-on-tb-dt
+    {:data-test id}
+    (ui/button-medium-primary (apply utils/fake-href target) primary)]])
+
+(defn top-stylist-information-points-grid-molecule
+  [{:keys [points]} grid-class]
+  (interleave
+   (for [{:keys [id icon primary]} points]
+     [:div.pb1.flex
+      [:div.flex.items-center.justify-center {:style {:width "25px"}}
+       (when icon
+         (svg/symbolic->html icon))]
+      [:div (merge (when grid-class
+                     {:class grid-class})
+                   (when id
+                     {:data-test id}))
+       primary]])
+   (cycle [[:div] nil])))
+
+;; Forked from top-stylist. They now deviate
+(defn top-stylist-information-points-molecule
+  [data]
+  [:div
+   [:div.pt3.mx-auto.grid.proxima.content-1.hide-on-mb
+    {:style {:grid-template-columns "auto 10px auto"
+             :max-width             "400px"}}
+    (top-stylist-information-points-grid-molecule data "pl2")]
+   [:div.pt3.mx-auto.grid.proxima.content-3.hide-on-tb-dt
+    {:style {:grid-template-columns "auto 10px auto"
+             :max-width             "305px"}}
+    (top-stylist-information-points-grid-molecule data nil)]])
 
 (c/defcomponent organism
   [data _ _]
@@ -69,5 +113,5 @@
    (hero (with :stylist-profile.card.hero data))
    (star-rating (with :stylist-profile.card.star-rating data))
    [:div.mx-auto.col-10
-    (stylist-matching.ui.stylist-cards/top-stylist-information-points-molecule (with :stylist-profile.card.laurels data))]
+    (top-stylist-information-points-molecule (with :stylist-profile.card.laurels data))]
    (cta (with :stylist-profile.card.cta data))])

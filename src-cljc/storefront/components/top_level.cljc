@@ -248,12 +248,19 @@
         (routes/sub-page? [nav-event] [events/navigate-adventure])
         (routes/sub-page? [nav-event] [events/navigate-shopping-quiz])
         (routes/sub-page? [nav-event] [events/navigate-adventure-appointment-booking]))
-       [:div {:data-test (keypaths/->component-str nav-event)}
+       [:div {:data-test (keypaths/->component-str nav-event)
+              :class (when (some #(= nav-event %) [events/navigate-adventure-stylist-profile])
+                       "stylist-profile-details")}
         [:div {:key "popup"}
          #?(:cljs (popup/built-component data nil))]
         [:div.stretch
          {:style {:margin-bottom "-30px"}
-          :class "max-580 mx-auto relative"}
+          ;; TODO temporary hack for desktop stylist profile
+          ;;      As we re-align our pages to have their own control (ie. the todo above)
+          ;;      we can add events here that we're transitioning to be desktop friendly
+          :class (str (when-not (some #(= nav-event %) [events/navigate-adventure-stylist-profile])
+                        "max-580 ")
+                      "mx-auto relative")}
          ((main-component nav-event) data nil)]
         (when #?(:clj true
                  :cljs (-> data (get-in stylist-directory.keypaths/stylist-search-show-filters?) not))

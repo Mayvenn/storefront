@@ -15,13 +15,21 @@
   [{:footer.cta/keys [id label] [event :as target] :footer.cta/target}]
   (c/html
    (when id
-     [:div.col-5.mx-auto.pt2
-      (ui/button-small-secondary
-       (merge {:data-test id}
-              (if (= :navigate (first event))
-                (apply utils/route-to target)
-                (apply utils/fake-href target)))
-       label)])))
+     [:div
+      [:div.col-2.mx-auto.pt2.hide-on-mb
+       (ui/button-small-secondary
+        (merge {:data-test id}
+               (if (= :navigate (first event))
+                 (apply utils/route-to target)
+                 (apply utils/fake-href target)))
+        label)]
+      [:div.col-5.mx-auto.pt2.hide-on-tb-dt
+       (ui/button-small-secondary
+        (merge {:data-test id}
+               (if (= :navigate (first event))
+                 (apply utils/route-to target)
+                 (apply utils/fake-href target)))
+        label)]])))
 
 (c/defcomponent organism
   [data _ _]

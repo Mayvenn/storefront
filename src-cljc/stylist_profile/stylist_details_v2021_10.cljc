@@ -19,6 +19,7 @@
             [storefront.events :as e]
             storefront.keypaths
             stylist-directory.keypaths
+            [storefront.components.svg :as svg]
 
             ;; NEW
             [stylist-profile.ui-v2021-10.card :as card-v2]
@@ -26,6 +27,7 @@
             [stylist-profile.ui-v2021-10.gallery :as gallery]
             [stylist-profile.ui-v2021-10.services-offered :as services-offered]
             [stylist-profile.ui-v2021-10.stylist-reviews-cards :as stylist-reviews-cards-v2]
+            [stylist-profile.ui-v2021-12.stylist-reviews-cards :as stylist-reviews-cards-v3]
 
             ;; OLD
             [stylist-profile.ui.footer :as footer]))
@@ -45,7 +47,7 @@
     [:div
      secondary]]))
 
-(c/defcomponent template
+(defn sub-template
   [{:keys [adv-header
            card
            footer
@@ -53,7 +55,8 @@
            google-maps
            mayvenn-header
            sticky-select-stylist
-           stylist-reviews] :as data} _ _]
+           stylist-reviews
+           desktop?] :as data}]
   [:div.bg-white.col-12.mb6.stretch {:style {:margin-bottom "-1px"}}
    [:main
     (when mayvenn-header
@@ -62,15 +65,29 @@
       (header/adventure-header adv-header))
     (c/build card-v2/organism card)
     (c/build gallery/organism gallery)
-    [:div.my2.m1-on-tb-dt.mb2-on-tb-dt.px3
+    [:div.mb8.col-10.mx-auto
      (c/build services-offered/organism (with :services-offered data))
      (licenses-molecule (with :licenses data))]
-    (c/build maps/component-v2 google-maps)
+    (if desktop?
+      (c/build maps/component-v3 google-maps)
+      (c/build maps/component-v2 google-maps))
     clear-float-atom
-    (c/build stylist-reviews-cards-v2/organism stylist-reviews)
+    [:div.hide-on-mb
+     (c/build stylist-reviews-cards-v3/organism stylist-reviews)]
+    [:div.hide-on-tb-dt
+     (c/build stylist-reviews-cards-v2/organism stylist-reviews)]
     ui-dividers/green]
    (c/build footer/organism footer)
    (c/build sticky-select-stylist-v2/organism sticky-select-stylist)])
+
+(c/defcomponent template
+  [{:keys [desktop?] :as data} _ _]
+  ;; HACK: This allows the map to render, but doesn't allow switching views
+  (if desktop?
+    [:div
+     (sub-template data)]
+    [:div.max-580.mx-auto
+     (sub-template data)]))
 
 (defn ^:private header<-
   [{:order.items/keys [quantity]} undo-history]
@@ -108,30 +125,48 @@
 (defn ^:private gallery<-
   [{:stylist/keys [slug id social-media] :stylist.gallery/keys [images]}
    instagram-stylist-profile?]
-  (merge
-   (when-let [ig-username (and instagram-stylist-profile? (:instagram social-media))]
-     {:gallery.instagram/id     "instagram"
-      :gallery.instagram/target [e/external-redirect-instagram-profile {:ig-username ig-username}]})
-   {:gallery/items              (->> images
-                                     (map-indexed
-                                      (fn [j {:keys [resizable-url]}]
-                                        {:key            (str "gallery-img-" id "-" j)
-                                         :ucare-img-url  resizable-url
-                                         :target-message [e/navigate-adventure-stylist-gallery
-                                                          {:stylist-id   id
-                                                           :store-slug   slug
-                                                           :query-params {:offset j}}]})))
-    :gallery/target [e/navigate-adventure-stylist-gallery
-                     {:stylist-id   id
-                      :store-slug   slug}]}))
+  (let [items                (map-indexed
+                              (fn [j {:keys [resizable-url]}]
+                                {:key            (str "gallery-img-" id "-" j)
+                                 :ucare-img-url  resizable-url
+                                 :target-message [e/navigate-adventure-stylist-gallery {:stylist-id   id
+                                                                                        :store-slug   slug
+                                                                                        :query-params {:offset j}}]})
+                              images)
+        item-count           (count items)
+        desktop-filler-count (mod item-count 6)
+        desktop-items        (->> {:filler-img (svg/symbolic->html [:svg/mayvenn-logo
+                                                                    {:class "fill-gray"
+                                                                     :style {:height "2em"
+                                                                             :width  "2em"}}])}
+                                  repeat
+                                  (take desktop-filler-count)
+                                  (map-indexed
+                                   (fn [j m]
+                                     (assoc m :key (->> item-count (+ j) dec (str "gallery-img-" id "-")))))
+                                  (concat items)
+                                  (take 12))]
+    (merge
+     (when-let [ig-username (and instagram-stylist-profile? (:instagram social-media))]
+       {:gallery.instagram/id     "instagram"
+        :gallery.instagram/target [e/external-redirect-instagram-profile {:ig-username ig-username}]})
+     ;; Only show 3, 6, 9, or 12 photos.
+     {:gallery.mobile/items  (-> items count (quot 3) (* 3) (min 12) (take items))
+      :gallery.mobile/grid-attrs "grid gap-px grid-cols-3"
+      :gallery.desktop/items desktop-items
+      :gallery.desktop/grid-attrs "grid gap-1 grid-cols-6"
+      :gallery/target        [e/navigate-adventure-stylist-gallery
+                              {:stylist-id id
+                               :store-slug slug}]})))
 
 (defn ^:private reviews<-
   [{:stylist.rating/keys [publishable? score cardinality] diva-stylist :diva/stylist}
    {stylist-reviews :reviews :as paginated-reviews}]
-  (let [max-reviews-shown 3
-        stylist-id        (:stylist-id diva-stylist)
-        store-slug        (:store-slug diva-stylist)
-        review-count      (:count paginated-reviews)]
+  (let [max-reviews-shown         3
+        max-desktop-reviews-shown 6
+        stylist-id                (:stylist-id diva-stylist)
+        store-slug                (:store-slug diva-stylist)
+        review-count              (:count paginated-reviews)]
     (when (and publishable?
                (seq stylist-reviews))
       (merge
@@ -146,7 +181,16 @@
                                                                       {:stylist-id   stylist-id
                                                                        :store-slug   store-slug
                                                                        :query-params {:offset ix}}]))))
-                                   (take max-reviews-shown))}
+                                   (take max-reviews-shown))
+        :reviews/desktop      (->> stylist-reviews
+                                   (map-indexed (fn [ix review]
+                                                  (-> review
+                                                      (update :review-date f/short-date)
+                                                      (assoc :target [e/navigate-adventure-stylist-profile-reviews
+                                                                      {:stylist-id   stylist-id
+                                                                       :store-slug   store-slug
+                                                                       :query-params {:offset ix}}]))))
+                                   (take max-desktop-reviews-shown))}
        (when (> review-count max-reviews-shown)
          {:reviews/cta-id     "show-all-stylist-reviews"
           :reviews/cta-target [e/navigate-adventure-stylist-profile-reviews
@@ -161,34 +205,35 @@
     :as                   stylist}]
   (merge
    (within :hero
-           {:background/ucare-id      "3cff075a-977d-4b69-841f-2bd497446b58"
-            :circle-portrait/portrait portrait
-            :title/id                 "stylist-name"
-            :title/primary            name
-            :star-bar/id              "star-bar"
-            :star-bar/value           score
-            :star-bar/opts            {:class "fill-p-color"}
-            :rating-count             cardinality
-            :salon/id                 "salon-name"
-            :salon/primary            salon
-            :salon/location           (str city ", " state)})
+           {:background/ucare-id         "72cb3389-444e-4f89-9ec2-4d845956d27c"
+            :background/desktop-ucare-id "ec525315-6869-4e75-9d81-59e57dcb0423"
+            :circle-portrait/portrait    portrait
+            :title/id                    "stylist-name"
+            :title/primary               name
+            :star-bar/id                 "star-bar"
+            :star-bar/value              score
+            :star-bar/opts               {:class "fill-p-color"}
+            :rating-count                cardinality
+            :salon/id                    "salon-name"
+            :salon/primary               salon
+            :salon/location              (str city ", " state)})
    {:star-rating/id    (str "rating-count-" slug)
     :star-rating/value decimal-score}
    (within :laurels
            {:points [{:icon    [:svg/calendar {:style {:height "1.2em"}
                                                :class "fill-s-color mr1"}]
-                      :primary (str (ui/pluralize-with-amount experience "year") " of experience")}
+                      :primary (str (ui/pluralize-with-amount experience "year") " experience")}
                      {:icon    [:svg/mayvenn-logo {:style {:height "1.2em"}
                                                    :class "fill-s-color mr1"}]
                       :primary (if (>= cardinality 3)
-                                 (str "Booked " cardinality " times")
+                                 (str cardinality " bookings")
                                  "New Mayvenn stylist")}
                      {:icon    [:svg/experience-badge {:style {:height "1.2em"}
                                                        :class "fill-s-color mr1"}]
                       :primary "Professional salon"}
                      {:icon    [:svg/certified {:style {:height "1.2em"}
                                                 :class "fill-s-color mr1"}]
-                      :primary "State licensed stylist"}]})
+                      :primary "State licensed"}]})
    (within :cta
            {:id      "stylist-profile-cta"
             :primary (str "Select " (-> stylist :diva/stylist :store-nickname))
@@ -253,7 +298,9 @@
            (when detailed-stylist
              (merge
               (shop-discountable-services<- skus-db detailed-stylist)
-              {:licenses/id        "stylist-license"
+              {:desktop?           #?(:cljs (> (.-innerWidth js/window) 749)
+                                      :clj nil)
+               :licenses/id        "stylist-license"
                :licenses/primary   "Licenses / Certifications"
                :licenses/secondary "Cosmetology license, Mayvenn Certified"
                :gallery            (gallery<- detailed-stylist instagram-stylist-profile?)

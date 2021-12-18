@@ -17,7 +17,7 @@
   [data _ _]
   [:div
    [:div.hide-on-mb
-    [:div.bg-pale-purple.fixed.max-580.border-none.col-12.bottom-0.py3
+    [:div.bg-pale-purple.fixed.border-none.bottom-0.py3.left-0.right-0
      [:div.flex.justify-center.my4
       (sticky-select-stylist-cta-molecule
        (update data :sticky-select-stylist.cta/id str "-desktop"))]]]
