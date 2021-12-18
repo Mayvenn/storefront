@@ -100,7 +100,7 @@
 (component/defcomponent component
   [{:stylist-search-filters/keys [sections]} _ _]
   [:div.col-12.bg-white {:style {:min-height "100vh"}}
-   (components.header/mobile-nav-header
+   (components.header/nav-header
     {:class "border-bottom border-gray"}
     (component/html [:div (ui/button-medium-underline-black
                            (merge {:data-test "stylist-search-filters-reset"}

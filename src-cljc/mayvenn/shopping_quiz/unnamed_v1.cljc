@@ -62,7 +62,7 @@
   [{:keys [header progress questions see-results]} _ _]
   [:div.col-12
    [:div.max-580.top-0.fixed.col-12.bg-white
-    (c/build header/mobile-nav-header-component header)
+    (c/build header/nav-header-component header)
     (c/build progress-bar/variation-1 progress)]
    [:div.flex.flex-column.mbj3.pbj3
     (c/elements question/variation-1
@@ -96,7 +96,7 @@
   [{:keys [header quiz-results shopping-quiz-v2?]} _ _]
   [:div.bg-cool-gray
    [:div.max-580.col-12.bg-white
-    (c/build header/mobile-nav-header-component header)]
+    (c/build header/nav-header-component header)]
    [:div.center.ptj2
     {:style {:padding-bottom "160px"}} ;; Footer height...
     [:div.flex.flex-column.px2

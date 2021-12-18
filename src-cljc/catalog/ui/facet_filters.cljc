@@ -155,7 +155,7 @@
 
 (c/defcomponent header-organism
   [data _ _]
-  (header/mobile-nav-header
+  (header/nav-header
    {:class "border-bottom border-gray"}
    (header-reset-molecule data)
    (c/html

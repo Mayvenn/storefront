@@ -27,7 +27,7 @@
   [{:keys [title close-id close-back close-route]}]
   [:div
    [:div.fixed.z4.top-0.left-0.right-0
-    (header/mobile-nav-header
+    (header/nav-header
      {:class "bg-white black"
       :style {:height "70px"}}
      (when close-id

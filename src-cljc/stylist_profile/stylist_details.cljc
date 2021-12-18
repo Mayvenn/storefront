@@ -141,7 +141,7 @@
   [:div.bg-white.col-12.mb6.stretch {:style {:margin-bottom "-1px"}}
    [:main
     (when mayvenn-header
-      (c/build header/mobile-nav-header-component mayvenn-header))
+      (c/build header/nav-header-component mayvenn-header))
     (when adv-header
       (header/adventure-header adv-header))
     (c/build card/organism card)

@@ -23,7 +23,7 @@
      :close-attrs (utils/fake-href e/control-addon-service-menu-dismiss)
      :col-class   "col-12"}
     [:div.m4.bg-white
-     (components.header/mobile-nav-header
+     (components.header/nav-header
       {:class ""}
       nil
       nil

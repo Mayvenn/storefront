@@ -139,7 +139,7 @@
        :close-attrs (utils/fake-href e/control-addon-service-menu-dismiss)
        :col-class   "col-12"}
       [:div.bg-white
-       (components.header/mobile-nav-header
+       (components.header/nav-header
         {:class "border-bottom border-gray"} nil
         (c/html [:div.center.proxima.content-1 "Add-on Services"])
         (c/html [:div (ui/button-medium-underline-primary

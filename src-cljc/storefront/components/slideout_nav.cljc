@@ -18,7 +18,7 @@
 
 (defn burger-header [cart]
   (component/html
-   (header/mobile-nav-header
+   (header/nav-header
     {:class "border-bottom border-gray bg-white black"
      :style {:height "70px"}}
     ;; HACKY(jeff): b/c of relative+absolute position of big-x, padding-left also increases y-offset, so we use negative margin to correct it

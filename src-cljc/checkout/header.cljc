@@ -39,7 +39,7 @@
     [:div
      (desktop-header desktop-header-data)
      [:div.hide-on-tb-dt
-      (storefront-header/mobile-nav-header
+      (storefront-header/nav-header
        {:class "border-bottom border-gray border-width-1 m-auto col-7-on-dt"}
 
        (when back-to-shopping-link?

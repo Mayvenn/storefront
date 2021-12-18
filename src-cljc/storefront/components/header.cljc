@@ -260,7 +260,7 @@
      (c/build header-menu-item item (c/component-id (:header-menu-item/id item))))])
 
 ;; Produces a mobile-nav layout (no styling)
-(defn mobile-nav-header [attrs left center right]
+(defn nav-header [attrs left center right]
   (let [size {:width "80px" :height "55px"}]
     (c/html
      [:div.flex.items-center
@@ -273,7 +273,7 @@
   [{:header.back-navigation/keys [target back]
     :header.cart/keys            [value]
     :header.title/keys           [primary]}]
-  (mobile-nav-header
+  (nav-header
    {:class "border-bottom border-gray bg-white black"
     :style {:height "70px"}}
    (c/html
@@ -291,9 +291,9 @@
    (ui/shopping-bag {:data-test "mobile-cart"}
                     {:quantity value})))
 
-(c/defcomponent mobile-nav-header-component
+(c/defcomponent nav-header-component
   [{:keys [forced-mobile-layout?] :as data} _ _]
-  (mobile-nav-header
+  (nav-header
    {:class (str "border-bottom border-gray "
                 (when-not forced-mobile-layout?
                   "hide-on-dt"))
@@ -328,7 +328,7 @@
                                              :width  "33px"}
                                  :data-test "desktop-cart"}
                                 cart)]]]
-   (c/build mobile-nav-header-component cart)])
+   (c/build nav-header-component cart)])
 
 (defn minimal-component
   [logo-nav-event]
