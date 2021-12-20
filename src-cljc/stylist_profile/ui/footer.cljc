@@ -7,7 +7,7 @@
   [{:footer.body/keys [copy id]}]
   (c/html
    (when id
-     [:div.h5.pt3
+     [:div.h4.pt3
       {:data-test id}
       copy])))
 
