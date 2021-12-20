@@ -57,7 +57,15 @@
            sticky-select-stylist
            stylist-reviews
            desktop?] :as data}]
-  [:div.bg-white.col-12.mb6.stretch {:style {:margin-bottom "-1px"}}
+  [:div.bg-white.col-12.mb6.stretch
+   {:style {:margin-bottom "-1px"
+            ;; For full-width:
+            :margin-left   "-50vw"
+            :margin-right  "-50vw"
+            :right         "49%"
+            :left          "49%"
+            :width         "100vw"
+            :position "relative"}}
    [:main
     (when mayvenn-header
       (c/build header/nav-header-component mayvenn-header))
