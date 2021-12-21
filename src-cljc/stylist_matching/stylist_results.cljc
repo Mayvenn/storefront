@@ -775,12 +775,18 @@
                                                             (remove #(= (:stylist-id %)
                                                                         (:stylist-id top-stylist)) matching-stylists))
                                                     matching-stylists)
+        premium-stylist-ids                       [111023 111025 111026 96040 1663 111024]
+        premium-stylists                          (when-let [premium-stylists (filter #((set premium-stylist-ids) (:stylist-id %))
+                                                                                      matching-stylists-with-top-stylist-bumped)]
+                                                    (concat premium-stylists
+                                                            (remove #((set premium-stylist-ids) (:stylist-id %))
+                                                                    matching-stylists-with-top-stylist-bumped)))
         matching-stylist-cards                    (stylist-data->stylist-cards
                                                    {:just-added-only?       just-added-only?
                                                     :just-added-experience? just-added-experience?
                                                     :stylist-results-test?  stylist-results-test?
                                                     :top-stylist-v2?        top-stylist-v2?
-                                                    :stylists               matching-stylists-with-top-stylist-bumped})
+                                                    :stylists               premium-stylists})
         non-matching-stylist-cards                (stylist-data->stylist-cards
                                                    {:just-added-only?       just-added-only?
                                                     :just-added-experience? just-added-experience?
