@@ -162,6 +162,8 @@
 
 (defn order-details?
   [data]
+  true
+  #_
   (display-feature? data "order-details"))
 
 (defn quiz-always-adds-holiday-promo?
