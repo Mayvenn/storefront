@@ -197,13 +197,14 @@
      (component/build root-menu data))])
 
 (defn query [data]
-  (let [selected-tab       (get-in data keypaths/slideout-nav-selected-tab)
-        auth               (auth/signed-in data)
-        user-type          (-> auth ::auth/as)
-        signed-in?         (-> auth ::auth/at-all)
-        vouchers?          (experiments/dashboard-with-vouchers? data)
-        past-appointments? (experiments/past-appointments? data)
-        stylist-experience          (get-in data keypaths/user-stylist-experience)
+  (let [selected-tab        (get-in data keypaths/slideout-nav-selected-tab)
+        auth                (auth/signed-in data)
+        user-type           (-> auth ::auth/as)
+        signed-in?          (-> auth ::auth/at-all)
+        vouchers?           (experiments/dashboard-with-vouchers? data)
+        shop?               (= "shop" (get-in data keypaths/store-slug))
+        past-appointments?  (experiments/past-appointments? data)
+        stylist-experience  (get-in data keypaths/user-stylist-experience)
         gallery-edit-target (if (and past-appointments? (= stylist-experience "aladdin"))
                               [events/navigate-gallery-appointments]
                               [events/navigate-gallery-edit])]
@@ -234,9 +235,11 @@
                                           :slide-out-nav-menu-item/id          "my-recent-order"
                                           :slide-out-nav-menu-item/primary     "My Recent Order"}])
                                       (when (= user-type :stylist)
-                                        (when vouchers? [{:slide-out-nav-menu-item/target  [events/navigate-voucher-redeem]
-                                                          :slide-out-nav-menu-item/id      "redeem-voucher"
-                                                          :slide-out-nav-menu-item/primary "Redeem Client Voucher"}])
+                                        (when (or shop?
+                                                  vouchers?)
+                                          [{:slide-out-nav-menu-item/target  [events/navigate-voucher-redeem]
+                                            :slide-out-nav-menu-item/id      "redeem-voucher"
+                                            :slide-out-nav-menu-item/primary "Redeem Client Voucher"}])
                                         [{:slide-out-nav-menu-item/target      [events/navigate-yourlooks-order-details]
                                           :slide-out-nav-menu-item/new-primary "NEW"
                                           :slide-out-nav-menu-item/id          "my-recent-order"
