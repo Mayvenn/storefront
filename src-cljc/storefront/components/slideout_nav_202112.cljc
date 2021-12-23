@@ -202,7 +202,6 @@
         user-type           (-> auth ::auth/as)
         signed-in?          (-> auth ::auth/at-all)
         vouchers?           (experiments/dashboard-with-vouchers? data)
-        shop?               (= "shop" (get-in data keypaths/store-slug))
         past-appointments?  (experiments/past-appointments? data)
         stylist-experience  (get-in data keypaths/user-stylist-experience)
         gallery-edit-target (if (and past-appointments? (= stylist-experience "aladdin"))
@@ -219,14 +218,14 @@
                                   nil)))
      {:slideout-tabs/tabs         tabs
       :slideout-tabs/selected-tab selected-tab}
-     {:account-tab/menu-items (concat (when (= user-type :guest)
+     {:account-tab/menu-items (concat (when (= :guest user-type)
                                         [{:slide-out-nav-menu-item/target  [events/navigate-sign-in]
                                           :slide-out-nav-menu-item/id      "sign-in"
                                           :slide-out-nav-menu-item/primary "Sign In"}
                                          {:slide-out-nav-menu-item/target  [events/navigate-sign-up]
                                           :slide-out-nav-menu-item/id      "sign-up"
                                           :slide-out-nav-menu-item/primary "Sign Up for an Account"}])
-                                      (when (= user-type :user)
+                                      (when (= :user user-type)
                                         [{:slide-out-nav-menu-item/target  [events/navigate-account-manage]
                                           :slide-out-nav-menu-item/id      "account-settings"
                                           :slide-out-nav-menu-item/primary "Account"}
@@ -234,12 +233,12 @@
                                           :slide-out-nav-menu-item/new-primary "NEW"
                                           :slide-out-nav-menu-item/id          "my-recent-order"
                                           :slide-out-nav-menu-item/primary     "My Recent Order"}])
-                                      (when (= user-type :stylist)
-                                        (when (or shop?
-                                                  vouchers?)
-                                          [{:slide-out-nav-menu-item/target  [events/navigate-voucher-redeem]
-                                            :slide-out-nav-menu-item/id      "redeem-voucher"
-                                            :slide-out-nav-menu-item/primary "Redeem Client Voucher"}])
+                                      (when (and (= :stylist user-type)
+                                                 vouchers?)
+                                        [{:slide-out-nav-menu-item/target  [events/navigate-voucher-redeem]
+                                          :slide-out-nav-menu-item/id      "redeem-voucher"
+                                          :slide-out-nav-menu-item/primary "Redeem Client Voucher"}])
+                                      (when (= :stylist user-type)
                                         [{:slide-out-nav-menu-item/target      [events/navigate-yourlooks-order-details]
                                           :slide-out-nav-menu-item/new-primary "NEW"
                                           :slide-out-nav-menu-item/id          "my-recent-order"
@@ -253,9 +252,10 @@
                                          {:slide-out-nav-menu-item/target  [events/navigate-v2-stylist-dashboard-orders]
                                           :slide-out-nav-menu-item/id      "dashboard"
                                           :slide-out-nav-menu-item/primary "Dashboard"}])
-                                      (when signed-in? [{:slide-out-nav-menu-item/target  [events/control-sign-out]
-                                                         :slide-out-nav-menu-item/id      "sign-out"
-                                                         :slide-out-nav-menu-item/primary "Log Out"}]))})))
+                                      (when signed-in?
+                                        [{:slide-out-nav-menu-item/target  [events/control-sign-out]
+                                          :slide-out-nav-menu-item/id      "sign-out"
+                                          :slide-out-nav-menu-item/primary "Log Out"}]))})))
 
 (defmethod transitions/transition-state events/slideout-nav-tab-selected [_ _ {:keys [tab]} app-state]
   (let [selected-tab (get-in app-state keypaths/slideout-nav-selected-tab)]
