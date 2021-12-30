@@ -15,17 +15,17 @@
 
 (defn sms-link
   [share-url]
-  (share-links/sms-link (str "Shop the bundles I picked for you here: "
+  (share-links/sms-link (str "Shop the look I created for you here: "
                              (share-links/with-utm-medium share-url "sms"))))
 
 (defn twitter-link
   [share-url]
   (share-links/twitter-link (share-links/with-utm-medium share-url "twitter")
-                            "Shop my top virgin hair bundle picks here:"))
+                            "Shop my top virgin hair look here:"))
 
 (defn email-link
   [share-url store-nickname]
-  (share-links/email-link "My recommended bundles for you"
+  (share-links/email-link "My recommended look for you"
                           (str "Hey,
 
 I've created a ready-to-shop cart with the look I recommend for you. Mayvenn is my pick for quality virgin human hair. They offer a totally free 30 day exchange program (if you have any issues with your hair at all). All you have to do is click the link below to check out.
