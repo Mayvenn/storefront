@@ -50,15 +50,13 @@
 ;;; event: Prepared
 ;;; <- payment info from customer
 ;;; -> acquiring token
-(defmethod t/transition-state
-  e/stylist-payment|prepared
+(defmethod t/transition-state e/stylist-payment|prepared
   [_ _ _ state]
   (assoc-in state
             (conj k-current :state)
             "prepared"))
 
-(defmethod fx/perform-effects
-  e/stylist-payment|prepared
+(defmethod fx/perform-effects e/stylist-payment|prepared
   [_ _ _ _ state]
   (let [cardholder  (->> (<- state :current)
                          (with :cardholder))
@@ -72,10 +70,8 @@
 ;;; event: Requested
 ;;; <- token acquired
 ;;; -> acquiring charge
-(defmethod t/transition-state
-  e/stylist-payment|requested
+(defmethod t/transition-state e/stylist-payment|requested
   [_ _ create-token-result state]
-  ;; TODO(corey) pare down what is saved
   (let [token (:token create-token-result)]
     (prn token)
     (-> state
@@ -89,8 +85,7 @@
                        (interpose " ")
                        (apply str))))))
 
-(defmethod fx/perform-effects
-  e/stylist-payment|requested
+(defmethod fx/perform-effects e/stylist-payment|requested
   [_ _ create-token-result _ state]
   (let [session-id      (get-in state k/session-id)
         stylist-payment (<- state :current)]
@@ -108,8 +103,7 @@
 ;;; event: Failed
 ;;; <- token failure
 ;;; <- charge failure
-(defmethod t/transition-state
-  e/stylist-payment|failed
+(defmethod t/transition-state e/stylist-payment|failed
   [_ _ result state]
   (cond-> state
     (= :error (:failure result))
@@ -121,16 +115,14 @@
 ;;; event: Sent
 ;;; <- charge acquired
 ;;; -> receipt display
-(defmethod t/transition-state
-  e/stylist-payment|sent
+(defmethod t/transition-state e/stylist-payment|sent
   [_ _ charge-result state]
   (cond-> state
     (:command/success charge-result)
     (assoc-in (conj k-current :state) "sent")))
 
 ;;; TODO(corey) this needs a new home
-(defmethod fx/perform-effects
-  e/stripe|create-token|requested
+(defmethod fx/perform-effects e/stripe|create-token|requested
   [_ _ {:on/keys [success failure]
         :keys [cardholder card-element]} _ _]
   #?(:cljs
