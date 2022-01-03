@@ -361,6 +361,7 @@
 (def models-wait (conj models-root :wait))
 (def models-follows (conj models-root :follows))
 (def models-live-help (conj models-root :live-help))
+(def models-stylist-payments (conj models-root :stylist-payments))
 
 (def slideout-nav (conj ui :slideout-nav))
 (def slideout-nav-selected-tab (conj slideout-nav :selected-tab))

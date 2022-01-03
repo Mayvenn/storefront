@@ -48,15 +48,43 @@
   (when (.hasOwnProperty js/window "Stripe")
     (let [api-id      {:request-key request-keys/stripe-create-token
                        :request-id  (str (random-uuid))}
-          card-holder (clj->js {:name            cardholder-name
-                                :address_line1   (:address1 address)
-                                :address_line2   (str (:address2 address))
-                                :address_city    (:city address)
-                                :address_state   (:state address)
-                                :address_zip     (:zipcode address)
-                                :address_country "us"
-                                :currency        "usd"})]
+          card-holder (clj->js
+                       {:name            cardholder-name
+                        :address_line1   (:address1 address)
+                        :address_line2   (str (:address2 address))
+                        :address_city    (:city address)
+                        :address_state   (:state address)
+                        :address_zip     (:zipcode address)
+                        :address_country "us"
+                        :currency        "usd"})]
       (handle-message events/api-start api-id)
       (-> js/stripe
           (.createToken card-element card-holder)
           (.then (partial stripe-response-handler (:place-order? args) api-id))))))
+
+(defn create-token-response*
+  [success-evt failure-evt api-id js-result]
+  (let [result (js->clj js-result :keywordize-keys true)]
+    (handle-message events/api-end api-id)
+    (handle-message (if (:token result) success-evt failure-evt)
+                    result)))
+
+(defn create-token*
+  "This is closer to just a wrapper on the Stripe API, the other
+  was too situated to checkout and orders."
+  [card-element cardholder success-evt failure-evt]
+  (when (.hasOwnProperty js/window "Stripe")
+    (let [api-id         {:request-key request-keys/stripe-create-token
+                          :request-id  (str (random-uuid))}
+          js-cardholder (->> cardholder
+                              (merge
+                               {:address_country "us"
+                                :currency        "usd"})
+                              clj->js)]
+      (handle-message events/api-start api-id)
+      (-> js/stripe
+          (.createToken card-element js-cardholder)
+          (.then (partial create-token-response*
+                          success-evt
+                          failure-evt
+                          api-id))))))

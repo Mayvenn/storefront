@@ -47,6 +47,7 @@
 (def update-addresses [:update-addresses])
 (def update-shipping-method [:update-shipping-method])
 (def update-cart-payments [:update-cart-payments])
+(def send-stylist-payment [:send-stylist-payment])
 (def add-promotion-code [:add-promo-code])
 (def remove-promotion-code [:remove-promo-code])
 (def get-order [:get-order])

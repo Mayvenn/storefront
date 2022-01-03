@@ -146,6 +146,7 @@
 (defpath browser-back)
 
 (defpath stripe)
+(defpath stripe|create-token|requested)
 (defpath stripe-success-create-token)
 (defpath stripe-failure-create-token)
 (defpath stripe-component-mounted)
@@ -813,3 +814,11 @@
 (defpath biz|email-verification|verified)
 
 (defpath slideout-nav-tab-selected)
+
+;; Mayvenn Pay (stylist payment pilot)
+(defpath navigate-mayvenn-stylist-pay)
+(defpath stylist-payment|reset)
+(defpath stylist-payment|prepared)
+(defpath stylist-payment|requested)
+(defpath stylist-payment|sent)
+(defpath stylist-payment|failed)

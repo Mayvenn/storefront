@@ -851,6 +851,16 @@
                  (assoc :session-id session-id))
      :handler (comp success-handler orders/TEMP-pretend-service-items-do-not-exist)})))
 
+(defn send-stylist-payment
+  [session-id payment success-event failure-event]
+  (storeback-api-req
+   POST
+   "/v2/send-stylist-payment"
+   request-keys/send-stylist-payment
+   {:params        (assoc payment :session-id session-id)
+    :handler       #(messages/handle-message success-event %)
+    :error-handler #(messages/handle-message failure-event %)}))
+
 (defn get-order
   ([params]
    (get-order params

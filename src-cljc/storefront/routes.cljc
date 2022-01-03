@@ -66,6 +66,8 @@
    "/quiz/unified-freeinstall/match-success"       (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-match-success)
    "/quiz/unified-freeinstall/appointment-booking" (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-appointment-booking)})
 
+(def mayvenn-stylist-pay-routes
+  {"/pay" (edn->bidi events/navigate-mayvenn-stylist-pay)})
 
 (def catalog-routes
   ;; NOTE: if you update category url, don't forget to update the fast-inverse-catalog-routes below
@@ -105,6 +107,7 @@
              design-system-routes
              catalog-routes
              {"/" (edn->bidi events/navigate-home)}
+             mayvenn-stylist-pay-routes
              stylist-matching-routes
              adventure-quiz-routes
              sign-in-routes

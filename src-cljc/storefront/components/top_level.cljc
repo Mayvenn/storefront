@@ -15,6 +15,8 @@
 
             #?@(:clj [[design-system.home :as design-system]])
 
+            [mayvenn.stylist-pay.core :as stylist-pay]
+
             adventure.informational.about-our-hair
             adventure.informational.certified-stylists
 
@@ -276,7 +278,13 @@
   [data owner opts]
   [:div
    #?(:cljs (email-capture/built-component data nil))
-   (if (or (= "shop" (get-in data keypaths/store-slug))
-           (= "retail-location" (get-in data keypaths/store-experience)))
+   (cond
+     (= events/navigate-mayvenn-stylist-pay (get-in data keypaths/navigation-event))
+     (stylist-pay/page data)
+ 
+     (or (= "shop" (get-in data keypaths/store-slug))
+         (= "retail-location" (get-in data keypaths/store-experience)))
      (shop-site data owner opts)
+
+     :else
      (classic-site data owner opts))])
