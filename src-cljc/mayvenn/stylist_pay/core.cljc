@@ -89,7 +89,7 @@
    [:div
     [:div.h3 "Your information"]
     (c/build new-card-1 (with :new-card data))]
-   [:div
+   [:div.mt4
     (actions/medium-primary (with :action data))]])
 
 (defn summary-line
