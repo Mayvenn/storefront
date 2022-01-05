@@ -142,13 +142,14 @@
                                                                                         :query-params {:offset j}}]})
                               images)
         item-count           (count items)
-        desktop-filler-count (mod item-count 6)
+        desktop-filler-count (- 6 (mod item-count 6))
+        trimmed-filler-count (if (= 6 desktop-filler-count) 0 desktop-filler-count)
         desktop-items        (->> {:filler-img (svg/symbolic->html [:svg/mayvenn-logo
                                                                     {:class "fill-gray"
                                                                      :style {:height "2em"
                                                                              :width  "2em"}}])}
                                   repeat
-                                  (take desktop-filler-count)
+                                  (take trimmed-filler-count)
                                   (map-indexed
                                    (fn [j m]
                                      (assoc m :key (->> item-count (+ j) dec (str "gallery-img-" id "-")))))
