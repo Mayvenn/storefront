@@ -1,7 +1,7 @@
 (ns stylist-profile.stylist-reviews-v2021-10
-  (:require #?(:cljs
-               [storefront.browser.scroll :as scroll]
-               [storefront.api :as api])
+  (:require #?@(:cljs
+                [[storefront.browser.scroll :as scroll]
+                 [storefront.api :as api]])
             adventure.keypaths
             api.stylist
             [mayvenn.visual.tools :refer [with within]]
