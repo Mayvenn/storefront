@@ -857,7 +857,7 @@
            :selector/essentials    [:hair/family :catalog/department :hair/base-material]
            :selector/electives     [:hair/family :hair/texture :hair/origin]
            :page/title             "100% Virgin Hair HD Lace Wig | Mayvenn"
-           :page.meta/description  (copy "Mayvenn’s Standard Lace Wigs come complete with 13x4, 4x4, or 5x5 inches of parting space."
+           :page.meta/description  (copy "Mayvenn’s HD Lace Wigs come complete with 13x4, 4x4, or 5x5 inches of parting space."
                                          "Crafted with high-quality 100% virgin human hair.")
            :opengraph/title        (copy "Mayvenn HD Lace Wig - Free shipping."
                                          "Free 30 day returns. Made with 100% virgin human hair.")
