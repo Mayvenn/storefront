@@ -1,6 +1,7 @@
 (ns stylist-profile.stylist-reviews-v2021-10
   (:require #?(:cljs
-               [storefront.browser.scroll :as scroll])
+               [storefront.browser.scroll :as scroll]
+               [storefront.api :as api])
             adventure.keypaths
             api.stylist
             [mayvenn.visual.tools :refer [with within]]
@@ -14,6 +15,7 @@
             [storefront.events :as e]
             storefront.keypaths
             [storefront.platform.component-utils :as utils]
+            [storefront.transitions :as t]
             stylist-directory.keypaths))
 
 (def install-type->display-name
@@ -166,3 +168,21 @@
   #?(:cljs
      (when-let [offset (:offset query-params)]
        (scroll/scroll-selector-to-top (str "[data-ref=review-" offset "]") -60))))
+
+(defmethod t/transition-state e/api-success-fetch-stylist-reviews
+  [_ _ paginated-reviews app-state]
+  (let [existing-reviews (:reviews (get-in app-state stylist-directory.keypaths/paginated-reviews))]
+    (-> app-state
+        (assoc-in stylist-directory.keypaths/paginated-reviews paginated-reviews)
+        (update-in (conj stylist-directory.keypaths/paginated-reviews :reviews)
+                   (partial concat existing-reviews)))))
+
+(defmethod fx/perform-effects e/control-fetch-stylist-reviews
+  [dispatch event args prev-app-state app-state]
+  #?(:cljs
+     (api/fetch-stylist-reviews (get-in app-state storefront.keypaths/api-cache)
+                                {:stylist-id (get-in app-state adventure.keypaths/stylist-profile-id)
+                                 :page       (-> (get-in app-state stylist-directory.keypaths/paginated-reviews)
+                                                 :current-page
+                                                 (or 0)
+                                                 inc)})))

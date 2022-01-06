@@ -2,8 +2,7 @@
   "Stylist profile"
   (:require [storefront.accessors.experiments :as experiments]
             [storefront.component :as c]
-            [stylist-profile.stylist-details-v2021-10 :as v2]
-            [stylist-profile.stylist-details :as v1]
+            [stylist-profile.stylist-details :as v2]
             checkout.cart.swap))
 
 ;; This should require stylist results and stylist details
@@ -11,6 +10,4 @@
 
 (defn ^:export page
   [state _]
-  (if (experiments/stylist-profile? state)
-    (v2/built-component state)
-    (v1/built-component state)))
+  (v2/built-component state))

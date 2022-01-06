@@ -222,7 +222,6 @@
 (defpath control-addon-checkbox)
 (defpath control-change-stylist)
 (defpath control-remove-stylist)
-(defpath share-stylist)
 
 (defpath control-popup-hide)
 
@@ -387,8 +386,6 @@
 
 (defpath api-success-voucher-redemption)
 
-(defpath api-success-shared-stylist)
-
 (defpath api-success-email-verification-initiate)
 (defpath api-success-email-verification-verify)
 
@@ -399,7 +396,6 @@
 (defpath api-failure-errors-invalid-promo-code)
 (defpath api-failure-pending-promo-code)
 (defpath api-failure-order-not-created-from-shared-cart)
-(defpath api-failure-shared-stylist)
 (defpath api-failure-voucher-redemption)
 (defpath api-failure-shared-cart)
 (defpath api-failure-email-verification-initiate)
