@@ -113,7 +113,6 @@
    (interleave
     (for [{:keys [id icon primary]} points]
       [:div.pb1.proxima.content-3.flex
-       {:style {:max-width "150px"}}
        [:div.flex.items-center.justify-center {:style {:width "25px"}}
         (when icon
           (svg/symbolic->html icon))]
