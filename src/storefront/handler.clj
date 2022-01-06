@@ -518,7 +518,9 @@
     (let [{:keys [experience
                   stylist-id
                   store-slug]} (get-in-req-state req keypaths/store)]
-      (if (= "aladdin" experience)
+      (if (and (= "aladdin" experience)
+               (not= events/navigate-mayvenn-stylist-pay
+                     nav-event))
         (util.response/redirect
          (store-url "shop" environment
                     (cond-> req
