@@ -842,8 +842,8 @@
 
            :page/icp?            false
            :category/new?        true
-           :category/description (copy "The same quality virgin hair wigs you love, now crafted with new and"
-                                       "improved materials. Our HD wigs have transparent lace for seamless blending.")
+           :category/description (copy "Explore all of your favorite looks with our versatile HD wig options."
+                                       "Our HD wigs have transparent lace for seamless blending.")
            :subcategory/image-id "e4266735-42fc-40b1-bd37-ce5a243fa681"
            :subcategory/title    "HD Lace Wigs"
            :copy/title           "HD Lace Wigs"
@@ -856,17 +856,16 @@
            :hair/base-material     #{"hd-lace"}
            :selector/essentials    [:hair/family :catalog/department :hair/base-material]
            :selector/electives     [:hair/family :hair/texture :hair/origin]
-           :page/title             "HD Lace Wigs: Virgin Hair HD Lace Wigs | Mayvenn"
-           :page.meta/description  (copy "Mayvenn’s virgin human hair HD lace wigs allow you to achieve a new look in minutes"
-                                         "& come in different variations such as Brazilian, Malaysian, straight,"
-                                         "& deep wave.")
-           :opengraph/title        (copy "Mayvenn HD Lace Wigs - Free shipping."
+           :page/title             "100% Virgin Hair HD Lace Wig | Mayvenn"
+           :page.meta/description  (copy "Mayvenn’s Standard Lace Wigs come complete with 13x4, 4x4, or 5x5 inches of parting space."
+                                         "Crafted with high-quality 100% virgin human hair.")
+           :opengraph/title        (copy "Mayvenn HD Lace Wig - Free shipping."
                                          "Free 30 day returns. Made with 100% virgin human hair.")
-           :opengraph/description  (copy "100% virgin human hair, machine-wefted and backed by our"
-                                         "30 Day Quality Guarantee, our Wigs can be customized to fit"
-                                         "your unique look using the built-in combs and adjustable strap.")
+           :opengraph/description  (copy "Our HD Lace Wigs are sure to be a favorite."
+                                         "Take advantage of high-quality HD Lace and 4 classic textures."
+                                         "Easily customizable with built-in combs and an adjustable strap.")
            :product-list/title     "Shop All HD Lace Wigs"
-           :contentful/faq-id      :icp-wigs
+           :contentful/faq-id      :category-hd-lace-wigs
            :content-block/type     :about-attributes
            :content-block/title    "Wigs 101:"
            :content-block/header   "How to Choose"
