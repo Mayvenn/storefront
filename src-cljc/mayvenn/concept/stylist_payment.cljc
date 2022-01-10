@@ -4,14 +4,16 @@
 
   Caveats: This only handles one stylist payment at a time, :current
   "
-  (:require [storefront.events :as e]
+  (:require [clojure.string :refer [includes? ends-with?]]
+            [storefront.events :as e]
             [storefront.keypaths :as k]
             [storefront.platform.messages
              :as messages
              :refer [handle-message] :rename {handle-message publish}]
             #?@(:cljs
                 [[storefront.api :as api]
-                 [storefront.hooks.stripe :as stripe]])
+                 [storefront.hooks.stripe :as stripe]
+                 [storefront.browser.scroll :as scroll]])
             [storefront.transitions :as t]
             [storefront.effects :as fx]
             [mayvenn.visual.tools :refer [with]])) ;; TODO(corey) maybe this is just visual?
@@ -29,10 +31,22 @@
 ;;; payment-id
 ;;; state #{reset,prepared,requested,sent,failed}
 
+(defn ^:private invalid-email?
+  [email]
+  (not (and (seq email)
+            (< 3 (count email))
+            (includes? email "@")
+            (not (ends-with? email "@")))))
+
 (defn <- [state id]
-  (-> state
-      (get-in (conj k/models-stylist-payments id))
-      (update :stylist-payment/amount * 100)))
+  (let [{:as stylist-payment
+         :stylist-payment/keys [amount email]}
+        (-> state
+            (get-in (conj k/models-stylist-payments id))
+            (update :stylist-payment/amount * 100))]
+    (assoc stylist-payment
+           :valid (and (number? amount)
+                       (not (invalid-email? email))))))
 
 ;; behavior
 
@@ -73,7 +87,6 @@
 (defmethod t/transition-state e/stylist-payment|requested
   [_ _ create-token-result state]
   (let [token (:token create-token-result)]
-    (prn token)
     (-> state
         (assoc-in (conj k-current :state)
                   "requested")
@@ -87,13 +100,19 @@
 
 (defmethod fx/perform-effects e/stylist-payment|requested
   [_ _ create-token-result _ state]
-  (let [session-id      (get-in state k/session-id)
-        stylist-payment (<- state :current)]
+  #?(:cljs
+     (scroll/snap-to-top))
+  (let [session-id (get-in state k/session-id)
+        {:stylist-payment/keys [amount note email phone]
+         :as stylist-payment}
+        (<- state :current)]
     #?(:cljs
        (api/send-stylist-payment
         session-id
-        {:amount         (:stylist-payment/amount stylist-payment)
-         :note           (:stylist-payment/note stylist-payment)
+        {:amount         amount
+         :payee_email    email
+         :payee_phone    phone
+         :note           note
          :source         (:stripe/source stylist-payment)
          :stylist-id     (:stylist/id stylist-payment)
          :idempotent-key (:idem/id stylist-payment)}
@@ -117,9 +136,14 @@
 ;;; -> receipt display
 (defmethod t/transition-state e/stylist-payment|sent
   [_ _ charge-result state]
-  (cond-> state
-    (:command/success charge-result)
-    (assoc-in (conj k-current :state) "sent")))
+  (if-not (:command/success charge-result)
+    state
+    (-> state
+        (assoc-in (conj k-current
+                        :stylist-payment/payment-id)
+                  (:payment-id charge-result))
+        (assoc-in (conj k-current :state)
+                  "sent"))))
 
 ;;; TODO(corey) this needs a new home
 (defmethod fx/perform-effects e/stripe|create-token|requested
