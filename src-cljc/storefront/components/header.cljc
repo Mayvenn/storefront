@@ -395,11 +395,12 @@
                                         "shop-bundle-sets-menu-expanded")})
 
 (defn basic-query [data]
-  (let [store     (marquee/query data)
-        site      (sites/determine-site data)
-        shop?     (= :shop site)
-        classic?  (= :classic site)
-        signed-in (auth/signed-in data)]
+  (let [store           (marquee/query data)
+        site            (sites/determine-site data)
+        shop?           (= :shop site)
+        classic?        (= :classic site)
+        signed-in       (auth/signed-in data)
+        sale-shop-hair? (experiments/sale-shop-hair? data)]
     {:signed-in                   signed-in
      :on-taxon?                   (get-in data keypaths/current-traverse-nav)
      :promo-banner                (promo-banner/query data)
@@ -471,13 +472,14 @@
                                  (concat
                                   [{:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug "wigs" :catalog/category-id "13"}]
                                     :slide-out-nav-menu-item/id          "menu-shop-wigs"
-                                    :slide-out-nav-menu-item/new-primary "NEW"
+                                    :slide-out-nav-menu-item/new-primary (if sale-shop-hair? "SALE" "NEW")
                                     :slide-out-nav-menu-item/nested?     false
                                     :slide-out-nav-menu-item/primary     "Wigs"}
-                                   {:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug "human-hair-bundles" :catalog/category-id "27"}]
-                                    :slide-out-nav-menu-item/nested? false
-                                    :slide-out-nav-menu-item/id      "menu-shop-human-hair-bundles"
-                                    :slide-out-nav-menu-item/primary "Hair Bundles"}
+                                   {:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug "human-hair-bundles" :catalog/category-id "27"}]
+                                    :slide-out-nav-menu-item/new-primary (when sale-shop-hair? "SALE")
+                                    :slide-out-nav-menu-item/nested?     false
+                                    :slide-out-nav-menu-item/id          "menu-shop-human-hair-bundles"
+                                    :slide-out-nav-menu-item/primary     "Hair Bundles"}
                                    {:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug "virgin-closures" :catalog/category-id "0"}]
                                     :slide-out-nav-menu-item/id      "menu-shop-virgin-closures"
                                     :slide-out-nav-menu-item/nested? false

@@ -169,3 +169,7 @@
 (defn quiz-always-adds-holiday-promo?
   [data]
   (display-feature? data "quiz-always-adds-holiday-promo"))
+
+(defn sale-shop-hair?
+  [data]
+  (display-feature? data "sale-shop-hair"))
