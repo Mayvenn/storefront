@@ -344,7 +344,7 @@
 ;; NOTE: This a-la-carte does not mean services, it refers to not using shared-carts/looks
 (defn shop-a-la-carte-flyout-query [data]
   {:header-menu-item/flyout-menu-path keypaths/shop-a-la-carte-menu-expanded
-   :header-menu-item/new-label        (when experiments/sale-shop-hair? "SALE")
+   :header-menu-item/new-label        (when (experiments/sale-shop-hair? data) "SALE")
    :header-menu-item/content          "Shop hair"
    :header-menu-item/id               "desktop-shop-hair"
    :flyout/items                      (->> (get-in data keypaths/categories)
