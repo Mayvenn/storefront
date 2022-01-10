@@ -222,7 +222,7 @@
   [{:header-menu-item/keys [navigation-target
                             href
                             content
-                            new-label?
+                            new-label
                             label-icon
                             flyout-menu-path]
     :as data} _ _]
@@ -245,8 +245,8 @@
       (merge {:href href}))
     (when label-icon
       (svg/symbolic->html [label-icon {:style {:width "0.7em" :height "0.7em"} :class "mx1"}]))
-    (when new-label?
-      [:span.p-color.pr1 "NEW"])
+    (when new-label
+      [:span.p-color.pr1 new-label])
     content]
    [:div.absolute.left-0.z2
     {:style {:padding-left "24px"}}
@@ -344,6 +344,7 @@
 ;; NOTE: This a-la-carte does not mean services, it refers to not using shared-carts/looks
 (defn shop-a-la-carte-flyout-query [data]
   {:header-menu-item/flyout-menu-path keypaths/shop-a-la-carte-menu-expanded
+   :header-menu-item/new-label        (when experiments/sale-shop-hair? "SALE")
    :header-menu-item/content          "Shop hair"
    :header-menu-item/id               "desktop-shop-hair"
    :flyout/items                      (->> (get-in data keypaths/categories)
@@ -509,7 +510,7 @@
                             [{:header-menu-item/navigation-target [events/navigate-shopping-quiz-unified-freeinstall-intro
                                                                    {:query-params {:location "desktop_header"}}]
                               :header-menu-item/id                "desktop-shop-quiz-unified-fi"
-                              :header-menu-item/new-label?        true
+                              :header-menu-item/new-label         "NEW"
                               :header-menu-item/content           "Start Hair Quiz"}]
                             [{:header-menu-item/navigation-target [events/navigate-adventure-find-your-stylist]
                               :header-menu-item/id                "desktop-shop-find-stylist"
