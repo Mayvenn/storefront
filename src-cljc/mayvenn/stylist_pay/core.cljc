@@ -168,8 +168,8 @@
 (defn summary-line
   [{:keys [primary secondary]}]
   (c/html
-   [:div.flex.justify-between.items-center
-    [:div primary]
+   [:div.flex.flex-column.justify-between.items-center
+    [:div.bold primary]
     [:div secondary]]))
 
 (c/defcomponent receipt-template
@@ -198,13 +198,13 @@
       (= "sent" (:state stylist-payment))
       (let [{:stylist-payment/keys [amount payment-id]} stylist-payment]
         (c/build receipt-template
-                 {:header/target   [e/navigate-home]
-                  :title/primary   "Payment sent"
-                  :title/tertiary  (str "Payment ID: " payment-id)
-                  :summary/primary (str "$" (/ amount 100) " "
-                                        "was successfully sent to " (:store-name store) ". "
-                                        "We will let them know you sent the money and we will "
-                                        "email you a 15% off coupon at the end of the month.")}))
+                 {:header/target     [e/navigate-home]
+                  :title/primary     "Payment sent"
+                  :title/tertiary    (str "Payment ID: " payment-id)
+                  :summary/primary   "Congratulations!"
+                  :summary/secondary (str
+                                      "Your payment was successfully sent to " (:store-name store) ". "
+                                      "You will receive your 15% off coupon at the end of the month.")}))
 
       :else
       (c/build template
