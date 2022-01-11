@@ -13,8 +13,10 @@
             #?@(:cljs
                 [[storefront.api :as api]
                  [storefront.hooks.stripe :as stripe]
+                 [storefront.hooks.stringer :as stringer]
                  [storefront.browser.scroll :as scroll]])
             [storefront.transitions :as t]
+            [storefront.trackings :as tt]
             [storefront.effects :as fx]
             [mayvenn.visual.tools :refer [with]])) ;; TODO(corey) maybe this is just visual?
 
@@ -52,14 +54,18 @@
 
 ;;; event: Reset
 ;;; <- initialized, via navigation
-(defmethod t/transition-state
-  e/stylist-payment|reset
+(defmethod t/transition-state e/stylist-payment|reset
   [_ _ {:stylist/keys [id]} state]
   (assoc-in state
             k-current
             {:state      "reset"
              :stylist/id id
              :idem/id    (str #?(:cljs (random-uuid)))}))
+
+(defmethod tt/perform-track e/stylist-payment|reset
+  [_ _ _ state]
+  #?(:cljs (stringer/track-event "stylist_payment_reset"
+                                 {:session-id (get-in state k/session-id)})))
 
 ;;; event: Prepared
 ;;; <- payment info from customer
@@ -80,6 +86,11 @@
               :on/failure e/stylist-payment|failed
               :card-holder  cardholder
               :card-element card-element})))
+
+(defmethod tt/perform-track e/stylist-payment|prepared
+  [_ _ _ state]
+  #?(:cljs (stringer/track-event "stylist_payment_prepared"
+                                 {:session-id (get-in state k/session-id)})))
 
 ;;; event: Requested
 ;;; <- token acquired
@@ -119,6 +130,11 @@
         e/stylist-payment|sent
         e/stylist-payment|failed))))
 
+(defmethod tt/perform-track e/stylist-payment|requested
+  [_ _ _ state]
+  #?(:cljs (stringer/track-event "stylist_payment_requested"
+                                 {:session-id (get-in state k/session-id)})))
+
 ;;; event: Failed
 ;;; <- token failure
 ;;; <- charge failure
@@ -130,6 +146,11 @@
               (-> result :response :body :error-message))
     :always
     (assoc-in (conj k-current :state) "failed")))
+
+(defmethod tt/perform-track e/stylist-payment|failed
+  [_ _ _ state]
+  #?(:cljs (stringer/track-event "stylist_payment_failed"
+                                 {:session-id (get-in state k/session-id)})))
 
 ;;; event: Sent
 ;;; <- charge acquired
@@ -144,6 +165,14 @@
                   (:payment-id charge-result))
         (assoc-in (conj k-current :state)
                   "sent"))))
+
+(defmethod tt/perform-track e/stylist-payment|sent
+  [_ _ _ state]
+  #?(:cljs (stringer/track-event "stylist_payment_sent"
+                                 {:session-id (get-in state k/session-id)})))
+
+;;;;;;
+;;;;;;
 
 ;;; TODO(corey) this needs a new home
 (defmethod fx/perform-effects e/stripe|create-token|requested
