@@ -212,7 +212,7 @@
                 :title/primary      "Mayvenn Stylist Pay"
                 :title/secondary    "Beta"
                 :title/tertiary     "Complete payment with Mayvenn Stylist Pay to receive a 15% off coupon"
-                :stylist/img-url    nil
+                :stylist/img-url    (some-> store :portrait :resizable-url)
                 :stylist/primary    (:store-name store)
                 :stylist/secondary  (->> ((juxt :city
                                                 :state-abbr)
