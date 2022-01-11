@@ -106,7 +106,7 @@
 (defcomponent template
   [{:keys [flash header stylist-search maps-spinner query-spinner? cart]} _ _]
   (if query-spinner?
-    [:div.max-580.bg-pale-purple.absolute.overlay
+    [:div.bg-pale-purple.absolute.overlay
      [:div.absolute.overlay.border.border-white.border-framed-white.m4.p5.flex.flex-column.items-center.justify-center
       [:div (svg/mayvenn-logo {:class "spin-y"
                                :style {:width "54px"}})]
@@ -114,13 +114,14 @@
        [:div.title-2.canela.center
         [:div "Sit back and relax."]
         [:div "There’s no end to what your hair can do."]]]]]
-    [:div.center.flex.flex-auto.flex-column
+    [:div.flex.flex-auto.flex-column
      (header/adventure-header header)
      (component/build flash/component flash nil)
-     (if (seq maps-spinner)
-       (component/build spinner/organism maps-spinner nil)
-       [:div.px2.mt8.pt4
-        (component/build stylist-search/organism stylist-search nil)])]))
+     [:div.max-580.mx-auto
+      (if (seq maps-spinner)
+             (component/build spinner/organism maps-spinner nil)
+             [:div.px2.mt8.pt4
+              (component/build stylist-search/organism stylist-search nil)])]]))
 
 (defn ^:export page
   [state _]

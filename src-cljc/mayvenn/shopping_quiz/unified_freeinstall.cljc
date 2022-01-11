@@ -122,7 +122,8 @@
    [:div.bg-white
     (quiz-header (with :header data))]
    (c/build progress-bar/variation-1 (with "progress" data))
-   (c/build booking.core/body data)])
+   [:div.max-580.mx-auto
+    (c/build booking.core/body data)]])
 
 ;; Template: 3/Match Success
 (c/defcomponent matched-success-template
@@ -131,33 +132,33 @@
    [:div.bg-white
     (quiz-header (with :header data))]
    (c/build progress-bar/variation-1 (with :progress data))
-   (titles/canela-huge (with :title data))
+   [:div.max-580.mx-auto (titles/canela-huge (with :title data))
 
-   [:div.flex.flex-column.m3.g2
-    (c/elements card/cart-item-1
-                data
-                :card/cart-items)]
-   [:div.center.px4.my2
-    [:div.mb4
-     [:div.flex.justify-center.items-center.align-middle
-      (svg/symbolic->html (:summary/icon data))
-      (titles/proxima (with :summary-subtotal data))]
-     [:div.strike (titles/proxima-tiny (with :summary-slash data))]
-     (titles/proxima-large (with :summary-total data))]
-    [:div.flex.justify-center.items-center
-     (actions/large-primary (with :checkout data))]
-    [:div.h5.black.py1.flex.items-center
-     [:div.flex-grow-1.border-bottom.border-gray]
-     [:div.mx2 (titles/proxima-tiny (with :or data))]
-     [:div.flex-grow-1.border-bottom.border-gray]]
-    [:div.flex.justify-center.items-center
-     (actions/large-paypal (with :paypal data))]
-    #?(:cljs
-       [:div.my4
-        (c/build quadpay/component
-                 (with :quadpay data)
-                 nil)])]
-   (c/build escape-hatch/variation-1 (with :escape-hatch data))])
+    [:div.flex.flex-column.m3.g2
+     (c/elements card/cart-item-1
+                 data
+                 :card/cart-items)]
+    [:div.center.px4.my2
+     [:div.mb4
+      [:div.flex.justify-center.items-center.align-middle
+       (svg/symbolic->html (:summary/icon data))
+       (titles/proxima (with :summary-subtotal data))]
+      [:div.strike (titles/proxima-tiny (with :summary-slash data))]
+      (titles/proxima-large (with :summary-total data))]
+     [:div.flex.justify-center.items-center
+      (actions/large-primary (with :checkout data))]
+     [:div.h5.black.py1.flex.items-center
+      [:div.flex-grow-1.border-bottom.border-gray]
+      [:div.mx2 (titles/proxima-tiny (with :or data))]
+      [:div.flex-grow-1.border-bottom.border-gray]]
+     [:div.flex.justify-center.items-center
+      (actions/large-paypal (with :paypal data))]
+     #?(:cljs
+        [:div.my4
+         (c/build quadpay/component
+                  (with :quadpay data)
+                  nil)])]
+    (c/build escape-hatch/variation-1 (with :escape-hatch data))]])
 
 (defn ^:private hacky-stylist-image
   [stylist]
@@ -260,13 +261,14 @@
    [:div.bg-white
     (quiz-header (with :header data))]
    (c/build progress-bar/variation-1 (with :progress data))
-   (c/build stylist-results/search-inputs-organism
-            stylist-search-inputs)
-   (if spinning?
-     [:div.mt6 ui/spinner]
-     [:div.relative.stretch
-      (c/build stylist-results/results-template results)
-      (when scrim? scrim-atom)])])
+   [:div.max-580.mx-auto
+    (c/build stylist-results/search-inputs-organism
+             stylist-search-inputs)
+    (if spinning?
+      [:div.mt6 ui/spinner]
+      [:div.relative.stretch
+       (c/build stylist-results/results-template results)
+       (when scrim? scrim-atom)])]])
 
 (defn stylist-results<
   [quiz-progression
@@ -314,7 +316,7 @@
    [:div.bg-white
     (quiz-header (with :header data))]
    (c/build progress-bar/variation-1 (with :progress data))
-   [:div.px2.mt8.pt4
+   [:div.px2.mt8.pt4.max-580.mx-auto
     (c/build stylist-search/organism data)]])
 
 (defn find-your-stylist<
@@ -346,7 +348,7 @@
    [:div.bg-white
     (quiz-header (with :header data))]
    (c/build progress-bar/variation-1 (with :progress data))
-   [:div.flex.flex-column.items-center
+   [:div.flex.flex-column.items-center.max-580.mx-auto
     [:div.col-10.pt2
      (titles/canela (with :title data))]
     [:div.col-12.p3
@@ -359,7 +361,7 @@
    [:div.bg-white
     (quiz-header (with :header data))]
    (c/build progress-bar/variation-1 (with :progress data))
-   [:div.flex.flex-column.justify-center.items-center.myj3
+   [:div.flex.flex-column.justify-center.items-center.myj3.max-580.mx-auto
     [:div.col-8.my2
      (titles/canela (with :title data))]
     [:div.mb6.col-10.col-8-on-tb
@@ -443,7 +445,7 @@
     (quiz-header (with :header data))]
    (c/build progress-bar/variation-1 (with :progress data))
    (c/build flash/component (:flash data) nil)
-   [:div.flex.flex-column.mbj2
+   [:div.flex.flex-column.mbj2.max-580.mx-auto
     (titles/canela-huge {:primary "Our picks for you"})
     (c/elements card-look-2-suggestion-wrapper
                 data
@@ -457,7 +459,7 @@
    [:div.bg-white
     (quiz-header (with :header data))]
    (c/build progress-bar/variation-1 (with :progress data))
-   [:div.flex.flex-column.mbj2
+   [:div.flex.flex-column.mbj2.max-580.mx-auto
     (titles/canela-huge {:primary "Our picks for you"})
     (c/elements card/look-1
                 data
@@ -547,7 +549,7 @@
   [:div
    (quiz-header (with :header data))
    (c/build progress-bar/variation-1 (with :progress data))
-   [:div.flex.flex-column.mbj3.pbj3
+   [:div.flex.flex-column.mbj3.pbj3.max-580.mx-auto
     (c/elements question/variation-1
                 data
                 :questions)

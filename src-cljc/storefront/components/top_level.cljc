@@ -260,9 +260,7 @@
           ;; TODO temporary hack for desktop stylist profile
           ;;      As we re-align our pages to have their own control (ie. the todo above)
           ;;      we can add events here that we're transitioning to be desktop friendly
-          :class (str (when-not (some #(= nav-event %) [events/navigate-adventure-stylist-profile])
-                        "max-580 ")
-                      "mx-auto relative")}
+          :class "mx-auto relative"}
          ((main-component nav-event) data nil)]
         (when #?(:clj true
                  :cljs (-> data (get-in stylist-directory.keypaths/stylist-search-show-filters?) not))

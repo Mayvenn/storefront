@@ -661,13 +661,14 @@
    ;; TODO(corey) is this used?
    (component/build gallery-modal/organism gallery-modal)
    (components.header/adventure-header header)
-   (component/build search-inputs-organism stylist-search-inputs)
-   (if spinning?
-     [:div.mt6 ui/spinner]
-     [:div.relative.stretch
-      (component/build results-template results)
-      (when scrim?
-        scrim-atom)])])
+   [:div.max-580.mx-auto.bg-white
+    (component/build search-inputs-organism stylist-search-inputs)
+    (if spinning?
+      [:div.mt6 ui/spinner]
+      [:div.relative.stretch
+       (component/build results-template results)
+       (when scrim?
+         scrim-atom)])]])
 
 (def shopping-method-choice-query
   {:shopping-method-choice.error-title/id        "stylist-matching-shopping-method-choice"
