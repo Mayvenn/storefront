@@ -232,6 +232,26 @@
        [:div.h5.medium.s-color (mf/as-money amount)]
        [:div.h8 "Cash"]]]]))
 
+(defn ^:private payment-award-component
+  [{:keys [balance-transfer] :as queried-data}]
+  (let [{:keys [id transfered-at amount data]} balance-transfer
+        {:keys [payee-name note payment-id]}   data]
+    [:div.container.mb4.px3
+     [:div.py3 (ui-molecules/return-link (:payout/return-link queried-data))]
+     [:div
+      [:div.col.col-1.px2 (svg/coin-in-slot {:height 14
+                                             :width  20})]
+      [:div.col.col-9.pl2
+       [:h4.col-12.left.medium.pb4 "Stylist Payment"
+        (when payee-name (str " - " payee-name))]
+       [:div.col-12
+        (info-block "deposit date" (f/long-date (or transfered-at (:transfered_at data))))
+        (info-block "from" payee-name)
+        (info-block "payment id" payment-id)
+        (info-block "note" note)]]
+      [:div.col.col-2.mtp1.right-align
+       [:div.h5.medium.s-color (mf/as-money amount)]]]]))
+
 ;; TODO: Refactor the query in this namespace to not be as one-to-one with the
 ;; model representation
 (defn ^:private voucher-award-component
@@ -344,6 +364,7 @@
         "payout"        (payout-component data)
         "commission"    (commission-component data)
         "award"         (award-component data)
+        "payment_award" (payment-award-component data)
         "voucher_award" (voucher-award-component data)))))
 
 (defn ^:export built-component [data opts]

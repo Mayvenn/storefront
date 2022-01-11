@@ -21,8 +21,14 @@
             [clojure.string :as string]))
 
 (defn balance-transfer->payment [balance-transfer]
-  (let [{:keys [id type data]}                                                                           balance-transfer
-        {:keys [order created-at amount campaign-name reason commission-date payout-method-name voucher-uuid voucher]} data]
+  (let [{:keys [id type data]} balance-transfer
+
+        {:keys [order created-at amount
+                campaign-name reason commission-date
+                payout-method-name
+                voucher-uuid voucher
+                payee-name]}
+        data]
     (merge {:id                 id
             :icon               "68e6bcb0-a236-46fe-a8e7-f846fff0f464"
             :date               created-at
@@ -39,6 +45,10 @@
                               :data-test (str "commission-" (:number order))
                               :date      commission-date}
              "award"         {:title     reason
+                              :data-test (str "award-" id)}
+             "payment_award" {:title     (str "Stylist Payment"
+                                              (when payee-name
+                                                (str " - " payee-name)))
                               :data-test (str "award-" id)}
              "voucher_award" {:title     (str "Service Payment"
                                               (when-let [name (orders/first-name-plus-last-name-initial order)]
