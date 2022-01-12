@@ -1,20 +1,19 @@
 (ns mayvenn.stylist-pay.core
   (:require api.stylist
             [storefront.component :as c]
+            [storefront.components.footer-links :as footer-links]
             [storefront.components.ui :as ui]
-            [storefront.components.svg :as svg]
+            [storefront.config :as config]
             [storefront.keypaths :as k]
             [storefront.platform.messages
              :as messages
              :refer [handle-message] :rename {handle-message publish}]
             #?@(:cljs
                 [[storefront.hooks.stripe :as stripe]])
-            [storefront.transitions :as t]
             [storefront.effects :as fx]
             [storefront.events :as e]
             [mayvenn.concept.stylist-payment :as stylist-payment]
             [mayvenn.visual.ui.actions :as actions]
-            [mayvenn.visual.ui.titles :as titles]
             [mayvenn.visual.tools :refer [with]]))
 
 (c/defdynamic-component ^:private new-card-1
@@ -104,6 +103,16 @@
      (when (seq target)
        {:event (first target)})))])
 
+(c/defcomponent footer-1
+  [_ _ _]
+  [:div.py2.px3.flex.flex-column
+   [:div.title-2.proxima.shout.mx-auto.mb1 "Need Help?"]
+   [:div.content-3.proxima.mx-auto
+    (ui/link :link/phone :a.inherit-color {} config/support-phone-number)
+    " | 8am-5pm PST M-F"]
+   [:div.left
+    (c/build footer-links/component {:minimal? true} nil)]])
+
 ;;;
 
 (defn flipped-title
@@ -163,7 +172,9 @@
       (c/build field-1 (with :phone data))
       (c/build checkbox-1 (with :opt-in data))]]
     [:div.mt4
-     (actions/medium-primary (with :action data))]]])
+     (actions/medium-primary (with :action data))]]
+   [:div.col-12.bg-cool-gray.myj1.pyj2
+    (c/build footer-1 data)]])
 
 (defn summary-line
   [{:keys [primary secondary]}]
