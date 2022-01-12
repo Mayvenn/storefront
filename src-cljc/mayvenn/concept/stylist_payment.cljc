@@ -192,6 +192,15 @@
   (let [data (merge
               (<-tracking state :current)
               {:session-id (get-in state k/session-id)})]
+    (when (:opt-in data)
+      #?(:cljs
+         (stringer/identify {:email (:stylist-payment/email data)}))
+      #?(:cljs
+         (stringer/track-event "email_capture-capture"
+                               {:email            (:stylist-payment/email data)
+                                :email-capture-id "stylist-pay"
+                                :store-slug       (get-in state k/store-slug)
+                                :store-experience (get-in state k/store-experience)})))
     #?(:cljs
        (stringer/track-event "stylist_payment_sent"
                              data))))
