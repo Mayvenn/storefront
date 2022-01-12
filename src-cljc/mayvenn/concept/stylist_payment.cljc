@@ -50,6 +50,11 @@
            :valid (and (number? amount)
                        (not (invalid-email? email))))))
 
+(defn <-tracking
+  [state id]
+  (-> (<- state id)
+      (dissoc :stripe/token)))
+
 ;; behavior
 
 ;;; event: Reset
@@ -64,8 +69,12 @@
 
 (defmethod tt/perform-track e/stylist-payment|reset
   [_ _ _ state]
-  #?(:cljs (stringer/track-event "stylist_payment_reset"
-                                 {:session-id (get-in state k/session-id)})))
+  (let [data (merge
+              (<-tracking state :current)
+              {:session-id (get-in state k/session-id)})]
+    #?(:cljs
+       (stringer/track-event "stylist_payment_reset"
+                             data))))
 
 ;;; event: Prepared
 ;;; <- payment info from customer
@@ -89,8 +98,12 @@
 
 (defmethod tt/perform-track e/stylist-payment|prepared
   [_ _ _ state]
-  #?(:cljs (stringer/track-event "stylist_payment_prepared"
-                                 {:session-id (get-in state k/session-id)})))
+  (let [data (merge
+              (<-tracking state :current)
+              {:session-id (get-in state k/session-id)})]
+    #?(:cljs
+       (stringer/track-event "stylist_payment_prepared"
+                             data))))
 
 ;;; event: Requested
 ;;; <- token acquired
@@ -132,8 +145,12 @@
 
 (defmethod tt/perform-track e/stylist-payment|requested
   [_ _ _ state]
-  #?(:cljs (stringer/track-event "stylist_payment_requested"
-                                 {:session-id (get-in state k/session-id)})))
+  (let [data (merge
+              (<-tracking state :current)
+              {:session-id (get-in state k/session-id)})]
+    #?(:cljs
+       (stringer/track-event "stylist_payment_requested"
+                             data))))
 
 ;;; event: Failed
 ;;; <- token failure
@@ -142,15 +159,19 @@
   [_ _ result state]
   (cond-> state
     (= :error (:failure result))
-    (assoc-in (conj k/errors :field-errors ["card-error"] :long-message)
+    (assoc-in (conj k-current :field-errors ["card-error"] :long-message)
               (-> result :response :body :error-message))
     :always
     (assoc-in (conj k-current :state) "failed")))
 
 (defmethod tt/perform-track e/stylist-payment|failed
   [_ _ _ state]
-  #?(:cljs (stringer/track-event "stylist_payment_failed"
-                                 {:session-id (get-in state k/session-id)})))
+  (let [data (merge
+              (<-tracking state :current)
+              {:session-id (get-in state k/session-id)})]
+    #?(:cljs
+       (stringer/track-event "stylist_payment_failed"
+                             data))))
 
 ;;; event: Sent
 ;;; <- charge acquired
@@ -168,8 +189,12 @@
 
 (defmethod tt/perform-track e/stylist-payment|sent
   [_ _ _ state]
-  #?(:cljs (stringer/track-event "stylist_payment_sent"
-                                 {:session-id (get-in state k/session-id)})))
+  (let [data (merge
+              (<-tracking state :current)
+              {:session-id (get-in state k/session-id)})]
+    #?(:cljs
+       (stringer/track-event "stylist_payment_sent"
+                             data))))
 
 ;;;;;;
 ;;;;;;
