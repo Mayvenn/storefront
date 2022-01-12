@@ -215,9 +215,7 @@
 (defn page
   [state _]
   (let [current-category                    (accessors.categories/current-category state)
-        ff-wigs-icp-v2?                     (experiments/wigs-icp-v2? state)
-        revert-wigs-icp?                    (and (= "13" (:catalog/category-id current-category))
-                                                 (not ff-wigs-icp-v2?))
+        revert-wigs-icp?                    (= "13" (:catalog/category-id current-category))
         interstitial-category               (cond-> (accessors.categories/current-category state)
                                                revert-wigs-icp? (assoc :subcategories/ids ["24" "26" "25" "40" "41"])
                                                revert-wigs-icp?  (assoc :subcategories/layout :list))
@@ -257,7 +255,7 @@
                                                    :list/sections      (for [{:keys [question answer]} question-answers]
                                                                          {:faq/title   (:text question)
                                                                           :faq/content answer})}))
-                       :spotlighting          (when (and (= "13" (:catalog/category-id current-category)) ff-wigs-icp-v2?)
+                       :spotlighting          (when (= "13" (:catalog/category-id current-category))
                                                 {:title      (:spotlighting/title interstitial-category)
                                                  :spotlights (map (fn [{:keys [:subcategory/image-id
                                                                                :subcategory/title
