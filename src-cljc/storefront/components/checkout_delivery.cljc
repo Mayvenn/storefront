@@ -215,10 +215,10 @@
            (->> (.formatToParts
                  (js/Intl.DateTimeFormat
                   "en-US" #js
-                           {:timeZone "America/New_York"
-                            :weekday  "short"
-                            :hour     "numeric"
-                            :hour12   false}) now)
+                  {:timeZone "America/New_York"
+                   :weekday  "short"
+                   :hour     "numeric"
+                   :hour12   false}) now)
                 js->clj
                 (mapv js->clj)
                 (mapv (fn [{:strs [type value]}]
@@ -236,29 +236,31 @@
 
         {:order/keys [items] :waiter/keys [order]} (api.orders/current data)
 
-        shipping       (orders/shipping-item order)
-        free-shipping? (= "WAITER-SHIPPING-1" (:sku shipping))
-        only-services? (every? line-items/service? (orders/product-and-service-items order))
-        drop-shipping? (boolean (select {:warehouse/slug #{"factory-cn"}} items))
-        hide-delivery-date? (experiments/hide-delivery-date? data)
-        inventory-count-shipping-halt? (experiments/inventory-count-shipping-halt? data)]
+        shipping                       (orders/shipping-item order)
+        free-shipping?                 (= "WAITER-SHIPPING-1" (:sku shipping))
+        only-services?                 (every? line-items/service? (orders/product-and-service-items order))
+        drop-shipping?                 (boolean (select {:warehouse/slug #{"factory-cn"}} items))
+        hide-delivery-date?            (experiments/hide-delivery-date? data)
+        inventory-count-shipping-halt? (experiments/inventory-count-shipping-halt? data)
+        hide-guaranteed-shipping?      (experiments/hide-guaranteed-shipping? data)]
     (merge
-     {:delivery/id        (when-not (and free-shipping? only-services?)
-                            "shipping-method")
-      :delivery/primary   "Shipping Method"
-      :delivery/options   (->> shipping-methods
-                               (map (partial shipping-method->shipping-method-option
-                                             selected-sku
-                                             now
-                                             east-coast-weekday
-                                             in-window?
-                                             drop-shipping?
-                                             hide-delivery-date?)))}
-     (if inventory-count-shipping-halt?
-       {:delivery.note/id   "inventory-warning"
-        :delivery.note/copy "Due to our annual year-end inventory count, Mayvenn will not be shipping new orders until Monday, December 13."
-        :delivery.note/severity :warning}
-       {:delivery.note/id   (when in-window? "delivery-note")
-        :delivery.note/copy (if friday?
-                              "Order by 10am ET today to have the guaranteed delivery dates below"
-                              "Order by 1pm ET today to have the guaranteed delivery dates below")}))))
+     {:delivery/id      (when-not (and free-shipping? only-services?)
+                          "shipping-method")
+      :delivery/primary "Shipping Method"
+      :delivery/options (->> shipping-methods
+                             (map (partial shipping-method->shipping-method-option
+                                           selected-sku
+                                           now
+                                           east-coast-weekday
+                                           in-window?
+                                           drop-shipping?
+                                           hide-delivery-date?)))}
+     (when-not hide-guaranteed-shipping?
+       (if inventory-count-shipping-halt?
+         {:delivery.note/id       "inventory-warning"
+          :delivery.note/copy     "Due to our annual year-end inventory count, Mayvenn will not be shipping new orders until Monday, December 13."
+          :delivery.note/severity :warning}
+         {:delivery.note/id   (when in-window? "delivery-note")
+          :delivery.note/copy (if friday?
+                                "Order by 10am ET today to have the guaranteed delivery dates below"
+                                "Order by 1pm ET today to have the guaranteed delivery dates below")})))))

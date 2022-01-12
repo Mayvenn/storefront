@@ -169,3 +169,7 @@
 (defn sale-shop-hair?
   [data]
   (display-feature? data "sale-shop-hair"))
+
+(defn hide-guaranteed-shipping?
+  [data]
+  (display-feature? data "hide-guaranteed-shipping"))
