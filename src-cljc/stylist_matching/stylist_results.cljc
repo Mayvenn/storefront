@@ -776,7 +776,7 @@
                                                             (remove #(= (:stylist-id %)
                                                                         (:stylist-id top-stylist)) matching-stylists))
                                                     matching-stylists)
-        premium-stylist-ids                       [111023 111025 111026 96040 1663 111024]
+        premium-stylist-ids                       [111023 111025 111026 96040 1663 111024 111029]
         premium-stylists                          (when-let [premium-stylists (filter #((set premium-stylist-ids) (:stylist-id %))
                                                                                       matching-stylists-with-top-stylist-bumped)]
                                                     (concat premium-stylists
