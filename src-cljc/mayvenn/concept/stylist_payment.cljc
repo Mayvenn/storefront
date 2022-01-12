@@ -159,7 +159,7 @@
   [_ _ result state]
   (cond-> state
     (= :error (:failure result))
-    (assoc-in (conj k-current :field-errors ["card-error"] :long-message)
+    (assoc-in (conj k/errors :field-errors ["card-error"] :long-message)
               (-> result :response :body :error-message))
     :always
     (assoc-in (conj k-current :state) "failed")))
