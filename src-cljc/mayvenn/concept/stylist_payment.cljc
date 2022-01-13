@@ -87,13 +87,13 @@
 
 (defmethod fx/perform-effects e/stylist-payment|prepared
   [_ _ _ _ state]
-  (let [cardholder  (->> (<- state :current)
-                         (with :cardholder))
+  (let [cardholder   (->> (<- state :current)
+                          (with :cardholder))
         card-element (get-in state k/stripe-card-element)]
     (publish e/stripe|create-token|requested
-             {:on/success e/stylist-payment|requested
-              :on/failure e/stylist-payment|failed
-              :card-holder  cardholder
+             {:on/success   e/stylist-payment|requested
+              :on/failure   e/stylist-payment|failed
+              :cardholder   cardholder
               :card-element card-element})))
 
 (defmethod tt/perform-track e/stylist-payment|prepared
