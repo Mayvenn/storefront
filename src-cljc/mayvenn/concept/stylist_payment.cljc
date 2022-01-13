@@ -134,8 +134,8 @@
        (api/send-stylist-payment
         session-id
         {:amount         amount
-         :payee_email    email
-         :payee_phone    phone
+         :payee-email    email
+         :payee-phone    phone
          :note           note
          :source         (:stripe/source stylist-payment)
          :stylist-id     (:stylist/id stylist-payment)
