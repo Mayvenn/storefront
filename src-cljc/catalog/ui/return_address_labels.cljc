@@ -11,7 +11,7 @@
    (apply utils/route-to nav-event)
    (ui/img {:src         image-src
             :square-size 40
-            :max-size    "40px"
+            :max-size    40
             :class       "mp3"})
    [:div.proxima.content-3.p1 title]])
 

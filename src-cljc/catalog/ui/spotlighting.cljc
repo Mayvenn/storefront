@@ -7,7 +7,7 @@
   [:a.block.black
    (apply utils/route-to nav-event)
    ;; (ui/circle-picture {:width "108px"} (str "//ucarecdn.com/" image-src "/"))
-   (ui/circle-ucare-img {:width 108} image-src)
+   (ui/circle-ucare-img {:width "108"} image-src)
    [:div.center.mt3 title]])
 
 (c/defcomponent organism
