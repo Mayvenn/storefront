@@ -661,7 +661,7 @@
    ;; TODO(corey) is this used?
    (component/build gallery-modal/organism gallery-modal)
    (components.header/adventure-header header)
-   [:div.max-580.mx-auto.bg-white
+   [:div.max-580.col-12.mx-auto.bg-white
     (component/build search-inputs-organism stylist-search-inputs)
     (if spinning?
       [:div.mt6 ui/spinner]
