@@ -22,6 +22,8 @@
   #{e/navigate-cart
     e/navigate-checkout
 
+    e/navigate-mayvenn-stylist-pay
+
     ;; Auth pages
     e/navigate-reset-password
     e/navigate-force-set-password
