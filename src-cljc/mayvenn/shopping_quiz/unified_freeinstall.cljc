@@ -445,25 +445,12 @@
     (quiz-header (with :header data))]
    (c/build progress-bar/variation-1 (with :progress data))
    (c/build flash/component (:flash data) nil)
-   [:div.flex.flex-column.mbj2.max-580.mx-auto
+   [:div.flex.flex-column.mbj2.max-960.mx-auto
     (titles/canela-huge {:primary "Our picks for you"})
-    (c/elements card-look-2-suggestion-wrapper
-                data
-                :suggestions-v2)]
-   (c/build escape-hatch/variation-1
-            (with :escape-hatch data))])
-
-(c/defcomponent suggestions-template
-  [data _ _]
-  [:div.col-12.bg-cool-gray.stretch
-   [:div.bg-white
-    (quiz-header (with :header data))]
-   (c/build progress-bar/variation-1 (with :progress data))
-   [:div.flex.flex-column.mbj2.max-580.mx-auto
-    (titles/canela-huge {:primary "Our picks for you"})
-    (c/elements card/look-1
-                data
-                :suggestions)]
+    [:div.grid.grid-cols-2-on-tb-dt.grid-cols-1-on-mb
+     (c/elements card-look-2-suggestion-wrapper
+                 data
+                 :suggestions-v2)]]
    (c/build escape-hatch/variation-1
             (with :escape-hatch data))])
 
@@ -773,12 +760,8 @@
             (c/build summary-template
                      (summary< products-db skus-db images-db quiz-progression selected-look undo-history))
 
-            (experiments/shopping-quiz-v2? state)
-            (c/build suggestions-template-v2
-                     (suggestions< products-db skus-db images-db quiz-progression looks-suggestions undo-history flash))
-
             :else
-            (c/build suggestions-template
+            (c/build suggestions-template-v2
                      (suggestions< products-db skus-db images-db quiz-progression looks-suggestions undo-history flash))))
       ;; STEP 1: Taking the quiz
       1 (let [{:keys [questions answers progression]} (questioning/<- state shopping-quiz-id)
