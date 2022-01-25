@@ -342,8 +342,6 @@
   (let [selections         (get-in data catalog.keypaths/detailed-product-selections)
         product            (products/current-product data)
         product-skus       (products/extract-product-skus data product)
-        out-of-stock-skus  (remove :inventory/in-stock? product-skus)
-        nav-stack          (get-in data keypaths/navigation-undo-stack nil)
         images-catalog     (get-in data keypaths/v2-images)
         facets             (facets/by-slug data)
         selected-sku       (get-in data catalog.keypaths/detailed-product-selected-sku)
