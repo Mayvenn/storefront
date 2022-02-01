@@ -7,7 +7,8 @@
             [storefront.events :as events]
             [storefront.platform.component-utils :as util]
             [storefront.platform.carousel :as carousel]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [spice.core :as spice]))
 
 (defn ^:private carousel-slide
   [destination-event product-id page-slug sku-id dt-prefix idx
@@ -31,10 +32,6 @@
 (defn ->title-case [s]
   #?(:clj (string/capitalize s)
      :cljs (goog.string/toTitleCase s)))
-
-(defn parse-int [v]
-  #?(:clj (Integer/parseInt v)
-     :cljs (js/parseInt v 10)))
 
 (defn ^:private popup-slide [long-name social-card]
   ;; NOTE: desktop-aware? should always be false because we want the slide to take up the full width
@@ -92,7 +89,7 @@
                         {:opts {:settings {:items       1
                                            :edgePadding 0
                                            :nav         false
-                                           :startIndex  (parse-int offset)}
+                                           :startIndex  (spice/parse-int offset)}
                                 :slides (mapv (partial popup-slide (:product-name carousel-data))
                                               (:social-cards carousel-data))
                                 :events [["indexChanged"
