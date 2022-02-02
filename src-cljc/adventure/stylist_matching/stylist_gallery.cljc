@@ -16,6 +16,7 @@
             [storefront.components.svg :as svg]
             [storefront.effects :as fx]
             [storefront.events :as e]
+            [storefront.components.gallery :as gallery]
             storefront.keypaths
             [storefront.platform.component-utils :as utils]
             [storefront.transitions :as transitions]))
@@ -70,6 +71,27 @@
                                :height "14px"}})])))]
    [:div {:style {:margin-top "70px"}}]])
 
+(defn desktop-stylist-gallery-header-molecule
+  [{:stylist-gallery-header/keys [title close-id close-route]}]
+  [:div
+   [:div.fixed.z4.top-0.left-0.right-0
+    (header/nav-header
+     {:class "border-bottom border-gray bg-white black"
+      :style {:height "70px"}}
+     nil
+     (component/html [:div.h4.medium title])
+     (component/html
+      (when close-id
+        [:div.ml-auto.flex.items-center.justify-around
+         (merge {:data-test close-id
+                 :style     {:width  "70px"
+                             :height "70px"}}
+                close-route)
+         (svg/x-sharp {:class "black"
+                       :style {:width  "14px"
+                               :height "14px"}})])))]
+   [:div {:style {:margin-top "70px"}}]])
+
 (defn ^:private stylist-gallery-image
   [idx url]
   ;; padding hack to preserve pre-load image aspect ratio
@@ -83,11 +105,28 @@
     [:img {:src   (str url "-/scale_crop/580x580/smart/")
            :style {:width "100%"}}]]])
 
+(defn ^:private desktop-stylist-gallery-image
+  [idx url]
+  ;; padding hack to preserve pre-load image aspect ratio
+  [:picture.ml1
+   {:data-ref (str "offset-" idx)
+    :style    {:top 0
+               :bottom 0}}
+   [:source {:src-set
+             (str url "-/scale_crop/1160x1160/smart/ 2x," url "-/scale_crop/580x580/smart/ 1x")}]
+   [:img {:src (str url "-/scale_crop/580x580/smart/")
+          :style {:width "29%"}}]])
+
 (defcomponent component
   [data owner opts]
-  [:div.col-12.bg-white
-   (stylist-gallery-header-molecule data)
-   (map-indexed stylist-gallery-image (:gallery data))])
+  [:div
+   [:div.col-12.bg-white.hide-on-tb-dt
+    (stylist-gallery-header-molecule data)
+    (map-indexed stylist-gallery-image (:gallery data))]
+   [:div.col-12.bg-white.hide-on-mb
+    (desktop-stylist-gallery-header-molecule data)
+    [:div.flex-wrap.justify-between
+     (map-indexed desktop-stylist-gallery-image (:gallery data))]]])
 
 (defmethod transitions/transition-state e/navigate-adventure-stylist-gallery
   [_ _ {:keys [stylist-id]} state]
