@@ -7,7 +7,7 @@
             [clojure.string :as string]
             [spice.core :as spice]
             [spice.maps :as maps]
-            [spice.date]
+            [spice.date :as date]
             [storefront.accessors.line-items :as line-items]
             [storefront.component :as c]
             [storefront.components.checkout-delivery :as checkout-delivery]
@@ -117,6 +117,16 @@
     [[:div.center.mb4.content-3 "You have no recent orders"]
      (ui/button-medium-primary (utils/route-to e/navigate-category {:page/slug "mayvenn-install" :catalog/category-id "23"}) "Browse Products")]))
 
+(defn appointment-details-template
+  [{:appointment-details/keys [id date time]}]
+  (when id
+    [:div.py6.px8.max-960.mx-auto
+     {:key id}
+     [:div.title-1.proxima.shout.py3 "Appointment Status"]
+     [:div.title-2.proxima.shout.py2 "Appointment Info"]
+     [:div "Date: " date]
+     [:div "Time: " time]]))
+
 (c/defcomponent template
   [data _ _]
   [:div.py6.px8.max-960.mx-auto
@@ -126,6 +136,7 @@
    (your-looks-title-template data)
    (order-details-template data)
    (no-orders-details-template data)
+   (appointment-details-template data)
    (c/build email-verification/template data)])
 
 (defn generate-tracking-url [carrier tracking-number]
@@ -142,7 +153,7 @@
 ;; TODO Switch to using spice.date/date?
 (defn date? [value]
   (try
-    (some? (spice.date/to-iso value))
+    (some? (date/to-iso value))
     (catch #?(:clj Throwable
               :cljs :default) _
       false)))
@@ -234,6 +245,14 @@
                                                      (str length-circle-value "”"))
          :cart-item-square-thumbnail/ucare-id      (->> (get skus sku) (catalog-images/image images "cart") :ucare/id)}))))
 
+(defn appointment-details-query
+  [app-state {:keys [appointment-date canceled-at stylist-id]}]
+  (when (and appointment-date
+             (not canceled-at))
+    {:appointment-details/id "appointment-details"
+     :appointment-details/date (f/short-date appointment-date)
+     :appointment-details/time (f/time-12-hour appointment-date)}))
+
 (defn query [app-state]
   (let [user-verified?       (boolean (get-in app-state k/user-verified-at))
         order-number         (or (:order-number (last (get-in app-state k/navigation-message)))
@@ -245,9 +264,11 @@
                 placed-at
                 shipments
                 shipping-address
+                appointment
                 total]}      (->> (get-in app-state k/order-history)
                                   (filter (fn [o] (= order-number (:number o))))
                                   first)
+        appointment          appointment
         verif-status-message (-> app-state (get-in keypaths/navigation-message) second :query-params :stsm)]
     (cond-> {}
       (not user-verified?)
@@ -285,13 +306,14 @@
                                           url            (generate-tracking-url carrier tracking-number)]
                                       {:shipping-estimate (when (date? placed-at)
                                                              (-> placed-at
-                                                                 spice.date/to-datetime
-                                                                 (spice.date/add-delta {:days (->shipping-days-estimate drop-shipping? shipping-sku placed-at)})
+                                                                 date/to-datetime
+                                                                 (date/add-delta {:days (->shipping-days-estimate drop-shipping? shipping-sku placed-at)})
                                                                  long-date))
                                        :url               url
                                        :carrier           carrier
                                        :tracking-number   tracking-number
                                        :cart-items        (fulfillment-items-query app-state line-item-ids shipments)}))}
+             (appointment-details-query app-state appointment)
              {:verif-status-message/copy (when (= "verif-success" verif-status-message) "Your email was successfully verified.")}))))
 
 (defn ^:export page

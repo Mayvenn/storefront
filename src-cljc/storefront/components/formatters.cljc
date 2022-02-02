@@ -76,6 +76,11 @@
                                  date-like)]
        (string/join "." [month day year]))))
 
+(defn time-12-hour [date-like]
+  (when-let [datetime (date/to-datetime date-like)]
+    #?(:cljs (format-date {:timeStyle "short"} datetime)
+       :clj (.print (org.joda.time.format.DateTimeFormat/forPattern "h:mm a") datetime))))
+
 (defn phone-number [phone]
   {:pre [(#{10 11} (->> phone str numbers/digits-only count))]}
   (->> phone
