@@ -43,6 +43,20 @@
        [:img {:src   (str ucare-id "-/scale_crop/216x216/-/format/auto/")
               :class "col-12"}])])))
 
+(defn desktop-stylist-card-gallery-molecule
+  [{:stylist-card.gallery/keys [id items]}]
+  (when id
+    (component/html
+     [:div.px2
+      (component/build carousel/component
+                       {:data items}
+                       {:opts {:settings {:nav   false
+                                          :items 6
+                                          ;; setting this to true causes some of our event listeners to
+                                          ;; get dropped by tiny-slider.
+                                          :loop  false}
+                               :slides   (map stylist-card-gallery-item-molecule items)}})])))
+
 (defn stylist-card-gallery-molecule
   [{:stylist-card.gallery/keys [id items]}]
   (when id
@@ -148,3 +162,18 @@
       (ui/aspect-ratio 426 105 [:div]))]
    (top-stylist-information-points-molecule (with :stylist-card.top-stylist.laurels data))
    [:div.col-12.pt1.pb3.px2 (stylist-card-cta-molecule data)]])
+
+(defcomponent desktop-organism
+  [data _ {:keys [id]}]
+  [:div.flex.left-align.border.border-warm-gray.mx3.mt1.mb3.bg-white
+   {:id        id
+    :data-test id}
+   [:div.flex-column
+    {:style {:max-width 360}}
+    (stylist-card-header-molecule data)
+    (top-stylist-information-points-molecule (with :stylist-card.top-stylist.laurels data))
+    [:div.col-12.p2 (stylist-card-cta-molecule data)]]
+   [:div.col-12.my3
+    (if (:screen/seen? data)
+      (desktop-stylist-card-gallery-molecule data)
+      (ui/aspect-ratio 426 105 [:div]))]])

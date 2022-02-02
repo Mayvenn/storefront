@@ -482,6 +482,52 @@
      breaker-results])
    breaker-content])
 
+(defdynamic-component desktop-results-template
+  (did-mount
+   [this]
+   (let [{:keys [stylist.analytics/cards stylist-results-returned?]}
+         (component/get-props this)]
+     (when stylist-results-returned?
+       (publish e/adventure-stylist-search-results-displayed
+                                {:cards cards}))))
+  (render
+   [this]
+   (let [{:keys [stylist-results-present? shopping-method-choice] :as data}
+         (component/get-props this)]
+     (component/html
+      (if stylist-results-present?
+        [:div
+         (when-let [count-id (:list.stylist-counter/key data)]
+           [:div
+            {:key count-id}
+            (ui/screen-aware matching-count-organism
+                             {:stylist-count-content (:list.stylist-counter/title data)}
+                             (component/component-id count-id))])
+         (when (:list.matching/key data)
+           [:div
+            (for [data (:list.matching/cards data)]
+              [:div {:key (:react/key data)}
+               (ui/screen-aware stylist-cards/desktop-organism
+                                data
+                                (component/component-id (:react/key data)))])])
+         (when (:list.breaker/id data)
+           [:div
+            {:key       "non-matching-breaker"
+             :data-test (:list.breaker/id data)}
+            (component/build non-matching-breaker
+                             {:breaker-results (:list.breaker/results-content data)
+                              :breaker-content (:list.breaker/content data)})])
+         (when (:list.non-matching/key data)
+           [:div
+            (for [card (:list.non-matching/cards data)]
+              [:div {:key (:react/key card)}
+               (ui/screen-aware stylist-cards/organism
+                                card
+                                (component/component-id (:react/key card)))])])]
+
+        (component/build shopping-method-choice/organism
+                         shopping-method-choice))))))
+
 (defdynamic-component results-template
   (did-mount
    [this]
@@ -641,6 +687,19 @@
       [:div.flex.px4.py2.justify-center
        [:div.flex.items-center {:style {:height "37px"}} primary]]])))
 
+(defcomponent desktop-search-inputs-organism
+  [data _ _]
+  [:div.px3.py2.bg-white.border-bottom.border-gray.flex.flex-row
+   [:div.col-3.px3
+    (component/build stylist-results-name-input-molecule data)]
+   [:div.col-3.px3
+    (when (:stylist-results.address-input/id data)
+                (component/build stylist-results-address-input-molecule data))]
+   [:div.relative.col-6.px3
+    (stylist-results-name-presearch-results-molecule data)
+    (stylist-results-empty-name-presearch-results-molecule data)
+    (stylist-results-service-filters-molecule data)]])
+
 (defcomponent search-inputs-organism
   [data _ _]
   [:div.px3.py2.bg-white.border-bottom.border-gray
@@ -661,7 +720,15 @@
    ;; TODO(corey) is this used?
    (component/build gallery-modal/organism gallery-modal)
    (components.header/adventure-header header)
-   [:div.max-580.col-12.mx-auto.bg-white
+   [:div.hide-on-mb
+    (component/build desktop-search-inputs-organism stylist-search-inputs)
+    (if spinning?
+      [:div.mt6 ui/spinner]
+      [:div.relative.stretch
+       (component/build desktop-results-template results)
+       (when scrim?
+         scrim-atom)])]
+   [:div.max-580.col-12.mx-auto.bg-white.hide-on-tb-dt
     (component/build search-inputs-organism stylist-search-inputs)
     (if spinning?
       [:div.mt6 ui/spinner]
@@ -835,7 +902,6 @@
             address-field-errors   (get-in app-state k/address-field-errors)
             back-button-target     [e/navigate-adventure-find-your-stylist]]
         (component/build template
-
                          {:gallery-modal         (gallery-modal-query app-state)
                           :spinning?             (or (empty? (:status matching))
                                                      (utils/requesting? app-state request-keys/fetch-matched-stylists)
