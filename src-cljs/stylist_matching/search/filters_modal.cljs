@@ -101,7 +101,7 @@
   [{:stylist-search-filters/keys [sections]} _ _]
   [:div.col-12.bg-white {:style {:min-height "100vh"}}
    (components.header/nav-header
-    {:class "border-bottom border-gray"}
+    {:class "border-bottom border-gray max-960 mx-auto"}
     (component/html [:div (ui/button-medium-underline-black
                            (merge {:data-test "stylist-search-filters-reset"}
                                   (utils/fake-href events/control-stylist-search-reset-filters))
@@ -111,7 +111,7 @@
                            (merge {:data-test "stylist-search-filters-dismiss"}
                                   (utils/fake-href events/control-stylist-search-filters-dismiss))
                            "DONE")]))
-   [:div.mb5 (map #(component/build filter-section % {}) sections)]])
+   [:div.mb5.max-960.mx-auto (map #(component/build filter-section % {}) sections)]])
 
 (defmethod effects/perform-effects events/control-stylist-search-toggle-filter
   [_ _ {:keys [previously-checked? stylist-filter-selection]} _ state]
