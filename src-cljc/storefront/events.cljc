@@ -169,6 +169,7 @@
 
 (defpath control-orderdetails-submit)
 (defpath flow--orderdetails--resulted)
+(defpath flow--orderdetails--stylist-resulted)
 
 (defpath poll-stylist-portrait)
 (defpath poll-gallery)

@@ -74,6 +74,7 @@
 (def fetch-stylists-matching-filters [:fetch-stylists-matching-filters])
 (def presearch-name [:presearch-name])
 
+(def fetch-stylist [:fetch-stylist])
 (def fetch-matched-stylist [:fetch-matched-stylist])
 (def fetch-matched-stylists [:fetch-matched-stylists])
 (def fetch-stylist-reviews [:fetch-matched-stylist])

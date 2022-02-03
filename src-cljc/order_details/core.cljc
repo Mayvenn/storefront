@@ -120,16 +120,32 @@
 (defn appointment-details-template
   [{:appointment-details/keys [id date time]}]
   (when id
-    [:div.py6.px8.max-960.mx-auto
+    [:div.py3.px8.max-960.mx-auto
      {:key id}
      [:div.title-1.proxima.shout.py3 "Appointment Status"]
      [:div.title-2.proxima.shout.py2 "Appointment Info"]
      [:div "Date: " date]
      [:div "Time: " time]]))
 
+(defn stylist-details-template
+  [{:stylist-details/keys [id nickname phone salon-name salon-address]}]
+  (when id
+    [:div.py2.px8.max-960.mx-auto
+     {:key id}
+     [:div
+      [:div.title-1.proxima.shout.py3 "Stylist Info"]
+      [:div nickname]
+      [:div phone]]
+     [:div
+      [:div.title-2.proxima.shout.py2 "Salon Name"]
+      [:div salon-name]]
+     [:div
+      [:div.title-2.proxima.shout.py2 "Salon Address"]
+      (into [:div] (for [line salon-address] [:div {:key line} line]))]]))
+
 (c/defcomponent template
   [data _ _]
-  [:div.py6.px8.max-960.mx-auto
+  [:div.py2.px8.max-960.mx-auto
    {:key "your-look"}
    (let [copy (:verif-status-message/copy data)]
      (when copy (flash/success-box {} copy)))
@@ -137,6 +153,7 @@
    (order-details-template data)
    (no-orders-details-template data)
    (appointment-details-template data)
+   (stylist-details-template data)
    (c/build email-verification/template data)])
 
 (defn generate-tracking-url [carrier tracking-number]
@@ -246,12 +263,22 @@
          :cart-item-square-thumbnail/ucare-id      (->> (get skus sku) (catalog-images/image images "cart") :ucare/id)}))))
 
 (defn appointment-details-query
-  [app-state {:keys [appointment-date canceled-at stylist-id]}]
-  (when (and appointment-date
-             (not canceled-at))
-    {:appointment-details/id "appointment-details"
-     :appointment-details/date (f/short-date appointment-date)
-     :appointment-details/time (f/time-12-hour appointment-date)}))
+  [app-state]
+  (when-let [{:keys [appointment-date canceled-at]} (get-in app-state [:models :appointment :date])]
+    (when (and appointment-date
+               (not canceled-at))
+      {:appointment-details/id "appointment-details"
+       :appointment-details/date (f/short-date appointment-date)
+       :appointment-details/time (f/time-12-hour appointment-date)})))
+
+(defn stylist-details-query
+  [app-state]
+  (when-let [{:keys [nickname phone salon-name salon-address]} (get-in app-state [:models :appointment :stylist])]
+    {:stylist-details/id            "stylist-details"
+     :stylist-details/nickname      nickname
+     :stylist-details/salon-name    salon-name
+     :stylist-details/phone         phone
+     :stylist-details/salon-address salon-address}))
 
 (defn query [app-state]
   (let [user-verified?       (boolean (get-in app-state k/user-verified-at))
@@ -264,11 +291,9 @@
                 placed-at
                 shipments
                 shipping-address
-                appointment
                 total]}      (->> (get-in app-state k/order-history)
                                   (filter (fn [o] (= order-number (:number o))))
                                   first)
-        appointment          appointment
         verif-status-message (-> app-state (get-in keypaths/navigation-message) second :query-params :stsm)]
     (cond-> {}
       (not user-verified?)
@@ -313,7 +338,9 @@
                                        :carrier           carrier
                                        :tracking-number   tracking-number
                                        :cart-items        (fulfillment-items-query app-state line-item-ids shipments)}))}
-             (appointment-details-query app-state appointment)
+             (appointment-details-query app-state)
+             (stylist-details-query app-state)
+
              {:verif-status-message/copy (when (= "verif-success" verif-status-message) "Your email was successfully verified.")}))))
 
 (defn ^:export page
@@ -340,41 +367,54 @@
                  (api/get-order {:number     order-number
                                  :user-id    (get-in app-state k/user-id)
                                  :user-token (get-in app-state k/user-token)}
-                                {:handler       #(messages/handle-message e/api-success-get-orders {:orders [%]})
+                                {:handler       #(messages/handle-message e/flow--orderdetails--resulted {:orders [%]})
                                  :error-handler #(messages/handle-message e/flash-show-failure
                                                                           {:message (str "Unable to retrieve order " order-number ". Please contact support.")})})
                  (api/get-orders {:limit      1
                                   :user-id    (get-in app-state k/user-id)
                                   :user-token (get-in app-state k/user-token)}
-                                 #(messages/handle-message e/api-success-get-orders {:orders (:results %)})
+                                 #(messages/handle-message e/flow--orderdetails--resulted {:orders (:results %)})
                                  #(messages/handle-message e/flash-show-failure
                                                            {:message (str "Unable to retrieve order. Please contact support.")})))
          :clj nil))))
 
-(defmethod transitions/transition-state e/api-success-get-orders
+(defmethod transitions/transition-state e/flow--orderdetails--resulted
   [_ _ {:keys [orders]} app-state]
   (let [old-orders (maps/index-by :number (get-in app-state k/order-history))
-        new-orders (maps/index-by :number orders)]
-    (assoc-in app-state k/order-history (->> (merge old-orders new-orders)
-                                             vals
-                                             (sort-by :placed-at >)))))
+        new-orders (maps/index-by :number orders)
+        order-history (->> (merge old-orders new-orders)
+                           vals
+                           (sort-by :placed-at >))]
+    (-> app-state
+        (assoc-in k/order-history order-history)
+        (assoc-in [:models :appointment :date] (:appointment (first order-history))))))
 
-(defmethod effects/perform-effects e/api-success-get-orders
+(defmethod effects/perform-effects e/flow--orderdetails--resulted
   [_ _ args _ app-state]
-  (let [most-recent-open-order (first (get-in app-state k/order-history))]
-    (follow/publish-all app-state e/api-success-get-orders {:order-number (:number most-recent-open-order) })
+  (let [most-recent-open-order (first (get-in app-state k/order-history))
+        api-cache              (get-in app-state keypaths/api-cache)]
     (messages/handle-message e/ensure-sku-ids {:sku-ids (->> most-recent-open-order
                                                              :shipments
                                                              (mapcat :line-items)
                                                              (filter line-items/product-or-service?)
-                                                             (map :sku))})))
+                                                             (map :sku))})
+    #?(:cljs
+       (api/fetch-stylist api-cache
+                          (get-in app-state k/user-id)
+                          (get-in app-state k/user-token)
+                          (:servicing-stylist-id most-recent-open-order)
+                          {:success-handler #(messages/handle-message e/flow--orderdetails--stylist-resulted %)
+                           :error-handler   identity}))))
 
-(defmethod transitions/transition-state e/flow--orderdetails--resulted
-  [_ _ _ app-state]
-  (follow/clear app-state e/api-success-get-orders))
+(defmethod transitions/transition-state e/flow--orderdetails--stylist-resulted
+  [_ _ {:keys [address store-slug store-nickname salon stylist-id]} app-state]
+  (let [{:keys [name city state zipcode address-1 address-2]} salon]
+    (assoc-in app-state
+              [:models :appointment :stylist]
+              {:nickname      store-nickname
+               :phone         (f/phone-number (:phone address))
+               :salon-name    name
+               :salon-address [address-1
+                               (when (seq address-2) address-2)
+                               (str city ", " state " " zipcode)]})))
 
-(defmethod effects/perform-effects e/flow--orderdetails--resulted
-  [_ _ args _ app-state]
-  #?(:cljs
-     (when-let [order-number (-> args :follow/args :order-number)]
-       (history/enqueue-redirect e/navigate-yourlooks-order-details {:order-number order-number}))))
