@@ -107,14 +107,14 @@
     label)])
 
 (c/defcomponent template
-  [{:reviews/keys [id rating-count rating reviews
+  [{:reviews/keys                               [id rating-count rating reviews
                    cta-id cta-label cta-target] :as data} _ _]
   (c/html
    (when id
      [:div
       (header (with :reviews.header data))
-      [:div.border-top.border-cool-gray {:key id
-                                         :id  "reviews"}
+      [:div.border-top.border-cool-gray.max-960.mx-auto {:key id
+                                                         :id  "reviews"}
        (avg-rating-and-rating-count rating rating-count)
        (c/elements review data :reviews/reviews)
        (when cta-id
