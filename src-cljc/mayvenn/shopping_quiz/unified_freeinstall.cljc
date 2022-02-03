@@ -608,7 +608,7 @@
   [:div.flex.flex-column.stretch.bg-pale-purple
    [:div.bg-white.self-stretch
     (quiz-header (with :header data))]
-   [:div.flex.flex-column.items-center.justify-center.flex-auto
+   [:div.flex.flex-column.items-center.flex-auto.mt10
     [:div.col-10
      (titles/canela-huge (with :title data))]
     [:div.col-6
