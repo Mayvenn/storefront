@@ -118,30 +118,38 @@
      (ui/button-medium-primary (utils/route-to e/navigate-category {:page/slug "mayvenn-install" :catalog/category-id "23"}) "Browse Products")]))
 
 (defn appointment-details-template
-  [{:appointment-details/keys [id date time]}]
+  [{:appointment-details/keys [id spinning? date time]}]
   (when id
     [:div.py3.px8.max-960.mx-auto
      {:key id}
-     [:div.title-1.proxima.shout.py3 "Appointment Status"]
-     [:div.title-2.proxima.shout.py2 "Appointment Info"]
-     [:div "Date: " date]
-     [:div "Time: " time]]))
+     [:div
+      [:div.title-1.proxima.shout.py3 "Appointment Status"]
+      [:div.title-2.proxima.shout.py2 "Appointment Info"]
+      [:div "Date: " date]
+      [:div "Time: " time]]]))
 
 (defn stylist-details-template
-  [{:stylist-details/keys [id nickname phone salon-name salon-address]}]
-  (when id
+  [{:stylist-details/keys [id spinning? nickname phone salon-name salon-address]}]
+  (cond
+    spinning?
+    [:div
+     {:style {:min-height "400px"}}
+     ui/spinner]
+
+    id
     [:div.py2.px8.max-960.mx-auto
      {:key id}
      [:div
-      [:div.title-1.proxima.shout.py3 "Stylist Info"]
-      [:div nickname]
-      [:div phone]]
-     [:div
-      [:div.title-2.proxima.shout.py2 "Salon Name"]
-      [:div salon-name]]
-     [:div
-      [:div.title-2.proxima.shout.py2 "Salon Address"]
-      (into [:div] (for [line salon-address] [:div {:key line} line]))]]))
+      [:div
+       [:div.title-1.proxima.shout.py3 "Stylist Info"]
+       [:div nickname]
+       [:div phone]]
+      [:div
+       [:div.title-2.proxima.shout.py2 "Salon Name"]
+       [:div salon-name]]
+      [:div
+       [:div.title-2.proxima.shout.py2 "Salon Address"]
+       (into [:div] (for [line salon-address] [:div {:key line} line]))]]]))
 
 (c/defcomponent template
   [data _ _]
@@ -273,12 +281,17 @@
 
 (defn stylist-details-query
   [app-state]
-  (when-let [{:keys [nickname phone salon-name salon-address]} (get-in app-state [:models :appointment :stylist])]
-    {:stylist-details/id            "stylist-details"
-     :stylist-details/nickname      nickname
-     :stylist-details/salon-name    salon-name
-     :stylist-details/phone         phone
-     :stylist-details/salon-address salon-address}))
+  (cond
+    (utils/requesting? app-state request-keys/fetch-stylist)
+    {:stylist-details/spinning? true}
+
+    (get-in app-state [:models :appointment :stylist])
+    (let [{:keys [nickname phone salon-name salon-address]} (get-in app-state [:models :appointment :stylist])]
+      {:stylist-details/id            "stylist-details"
+       :stylist-details/nickname      nickname
+       :stylist-details/salon-name    salon-name
+       :stylist-details/phone         phone
+       :stylist-details/salon-address salon-address})))
 
 (defn query [app-state]
   (let [user-verified?       (boolean (get-in app-state k/user-verified-at))
@@ -398,13 +411,14 @@
                                                              (mapcat :line-items)
                                                              (filter line-items/product-or-service?)
                                                              (map :sku))})
-    #?(:cljs
-       (api/fetch-stylist api-cache
-                          (get-in app-state k/user-id)
-                          (get-in app-state k/user-token)
-                          (:servicing-stylist-id most-recent-open-order)
-                          {:success-handler #(messages/handle-message e/flow--orderdetails--stylist-resulted %)
-                           :error-handler   identity}))))
+    (when-let [ssid (:servicing-stylist-id most-recent-open-order)]
+      #?(:cljs
+         (api/fetch-stylist api-cache
+                            (get-in app-state k/user-id)
+                            (get-in app-state k/user-token)
+                            ssid
+                            {:success-handler #(messages/handle-message e/flow--orderdetails--stylist-resulted %)
+                             :error-handler   identity})))))
 
 (defmethod transitions/transition-state e/flow--orderdetails--stylist-resulted
   [_ _ {:keys [address store-slug store-nickname salon stylist-id]} app-state]
