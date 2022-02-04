@@ -789,7 +789,9 @@
        (svg/shopping-bag {:width  "33px"
                           :height "44px"})
        [:div.absolute.flex.items-center.justify-center
-        {:style (merge {:padding-top "8px" :font "900 14px/17px 'Proxima Nova'"}
+        {:aria-label (str "Shopping bag contains " quantity " items") ; need to describe shopping bag icon for a11y
+         :style      (merge {:padding-top "8px"
+                             :font        "900 14px/17px 'Proxima Nova'"}
                        (when two-digits?
                          {:margin-right "1px"}))}
         quantity]]])))
@@ -1049,7 +1051,7 @@
                       (if (:child-handles-ref? opts)
                         (component/build embed data' opts')
                         (component/html
-                         [:div {:ref trigger}
+                         [:div.bg-white {:ref trigger}
                           (when-not seen? nbsp)  ; When the content has no height, isIntersecting is always false.
                           (component/build embed data' opts')])))))))
 

@@ -209,6 +209,7 @@
                                              {:text "relax" :attrs {:style {:font-size "54px"}}}]
                         :body/value         "We’ve rounded up the best stylists in the country so you can be sure your hair is in really, really good hands."
                         :cta/value          "Learn more"
+                        :cta/aria-label     "Learn more about certified stylists"
                         :cta/id             "info-certified-stylists"
                         :cta/target         [e/navigate-info-certified-stylists]}
    :who-shop-hair      {:layer/type :image-block

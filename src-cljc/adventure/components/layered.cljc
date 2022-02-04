@@ -66,13 +66,14 @@
      [:span])))
 
 (defn ^:private shop-cta-with-icon
-  [{:cta/keys [target icon value id]}]
+  [{:cta/keys [target icon value id aria-label]}]
   (component/html
    (if id
      [:a.my2
       (assoc (apply utils/route-to target)
              :data-test id
-             :data-ref id)
+             :data-ref id
+             :aria-label aria-label)
       (when icon
         (svg/symbolic->html icon))
       [:div.underline.block.content-3.bold.p-color.shout.pb6
