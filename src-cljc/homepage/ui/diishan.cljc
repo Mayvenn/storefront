@@ -40,12 +40,12 @@
                                      "1000")}
                            (get ucare-ids breakpoint))]
     (if (= :mobile breakpoint)
-      [:div.relative
+      [:div.relative.bg-black
        [:div.absolute.white.right-0.py8.px4.right-align.z1
         [:div.proxima.title-2.shout primary]
         [:div secondary]]
        diishan-portrait]
-      [:div.relative.col-6
+      [:div.relative.col-6.bg-black
        [:div.absolute.white.right-0.py6.px4.right-align.z1
         [:div.proxima.title-1.my1.shout primary]
         [:div secondary]]
