@@ -166,9 +166,10 @@
           (map (fn [{:vouchers-details/keys [qr-code-url voucher-code services expiration-date redemption-date status]}]
                  [:div
                   [:div.title-1.proxima.shout.py3 "Voucher"]
-                  [:div.flex.justify-center
-                   (ui/img {:src   qr-code-url
-                            :style {:max-width "150px"}})]
+                  (when qr-code-url
+                    [:div.flex.justify-center
+                     (ui/img {:src   qr-code-url
+                              :style {:max-width "150px"}})])
                   [:div
                    [:div.title-2.proxima.shout.py2 "Status"]
                    status]
@@ -184,12 +185,11 @@
                      redemption-date])
                   [:div
                    [:div.title-2.proxima.shout.py2 "What's included"]
-                   (map (fn [{:keys [variant-name included-services]}]
-                          [:div variant-name
-                           [:ul
-                            (map (fn [service-line]
-                                   [:li service-line])
-                                 included-services)]])
+                   (map (fn [{:keys [included-services]}]
+                          [:ul
+                           (map (fn [service-line]
+                                  [:li service-line])
+                                included-services)])
                         services)
                    [:div.content-4.dark-gray.mt2 "*Shampoo, Condition, Braid down, and Basic styling included."]]])
                vouchers)) ))
@@ -349,28 +349,30 @@
      :vouchers-details/vouchers (map (fn [{:keys [services qr-code-url voucher-code
                                                   expiration-date redemption-date
                                                   disabled-reason fulfilled? redeemed? identified?]}]
-                                       (merge #:vouchers-details
-                                              {:qr-code-url     qr-code-url
-                                               :voucher-code    voucher-code
-                                               :expiration-date (f/short-date expiration-date)
-                                               :services        (map (fn [{:keys [variant-name service-awards/offered-service-slugs]}]
-                                                                       {:variant-name variant-name
-                                                                        :included-services (map (fn [service-slug]
-                                                                                                  (let [specialty-key (str "specialty-"service-slug)
-                                                                                                        addon? (stylist-filters/service-menu-key->addon? specialty-key)]
-                                                                                                    (str
-                                                                                                     (stylist-filters/service-menu-key->title specialty-key)
-                                                                                                     (if addon? " (add-on)" "*"))))
-                                                                                                offered-service-slugs)})
-                                                                     services)
-                                               :whats-included  (mapcat :service-awards/offered-service-slugs services)
-                                               :status          (cond disabled-reason "Disabled"
-                                                                      redeemed?       "Redeemed"
-                                                                      fulfilled?      "Issued"
-                                                                      identified?     "Pending"
-                                                                      :else           "Unknown")}
-                                              (when redemption-date
-                                                #:vouchers-details{:redemption-date (f/short-date expiration-date)})))
+                                       (let [past-expiration-date? (date/after? (date/now) expiration-date)
+                                             status                (cond disabled-reason       "Canceled"
+                                                                         redeemed?             "Redeemed"
+                                                                         past-expiration-date? "Expired"
+                                                                         fulfilled?            "Issued"
+                                                                         identified?           "Pending"
+                                                                         :else                 "Unknown")]
+                                         (merge #:vouchers-details
+                                                {:qr-code-url     (when (= "Issued" status) qr-code-url)
+                                                 :voucher-code    voucher-code
+                                                 :expiration-date (f/short-date expiration-date)
+                                                 :services        (map (fn [{:keys [service-awards/offered-service-slugs]}]
+                                                                         {:included-services (map (fn [service-slug]
+                                                                                                    (let [specialty-key (str "specialty-"service-slug)
+                                                                                                          addon?        (stylist-filters/service-menu-key->addon? specialty-key)]
+                                                                                                      (str
+                                                                                                       (stylist-filters/service-menu-key->title specialty-key)
+                                                                                                       (if addon? " (add-on)" "*"))))
+                                                                                                  offered-service-slugs)})
+                                                                       services)
+                                                 :whats-included  (mapcat :service-awards/offered-service-slugs services)
+                                                 :status          status}
+                                                (when redemption-date
+                                                  #:vouchers-details{:redemption-date (f/short-date expiration-date)}))))
                                      (get-in app-state [:models :order-details :vouchers]))}))
 
 (defn query [app-state]
