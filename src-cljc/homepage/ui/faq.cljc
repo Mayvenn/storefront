@@ -10,7 +10,7 @@
   (when (seq data)
     [:div.col-12.mx-auto.bg-pale-purple.px6.py8
      [:div.col-8-on-dt.mx-auto
-      [:div.canela.title-1.center.my7
+      [:h2.canela.title-1.center.my7
        "Frequently Asked Questions"]
       (c/build accordion/component
                {:expanded-indices #{expanded-index}

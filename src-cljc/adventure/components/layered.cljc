@@ -323,7 +323,7 @@
       [:a {:name anchor-name}])
     (when big-title
       (let [[secondary primary] big-title]
-        [:div.py1.shout
+        [:h2.py1.shout
          [:div.title-1.proxima.my1 (:attrs secondary) (:text secondary)]
          [:div.title-1.canela.mt2.mb4 (:attrs primary) (:text primary)]]))
     (when title
