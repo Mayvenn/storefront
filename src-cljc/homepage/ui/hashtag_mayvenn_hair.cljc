@@ -26,7 +26,7 @@
 (defn ^:private looks-images-molecule
   [{:hashtag-mayvenn-hair.looks/keys [images]}]
   (for [{:keys [image-url]} images]
-    [:a.col-6.col-3-on-tb-dt.p1
+    [:div.col-6.col-3-on-tb-dt.p1
      {:key (str image-url)}
      (ui/screen-aware ugc-image {:image-url image-url} nil)]))
 
