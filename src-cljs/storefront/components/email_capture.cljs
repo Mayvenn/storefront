@@ -28,13 +28,17 @@
                      (ui/img {:max-size "500px"
                               :class    "col-12"
                               :style    {:vertical-align "bottom"}
-                              :src      uuid-dsk}))]
+                              :src      uuid-dsk
+                              ;; no alt for decorative image
+                              :alt      ""}))]
    [:div.hide-on-tb-dt
     (ui/aspect-ratio 4 3
                      (ui/img {:max-size "500px"
                               :class    "col-12"
                               :style    {:vertical-align "bottom"}
-                              :src      uuid-mob}))]])
+                              :src      uuid-mob
+                              ;; no alt for decorative image
+                              :alt      ""}))]])
 
 (defn title [{:email-capture.title/keys [primary]}]
   [:div.proxima.title-1.mb3
@@ -147,7 +151,9 @@
    {:style     {:max-width "580px"}
     :data-test "email-capture-modal"}
    [:div.relative
-    (ui/ucare-img {:style {:max-width "580px"}} "b3537c0c-a339-4cd1-9518-5ba1576b8b8c")
+    (ui/ucare-img {:style {:max-width "580px"}
+                   ;; no alt text for decorative image
+                   :alt ""} "b3537c0c-a339-4cd1-9518-5ba1576b8b8c")
     [:div.absolute
      {:style {:top "1rem" :right "1rem"}}
      (ui/modal-close {:data-test   "email-capture-dismiss"
@@ -175,7 +181,9 @@
    {:style     {:max-width "580px"}
     :data-test "email-capture-modal"}
    [:div.relative
-    (ui/ucare-img {:style {:max-width "580px"}} "0400b18e-7b0a-4835-8e1a-4fc2c51ae604")
+    (ui/ucare-img {:style {:max-width "580px"}
+                   ;; no alt text for decorative image
+                   :alt ""} "0400b18e-7b0a-4835-8e1a-4fc2c51ae604")
     [:div.absolute
      {:style {:top "1rem" :right "1rem"}}
      (ui/modal-close {:data-test   "email-capture-dismiss"
@@ -203,7 +211,9 @@
    {:style     {:max-width "580px"}
     :data-test "email-capture-modal"}
    [:div.relative
-    (ui/ucare-img {:style {:max-width "580px"}} "e24dbb4a-7cbf-4479-8bb4-57bebe180c29")
+    (ui/ucare-img {:style {:max-width "580px"}
+                   ;; no alt text for decorative image
+                   :alt ""} "e24dbb4a-7cbf-4479-8bb4-57bebe180c29")
     [:div.absolute
      {:style {:top "1rem" :right "1rem"}}
      (ui/modal-close {:data-test   "email-capture-dismiss"
@@ -237,7 +247,9 @@
    {:style     {:max-width "580px"}
     :data-test "email-capture-modal"}
    [:div.relative
-    (ui/ucare-img {:style {:max-width "580px"}} "3a24b338-b84e-410a-913f-5416d3c95ad6")
+    (ui/ucare-img {:style {:max-width "580px"}
+                   ;; no alt text for decorative image
+                   :alt ""} "3a24b338-b84e-410a-913f-5416d3c95ad6")
     [:div.absolute
      {:style {:top "1rem" :right "1rem"}}
      (ui/modal-close {:data-test   "email-capture-dismiss"
@@ -271,7 +283,9 @@
    {:style     {:max-width "580px"}
     :data-test "email-capture-modal"}
    [:div.relative
-    (ui/ucare-img {:style {:max-width "580px"}} "7352c0fa-0cda-4dbf-8ddf-d5ebeb1b2f98")
+    (ui/ucare-img {:style {:max-width "580px"}
+                   ;; no alt text for decorative image
+                   :alt ""} "7352c0fa-0cda-4dbf-8ddf-d5ebeb1b2f98")
     [:div.absolute
      {:style {:top "1rem" :right "1rem"}}
      (ui/modal-close {:data-test   "email-capture-dismiss"
@@ -306,7 +320,9 @@
    {:style     {:max-width "580px"}
     :data-test "email-capture-modal"}
    [:div.relative
-    (ui/ucare-img {:style {:max-width "580px"}} "cfeaed5f-d79a-409d-bd5b-842a98820423")
+    (ui/ucare-img {:style {:max-width "580px"}
+                   ;; no alt text for decorative image
+                   :alt ""} "cfeaed5f-d79a-409d-bd5b-842a98820423")
     [:div.absolute
      {:style {:top "1rem" :right "1rem"}}
      (ui/modal-close {:data-test   "email-capture-dismiss"
