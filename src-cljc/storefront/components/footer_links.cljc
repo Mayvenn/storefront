@@ -51,7 +51,8 @@
           :args    {:class     "bg-p-color border-none"
                     :disabled? disabled?
                     :on-click  (apply utils/send-event-callback target)
-                    :data-test (str "sign-up-" view)}})]]
+                    :data-test (str "sign-up-" view)
+                    :type      "submit"}})]]
       (when text
         [:div.mb7.mtn2 text])])))
 
