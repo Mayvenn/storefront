@@ -48,11 +48,11 @@
           :errors        (get errors ["email"])
           :data-ref      (str id "-" view)}
          {:content label
-          :args    {:class     "bg-p-color border-none"
-                    :disabled? disabled?
-                    :on-click  (apply utils/send-event-callback target)
-                    :data-test (str "sign-up-" view)
-                    :type      "submit"}})]]
+          :args    {:class          "bg-p-color border-none"
+                    :disabled?      disabled?
+                    :on-click       (apply utils/send-event-callback target)
+                    :data-test      (str "sign-up-" view)
+                    :type           "submit"}})]]
       (when text
         [:div.mb7.mtn2 text])])))
 

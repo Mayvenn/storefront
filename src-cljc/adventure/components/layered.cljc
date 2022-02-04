@@ -309,7 +309,7 @@
 (defcomponent shop-text-block
   [{anchor-name :anchor/name
     title       :header/value
-    h1          :header/first-on-page?
+    h1          :header/first-on-page? ; to set up h cascade correctly for a11y
     big-title   :big-header/content
     body        :body/value
     divider-img :divider-img

@@ -101,13 +101,13 @@
 
 (defn button
   [additional-classes
-   {:keys [disabled? disabled-content disabled-class spinning? navigation-message href]
+   {:keys [disabled? disabled-content disabled-class spinning? navigation-message href type]
     :as   opts}
    content]
   (component/html
    (let [shref   (str href)
          attrs   (cond-> opts
-                   :always                                                   (dissoc :spinning? :disabled? :disabled-class :navigation-message)
+                   :always                                                   (dissoc :spinning? :disabled? :disabled-class :navigation-message :submit-button?)
                    navigation-message                                        (merge (apply utils/route-to navigation-message))
                    (and (string/starts-with? shref "#") (> (count shref) 1)) (merge (utils/scroll-href (subs href 1)))
                    (or disabled? spinning?)                                  (assoc :on-click utils/noop-callback)
@@ -122,11 +122,17 @@
                         disabled-content)
                    disabled-content
                    :else content)]
-     [:a (merge {:href "#"} attrs)
-      ;; FIXME: the button helper functions with & content force us to do this for consistency
-      (if (seq? content)
-        (into [:span] content)
-        content)])))
+     (if (= type "submit") ; form submit buttons should not be links for a11y
+       [:button (merge {:href "#"} attrs)
+        ;; FIXME: the button helper functions with & content force us to do this for consistency
+        (if (seq? content)
+          (into [:span] content)
+          content)]
+       [:a (merge {:href "#"} attrs)
+        ;; FIXME: the button helper functions with & content force us to do this for consistency
+        (if (seq? content)
+          (into [:span] content)
+          content)]))))
 
 (def ^:private button-large-primary-classes "btn-large btn-p-color button-font-1 shout")
 (def ^:private disabled-button-large-primary-classes "btn-large btn-gray button-font-1 shout btn-disabled")
