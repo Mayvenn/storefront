@@ -122,7 +122,7 @@
                         disabled-content)
                    disabled-content
                    :else content)]
-     [:a (merge {:href "#"} attrs)
+     [:button (merge {:href "#"} attrs)
       ;; FIXME: the button helper functions with & content force us to do this for consistency
       (if (seq? content)
         (into [:span] content)
