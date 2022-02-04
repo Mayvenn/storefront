@@ -309,6 +309,7 @@
 (defcomponent shop-text-block
   [{anchor-name :anchor/name
     title       :header/value
+    h1          :header/first-on-page?
     big-title   :big-header/content
     body        :body/value
     divider-img :divider-img
@@ -326,8 +327,10 @@
          [:div.title-1.proxima.my1 (:attrs secondary) (:text secondary)]
          [:div.title-1.canela.mt2.mb4 (:attrs primary) (:text primary)]]))
     (when title
-      [:div.title-1.canela
-       title])
+      (if h1
+        [:h1.title-1.canela title]
+        [:div.title-1.canela title]))
+
     (when body
       [:div.title-2.canela body])
     [:div.pt3

@@ -320,7 +320,7 @@
      [:div.flex.justify-between.px8
       [:div {:style {:width "33px"}}]
       [:div.mb3 {:key "logo"}
-       [:h1.mb4 ^:inline (ui/clickable-logo {:event     events/navigate-home
+       [:div.mb4 ^:inline (ui/clickable-logo {:event     events/navigate-home
                                               :data-test "desktop-header-logo"
                                               :height    "44px"})]
        [:div ^:inline (c/build desktop-menu data)]]
