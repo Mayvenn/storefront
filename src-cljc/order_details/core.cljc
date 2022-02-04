@@ -70,19 +70,17 @@
              ;; TODO: Why are there two sections labeled "shipment"?
              (titled-content "Shipment"
                              [:div
-                              (for [[index cart-item] (map-indexed vector cart-items)
-                                    :let              [react-key (:react/key cart-item)]
-                                    :when             react-key]
-                                [:div
-                                 {:key (str index "-cart-item-" react-key)}
-                                 (when-not (zero? index)
-                                   [:div.flex.bg-white
-                                    [:div.ml2 {:style {:width "75px"}}]
-                                    ;; TODO: interpose with border, rather than putting on ever element
-                                    [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
+                              (interpose
+                               [:div.flex.bg-white
+                                [:div {:style {:width "75px"}}]
+                                [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto]]
+                               (for [[index cart-item] (map-indexed vector cart-items)
+                                     :let              [react-key (:react/key cart-item)]
+                                     :when             react-key]
                                  [:div.mxn2
+                                  {:key (str index "-cart-item-" react-key)}
                                   (c/build cart-item-v202004/organism {:cart-item cart-item}
-                                           (c/component-id (str index "-cart-item-" react-key)))]])
+                                           (c/component-id (str index "-cart-item-" react-key)))]))
                               (titled-subcontent "Shipping Estimate" shipping-estimate)
                               (if url
                                 [:div
