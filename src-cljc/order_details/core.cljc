@@ -40,7 +40,7 @@
    [:div.content-1.proxima content]])
 
 (defn address-copy [{:keys [address1 city state zipcode address2]}]
-  (str address1 ", " (when address2 address2 ",") city ", " state ", " zipcode))
+  (str address1 ", " (when (not-empty address2) address2 ",") city ", " state ", " zipcode))
 
 (defn your-looks-title-template
   [{:your-looks-title/keys [id copy]}]
