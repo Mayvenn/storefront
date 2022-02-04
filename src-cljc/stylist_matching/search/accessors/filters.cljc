@@ -57,6 +57,19 @@
       (get sku-id)
       :service-menu-key))
 
+(defn service-menu-key->title
+  [menu-key]
+  (->> (concat free-install-filter-data addon-filter-data)
+       (filter #(= menu-key (name (:service-menu-key %))))
+       first
+       :title))
+
+(defn service-menu-key->addon?
+  [menu-key]
+  (->> addon-filter-data
+       (filter #(= menu-key (name (:service-menu-key %))))
+       not-empty))
+
 (def allowed-stylist-filters
   (->> service-filter-data (map :sku-id) set))
 

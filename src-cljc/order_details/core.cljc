@@ -26,7 +26,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.accessors.auth :as auth]
             [storefront.request-keys :as request-keys]
-            [storefront.components.flash :as flash]))
+            [storefront.components.flash :as flash]
+            [stylist-matching.search.accessors.filters :as stylist-filters]))
 
 (defn titled-content [title content]
   [:div.my6
@@ -183,8 +184,14 @@
                      redemption-date])
                   [:div
                    [:div.title-2.proxima.shout.py2 "What's included"]
-                   [:ul
-                    (map (fn [service] [:li service]) services)]]])
+                   (map (fn [{:keys [variant-name included-services]}]
+                          [:div variant-name
+                           [:ul
+                            (map (fn [service-line]
+                                   [:li service-line])
+                                 included-services)]])
+                        services)
+                   [:div.content-4.dark-gray.mt2 "*Shampoo, Condition, Braid down, and Basic styling included."]]])
                vouchers)) ))
 
 (c/defcomponent template
@@ -346,8 +353,17 @@
                                               {:qr-code-url     qr-code-url
                                                :voucher-code    voucher-code
                                                :expiration-date (f/short-date expiration-date)
-                                               :services        (map (fn [{:keys [quantity product-name]}]
-                                                                       (str quantity "x " product-name)) services)
+                                               :services        (map (fn [{:keys [variant-name service-awards/offered-service-slugs]}]
+                                                                       {:variant-name variant-name
+                                                                        :included-services (map (fn [service-slug]
+                                                                                                  (let [specialty-key (str "specialty-"service-slug)
+                                                                                                        addon? (stylist-filters/service-menu-key->addon? specialty-key)]
+                                                                                                    (str
+                                                                                                     (stylist-filters/service-menu-key->title specialty-key)
+                                                                                                     (if addon? " (add-on)" "*"))))
+                                                                                                offered-service-slugs)})
+                                                                     services)
+                                               :whats-included  (mapcat :service-awards/offered-service-slugs services)
                                                :status          (cond disabled-reason "Disabled"
                                                                       redeemed?       "Redeemed"
                                                                       fulfilled?      "Issued"
