@@ -151,6 +151,42 @@
        [:div.title-2.proxima.shout.py2 "Salon Address"]
        (into [:div] (for [line salon-address] [:div {:key line} line]))]]]))
 
+(defn vouchers-details-template
+  [{:vouchers-details/keys [id spinning? vouchers]}]
+  (cond
+    spinning?
+    [:div
+     {:style {:min-height "400px"}}
+     ui/spinner]
+
+    id
+    (into [:div.py2.px8.max-960.mx-auto
+           {:key id}]
+          (map (fn [{:vouchers-details/keys [qr-code-url voucher-code services expiration-date redemption-date status]}]
+                 [:div
+                  [:div.title-1.proxima.shout.py3 "Voucher"]
+                  [:div.flex.justify-center
+                   (ui/img {:src   qr-code-url
+                            :style {:max-width "150px"}})]
+                  [:div
+                   [:div.title-2.proxima.shout.py2 "Status"]
+                   status]
+                  [:div
+                   [:div.title-2.proxima.shout.py2 "Code"]
+                   voucher-code]
+                  [:div
+                   [:div.title-2.proxima.shout.py2 "Expiration date"]
+                   expiration-date]
+                  (when redemption-date
+                    [:div
+                     [:div.title-2.proxima.shout.py2 "Redemption date"]
+                     redemption-date])
+                  [:div
+                   [:div.title-2.proxima.shout.py2 "What's included"]
+                   [:ul
+                    (map (fn [service] [:li service]) services)]]])
+               vouchers)) ))
+
 (c/defcomponent template
   [data _ _]
   [:div.py2.px8.max-960.mx-auto
@@ -162,6 +198,7 @@
    (no-orders-details-template data)
    (appointment-details-template data)
    (stylist-details-template data)
+   (vouchers-details-template data)
    (c/build email-verification/template data)])
 
 (defn generate-tracking-url [carrier tracking-number]
@@ -293,6 +330,33 @@
        :stylist-details/phone         phone
        :stylist-details/salon-address salon-address})))
 
+;; Voucher states: pending, active, redeemed, expired, canceled, new
+
+(defn vouchers-details-query [app-state]
+  (cond
+    (utils/requesting? app-state request-keys/fetch-vouchers-for-order)
+    {:vouchers-details/spinning? true}
+
+    (seq (get-in app-state [:models :order-details :vouchers]))
+    {:vouchers-details/id       "vouchers-details"
+     :vouchers-details/vouchers (map (fn [{:keys [services qr-code-url voucher-code
+                                                  expiration-date redemption-date
+                                                  disabled-reason fulfilled? redeemed? identified?]}]
+                                       (merge #:vouchers-details
+                                              {:qr-code-url     qr-code-url
+                                               :voucher-code    voucher-code
+                                               :expiration-date (f/short-date expiration-date)
+                                               :services        (map (fn [{:keys [quantity product-name]}]
+                                                                       (str quantity "x " product-name)) services)
+                                               :status          (cond disabled-reason "Disabled"
+                                                                      redeemed?       "Redeemed"
+                                                                      fulfilled?      "Issued"
+                                                                      identified?     "Pending"
+                                                                      :else           "Unknown")}
+                                              (when redemption-date
+                                                #:vouchers-details{:redemption-date (f/short-date expiration-date)})))
+                                     (get-in app-state [:models :order-details :vouchers]))}))
+
 (defn query [app-state]
   (let [user-verified?       (boolean (get-in app-state k/user-verified-at))
         order-number         (or (:order-number (last (get-in app-state k/navigation-message)))
@@ -353,6 +417,7 @@
                                        :cart-items        (fulfillment-items-query app-state line-item-ids shipments)}))}
              (appointment-details-query app-state)
              (stylist-details-query app-state)
+             (vouchers-details-query app-state)
 
              {:verif-status-message/copy (when (= "verif-success" verif-status-message) "Your email was successfully verified.")}))))
 
@@ -411,14 +476,23 @@
                                                              (mapcat :line-items)
                                                              (filter line-items/product-or-service?)
                                                              (map :sku))})
+    #?(:cljs
+       (api/fetch-vouchers-for-order (get-in app-state k/user-id)
+                                     (get-in app-state k/user-token)
+                                     (:number most-recent-open-order)
+                                     {:success-handler #(messages/handle-message e/flow--orderdetails--vouchers-resulted %)
+                                      :error-handler   identity}))
     (when-let [ssid (:servicing-stylist-id most-recent-open-order)]
       #?(:cljs
          (api/fetch-stylist api-cache
                             (get-in app-state k/user-id)
                             (get-in app-state k/user-token)
                             ssid
-                            {:success-handler #(messages/handle-message e/flow--orderdetails--stylist-resulted %)
-                             :error-handler   identity})))))
+                            {:success-handler #(messages/handle-message e/flow--orderdetails--stylist-resulted %)})))))
+
+(defmethod transitions/transition-state e/flow--orderdetails--vouchers-resulted
+  [_ _ {:keys [vouchers]} app-state]
+  (assoc-in app-state [:models :order-details :vouchers] vouchers))
 
 (defmethod transitions/transition-state e/flow--orderdetails--stylist-resulted
   [_ _ {:keys [address store-slug store-nickname salon stylist-id]} app-state]
@@ -431,4 +505,3 @@
                :salon-address [address-1
                                (when (seq address-2) address-2)
                                (str city ", " state " " zipcode)]})))
-

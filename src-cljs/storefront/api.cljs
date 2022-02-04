@@ -1147,20 +1147,30 @@
                  #(messages/handle-message events/api-success-fetch-stylists-matching-filters %))}))
 
 (defn fetch-stylist
-  ([cache user-id user-token stylist-id]
-   (fetch-stylist cache user-id user-token stylist-id nil))
-  ([cache user-id user-token stylist-id {:keys [error-handler cache/bypass? success-handler]}]
-   (cache-req
-    cache
-    GET
-    "/v1/stylist/for-user"
-    request-keys/fetch-stylist
-    {:params        {:user-id    user-id
-                     :user-token user-token
-                     :stylist-id stylist-id}
-     :handler       success-handler
-     :error-handler error-handler
-     :cache/bypass? bypass?})))
+  [cache user-id user-token stylist-id {:keys [error-handler cache/bypass? success-handler]}]
+  (cache-req
+   cache
+   GET
+   "/v1/stylist/for-user"
+   request-keys/fetch-stylist
+   {:params        {:user-id    user-id
+                    :user-token user-token
+                    :stylist-id stylist-id}
+    :handler       success-handler
+    :error-handler error-handler
+    :cache/bypass? bypass?}))
+
+(defn fetch-vouchers-for-order
+  [user-id user-token order-number {:keys [error-handler success-handler]}]
+  (storeback-api-req
+   GET
+   "/vouchers-for-order"
+   request-keys/fetch-vouchers-for-order
+   {:params        {:user-id    user-id
+                    :user-token user-token
+                    :number     order-number}
+    :handler       success-handler
+    :error-handler error-handler}))
 
 (defn fetch-matched-stylist
   ([cache stylist-id]
