@@ -35,9 +35,9 @@
    [:div.content-1.proxima content]])
 
 (defn titled-subcontent [title content]
-  [:div.my6
+  [:div.my3
    [:div.title-3.shout.proxima title]
-   [:div.content-2.proxima content]])
+   [:div.content-1.proxima content]])
 
 (defn address-copy [{:keys [address1 city state zipcode address2]}]
   (str address1 ", " (when address2 address2 ",") city ", " state ", " zipcode))
@@ -47,6 +47,7 @@
   (when id
     [:div.title-2.canela.center.mt10.mb6 {:key id} copy]))
 
+;; TODO: break this apart
 (defn order-details-template
   [{:order-details/keys [id
                          fulfillments
@@ -56,7 +57,7 @@
                          total
                          pending-cart-items]}]
   (when id
-       [:div.py6.px8.max-960.mx-auto
+       [:div.my6.max-960.mx-auto
         {:key id}
         [:div.title-1.canela "My Recent Order"]
         (titled-content "Order Number" order-number)
@@ -66,51 +67,51 @@
         (if (seq fulfillments)
           (for [{:keys [url carrier tracking-number shipping-estimate cart-items]} fulfillments]
             [:div
-             [:div.title-2.shout.proxima "Shipment"]
-             (for [[index cart-item] (map-indexed vector cart-items)
-                   :let              [react-key (:react/key cart-item)]
-                   :when             react-key]
-               [:div
-                {:key (str index "-cart-item-" react-key)}
-                (when-not (zero? index)
-                  [:div.flex.bg-white
-                   [:div.ml2 {:style {:width "75px"}}]
-                   [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
-                (c/build cart-item-v202004/organism {:cart-item cart-item}
-                         (c/component-id (str index "-cart-item-" react-key)))])
-             (titled-subcontent "Shipping Estimate" shipping-estimate)
-             (if url
-               [:div
-                carrier
-                " Tracking: "
-                [:a
-                 (utils/fake-href e/external-redirect-url {:url url})
-                 tracking-number]]
-               (titled-subcontent "Tracking:" "Waiting for Shipment"))])
+             ;; TODO: Why are there two sections labeled "shipment"?
+             (titled-content "Shipment"
+                             [:div
+                              (for [[index cart-item] (map-indexed vector cart-items)
+                                    :let              [react-key (:react/key cart-item)]
+                                    :when             react-key]
+                                [:div
+                                 {:key (str index "-cart-item-" react-key)}
+                                 (when-not (zero? index)
+                                   [:div.flex.bg-white
+                                    [:div.ml2 {:style {:width "75px"}}]
+                                    ;; TODO: interpose with border, rather than putting on ever element
+                                    [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
+                                 [:div.mxn2
+                                  (c/build cart-item-v202004/organism {:cart-item cart-item}
+                                           (c/component-id (str index "-cart-item-" react-key)))]])
+                              (titled-subcontent "Shipping Estimate" shipping-estimate)
+                              (if url
+                                [:div
+                                 carrier
+                                 " Tracking: "
+                                 [:a
+                                  (utils/fake-href e/external-redirect-url {:url url})
+                                  tracking-number]]
+                                (titled-subcontent "Tracking:" "Waiting for Shipment"))])])
           (titled-subcontent "Tracking:" "Waiting for Shipment"))
 
-        (when pending-cart-items
+        (when (seq pending-cart-items)
           [:div
-           [:div.title-2.shout.proxima "Shipment"]
-           (for [[index cart-item] (map-indexed vector pending-cart-items)
-                 :let              [react-key (:react/key cart-item)]
-                 :when             react-key]
-             [:div
-              {:key (str index "-cart-item-" react-key)}
-              (when-not (zero? index)
-                [:div.flex.bg-white
-                 [:div.ml2 {:style {:width "75px"}}]
-                 [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
-              (c/build cart-item-v202004/organism {:cart-item cart-item}
-                       (c/component-id (str index "-cart-item-" react-key)))])
-           (titled-subcontent "Tracking:" "Waiting for Shipment")])
-        (titled-content "Payment" nil)
-        (titled-subcontent "Total" (mf/as-money total))
-        [:p.mt8 "If you need to edit or cancel your order, please contact our customer service at "
-         (ui/link :link/email :a {} "help@mayvenn.com")
-         " or "
-         (ui/link :link/phone :a.inherit-color {} config/support-phone-number)
-         "."]]))
+           (titled-content "Shipment"
+                           [:div
+                            (for [[index cart-item] (map-indexed vector pending-cart-items)
+                                  :let              [react-key (:react/key cart-item)]
+                                  :when             react-key]
+                              [:div
+                               {:key (str index "-cart-item-" react-key)}
+                               (when-not (zero? index)
+                                 [:div.flex.bg-white
+                                  [:div.ml2 {:style {:width "75px"}}]
+                                  [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
+                               (c/build cart-item-v202004/organism {:cart-item cart-item}
+                                        (c/component-id (str index "-cart-item-" react-key)))])
+                            (titled-subcontent "Tracking:" "Waiting for Shipment")])])
+        (titled-content "Payment" [:div
+                                   (titled-subcontent "Total" (mf/as-money total))])]))
 
 (defn no-orders-details-template
   [{:no-orders-details/keys [id]}]
@@ -118,16 +119,17 @@
     [[:div.center.mb4.content-3 "You have no recent orders"]
      (ui/button-medium-primary (utils/route-to e/navigate-category {:page/slug "mayvenn-install" :catalog/category-id "23"}) "Browse Products")]))
 
+;; TODO: does appointment status header need to be there when there's no appt set?
 (defn appointment-details-template
   [{:appointment-details/keys [id spinning? date time]}]
   (when id
-    [:div.py3.px8.max-960.mx-auto
+    [:div.my6.max-960.mx-auto
      {:key id}
-     [:div
-      [:div.title-1.proxima.shout.py3 "Appointment Status"]
-      [:div.title-2.proxima.shout.py2 "Appointment Info"]
-      [:div "Date: " date]
-      [:div "Time: " time]]]))
+     (titled-content "Appointment Status"
+                     (titled-subcontent "Appointment Info"
+                                        [:div
+                                         [:div "Date: " date]
+                                         [:div "Time: " time]]))]))
 
 (defn stylist-details-template
   [{:stylist-details/keys [id spinning? nickname phone salon-name salon-address]}]
@@ -138,19 +140,18 @@
      ui/spinner]
 
     id
-    [:div.py2.px8.max-960.mx-auto
+    [:div.my6.max-960.mx-auto
      {:key id}
-     [:div
-      [:div
-       [:div.title-1.proxima.shout.py3 "Stylist Info"]
-       [:div nickname]
-       [:div phone]]
-      [:div
-       [:div.title-2.proxima.shout.py2 "Salon Name"]
-       [:div salon-name]]
-      [:div
-       [:div.title-2.proxima.shout.py2 "Salon Address"]
-       (into [:div] (for [line salon-address] [:div {:key line} line]))]]]))
+     (titled-content "Stylist Info"
+                     [:div
+                      [:div nickname]
+                      [:div phone]
+                      (titled-subcontent "Salon Name"
+                                         salon-name)
+                      (titled-subcontent "Salon Address"
+                                         (into [:div]
+                                               (for [line salon-address]
+                                                 [:div {:key line} line])))])]))
 
 (defn vouchers-details-template
   [{:vouchers-details/keys [id spinning? vouchers]}]
@@ -161,37 +162,30 @@
      ui/spinner]
 
     id
-    (into [:div.py2.px8.max-960.mx-auto
+    (into [:div.my6.max-960.mx-auto
            {:key id}]
           (map (fn [{:vouchers-details/keys [qr-code-url voucher-code services expiration-date redemption-date status]}]
-                 [:div
-                  [:div.title-1.proxima.shout.py3 "Voucher"]
-                  (when qr-code-url
-                    [:div.flex.justify-center
-                     (ui/img {:src   qr-code-url
-                              :style {:max-width "150px"}})])
-                  [:div
-                   [:div.title-2.proxima.shout.py2 "Status"]
-                   status]
-                  [:div
-                   [:div.title-2.proxima.shout.py2 "Code"]
-                   voucher-code]
-                  [:div
-                   [:div.title-2.proxima.shout.py2 "Expiration date"]
-                   expiration-date]
-                  (when redemption-date
-                    [:div
-                     [:div.title-2.proxima.shout.py2 "Redemption date"]
-                     redemption-date])
-                  [:div
-                   [:div.title-2.proxima.shout.py2 "What's included"]
-                   (map (fn [{:keys [included-services]}]
-                          [:ul
-                           (map (fn [service-line]
-                                  [:li service-line])
-                                included-services)])
-                        services)
-                   [:div.content-4.dark-gray.mt2 "*Shampoo, Condition, Braid down, and Basic styling included."]]])
+                 (titled-content "Voucher"
+                                 [:div
+                                  (when qr-code-url
+                                    [:div.flex.flex-column.items-center.my6
+                                     (ui/img {:src   qr-code-url
+                                              :style {:max-width "150px"}})
+                                     [:div voucher-code]])
+                                  (titled-subcontent "Status" status)
+                                  (if redemption-date
+                                    (titled-subcontent "Redemption date" redemption-date)
+                                    (titled-subcontent "Expiration date" expiration-date))
+                                  (titled-subcontent "What's included"
+                                                     [:div
+                                                      (map (fn [{:keys [included-services]}]
+                                                             [:ul
+                                                              (map (fn [service-line]
+                                                                     [:li service-line])
+                                                                   included-services)])
+                                                           services)
+                                                      [:div.content-3.mt2
+                                                       "*Shampoo, Condition, Braid down, and Basic styling included."]])]))
                vouchers)) ))
 
 (c/defcomponent template
@@ -206,6 +200,11 @@
    (appointment-details-template data)
    (stylist-details-template data)
    (vouchers-details-template data)
+   #_[:p.mt8 "If you need to edit or cancel your order, please contact our customer service at "
+    (ui/link :link/email :a {} "help@mayvenn.com")
+    " or "
+    (ui/link :link/phone :a.inherit-color {} config/support-phone-number)
+    "."]
    (c/build email-verification/template data)])
 
 (defn generate-tracking-url [carrier tracking-number]
