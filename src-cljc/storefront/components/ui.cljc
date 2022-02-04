@@ -874,10 +874,12 @@
 
 (defn expand-icon [expanded?]
   (component/html
-   [:img {:style {:width "8px"}
-          :src   (if expanded?
-                   "//ucarecdn.com/6cfa1b3c-ed89-4e71-b702-b6fdfba72c0a/-/format/auto/collapse"
-                   "//ucarecdn.com/dbdcce35-e6da-4247-be57-22991d086fc1/-/format/auto/expand")}]))
+   [:img (merge {:style {:width "8px"}}
+                (if expanded?
+                  {:src "//ucarecdn.com/6cfa1b3c-ed89-4e71-b702-b6fdfba72c0a/-/format/auto/collapse"
+                   :alt "Collapse"}
+                  {:src "//ucarecdn.com/dbdcce35-e6da-4247-be57-22991d086fc1/-/format/auto/expand"
+                   :alt "Expand"}))]))
 
 (defn clickable-logo [{:as attrs :keys [height event]}]
   (component/html
