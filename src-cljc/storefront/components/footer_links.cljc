@@ -79,7 +79,7 @@
                                          :class  "fill-white"})
         [:div.flex.mt4.mb3.col-12-on-dt
        [:div.col-4 {:key "full"}
-        ^:inline (footer-link (utils/route-to events/navigate-content-about-us) "About")
+        ^:inline (footer-link (merge {:aria-label "About Mayvenn"} (utils/route-to events/navigate-content-about-us)) "About")
         ^:inline (footer-link {:href "https://jobs.mayvenn.com"} "Careers")
         ^:inline (footer-link (utils/route-to events/navigate-content-help) "Contact")]
        [:div.col-4 {:key "standard"}

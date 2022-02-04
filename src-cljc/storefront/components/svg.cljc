@@ -184,7 +184,7 @@
 (defn ^:private mayvenn-on-social [title xlink]
   (let [title-id (str "social-title-" xlink)]
     (component/html
-     [:svg.container-size {:class "fill-black" :role "img" :aria-labelledby title-id}
+     [:svg.container-size {:class "fill-black" :role "img" :aria-labelledby title-id :aria-label title}
       [:title {:id title-id} title]
       ^:inline (svg-xlink {:role "presentation"} xlink)])))
 
