@@ -884,8 +884,9 @@
 (defn clickable-logo [{:as attrs :keys [height event]}]
   (component/html
    [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.p-color
-    (merge {:style     {:height height}
-            :title     "Mayvenn"}
+    (merge {:style {:height height}
+            :alt   "Mayvenn"
+            :title "Mayvenn Logo"}
            (when event (utils/route-to event))
            (dissoc attrs :height :event))]))
 
