@@ -108,6 +108,25 @@
      ucare?      (ucare-hero mob-uuid dsk-uuid file-name alt)
      :else       (image-hero mob-url dsk-url alt))])
 
+(defcomponent fullsize-image
+  "The difference between this and the hero is that there is no <a> tag. The <a> tag implies a link away
+   for screen readers and there is no link here. This exists for a11y reasons."
+  [{:keys [opts
+           dsk-uuid
+           mob-uuid
+           dsk-url
+           mob-url
+           file-name
+           alt
+           ucare?
+           off-screen?]
+    :or   {file-name "hero-image"}} _ _]
+  [:div
+   (cond
+     off-screen? [:div.col-12]
+     ucare?      (ucare-hero mob-uuid dsk-uuid file-name alt)
+     :else       (image-hero mob-url dsk-url alt))])
+
 (defn field-reveal-molecule
   [{:field-reveal/keys [id label target]}]
   (when id
