@@ -16,12 +16,12 @@
 (defn ^:private contact-us-title-molecule
   [{:contact-us.title/keys [primary secondary]}]
   [:div
-   [:h5.mt6.proxima.shout.title-2 primary]
-   [:h1.canela.title-1.pb1 secondary]])
+   [:h2.mt6.proxima.shout.title-2 primary]
+   [:div.canela.title-1.pb1 secondary]])
 
 (defn ^:private contact-us-body-molecule
   [{:contact-us.body/keys [primary]}]
-  [:h5.proxima.content-2 primary])
+  [:div.proxima.content-2 primary])
 
 (def contact-us-straight-line-atom
   [:div.stroke-s-color.pt4.hide-on-dt

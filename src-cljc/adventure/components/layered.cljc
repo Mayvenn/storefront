@@ -380,9 +380,9 @@
    owner
    opts]
   [:div.col-12.bg-warm-gray.center.flex.flex-column.items-center.py2
-   [:div.mt2
+   [:h2.mt2
     (when title-value
-      [:h2.title-1.canela
+      [:div.title-1.canela
        (interpose [:br] title-value)])
     (when subtitle-value
       [:div.title-1.proxima.shout.sub.my1

@@ -18,8 +18,8 @@
     (guarantees-icon-molecule element id)))
 
 (def ^:private guarantees-title-molecule
-  [:div.mt5.mb3
-   [:h2.title-1.proxima.shout.pb1
+  [:h2.mt5.mb3
+   [:div.title-1.proxima.shout.pb1
     [:div.img-logo.bg-no-repeat.bg-center.bg-contain
      {:style {:height "29px"}}]]
    [:div.title-1.canela.shout "guarantees"]])
