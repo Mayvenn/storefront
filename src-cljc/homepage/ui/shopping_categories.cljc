@@ -27,7 +27,7 @@
 
 (defn ^:private shopping-categories-alt-label-atom
   [[first-line last-line]]
-  [:div.p2.flex.justify-around.items-center.bg-pale-purple.dark-gray.inherit-color.canela.title-2.center
+  [:div.p2.flex.justify-around.items-center.bg-pale-purple.black.inherit-color.canela.title-2.center
    {:style {:height "100%"
             :width  "100%"}}
    first-line [:br] last-line])
@@ -39,7 +39,7 @@
     [:div.col.col-6.col-4-on-tb-dt.px1.my1
      {:key react-key :data-test id}
      (ui/aspect-ratio width height
-                      [:a (apply utils/route-to target)
+                      [:a.bg-black (apply utils/route-to target)
                        (when ucare-id
                          (shopping-categories-image-atom ucare-id
                                                          id
@@ -56,7 +56,7 @@
 
 (defn ^:private shopping-categories-title-molecule
   [{:shopping-categories.title/keys [primary]}]
-  [:div.mb3.center.mx-auto.title-1.canela primary])
+  [:h1.mb3.center.mx-auto.title-1.canela primary])
 
 (c/defcomponent organism
   [data _ _]

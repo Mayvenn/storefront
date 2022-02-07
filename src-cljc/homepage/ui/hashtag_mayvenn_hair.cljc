@@ -8,9 +8,10 @@
   (ui/aspect-ratio
    1 1
    (cond
-     seen?          [:img {:class "col-12"
-                           :src   image-url}]
-     :else          [:div.col-12 " "])))
+     seen? [:img {:class "col-12"
+                  :src   image-url
+                  :alt   ""}]
+     :else [:div.col-12 " "])))
 
 (defn ^:private more-looks-cta
   [{:hashtag-mayvenn-hair.cta/keys [target label id]}]

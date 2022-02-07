@@ -123,13 +123,14 @@
        [:div.col-10.my2.h5 value]))
    (cta-with-chevron data)])
 
-(defcomponent ^:private ugc-image [{:screen/keys [seen?] :keys [image-url]} owner opts]
+(defcomponent ^:private ugc-image [{:screen/keys [seen?] :keys [image-url alt]} owner opts]
   (ui/aspect-ratio
    1 1
    (cond
-     seen?          [:img {:class "col-12"
-                           :src   image-url}]
-     :else          [:div.col-12 " "])))
+     seen? [:img {:class "col-12"
+                  :src   image-url
+                  :alt   alt}]
+     :else [:div.col-12 " "])))
 
 (defcomponent ugc
   [data owner opts]
@@ -144,7 +145,8 @@
        {:key (str image-url)}
        (ui/screen-aware
         ugc-image
-        {:image-url image-url}
+        {:image-url image-url
+         :alt       (:alt opts)}
         nil)])]])
 
 (defcomponent faq
