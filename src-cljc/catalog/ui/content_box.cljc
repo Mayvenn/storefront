@@ -36,5 +36,5 @@
      [:div.proxima.title-2.bold.caps.pb1 "Still Have Questions?"]
      [:div.canela.content-2
       [:div "Customer Service can help!"]
-      [:div "Call " [:a.inherit-color {:href (ui/phone-url config/support-phone-number)} config/support-phone-number " "]]
+      [:div "Call " (ui/link :link/phone :a.inherit-color {} config/support-phone-number)]
       [:div "Monday through Friday from 8am-5pm PST."]]]]])

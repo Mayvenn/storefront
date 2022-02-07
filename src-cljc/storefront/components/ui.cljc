@@ -909,7 +909,7 @@
    (if (= 1 (max cnt (- cnt))) singular plural)))
 
 (defn phone-url [tel-num]
-  (str "tel://+" (numbers/digits-only tel-num)))
+  (str "tel:+" (numbers/digits-only tel-num)))
 
 (defn email-url [email]
   (str "mailto:" email))
@@ -918,7 +918,10 @@
   [tag (assoc attrs :href (email-url (last body))) (apply str body)])
 
 (defn phone-link [tag attrs & body]
-  [tag (assoc attrs :href (phone-url (last body))) body])
+  [tag (assoc attrs :href (phone-url (last body))
+              :aria-label (str "Phone number: "
+                               (apply str (interpose " " (numbers/digits-only (last body))))))
+   body])
 
 (defn sms-url [tel-num]
   ;; Android cannot detect shortcodes properly if you're using sms://+34649 or sms://34649

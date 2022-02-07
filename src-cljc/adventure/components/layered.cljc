@@ -199,9 +199,9 @@
     contact-us-blocks  :contact-us-blocks} _ _]
   [:div
    [:div.bg-warm-gray.center.py8
-    [:h5.mt6.proxima.shout.title-2 ^String title-value]
-    [:h1.canela.title-1.pb1 ^String subtitle-value]
-    [:h5.proxima.content-2 ^String sub-subtitle-value]
+    [:h2.mt6.proxima.shout.title-2 ^String title-value]
+    [:div.canela.title-1.pb1 ^String subtitle-value]
+    [:div.proxima.content-2 ^String sub-subtitle-value]
     [:div.stroke-s-color.pt4
      ^:inline (svg/straight-line {:width  "1px"
                                   :height "42px"})]
