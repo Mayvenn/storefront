@@ -57,7 +57,8 @@
     [:img.border.border-gray.ml4.mr1
      {:height "20px"
       :width  "21px"
-      :src    selected-color-swatch}]
+      :src    selected-color-swatch
+      :alt    (str "Color swatch for " (last selected-value-html))}]
     [:div.ml2.flex-auto selected-value-html]
     [:div.self-center ^:inline picker-chevron]]
    select-html])

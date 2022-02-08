@@ -12,7 +12,7 @@
 
 (defn ^:private carousel-slide
   [destination-event product-id page-slug sku-id dt-prefix idx
-   {:keys [image-url]}]
+   {:keys [image-url social-service description title]}]
   (component/html
    [:a.block.p1
     (merge
@@ -27,7 +27,9 @@
     (ui/aspect-ratio
      1 1
      {:class "flex items-center"}
-     (ui/basic-defer-img {:class "col-12"} image-url))]))
+     (ui/basic-defer-img {:class "col-12"
+                          :alt (str title "'s " social-service " image of a person wearing " description)}
+                         image-url))]))
 
 (defn ->title-case [s]
   #?(:clj (string/capitalize s)
