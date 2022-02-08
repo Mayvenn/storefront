@@ -81,7 +81,7 @@
    {:on-click  (apply utils/send-event-callback target)
     :data-test (:facet-filtering.section.filter/id data)
     :key       id}
-   [:div (ui/check-box {:value value :id id})]
+   [:div (ui/check-box {:value value :id (str "filter-" primary "-mobile")})]
    (when icon-url
      [:img.block.pr2
       {:style {:width  "50px"
@@ -124,7 +124,7 @@
    {:on-click (apply utils/send-event-callback target)
     :key      id}
    [:div (ui/check-box {:value     value
-                        :id        id
+                        :id        (str "filter-" primary "-desktop")
                         :data-test id})]
    (when icon-url
      [:img.block.pr2
