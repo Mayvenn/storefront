@@ -376,8 +376,17 @@
       (effects/redirect events/navigate-shop-by-look {:album-keyword album-keyword}))))
 
 (defmethod effects/perform-effects events/navigate-account [_ event args _ app-state]
-  (when-not (get-in app-state keypaths/user-token)
-    (effects/redirect events/navigate-sign-in)))
+  (let [sign-in-data (auth/signed-in app-state)
+        hard-session-token (-> app-state
+                               (get-in keypaths/cookie)
+                               cookie-jar/retrieve-login
+                               :hard-session-token)]
+    (when (or (= :guest (::auth/as sign-in-data))
+              (and (auth/requires-hard-session? event)
+                   (nil? hard-session-token)))
+      ;; TODO(ellie+andres, 2022-02-08): Include flash explaining why they are being asked to log in,
+      ;; if it's due to not having a hard session
+      (effects/redirect events/navigate-sign-in))))
 
 (defmethod effects/perform-effects events/navigate-stylist [_ event args _ app-state]
   (when (not (and (get-in app-state keypaths/user-token)
