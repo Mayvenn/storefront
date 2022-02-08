@@ -27,15 +27,16 @@
   (ui/forward-caret {:width  18
                      :height 18}))
 
-(defn ^:private invisible-select [{:keys [on-change options value]}]
+(defn ^:private invisible-select [{:keys [on-change options value label]}]
   [:select.absolute.invisible-select.overlay
-   {:on-change on-change
-    :value     value
-    :style     {:opacity 0
-                :border  "none"
-                :outline "none"
-                :width   "100%"
-                :height  "100%"}}
+   {:on-change  on-change
+    :value      value
+    :aria-label label
+    :style      {:opacity 0
+                 :border  "none"
+                 :outline "none"
+                 :width   "100%"
+                 :height  "100%"}}
    options])
 
 (defn ^:private picker-face
@@ -77,6 +78,7 @@
      [:div.hide-on-mb.relative.col-12
       (invisible-select
        {:value     selected-value
+        :label     primary
         :on-change #(messages/handle-message selection-event
                                              (assoc selection-args :value (.-value (.-target %))))
         :options   (map (fn [{:option/keys [value label available?]}]

@@ -103,15 +103,16 @@
            attrs)
     html-widget]))
 
-(defn invisible-select [{:keys [on-change options value]}]
+(defn invisible-select [{:keys [on-change options value label]}]
   [:select.absolute.invisible-select.overlay
-   {:on-change on-change
-    :value     value
-    :style     {:opacity 0
-                :border  "none"
-                :outline "none"
-                :width   "100%"
-                :height  "100%"}}
+   {:on-change  on-change
+    :value      value
+    :aria-label label
+    :style      {:opacity 0
+                 :border  "none"
+                 :outline "none"
+                 :width   "100%"
+                 :height  "100%"}}
    options])
 
 (def vertical-border
@@ -133,6 +134,7 @@
                                              :navigation-event navigation-event
                                              :value            (.-value (.-target %))})
        :value     (:hair/length selections)
+       :label     "Length"
        :options   (map (fn [option]
                          [:option {:value (:option/slug option)
                                    :key   (str "length-" (:option/slug option))}
@@ -148,6 +150,7 @@
        {:on-change #(messages/handle-message events/control-product-detail-picker-option-quantity-select
                                              {:value (spice/parse-int (.-value (.-target %)))})
         :value     sku-quantity
+        :label     "Quantity"
         :options   (map (fn [quantity]
                           [:option {:value quantity
                                     :key   (str "quantity-" quantity)}
@@ -192,6 +195,7 @@
      [:span product-sold-out-style (:option/name selected-color)]
      (invisible-select
       {:value     (:hair/color selections)
+       :label     "Color"
        :on-change #(messages/handle-message events/control-product-detail-picker-option-select
                                             {:selection        :hair/color
                                              :navigation-event navigation-event
@@ -228,6 +232,7 @@
      [:span product-sold-out-style (:option/name selected-base-material)]
      (invisible-select
       {:value     (:hair/base-material selections)
+       :lable     "Base Material"
        :on-change #(messages/handle-message events/control-product-detail-picker-option-select
                                             {:selection        :hair/base-material
                                              :navigation-event navigation-event

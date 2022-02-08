@@ -40,7 +40,7 @@
                                                                            :keypath keypath})
                   {:class     (if active?
                                 "black border-width-4 border-black"
-                                "dark-gray border-width-2 border-cool-gray")
+                                "dark-dark-gray border-width-2 border-cool-gray")
                    :style     {:padding-bottom (when-not active? "2px")} ; counter the thick border
                    :key       (str "tab-" (name id))
                    :data-test (str "tab-" (name id))})
