@@ -18,15 +18,14 @@
 
 (defn yotpo-reviews-summary
   [{:yotpo-reviews-summary/keys [product-title product-id data-url]}]
-  [:div
-   (when product-id
-     [:div.h6
-      {:style {:min-height "18px"}}
-      (component/build review-component/reviews-summary-dropdown-experiment-component
-                       {:yotpo-data-attributes
-                        {:data-name       product-title
-                         :data-product-id product-id
-                         :data-url        data-url}})])])
+  (when product-id
+    [:div.h6
+     {:style {:min-height "18px"}}
+     (component/build review-component/reviews-summary-dropdown-experiment-component
+                      {:yotpo-data-attributes
+                       {:data-name       product-title
+                        :data-product-id product-id
+                        :data-url        data-url}})]))
 
 (defcomponent non-hair-product-description
   [{:product-description/keys
