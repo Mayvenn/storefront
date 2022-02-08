@@ -113,7 +113,7 @@
   [{:product-card-title/keys [id primary]}]
   (when id
     (component/html
-     [:h2.mt3.mx1.content-2.proxima
+     [:h3.mt3.mx1.content-2.proxima
       primary])))
 
 (defcomponent product-card-details-molecule

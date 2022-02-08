@@ -42,7 +42,7 @@
   [:div.mb6
    {:id id :data-test id :key id}
    (when primary-title
-     [:div.canela.title-2.center.mb2 primary-title])
+     [:h2.canela.title-2.center.mb2 primary-title])
    [:div.flex.flex-wrap
     (for [card product-cards]
       ^:inline

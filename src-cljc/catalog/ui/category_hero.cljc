@@ -11,7 +11,7 @@
 
 (defn ^:private category-hero-title-molecule
   [{:category-hero.title/keys [primary]}]
-  [:div.h1.title-1.canela primary])
+  [:h1.title-1.canela primary])
 
 (defn ^:private category-hero-icon-molecule
   [{:category-hero.icon/keys [image-src]}]
