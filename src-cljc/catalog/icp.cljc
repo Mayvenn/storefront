@@ -44,7 +44,7 @@
   [:picture
    [:source {:src-set (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/lightest/-/resize/124x/" " 2x,"
                            "//ucarecdn.com/" image-id "/-/format/auto/-/quality/normal/-/resize/62x/" " 1x")}]
-   [:img ^:attrs {:src (str "//ucarecdn.com/" image-id "/-/format/auto/-/scale_crop/62x62/center/")}]])
+   [:img ^:attrs {:src (str "//ucarecdn.com/" image-id "/-/format/auto/-/scale_crop/62x62/center/") :alt ""}]])
 
 (defcomponent ^:private drill-category-list-entry-organism
   [{:drill-category/keys [id title description image-id target action-id action-label showing-3-or-more?]} _ _]
