@@ -3,11 +3,10 @@
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]))
 
-(defn ^:private spotlight-with-caption [{:keys [title image-src nav-event]}]
+(defn ^:private spotlight-with-caption [{:keys [title image-src nav-event alt]}]
   [:a.block.black
    (apply utils/route-to nav-event)
-   ;; (ui/circle-picture {:width "108px"} (str "//ucarecdn.com/" image-src "/"))
-   (ui/circle-ucare-img {:width "108"} image-src)
+   (ui/circle-ucare-img {:width "108" :alt alt} image-src)
    [:div.center.mt3 title]])
 
 (c/defcomponent organism

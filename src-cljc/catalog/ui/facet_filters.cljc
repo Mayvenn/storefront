@@ -86,6 +86,7 @@
      [:img.block.pr2
       {:style {:width  "50px"
                :height "30px"}
+       :alt   (str "Color swatch of " primary "-colored hair")
        :src   icon-url}])
    [:div
     primary]])
@@ -129,6 +130,7 @@
      [:img.block.pr2
       {:style {:width  "50px"
                :height "30px"}
+       :alt   (str "Color swatch of " primary "-colored hair")
        :src   icon-url}])
    [:div primary]])
 

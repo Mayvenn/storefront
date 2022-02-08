@@ -214,8 +214,8 @@
 
 (defn page
   [state _]
-  (let [current-category                    (accessors.categories/current-category state)
-        interstitial-category               (accessors.categories/current-category state)
+  (let [current-category      (accessors.categories/current-category state)
+        interstitial-category (accessors.categories/current-category state)
 
         facet-filtering-state               (assoc (get-in state catalog.keypaths/k-models-facet-filtering)
                                                    :facet-filtering/item-label "item")
@@ -260,6 +260,7 @@
                                                                                :page/slug]}]
                                                                     {:image-src image-id
                                                                      :title     title
+                                                                     :alt       (str "Woman wearing a " (clojure.string/join (butlast title)))
                                                                      :nav-event [events/navigate-category
                                                                                  {:page/slug           slug
                                                                                   :catalog/category-id category-id}]})
@@ -290,14 +291,15 @@
                                                  :drill-category-list/showing-3-or-more?     (>= (count values) 3)
                                                  :drill-category-list/tablet-desktop-columns (max 1 (min 3 (count values)))}})
                         :return-address-labels
-                        {:return-address-labels {:title "Shop by Category"
+                        {:return-address-labels {:title  "Shop by Category"
                                                  :labels (map (fn [{:keys [:subcategory/image-id
                                                                            :subcategory/title
                                                                            :catalog/category-id
                                                                            :page/slug]
-                                                                    :as subcategory}]
+                                                                    :as   subcategory}]
                                                                 {:image-src image-id
                                                                  :title     (or title (:copy/title subcategory))
+                                                                 :alt       (str "Woman wearing a " (clojure.string/join (butlast (or title (:copy/title subcategory)))))
                                                                  :nav-event [events/navigate-category
                                                                              {:page/slug           slug
                                                                               :catalog/category-id category-id}]})

@@ -6,13 +6,14 @@
 ;; This is named after the little customized address labels nonprofits mail you.
 ;; It is used on the category page to make the nav links below the spotlight.
 
-(defn ^:private image-with-label [{:keys [title image-src nav-event]}]
+(defn ^:private image-with-label [{:keys [title image-src nav-event alt]}]
   [:a.block.black.bg-cool-gray.flex.items-center
    (apply utils/route-to nav-event)
    (ui/img {:src         image-src
             :square-size 40
             :max-size    40
-            :class       "mp3"})
+            :class       "mp3"
+            :alt         alt})
    [:div.proxima.content-3.p1 title]])
 
 (c/defcomponent organism
