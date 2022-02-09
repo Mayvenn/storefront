@@ -114,7 +114,7 @@
                    disabled?                                                 (assoc :data-test-disabled "yes")
                    spinning?                                                 (assoc :data-test-spinning "yes")
                    :always                                                   (update :class str " " additional-classes)
-                   disabled?                                                 (update :class str " btn-gray btn-disabled cursor-not-allowed " (or disabled-class "is-disabled")))
+                   disabled?                                                 (update :class str " btn-gray cursor-not-allowed" (or disabled-class "is-disabled")))
          content (cond
                    spinning?
                    [spinner]
@@ -128,14 +128,14 @@
         (if (seq? content)
           (into [:span] content)
           content)]
-       [:a (merge {:href "#"} attrs)
+       [:a (merge (if disabled? {:aria-disabled true :role "link"} {:href "#"}) attrs) ; a11y: when disabled, links have aria-disabled true
         ;; FIXME: the button helper functions with & content force us to do this for consistency
         (if (seq? content)
           (into [:span] content)
           content)]))))
 
 (def ^:private button-large-primary-classes "btn-large btn-p-color button-font-1 shout")
-(def ^:private disabled-button-large-primary-classes "btn-large btn-gray button-font-1 shout btn-disabled")
+(def ^:private disabled-button-large-primary-classes "btn-large btn-gray button-font-1 shout")
 (defn button-large-primary              [attrs & content] (button button-large-primary-classes attrs content))
 (defn button-large-secondary            [attrs & content] (button "btn-large btn-outline button-font-1 shout" attrs content))
 (defn button-large-paypal               [attrs & content] (button "btn-large btn-paypal-color button-font-1 shout" attrs content))

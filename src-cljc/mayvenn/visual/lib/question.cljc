@@ -35,11 +35,11 @@
         [:div
          {:key id}
          (into
-          [:div.canela.title-2.mtj3.ptj3
+          [:h2.canela.title-2.mtj3.ptj3
            (when scroll-to
              {:data-scroll scroll-to})]
           (interpose [:br] primary))
-         [:div.content-2.dark-gray.my3
+         [:div.content-2.dark-dark-gray.my3
           secondary]])))))
 
 (c/defcomponent quiz-question-choice-button-molecule
@@ -59,7 +59,8 @@
      {:style {:height "0px"}}
      (when icon-url
        [:img.mr3 {:src   (assets/path icon-url)
-                  :style {:width "42px"}}])
+                  :style {:width "42px"}
+                  :alt   ""}])
      [:div.content-2.proxima.flex-auto.left-align
       primary]
      (when selected?

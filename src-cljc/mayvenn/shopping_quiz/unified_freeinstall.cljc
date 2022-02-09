@@ -108,11 +108,12 @@
       [:div
        {:data-test "header-back"}
        [:a.block.black.p2.flex.justify-center.items-center
-        (apply utils/route-back-or-to back target)
+        (merge {:aria-label "Go back"}
+               (apply utils/route-back-or-to back target))
         (svg/left-arrow {:width  "20"
-                         :height "20"})]]
-      [:div {:key "center"}]))
-   (c/html [:div.content-1.proxima.center primary])
+                         :height "20"})]
+       [:div {:key "center"}]]))
+   (c/html [:h1.content-1.proxima.center primary])
    (c/html [:div {:key "right"}])))
 
 ;; Template: 3/Appointment Booking
