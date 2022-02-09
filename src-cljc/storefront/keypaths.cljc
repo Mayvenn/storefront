@@ -26,7 +26,6 @@
 (def user [:user])
 (def user-email (conj user :email))
 (def user-token (conj user :user-token))
-(def user-hard-session-token (conj user :hard-session-token))
 (def user-store-slug (conj user :store-slug))
 (def user-store-id (conj user :store-id))
 (def user-verified-at (conj user :verified-at))

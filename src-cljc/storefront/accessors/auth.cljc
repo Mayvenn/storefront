@@ -5,12 +5,6 @@
  ;; TODO(ellie+andres, 2022-02-08): Replace this with a less hacky solution
  ;; Ideally one where it's not just a list of events
 
-(def ^:private hard-session-pages
-  #{e/navigate-account-manage})
-
-(defn requires-hard-session? [navigation-event]
-  (contains? hard-session-pages navigation-event))
-
 (defn signed-in [data]
   (let [as-stylist? (get-in data keypaths/user-store-id)
         as-user?    (get-in data keypaths/user-email)

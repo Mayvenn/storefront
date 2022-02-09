@@ -32,14 +32,14 @@
 (def user
   {:domain        nil
    :max-age       four-weeks
-   :optional-keys [:store-slug :store-id :stylist-experience :verified-at :hard-session-token]
+   :optional-keys [:store-slug :store-id :stylist-experience :verified-at]
    :required-keys [:email :user-token :id]})
 
 (def hard-session
   {:domain        nil
    :max-age       thirty-minutes
-   :optional-keys [:hard-session-token]
-   :required-keys []})
+   :optional-keys []
+   :required-keys [:hard-session-token]})
 
 (def order
   {:domain        nil
@@ -115,11 +115,10 @@
   (doseq [spec account-specs]
     (clear-cookie spec cookie)))
 
- ;; NOTE(ellie+andres, 2022-02-08): Hack to allow us to fetch user cookies with different expiration dates with one function
-(defn retrieve-login [cookie]
-  (merge
-   (retrieve user cookie)
-   (retrieve hard-session cookie)))
+(def clear-hard-session (partial clear-cookie hard-session))
+
+(def retrieve-login (partial retrieve user))
+(def retrieve-hard-session (partial retrieve hard-session))
 
 (def retrieve-current-order (partial retrieve order))
 (def retrieve-pending-promo-code (partial retrieve pending-promo))
@@ -150,10 +149,8 @@
         created-session-id)
       session-id)))
 
-;; NOTE(ellie+andres, 2022-02-08): Hack to allow us to set user cookies with different expiration dates with one function
-(defn save-user [cookie attrs]
-  (save-cookie user cookie attrs)
-  (save-cookie hard-session cookie attrs))
+(def save-user (partial save-cookie user))
+(def save-hard-session (partial save-cookie hard-session))
 
 (def save-order (partial save-cookie order))
 
