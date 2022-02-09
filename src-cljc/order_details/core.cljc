@@ -25,6 +25,7 @@
             [email-verification.core :as email-verification]
             [storefront.keypaths :as keypaths]
             [storefront.accessors.auth :as auth]
+            [storefront.effects :as storefront.effects]
             [storefront.request-keys :as request-keys]
             [storefront.components.flash :as flash]
             [stylist-matching.search.accessors.filters :as stylist-filters]))

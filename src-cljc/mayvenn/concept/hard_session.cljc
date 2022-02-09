@@ -45,25 +45,42 @@
              (some? (::token auth-data))))))
 
 (defmethod fx/perform-effects e/biz|hard-session|begin
-  [_ _ args state _]
+  [_ _ args _ state]
   (publish e/biz|hard-session|token|set (select-keys args [:token]))
   (publish e/biz|hard-session|timeout|initialized))
 
 (defmethod fx/perform-effects e/biz|hard-session|end
-  [_ _ args state _]
+  [_ _ args _ state]
   (publish e/biz|hard-session|token|clear)
-  (publish e/biz|hard-session|timeout|clear))
+  (publish e/biz|hard-session|timeout|clear)
+  (when (requires-hard-session? (get-in state k/navigation-event))
+    (publish e/redirect {:nav-message [e/navigate-sign-in {:flash "test"}]})))
+
+(defmethod t/transition-state e/biz|hard-session|timeout|started
+  [_ _ {:keys [timeout]} state]
+  #?(:cljs
+     (assoc-in state timeout-keypath timeout)))
+
+(defmethod fx/perform-effects e/biz|hard-session|timeout|started
+  [_ _ _ prev-state state]
+  #?(:cljs
+     (js/clearTimeout (get-in prev-state timeout-keypath))))
+
+(defmethod fx/perform-effects e/biz|hard-session|timeout|triggered
+  [_ _ _ prev-state state]
+  (publish e/biz|hard-session|end))
 
 (defmethod fx/perform-effects e/biz|hard-session|timeout|initialized
-  [_ _ _ state _]
+  [_ _ _ _ state]
   #?(:cljs
      (publish e/biz|hard-session|timeout|started
               {:timeout (publish-later e/biz|hard-session|timeout|triggered
                                        {}
                                        timeout-period)})))
 
+
 (defmethod fx/perform-effects e/biz|hard-session|token|set
-  [_ _event args app-state _prev-app-state]
+  [_ _event args _prev-app-state app-state]
   #?(:cljs
      (cookie-jar/save-hard-session (get-in app-state k/cookie)
                                    {:hard-session-token (:token args)})))
@@ -73,7 +90,7 @@
   (assoc-in app-state token-keypath token))
 
 (defmethod fx/perform-effects e/biz|hard-session|token|clear
-  [_ _event _args app-state _prev-app-state]
+  [_ _event _args _prev-app-state app-state]
   #?(:cljs
      (cookie-jar/clear-hard-session (get-in app-state k/cookie))))
 
