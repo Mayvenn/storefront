@@ -358,7 +358,7 @@
       (component/html
         (if-not (string/blank? secondary)
           [:div.mt1
-           [:div.content-4.proxima.dark-gray
+           [:div.content-4.proxima.dark-dark-gray
             (merge {:ref "caption"}
                    caption-attrs)
             secondary]
@@ -486,7 +486,8 @@
     (list
      {:class    "col-12"
       :max-size 749
-      :src      (:image-url look)}
+      :src      (:image-url look)
+      :alt "Person wearing "}
      (get-model-image images-catalog (first sorted-line-items))
      (get-cart-product-image images-catalog (first sorted-line-items)))))
 

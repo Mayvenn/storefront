@@ -48,7 +48,8 @@
            {:src         image-src
             :width       "63"
             :square-size 63
-            :max-size    100}))
+            :max-size    100
+            :alt         label}))
    [:div.ml2.col-12 {:data-test id} label]
    [:div.self-center ^:inline picker-chevron]])
 

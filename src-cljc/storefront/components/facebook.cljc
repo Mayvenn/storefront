@@ -13,7 +13,8 @@
       [:div.flex.items-center.justify-center
        [:div.mbn1
         (svg/button-facebook-f {:width "7px"
-                                :height "14px"})]
+                                :height "14px"
+                                :alt "Facebook logo"})]
        [:span.ml3 "Facebook Sign in"]]])))
 
 (defn- wide-button [loaded? click-event]
