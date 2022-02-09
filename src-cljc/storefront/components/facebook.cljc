@@ -25,7 +25,8 @@
       [:span "Sign in with Facebook"]
       (ui/ucare-img {:width  16
                      :height 16
-                     :class  "ml2"} "975698f3-3eda-411c-83ad-6a2750e0e59d")])
+                     :class  "ml2"
+                     :alt    "Facebook logo"} "975698f3-3eda-411c-83ad-6a2750e0e59d")])
     [:div {:style {:height "2.6666em"}}]))
 
 (defn sign-in-button [loaded?]
