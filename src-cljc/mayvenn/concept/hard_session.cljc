@@ -44,46 +44,55 @@
          (or (not (requires-hard-session? nav-event))
              (some? (::token auth-data))))))
 
-(defmethod fx/perform-effects e/biz|hard-session|begin
+(defmethod fx/perform-effects e/biz|hard-session|refresh
   [_ _ args _ state]
+  #?(:cljs
+     (when-let [token (some-> (get-in state k/cookie)
+                              cookie-jar/retrieve-hard-session
+                              :hard-session-token)]
+       (publish e/biz|hard-session|begin
+                {:token token}))))
+
+(defmethod fx/perform-effects e/biz|hard-session|begin
+  [_ _ args _ _state]
   (publish e/biz|hard-session|token|set (select-keys args [:token]))
   (publish e/biz|hard-session|timeout|initialized))
 
 (defmethod fx/perform-effects e/biz|hard-session|end
   [_ _ args _ state]
   (publish e/biz|hard-session|token|clear)
-  (publish e/biz|hard-session|timeout|clear)
+  (publish e/biz|hard-session|timeout|set {:timeout nil})
   (when (requires-hard-session? (get-in state k/navigation-event))
     (publish e/redirect {:nav-message [e/navigate-sign-in {:flash "test"}]})))
-
-(defmethod t/transition-state e/biz|hard-session|timeout|started
-  [_ _ {:keys [timeout]} state]
-  #?(:cljs
-     (assoc-in state timeout-keypath timeout)))
-
-(defmethod fx/perform-effects e/biz|hard-session|timeout|started
-  [_ _ _ prev-state state]
-  #?(:cljs
-     (js/clearTimeout (get-in prev-state timeout-keypath))))
-
-(defmethod fx/perform-effects e/biz|hard-session|timeout|triggered
-  [_ _ _ prev-state state]
-  (publish e/biz|hard-session|end))
 
 (defmethod fx/perform-effects e/biz|hard-session|timeout|initialized
   [_ _ _ _ state]
   #?(:cljs
-     (publish e/biz|hard-session|timeout|started
+     (publish e/biz|hard-session|timeout|set
               {:timeout (publish-later e/biz|hard-session|timeout|triggered
                                        {}
                                        timeout-period)})))
 
+(defmethod t/transition-state e/biz|hard-session|timeout|set
+  [_ _ {:keys [timeout]} state]
+  (assoc-in state timeout-keypath timeout))
+
+(defmethod fx/perform-effects e/biz|hard-session|timeout|set
+  [_ _ _ prev-state _state]
+  #?(:cljs
+     (some-> (get-in prev-state timeout-keypath)
+             js/clearTimeout)))
+
+(defmethod fx/perform-effects e/biz|hard-session|timeout|triggered
+  [_ _ _ _prev-state _state]
+  (publish e/biz|hard-session|end))
+
 
 (defmethod fx/perform-effects e/biz|hard-session|token|set
-  [_ _event args _prev-app-state app-state]
+  [_ _event {:keys [token]} _prev-app-state app-state]
   #?(:cljs
      (cookie-jar/save-hard-session (get-in app-state k/cookie)
-                                   {:hard-session-token (:token args)})))
+                                   {:hard-session-token token})))
 
 (defmethod t/transition-state e/biz|hard-session|token|set
   [_ _event {:keys [token]} app-state]

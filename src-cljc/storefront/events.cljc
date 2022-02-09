@@ -755,14 +755,14 @@
 
 ;; Hard Session
 (defpath biz|hard-session|timeout|initialized)
-(defpath biz|hard-session|timeout|started)
+(defpath biz|hard-session|timeout|set)
 (defpath biz|hard-session|timeout|triggered)
-(defpath biz|hard-session|timeout|clear)
 
 (defpath biz|hard-session|token|set)
 (defpath biz|hard-session|token|clear)
 
 (defpath biz|hard-session|begin)
+(defpath biz|hard-session|refresh)
 (defpath biz|hard-session|end)
 
 ;; NOTE

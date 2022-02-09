@@ -772,6 +772,10 @@
                         (get-in app-state keypaths/user))
   (redirect-to-return-navigation app-state))
 
+(defmethod effects/perform-effects events/api-success-account [_ _event _args _prev-app-state app-state]
+  ;; NOTE(ellie+andres, 2022-02-09): In the future this could actually get a whole new session token from diva
+  (messages/handle-later events/biz|hard-session|refresh))
+
 (defmethod effects/perform-effects events/api-success-auth-sign-in
   [_ _ _ _ app-state]
   (messages/handle-message events/flash-later-show-success
