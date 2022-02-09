@@ -45,7 +45,8 @@
    [:img.border.border-gray.ml4.mr1
     {:height "20px"
      :width  "21px"
-     :src    selected-color-swatch}]
+     :src    selected-color-swatch
+     :alt    (str "Color swatch for " (last selected-value-html))}]
    [:div.ml2.flex-auto selected-value-html]
    [:div.self-center ^:inline picker-chevron]])
 
@@ -308,8 +309,8 @@
        :height           "100px"
        :background-size  "contain"
        :background-image (str "url(" rectangle-swatch ")")}}]
-    (ui/ucare-img {:class "rounded-top-right" :height "100px"} sku-img)]
-
+    (ui/ucare-img {:class "rounded-top-right" :height "100px"
+                   :alt   (str name "hair color swatch")} sku-img)]
    [:div.py1.h6.ml3.self-start
     (when checked?
       {:class "bold"})
@@ -332,6 +333,7 @@
                    [:div {:style {:width "1em"}}]
                    [:div.circle  ; checkmark circle
                     (ui/ucare-img {:width           "30"
+                                   :alt             "Checked selection"
                                    :retina-quality  "better"
                                    :default-quality "better"}
                                   "9e2a48b3-9811-46d2-840b-31c9f85670ad")]]])])])
@@ -394,7 +396,8 @@
      {:style {:min-width "96px"}}
      [:a.flex.items-center.justify-center.medium
       (merge {:style     {:height "55px" :width "55px"}
-              :data-test "picker-close"}
+              :data-test "picker-close"
+              :aria-label (str "Close " title " Picker")}
              (utils/fake-href events/control-product-detail-picker-close))
       (svg/x-sharp {:height "12px" :width "12px"})]]]
    [:div.py3.px1 ;; body
