@@ -6,7 +6,7 @@
 (defn ^:private category-hero-tag-molecule
   [{:category-hero.tag/keys [primary]}]
   (when primary
-    [:div.s-color.title-3.proxima.bold.shout
+    [:div.p-color.title-3.proxima.bold.shout
      primary]))
 
 (defn ^:private category-hero-title-molecule
