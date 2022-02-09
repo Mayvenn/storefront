@@ -753,6 +753,18 @@
 (defpath navigate-shopping-quiz-unified-freeinstall-match-success)
 (defpath navigate-shopping-quiz-unified-freeinstall-appointment-booking)
 
+;; Hard Session
+(defpath biz|hard-session|timeout|initialized)
+(defpath biz|hard-session|timeout|started)
+(defpath biz|hard-session|timeout|triggered)
+(defpath biz|hard-session|timeout|clear)
+
+(defpath biz|hard-session|token|set)
+(defpath biz|hard-session|token|clear)
+
+(defpath biz|hard-session|begin)
+(defpath biz|hard-session|end)
+
 ;; NOTE
 ;; Models
 ;; - form concepts/nouns

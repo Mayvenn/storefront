@@ -42,7 +42,6 @@
       (assoc-in keypaths/user-id id)
       (assoc-in keypaths/user-email email)
       (assoc-in keypaths/user-token token)
-      (assoc-in keypaths/user-hard-session-token "true")
       (assoc-in keypaths/user-must-set-password must-set-password)
       (assoc-in keypaths/user-store-slug store-slug)
       (assoc-in keypaths/user-store-id store-id)
