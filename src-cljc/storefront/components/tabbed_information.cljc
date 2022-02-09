@@ -45,10 +45,10 @@
                    :key       (str "tab-" (name id))
                    :data-test (str "tab-" (name id))})
 
-         [:h2.flex.justify-center
+         [:div.flex.justify-center
           [:svg (assoc (:opts icon) :class (if active? "fill-black" "fill-gray"))
            ^:inline (svg/svg-xlink (:id icon))]]
-         [:div.center title]])]
+         [:h2.center title]])]
      (map tab-content tabs)]))
 
 (defmethod transitions/transition-state events/tabbed-information-tab-selected [_ _ {:keys [tab keypath]} app-state]
