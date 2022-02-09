@@ -117,7 +117,7 @@
   [data _ _]
   [:div.mt3.mx3
    [:div.flex.items-center.justify-between
-    [:div.flex-auto
+    [:h1.flex-auto
      (titles/proxima-left (with :title data))]
     [:div.col-2
      (catalog.M/price-block data)]]

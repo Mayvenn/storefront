@@ -72,6 +72,7 @@
          expanded-directive
          [:a.quadpay.mx1 {:href      "#"
                           :data-test "zip-learn-more"
+                          :aria-label "Learn more about Zip payments."
                           :on-click  (fn [e]
                                        (.preventDefault e)
                                        (show-modal))}

@@ -16,7 +16,7 @@
       (for [{:keys [content heading] :as section} sections]
         [:div.my2.pr2
          {:style {:min-width "50%"}}
-         [:div.proxima.title-3.shout heading]
+         [:h3.proxima.title-3.shout heading]
          [:div
           (if-not (string? content)
             (for [block content]
@@ -45,7 +45,7 @@
                    :key       (str "tab-" (name id))
                    :data-test (str "tab-" (name id))})
 
-         [:div.flex.justify-center
+         [:h2.flex.justify-center
           [:svg (assoc (:opts icon) :class (if active? "fill-black" "fill-gray"))
            ^:inline (svg/svg-xlink (:id icon))]]
          [:div.center title]])]
