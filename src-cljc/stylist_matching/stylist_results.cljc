@@ -716,7 +716,7 @@
 
 (defcomponent template
   [{:keys [spinning? gallery-modal header stylist-search-inputs scrim? results] :as data} _ _]
-  [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
+  [:div.black.center.flex.flex-auto.flex-column
    ;; TODO(corey) is this used?
    (component/build gallery-modal/organism gallery-modal)
    (components.header/adventure-header header)
@@ -728,7 +728,7 @@
        (component/build desktop-results-template results)
        (when scrim?
          scrim-atom)])]
-   [:div.max-580.col-12.mx-auto.bg-white.hide-on-tb-dt
+   [:div.max-580.col-12.mx-auto.hide-on-tb-dt
     (component/build search-inputs-organism stylist-search-inputs)
     (if spinning?
       [:div.mt6 ui/spinner]
