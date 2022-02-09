@@ -144,13 +144,15 @@
      (titled-content "Stylist Info"
                      [:div
                       [:div nickname]
-                      [:div phone]
+                      [:div [:a {:href (ui/phone-url phone)}
+                             phone]]
                       (titled-subcontent "Salon Name"
                                          salon-name)
+
                       (titled-subcontent "Salon Address"
-                                         (into [:div]
-                                               (for [line salon-address]
-                                                 [:div {:key line} line])))])]))
+                                         [:a {:href (str "http://maps.apple.com/?q=" (string/join "+" salon-address))}
+                                          (for [line salon-address]
+                                            [:div {:key line} line])])])]))
 
 (defn vouchers-details-template
   [{:vouchers-details/keys [id spinning? vouchers]}]
