@@ -754,9 +754,8 @@
 (defpath navigate-shopping-quiz-unified-freeinstall-appointment-booking)
 
 ;; Hard Session
-(defpath biz|hard-session|timeout|initialized)
+(defpath biz|hard-session|timeout|begin)
 (defpath biz|hard-session|timeout|set)
-(defpath biz|hard-session|timeout|triggered)
 
 (defpath biz|hard-session|token|set)
 (defpath biz|hard-session|token|clear)

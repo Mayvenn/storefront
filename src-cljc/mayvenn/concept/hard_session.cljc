@@ -56,7 +56,7 @@
 (defmethod fx/perform-effects e/biz|hard-session|begin
   [_ _ args _ _state]
   (publish e/biz|hard-session|token|set (select-keys args [:token]))
-  (publish e/biz|hard-session|timeout|initialized))
+  (publish e/biz|hard-session|timeout|begin))
 
 (defmethod fx/perform-effects e/biz|hard-session|end
   [_ _ args _ state]
@@ -65,11 +65,11 @@
   (when (requires-hard-session? (get-in state k/navigation-event))
     (publish e/redirect {:nav-message [e/navigate-sign-in {:flash "test"}]})))
 
-(defmethod fx/perform-effects e/biz|hard-session|timeout|initialized
+(defmethod fx/perform-effects e/biz|hard-session|timeout|begin
   [_ _ _ _ state]
   #?(:cljs
      (publish e/biz|hard-session|timeout|set
-              {:timeout (publish-later e/biz|hard-session|timeout|triggered
+              {:timeout (publish-later e/biz|hard-session|end
                                        {}
                                        timeout-period)})))
 
@@ -82,11 +82,6 @@
   #?(:cljs
      (some-> (get-in prev-state timeout-keypath)
              js/clearTimeout)))
-
-(defmethod fx/perform-effects e/biz|hard-session|timeout|triggered
-  [_ _ _ _prev-state _state]
-  (publish e/biz|hard-session|end))
-
 
 (defmethod fx/perform-effects e/biz|hard-session|token|set
   [_ _event {:keys [token]} _prev-app-state app-state]
