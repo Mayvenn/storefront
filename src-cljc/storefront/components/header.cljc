@@ -282,12 +282,14 @@
        {:data-test "header-back"}
        [:a.block.black.p2.flex.justify-center.items-center
         (if back
-          (apply utils/route-back-or-to back target)
-          (apply utils/route-to target))
+          (merge {:aria-label "Go back"}
+                 (apply utils/route-back-or-to back target))
+          (merge {:aria-label "Go back"}
+                 (apply utils/route-to target)))
         (svg/left-arrow {:width  "20"
                          :height "20"})]]
       [:div]))
-   (c/html [:div.content-1.proxima.center primary])
+   (c/html [:h1.content-1.proxima.center primary])
    (ui/shopping-bag {:data-test "mobile-cart"}
                     {:quantity value})))
 

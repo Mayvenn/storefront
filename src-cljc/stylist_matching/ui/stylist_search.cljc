@@ -106,7 +106,7 @@
    (let [data (c/get-props this)]
      (c/html
       [:div.m5
-       [:div.mb4
+       [:h2.mb4
         (titles/canela-left (with :stylist-search.title data))]
        [:div.mb4
         (stylist-search-location-search-box data)]

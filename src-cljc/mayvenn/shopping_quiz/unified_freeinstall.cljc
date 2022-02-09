@@ -610,7 +610,7 @@
    [:div.bg-white.self-stretch
     (quiz-header (with :header data))]
    [:div.flex.flex-column.items-center.flex-auto.mt10
-    [:div.col-10
+    [:h2.col-10
      (titles/canela-huge (with :title data))]
     [:div.col-6
      (actions/medium-primary (with :action data))]]])
