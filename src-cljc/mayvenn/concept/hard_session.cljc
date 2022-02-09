@@ -63,7 +63,8 @@
   (publish e/biz|hard-session|token|clear)
   (publish e/biz|hard-session|timeout|set {:timeout nil})
   (when (requires-hard-session? (get-in state k/navigation-event))
-    (publish e/redirect {:nav-message [e/navigate-sign-in {:flash "test"}]})))
+    (publish e/redirect {:nav-message [e/navigate-sign-in {}]})
+    (publish e/flash-later-show-failure {:message "You are signed out due to inactivity. Please sign back in."})))
 
 (defmethod fx/perform-effects e/biz|hard-session|timeout|begin
   [_ _ _ _ state]
