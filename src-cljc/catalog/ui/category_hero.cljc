@@ -25,11 +25,12 @@
    primary])
 
 (defn ^:private category-hero-action-molecule
-  [{:category-hero.action/keys [label target]}]
+  [{:category-hero.action/keys [label target aria]}]
   (when (and label target)
     [:div.mt3
      (ui/button-small-underline-black
-      {:on-click (apply utils/send-event-callback target)}
+      {:on-click   (apply utils/send-event-callback target)
+       :aria-label aria}
       label)]))
 
 (c/defcomponent organism

@@ -79,6 +79,7 @@
     ;; TODO(corey) this key is in #:copy
     (seq learn-more-target)
     (merge {:category-hero.action/label  "Learn more"
+            :category-hero.action/aria   "Learn more about complimentary Mayvenn Services."
             :category-hero.action/target learn-more-target})
 
     ;; TODO(corey) image handling reconciliation: svg as uri
