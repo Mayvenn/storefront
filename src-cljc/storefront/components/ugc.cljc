@@ -4,14 +4,15 @@
              [storefront.components.svg :as svg]
              [storefront.component :as component :refer [defcomponent]]))
 
-(defcomponent ugc-image [{:keys [image-url overlay]} _ _]
+(defcomponent ugc-image [{:keys [image-url overlay alt]} _ _]
   [:div.relative
    (ui/aspect-ratio
     1 1
     {:class "flex items-center"}
     (ui/img {:class    "col-12"
              :src      image-url
-             :max-size 749}))
+             :max-size 749
+             :alt      alt}))
    (when overlay
      [:div.absolute.flex.justify-end.bottom-0.right-0.mb8
       [:div {:style {:width       "0"
@@ -45,7 +46,7 @@
         [:div
          (util/route-to nav-event nav-args {:back-copy  (:back-copy copy)
                                             :short-name (:short-name copy)})
-         (component/build ugc-image (select-keys card [:overlay :image-url]))]
+         (component/build ugc-image (select-keys card [:overlay :image-url :alt]))]
         [:div.p1.px3.pb3
          [:div.h5.medium.mt1.mb2
           [:div.flex.items-center.justify-between.mb2

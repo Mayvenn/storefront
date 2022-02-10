@@ -53,8 +53,13 @@
                                (remove nil?)
                                (string/join " ")
                                not-empty)
-                          "Check this out!")]
-     {:id                     id
+                          "Check this out!")
+         alt-string   (case album-keyword
+                        :look            (str "Person wearing " color " " texture " bundles ")
+                        :all-bundle-sets "Bundles set of "
+                        nil)]
+     {:alt                    (str alt-string description)
+      :id                     id
       :image-url              photo-url
       :description            description
       :desktop-aware?         true
