@@ -42,7 +42,7 @@
 
 (c/defcomponent waiting-template
   [_ _ _]
-  [:div.max-580.bg-pale-purple.absolute.overlay
+  [:div.bg-pale-purple.absolute.overlay
    [:div.absolute.overlay.border.border-white.border-framed-white.m4.p5.flex.flex-column.items-center.justify-center
     [:div (svg/mayvenn-logo {:class "spin-y"
                              :style {:width "54px"}})]
@@ -61,7 +61,7 @@
 (c/defcomponent questioning-template
   [{:keys [header progress questions see-results]} _ _]
   [:div.col-12
-   [:div.max-580.top-0.fixed.col-12.bg-white
+   [:div.top-0.fixed.col-12.bg-white
     (c/build header/nav-header-component header)
     (c/build progress-bar/variation-1 progress)]
    [:div.flex.flex-column.mbj3.pbj3
@@ -95,7 +95,7 @@
 (c/defcomponent results-template
   [{:keys [header quiz-results shopping-quiz-v2?]} _ _]
   [:div.bg-cool-gray
-   [:div.max-580.col-12.bg-white
+   [:div.col-12.bg-white
     (c/build header/nav-header-component header)]
    [:div.center.ptj2
     {:style {:padding-bottom "160px"}} ;; Footer height...
