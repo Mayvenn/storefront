@@ -23,7 +23,7 @@
   (when id
     [:div {:key id}
      [:div.center.mb4.content-3 "To continue, please verify your email address"]
-     [:div.center.bold.mb6 email-address]
+     [:div.center.bold.mb6 {:data-test "email-address"} email-address]
      [:div.mb4 (ui/button-medium-primary (merge (utils/fake-href events/biz|email-verification|initiated {})
                                                 {:spinning? spinning?
                                                  :data-test "email-verification-initiate"
