@@ -30,7 +30,7 @@
      :style       {:margin-top (str gap-in-num-px "px")}
      :height      (str height-in-num-px "px")
      :width       (str height-in-num-px "px")
-     :alt         alt
+     :alt         "" ; decorative image gets empty alt text
      :square-size height-in-num-px
      :src         image-url})
    [:div.absolute.top-0.right-0.content-4.m1

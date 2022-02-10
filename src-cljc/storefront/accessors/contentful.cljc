@@ -54,11 +54,10 @@
                                (string/join " ")
                                not-empty)
                           "Check this out!")
-         alt-string   (case album-keyword
-                        :look            (str "Person wearing " color " " texture " bundles ")
-                        :all-bundle-sets "Bundles set of "
-                        nil)]
-     {:alt                    (str alt-string description)
+         alt-string   (if (= :look album-keyword)
+                        (str "Person wearing " color " " texture " bundles " description)
+                        "")]
+     {:alt                    alt-string
       :id                     id
       :image-url              photo-url
       :description            description
