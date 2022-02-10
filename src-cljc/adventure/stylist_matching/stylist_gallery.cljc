@@ -115,7 +115,7 @@
    [:source {:src-set
              (str url "-/scale_crop/1160x1160/smart/ 2x," url "-/scale_crop/580x580/smart/ 1x")}]
    [:img {:src (str url "-/scale_crop/580x580/smart/")
-          :style {:width "29%"}}]])
+          :style {:width "32%"}}]])
 
 (defcomponent component
   [data owner opts]
@@ -125,7 +125,7 @@
     (map-indexed stylist-gallery-image (:gallery data))]
    [:div.col-12.bg-white.hide-on-mb
     (desktop-stylist-gallery-header-molecule data)
-    [:div.flex-wrap.justify-between
+    [:div.flex-wrap.ml3
      (map-indexed desktop-stylist-gallery-image (:gallery data))]]])
 
 (defmethod transitions/transition-state e/navigate-adventure-stylist-gallery
