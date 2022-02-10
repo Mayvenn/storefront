@@ -217,6 +217,7 @@
                   "fedex" "https://www.fedex.com/fedextrack/?trknbr="
                   "usps"  "https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1="
                   "dhl"   "https://www.dhl.com/en/express/tracking.html?AWB="
+                  "headex" "https://foo-bar.com/tracking?tracking-number="
                   nil)
             (str tracking-number))))
 
