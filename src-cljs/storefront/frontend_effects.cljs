@@ -377,17 +377,15 @@
       (effects/redirect events/navigate-shop-by-look {:album-keyword album-keyword}))))
 
 (defmethod effects/perform-effects events/navigate-account [_ event args _ app-state]
-  (let [sign-in-data (auth/signed-in app-state)]
-    (when (or (= :guest (::auth/as sign-in-data))
-              (not (hard-session/allow? app-state event)))
-      ;; TODO(ellie+andres, 2022-02-08): Include flash explaining why they are being asked to log in,
-      ;; if it's due to not having a hard session
+  (let [sign-in-data (hard-session/signed-in app-state)]
+    (when (not (hard-session/allow? sign-in-data event))
       (effects/redirect events/navigate-sign-in))))
 
 (defmethod effects/perform-effects events/navigate-stylist [_ event args _ app-state]
-  (when (not (and (get-in app-state keypaths/user-token)
-                  (get-in app-state keypaths/user-store-id)))
-    (effects/redirect events/navigate-sign-in)))
+  (let [sign-in-data (hard-session/signed-in app-state)]
+    (when (or (not (= :stylist (::auth/as sign-in-data)))
+              (not (hard-session/allow? sign-in-data event)))
+      (effects/redirect events/navigate-sign-in))))
 
 (defmethod effects/perform-effects events/app-restart [_ _ _ _]
   (.reload js/window.location))
@@ -514,7 +512,7 @@
 
 (defn redirect-when-signed-in
   [app-state]
-  (when (hard-session/allow? app-state
+  (when (hard-session/allow? (hard-session/signed-in app-state)
                              (first (get-in app-state keypaths/return-navigation-message)))
     (redirect-to-return-navigation app-state)
     (messages/handle-message events/flash-later-show-success

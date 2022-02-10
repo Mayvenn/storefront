@@ -27,7 +27,8 @@
 (def ^:private hard-session-pages
   #{e/navigate-account-manage
     e/navigate-v2-stylist-dashboard
-    e/navigate-stylist-dashboard})
+    e/navigate-stylist-dashboard
+    e/navigate-stylist-account})
 
 (defn subnav? [super sub]
   (= sub (take (count sub) super)))
