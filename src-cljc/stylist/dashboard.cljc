@@ -26,6 +26,7 @@
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
             [voucher.keypaths :as voucher-keypaths]
+            [mayvenn.concept.hard-session :as hard-session]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.service-menu :as service-menu]
             [storefront.components.money-formatters :as mf]
@@ -152,13 +153,16 @@
   (component/build component (query data) opts))
 
 (defmethod effects/perform-effects events/navigate-v2-stylist-dashboard [_ event args _ app-state]
-  (let [signed-in (auth/signed-in app-state)]
+  (let [signed-in (hard-session/signed-in app-state)]
     (cond
       (not (::auth/at-all signed-in))
       (effects/redirect events/navigate-sign-in)
 
       (not (= :stylist (::auth/as signed-in)))
       (effects/redirect events/navigate-home)
+
+      (nil? (::hard-session/token signed-in))
+      (effects/redirect events/navigate-sign-in)
 
       :else
       (messages/handle-message events/v2-stylist-dashboard-stats-fetch))))

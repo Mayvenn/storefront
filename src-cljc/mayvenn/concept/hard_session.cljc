@@ -25,10 +25,15 @@
 (def timeout-keypath (conj model-keypath :timeout))
 
 (def ^:private hard-session-pages
-  #{e/navigate-account-manage})
+  #{e/navigate-account-manage
+    e/navigate-v2-stylist-dashboard
+    e/navigate-stylist-dashboard})
+
+(defn subnav? [super sub]
+  (= sub (take (count sub) super)))
 
 (defn requires-hard-session? [navigation-event]
-  (contains? hard-session-pages navigation-event))
+  (some (partial subnav? navigation-event) hard-session-pages))
 
 (defn signed-in [app-state]
   #?(:cljs
