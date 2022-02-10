@@ -9,7 +9,7 @@
   (let [as-stylist? (get-in data keypaths/user-store-id)
         as-user?    (get-in data keypaths/user-email)
         store-slug  (get-in data keypaths/store-slug)]
-    {::at-all (or as-stylist? as-user?)
+    {::at-all (some? (or as-stylist? as-user?))
      ::as     (cond
                 as-stylist? :stylist
                 as-user?    :user
