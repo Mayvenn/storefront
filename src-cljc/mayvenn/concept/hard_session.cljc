@@ -40,7 +40,7 @@
   Additionally, this respects hard-sessions and pages that require them."
   [app-state nav-event]
   (let [auth-data (signed-in app-state)]
-    (and (not= :guest (::auth/as auth-data)) ; => true
+    (and (::auth/at-all? auth-data)
          (or (not (requires-hard-session? nav-event))
              (some? (::token auth-data))))))
 
