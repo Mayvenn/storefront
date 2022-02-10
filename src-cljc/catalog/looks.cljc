@@ -116,17 +116,19 @@
      (within :looks-card.image-grid
              {:id               (str "look-" id)
               :height-in-num-px height-px
-              :gap-in-num-px gap-px})
+              :gap-in-num-px    gap-px})
 
      (within :looks-card.image-grid.hero
-             {:image-url (:url (first hero-imgs))
-              :badge-url (:platform-source (first hero-imgs))
-              :gap-in-num-px gap-px})
+             {:image-url     (:url (first hero-imgs))
+              :badge-url     (:platform-source (first hero-imgs))
+              :gap-in-num-px gap-px
+              :alt           (str "Person wearing skus " (clojure.string/join  ", " (mapv :catalog/sku-id items)))})
      (within :looks-card.image-grid.hair-column
              {:images (->> fanned-out-by-quantity-items
                            (sort-by :sku/price)
                            (map (fn [sku]
                                   {:length    (str (first (:hair/length sku)) "\"")
+                                   :alt       (:sku/title sku)
                                    :image-url (:ucare/id (catalog-images/image images-db "cart" sku))})))})
      (if discounted-price
        {:looks-card.title/secondary discounted-price

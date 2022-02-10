@@ -6,31 +6,33 @@
    [storefront.components.ui :as ui]))
 
 (defcomponent ^:private hero-molecule
-  [{:keys [image-url badge-url gap-in-num-px]} _ _]
+  [{:keys [image-url badge-url gap-in-num-px alt]} _ _]
   [:div.relative.flex-auto
-   {:style {:margin-top (str gap-in-num-px "px")
+   {:style {:margin-top   (str gap-in-num-px "px")
             :margin-right (str gap-in-num-px "px")}}
    (ui/img {:class    "container-size"
             :style    {:object-position "50% 25%"
                        :object-fit      "cover"}
             :src      image-url
-            :max-size 749})
+            :max-size 749
+            :alt      alt})
    [:div.absolute.bottom-0.m1.justify-start
     {:style {:height "22px"
              :width  "22px"}}
     badge-url]])
 
 (defcomponent ^:private height-adjusting-hair-image-molecule
-  [{:keys [image-url length gap-in-num-px height-in-num-px]} _ {:keys [id]}]
+  [{:keys [image-url length alt gap-in-num-px height-in-num-px]} _ {:keys [id]}]
   [:div.relative
    (ui/img
-    {:key           id
-     :class         "block"
-     :style         {:margin-top (str gap-in-num-px "px")}
-     :height        (str height-in-num-px "px")
-     :width         (str height-in-num-px "px")
-     :square-size   height-in-num-px
-     :src           image-url})
+    {:key         id
+     :class       "block"
+     :style       {:margin-top (str gap-in-num-px "px")}
+     :height      (str height-in-num-px "px")
+     :width       (str height-in-num-px "px")
+     :alt         alt
+     :square-size height-in-num-px
+     :src         image-url})
    [:div.absolute.top-0.right-0.content-4.m1
     length]])
 
