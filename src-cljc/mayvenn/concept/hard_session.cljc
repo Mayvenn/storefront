@@ -43,11 +43,10 @@
 (defn allow?
   "Determines whether a given user has access to a a given page requiring login.
   Additionally, this respects hard-sessions and pages that require them."
-  [app-state nav-event]
-  (let [auth-data (signed-in app-state)]
-    (and (::auth/at-all? auth-data)
-         (or (not (requires-hard-session? nav-event))
-             (some? (::token auth-data))))))
+  [signed-in-data nav-event]
+  (and (::auth/at-all signed-in-data)
+       (or (not (requires-hard-session? nav-event))
+           (some? (::token signed-in-data)))))
 
 (defmethod fx/perform-effects e/biz|hard-session|refresh
   [_ _ args _ state]
