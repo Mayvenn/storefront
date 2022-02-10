@@ -26,6 +26,7 @@
      [:div.center.bold.mb6 email-address]
      [:div.mb4 (ui/button-medium-primary (merge (utils/fake-href events/biz|email-verification|initiated {})
                                                 {:spinning? spinning?
+                                                 :data-test "email-verification-initiate"
                                                  :disabled? disabled?}) "Send verification email")]
      (let [{:email-verification--status-message/keys [fail-copy success-copy]} data]
        [(when fail-copy (flash/error-box {} fail-copy))
