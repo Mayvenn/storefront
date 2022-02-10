@@ -144,7 +144,7 @@
                          (select (merge ?addons selected-filters) service-skus)
                          (conj "add-on-services")
                          :default
-                         (or #{"free-mayvenn-services"})))))))
+                         (or #{"free-mayvenn-services" "add-on-services"})))))))
 
 (defmethod effects/perform-effects events/control-show-stylist-search-filters
   [_ event args previous-app-state app-state]
