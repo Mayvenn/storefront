@@ -152,7 +152,7 @@
 (defcomponent faq
   [{:keys [expanded-index sections]} owner opts]
   [:div.px6.mx-auto.col-6-on-dt.bg-pale-purple.py6
-   [:div.canela.title-1.center.my7 "Frequently Asked Questions"]
+   [:h2.canela.title-1.center.my7 "Frequently Asked Questions"]
    ^:inline
    (component/build
     accordion/component

@@ -400,7 +400,7 @@
                       quaternary]
     :as data} _ _]
   [:div
-   [:div.proxima.title-2.shout primary]
+   [:h1.proxima.title-2.shout primary]
    [:div.flex.justify-between.mt2
     [:div
      secondary

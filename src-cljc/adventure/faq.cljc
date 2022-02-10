@@ -15,7 +15,7 @@
 (defn component [{:keys [expanded-index sections background-color]}]
   [:div.px6.mx-auto.col-10-on-dt.py6
    {:class background-color}
-   [:div.canela.title-1.center.my7 "Frequently Asked Questions"]
+   [:h2.canela.title-1.center.my7 "Frequently Asked Questions"]
    (component/build
     accordion/component
     {:expanded-indices #{expanded-index}
