@@ -22,6 +22,7 @@
             [storefront.keypaths :as k]
             [storefront.platform.component-utils :as utils]
             [mayvenn.concept.follow :as follow]
+            [mayvenn.concept.hard-session :as hard-session]
             [email-verification.core :as email-verification]
             [storefront.keypaths :as keypaths]
             [storefront.accessors.auth :as auth]
@@ -448,9 +449,10 @@
   ;; evt = email validation token
   [_ event {:keys [order-number query-params] :as args} _ app-state]
   (let [user-verified-at (get-in app-state k/user-verified-at)
-        evt              (:evt query-params)]
+        evt              (:evt query-params)
+        sign-in-data     (hard-session/signed-in app-state)]
     (cond
-      (-> app-state auth/signed-in :storefront.accessors.auth/at-all not)
+      (not (hard-session/allow? sign-in-data event))
       (effects/redirect e/navigate-sign-in)
 
       (and (not user-verified-at)

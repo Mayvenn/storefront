@@ -28,7 +28,8 @@
   #{e/navigate-account-manage
     e/navigate-v2-stylist-dashboard
     e/navigate-stylist-dashboard
-    e/navigate-stylist-account})
+    e/navigate-stylist-account
+    e/navigate-yourlooks-order-details})
 
 (defn subnav? [super sub]
   (= sub (take (count sub) super)))
