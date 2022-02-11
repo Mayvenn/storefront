@@ -54,9 +54,11 @@
                                (string/join " ")
                                not-empty)
                           "Check this out!")
-         alt-string   (if (= :look album-keyword)
+         alt-string   (cond (= :look album-keyword)
                         (str "Person wearing " color " " texture " bundles " description)
-                        "")]
+                        (= :free-install-mayvenn album-keyword)
+                        (str social-media-platform " photo of person wearing " color " " texture " bundles " description)
+                        :else "")]
      {:alt                    alt-string
       :id                     id
       :image-url              photo-url

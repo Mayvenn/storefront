@@ -140,14 +140,14 @@
    (let [{:subheader/keys [value]} data]
      [:h6.center value])
    [:div.flex.flex-wrap.pt2
-    (for [{:keys [image-url] :as image-data} (:images data)]
+    (for [{:keys [alt image-url] :as image-data} (:images data)]
       [:a.col-6.col-3-on-tb-dt.p1
        (merge (apply utils/route-to (:cta/navigation-message image-data))
               {:key (str image-url)})
        (ui/screen-aware
         ugc-image
         {:image-url image-url
-         :alt       (:alt opts)}
+         :alt       (or (:alt opts) alt)}
         nil)])]])
 
 (defcomponent faq
@@ -454,13 +454,14 @@
    (when title
      [:div.title-2.proxima.shout.bold title])
    [:div.flex.flex-wrap.py3
-    (for [{:keys [image-url] :as image-data} images]
+    (for [{:keys [image-url alt] :as image-data} images]
       [:a.col-6.col-3-on-tb-dt.p1
        (merge (apply utils/route-to (:cta/navigation-message image-data))
               {:key (str image-url)})
        (ui/screen-aware
         ugc-image
-        {:image-url image-url}
+        {:image-url image-url
+         :alt       alt}
         nil)])]
    (shop-cta-with-icon data)])
 
