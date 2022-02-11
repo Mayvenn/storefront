@@ -31,15 +31,20 @@
             [storefront.components.flash :as flash]
             [stylist-matching.search.accessors.filters :as stylist-filters]))
 
-(defn titled-content [title content]
-  [:div.my6
-   [:div.title-2.shout.proxima title]
-   [:div.content-1.proxima content]])
+(defn titled-content
+  ([title content] (titled-content nil title content))
+  ([dt title content]
+   [:div.my6 (when dt {:data-test dt})
+    [:div.title-2.shout.proxima title]
+    [:div.content-1.proxima content]]))
 
-(defn titled-subcontent [title content]
-  [:div.my3
-   [:div.title-3.shout.proxima title]
-   [:div.content-1.proxima content]])
+(defn titled-subcontent
+  ([title content] (titled-subcontent nil title content))
+  ([dt title content]
+   [:div.my3 (when dt {:data-test dt})
+    [:div.title-3.shout.proxima title]
+    [:div.content-1.proxima content]]))
+
 
 (defn address-copy [{:keys [address1 city state zipcode address2]}]
   (str address1 ", " (when (not-empty address2) address2 ",") city ", " state ", " zipcode))
@@ -62,9 +67,9 @@
        [:div.my6.max-960.mx-auto
         {:key id}
         [:div.title-1.canela "My Recent Order"]
-        (titled-content "Order Number" order-number)
+        (titled-content (str "order-" order-number) "Order Number" order-number)
         (when placed-at
-          (titled-content "Placed On" placed-at))
+          (titled-content "placed-at" "Placed On" placed-at))
         (titled-content "Shipping Address" (address-copy shipping-address))
         (for [{:keys [fulfillments number title] :as shipment} shipments]
           (titled-content title
@@ -86,7 +91,7 @@
                                                           {:key (str index "-cart-item-" react-key)}
                                                           (c/build cart-item-v202004/organism {:cart-item cart-item}
                                                                    (c/component-id (str index "-cart-item-" react-key)))]))])))))
-        (titled-content "Payment" [:div
+        (titled-content "Payment" [:div {:data-test "payment-total"}
                                    (titled-subcontent "Total" (mf/as-money total))])]))
 
 (defn no-orders-details-template
@@ -104,8 +109,8 @@
      (titled-content "Appointment Status"
                      (titled-subcontent "Appointment Info"
                                         [:div
-                                         [:div "Date: " date]
-                                         [:div "Time: " time]]))]))
+                                         [:div  "Date: " [:span {:data-test "appointment-date"} date]]
+                                         [:div "Time: " [:span {:data-test "appointment-time"} time]]]))]))
 
 (defn stylist-details-template
   [{:stylist-details/keys [id spinning? nickname phone salon-name salon-address]}]
@@ -117,7 +122,8 @@
 
     id
     [:div.my6.max-960.mx-auto
-     {:key id}
+     {:key id
+      :data-test id}
      (titled-content "Stylist Info"
                      [:div
                       [:div nickname]
@@ -141,7 +147,8 @@
 
     id
     (into [:div.my6.max-960.mx-auto
-           {:key id}]
+           {:key id
+            :data-test id}]
           (map (fn [{:vouchers-details/keys [qr-code-url voucher-code services expiration-date redemption-date status]}]
                  (titled-content "Voucher"
                                  [:div
@@ -149,13 +156,13 @@
                                     [:div.flex.flex-column.items-center.my6
                                      (ui/img {:src   qr-code-url
                                               :style {:max-width "150px"}})
-                                     [:div voucher-code]])
+                                     [:div {:data-test "voucher-code"} voucher-code]])
                                   (titled-subcontent "Status" status)
                                   (if redemption-date
-                                    (titled-subcontent "Redemption date" redemption-date)
-                                    (titled-subcontent "Expiration date" expiration-date))
+                                    (titled-subcontent "voucher-redemption-date" "Redemption date" redemption-date)
+                                    (titled-subcontent "voucher-expiration-date" "Expiration date" expiration-date))
                                   (titled-subcontent "What's included"
-                                                     [:div
+                                                     [:div {:data-test "voucher-whats-included"}
                                                       (map (fn [{:keys [included-services]}]
                                                              [:ul
                                                               (map (fn [service-line]
@@ -307,8 +314,8 @@
     {:stylist-details/spinning? true}
 
     (get-in app-state [:models :appointment :stylist])
-    (let [{:keys [nickname phone salon-name salon-address]} (get-in app-state [:models :appointment :stylist])]
-      {:stylist-details/id            "stylist-details"
+    (let [{:keys [nickname phone salon-name salon-address stylist-id]} (get-in app-state [:models :appointment :stylist])]
+      {:stylist-details/id            (str "stylist-details-" stylist-id)
        :stylist-details/nickname      nickname
        :stylist-details/salon-name    salon-name
        :stylist-details/phone         phone
