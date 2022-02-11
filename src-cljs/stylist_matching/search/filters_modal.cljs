@@ -138,13 +138,7 @@
     (-> app-state
         (assoc-in stylist-directory.keypaths/stylist-search-show-filters? true)
         (assoc-in stylist-directory.keypaths/stylist-search-expanded-filter-sections
-                  (set (cond-> nil
-                         (select (merge ?discountable selected-filters) service-skus)
-                         (conj "free-mayvenn-services")
-                         (select (merge ?addons selected-filters) service-skus)
-                         (conj "add-on-services")
-                         :default
-                         (or #{"free-mayvenn-services" "add-on-services"})))))))
+                  (set #{"free-mayvenn-services" "add-on-services"})))))
 
 (defmethod effects/perform-effects events/control-show-stylist-search-filters
   [_ event args previous-app-state app-state]
