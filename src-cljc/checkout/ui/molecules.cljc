@@ -102,7 +102,7 @@
                      {:class     "inherit-color border-bottom border-width-2"
                       :data-test secondary-link-id})
             secondary-link-label]])]
-       [:div.content-4.dark-gray fine-print]]])))
+       [:div.content-4.black fine-print]]])))
 
 (defn free-install-added-atom
   [{:free-install-added/keys [primary]}]

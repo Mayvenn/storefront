@@ -31,7 +31,7 @@
           {:data-test "freeinstall-add-to-cart-info-link"
            :on-click  (apply utils/send-event-callback link-target)}
           link-label))]
-      [:div.content-4.dark-gray footnote]]]))
+      [:div.content-4.black footnote]]]))
 
 (defn add-to-cart-quadpay-molecule
   [{:add-to-cart.quadpay/keys [price loaded?]}]
