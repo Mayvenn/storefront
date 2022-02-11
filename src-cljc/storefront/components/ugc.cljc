@@ -52,7 +52,7 @@
           [:div.flex.items-center.justify-between.mb2
            [:div.flex.items-center
             [:div.flex.flex-column
-             [:div.h3 title ", " description]
+             [:h2.h3 title ", " description]
              [:div.flex.flex-row
               (when discounted-price [:div discounted-price])
               (cond
