@@ -25,9 +25,9 @@
              :cta/value              "Get started"
              :cta/navigation-message [events/navigate-adventure-find-your-stylist nil]}
 
-            {:layer/type      :shop-bulleted-explainer
-             :header/value    "About Our Certified Stylists"
-             :subheader/value "An overview"
+            {:layer/type     :shop-bulleted-explainer
+             :title/value    ["About Our Certified Stylists"]
+             :subtitle/value ["An overview"]
 
              :bullets [{:icon/uuid    "6f63157c-dc3a-4bbb-abcf-e03b08d6e102"
                         :icon/width   "27"
@@ -51,7 +51,7 @@
                                :free-install-mayvenn)}
             (merge {:layer/type :faq}
                    (faq/free-install-query data))
-            (merge {:layer/type         :shop-contact}
+            (merge {:layer/type :shop-contact}
                    layered/shop-contact-query)
             {:layer/type             :sticky-footer
              :layer/id               "sticky-footer-certified-stylists"

@@ -117,7 +117,7 @@
    (:section/opts data)
    (let [{:header/keys [value]} data]
      (when value
-       [:div.col-10.my2.h2 value]))
+       [:h1.col-10.my2.h2 value]))
    (let [{:body/keys [value]} data]
      (when value
        [:div.col-10.my2.h5 value]))
@@ -138,7 +138,7 @@
    (let [{:header/keys [value]} data]
      [:h2.center value])
    (let [{:subheader/keys [value]} data]
-     [:h6.center value])
+     [:div.content-3.center value])
    [:div.flex.flex-wrap.pt2
     (for [{:keys [alt image-url] :as image-data} (:images data)]
       [:a.col-6.col-3-on-tb-dt.p1
@@ -387,9 +387,9 @@
    owner
    opts]
   [:div.col-12.bg-warm-gray.center.flex.flex-column.items-center.py2
-   [:h2.mt2
+   [:div.mt2
     (when title-value
-      [:div.title-1.canela
+      [:h2.title-1.canela
        (interpose [:br] title-value)])
     (when subtitle-value
       [:div.title-1.proxima.shout.sub.my1
