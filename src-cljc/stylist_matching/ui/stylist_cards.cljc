@@ -72,11 +72,11 @@
                                :slides   (map stylist-card-gallery-item-molecule items)}})])))
 
 (defn stylist-card-cta-molecule
-  [{:stylist-card.cta/keys [id label target]}]
+  [{:stylist-card.cta/keys [id label target] :keys [desktop?]}]
   (when id
     (component/html
      (ui/button-medium-secondary
-      (merge {:data-test id}
+      (merge {:data-test (when-not desktop? id)}
              (apply utils/fake-href target))
       label))))
 
@@ -119,7 +119,7 @@
      [:span content]]))
 
 (defn top-stylist-information-points-molecule
-  [{:keys [points]}]
+  [{:keys [points desktop?]}]
   [:div.pt3.mx-auto
    {:style {:display               "grid"
             :grid-template-columns "auto 10px auto"
@@ -130,14 +130,14 @@
        [:div.flex.items-center.justify-center {:style {:width "25px"}}
         (when icon
           (svg/symbolic->html icon))]
-       [:div (when id {:data-test id}) primary]])
+       [:div (when-not desktop? {:data-test id}) primary]])
     (cycle [[:div] nil]))])
 
 (defn stylist-card-header-molecule
-  [{:stylist-card.header/keys [target id] :as data}]
+  [{:stylist-card.header/keys [target id] :keys [desktop?] :as data}]
   (when id
     [:div.col-12.flex.items-start.pb2.pt4
-     (assoc (apply utils/route-to target) :data-test id)
+     (assoc (apply utils/route-to target) :data-test (when-not desktop? id))
      [:div.flex.justify-center.items-center.col-3.ml4
       (stylist-card-thumbnail-molecule data)]
      [:div.col-9.medium.px3
@@ -164,16 +164,17 @@
    [:div.col-12.pt1.pb3.px2 (stylist-card-cta-molecule data)]])
 
 (defcomponent desktop-organism
-  [data _ {:keys [id]}]
-  [:div.flex.left-align.border.border-warm-gray.mx3.mt1.mb3.bg-white
-   {:id        id
-    :data-test id}
-   [:div.flex-column
-    {:style {:max-width 360}}
-    (stylist-card-header-molecule data)
-    (top-stylist-information-points-molecule (with :stylist-card.top-stylist.laurels data))
-    [:div.col-12.p2 (stylist-card-cta-molecule data)]]
-   [:div.col-12.my3
-    (if (:screen/seen? data)
-      (desktop-stylist-card-gallery-molecule data)
-      (ui/aspect-ratio 426 105 [:div]))]])
+  [{:keys [stylist-card-header/id] :as data} _ {:keys [id]}]
+  (let [data (assoc data :desktop? true)]
+    [:div.flex.left-align.border.border-warm-gray.mx3.mt1.mb3.bg-white
+     {:id        id
+      :data-test id}
+     [:div.flex-column
+      {:style {:max-width 360}}
+      (stylist-card-header-molecule data)
+      (top-stylist-information-points-molecule (with :stylist-card.top-stylist.laurels data))
+      [:div.col-12.p2 (stylist-card-cta-molecule data)]]
+     [:div.col-12.my3
+      (if (:screen/seen? data)
+        (desktop-stylist-card-gallery-molecule data)
+        (ui/aspect-ratio 426 105 [:div]))]]))
