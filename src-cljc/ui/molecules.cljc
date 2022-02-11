@@ -99,14 +99,19 @@
            ucare?
            off-screen?]
     :or   {file-name "hero-image"}} _ _]
-  [:a (cond-> opts
-        (:navigation-message opts)
-        (-> (merge (apply utils/route-to (:navigation-message opts)))
-            (dissoc :navigation-message)))
-   (cond
-     off-screen? [:div.col-12]
-     ucare?      (ucare-hero mob-uuid dsk-uuid file-name alt)
-     :else       (image-hero mob-url dsk-url alt))])
+  (if (:navigation-message opts)
+    [:a (cond-> opts
+          (:navigation-message opts)
+          (-> (merge (apply utils/route-to (:navigation-message opts)))
+              (dissoc :navigation-message)))
+               (cond
+                 off-screen? [:div.col-12]
+                 ucare?      (ucare-hero mob-uuid dsk-uuid file-name alt)
+                 :else       (image-hero mob-url dsk-url alt))]
+    [:div (cond
+            off-screen? [:div.col-12]
+            ucare?      (ucare-hero mob-uuid dsk-uuid file-name alt)
+            :else       (image-hero mob-url dsk-url alt))]))
 
 (defcomponent fullsize-image
   "The difference between this and the hero is that there is no <a> tag. The <a> tag implies a link away

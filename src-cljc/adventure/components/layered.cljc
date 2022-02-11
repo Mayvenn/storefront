@@ -140,9 +140,10 @@
    (let [{:subheader/keys [value]} data]
      [:h6.center value])
    [:div.flex.flex-wrap.pt2
-    (for [{:keys [image-url]} (:images data)]
+    (for [{:keys [image-url] :as image-data} (:images data)]
       [:a.col-6.col-3-on-tb-dt.p1
-       {:key (str image-url)}
+       (merge (apply utils/route-to (:cta/navigation-message image-data))
+              {:key (str image-url)})
        (ui/screen-aware
         ugc-image
         {:image-url image-url
@@ -453,9 +454,10 @@
    (when title
      [:div.title-2.proxima.shout.bold title])
    [:div.flex.flex-wrap.py3
-    (for [{:keys [image-url]} images]
+    (for [{:keys [image-url] :as image-data} images]
       [:a.col-6.col-3-on-tb-dt.p1
-       {:key (str image-url)}
+       (merge (apply utils/route-to (:cta/navigation-message image-data))
+              {:key (str image-url)})
        (ui/screen-aware
         ugc-image
         {:image-url image-url}
