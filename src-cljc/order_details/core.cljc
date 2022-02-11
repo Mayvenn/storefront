@@ -1,5 +1,6 @@
 (ns order-details.core
   (:require #?@(:cljs [[storefront.api :as api]
+                       [storefront.hooks.google-maps :as google-maps]
                        [storefront.history :as history]])
             [api.catalog :as catalog]
             [catalog.images :as catalog-images]
@@ -29,7 +30,8 @@
             [storefront.effects :as storefront.effects]
             [storefront.request-keys :as request-keys]
             [storefront.components.flash :as flash]
-            [stylist-matching.search.accessors.filters :as stylist-filters]))
+            [stylist-matching.search.accessors.filters :as stylist-filters]
+            [adventure.stylist-matching.maps :as stylist-maps]))
 
 (defn titled-content
   ([title content] (titled-content nil title content))
@@ -113,7 +115,7 @@
                                          [:div "Time: " [:span {:data-test "appointment-time"} time]]]))]))
 
 (defn stylist-details-template
-  [{:stylist-details/keys [id spinning? nickname phone salon-name salon-address]}]
+  [{:stylist-details/keys [id spinning? nickname phone salon-name salon-address map]}]
   (cond
     spinning?
     [:div
@@ -129,13 +131,7 @@
                       [:div nickname]
                       [:div [:a {:href (ui/phone-url phone)}
                              phone]]
-                      (titled-subcontent "Salon Name"
-                                         salon-name)
-
-                      (titled-subcontent "Salon Address"
-                                         [:a {:href (str "http://maps.apple.com/?q=" (string/join "+" salon-address))}
-                                          (for [line salon-address]
-                                            [:div {:key line} line])])])]))
+                      (c/build stylist-maps/component-v2 map)])]))
 
 (defn vouchers-details-template
   [{:vouchers-details/keys [id spinning? vouchers]}]
@@ -313,13 +309,23 @@
     (utils/requesting? app-state request-keys/fetch-stylist)
     {:stylist-details/spinning? true}
 
-    (get-in app-state [:models :appointment :stylist])
-    (let [{:keys [nickname phone salon-name salon-address slug]} (get-in app-state [:models :appointment :stylist])]
-      {:stylist-details/id            (str "stylist-details-" slug)
-       :stylist-details/nickname      nickname
-       :stylist-details/salon-name    salon-name
-       :stylist-details/phone         phone
-       :stylist-details/salon-address salon-address})))
+    (get-in app-state [:models :order-details :stylist])
+    (let [{:keys [salon
+                  store-nickname
+                  phone
+                  store-slug
+                  address]}   (get-in app-state [:models :order-details :stylist])
+          {:keys [latitude
+                  longitude]} salon]
+      {:stylist-details/id       (str "stylist-details-" store-slug)
+       :stylist-details/nickname store-nickname
+       :stylist-details/phone    (f/phone-number (:phone address))
+       :stylist-details/map      {:salon     salon
+                                  :latitude  latitude
+                                  :longitude longitude
+                                  :loaded?   (and (get-in app-state storefront.keypaths/loaded-google-maps)
+                                                  (some? latitude)
+                                                  (some? longitude))}})))
 
 ;; Voucher states: pending, active, redeemed, expired, canceled, new
 
@@ -456,19 +462,20 @@
       (messages/handle-message e/biz|email-verification|verified {:evt evt})
 
       user-verified-at
-      #?(:cljs (if order-number
-                 (api/get-order {:number     order-number
-                                 :user-id    (get-in app-state k/user-id)
-                                 :user-token (get-in app-state k/user-token)}
-                                {:handler       #(messages/handle-message e/flow--orderdetails--resulted {:orders [%]})
-                                 :error-handler #(messages/handle-message e/flash-show-failure
-                                                                          {:message (str "Unable to retrieve order " order-number ". Please contact support.")})})
-                 (api/get-orders {:limit      1
-                                  :user-id    (get-in app-state k/user-id)
-                                  :user-token (get-in app-state k/user-token)}
-                                 #(messages/handle-message e/flow--orderdetails--resulted {:orders (:results %)})
-                                 #(messages/handle-message e/flash-show-failure
-                                                           {:message (str "Unable to retrieve order. Please contact support.")})))
+      #?(:cljs (do (google-maps/insert)
+                   (if order-number
+                     (api/get-order {:number     order-number
+                                     :user-id    (get-in app-state k/user-id)
+                                     :user-token (get-in app-state k/user-token)}
+                                    {:handler       #(messages/handle-message e/flow--orderdetails--resulted {:orders [%]})
+                                     :error-handler #(messages/handle-message e/flash-show-failure
+                                                                              {:message (str "Unable to retrieve order " order-number ". Please contact support.")})})
+                     (api/get-orders {:limit      1
+                                      :user-id    (get-in app-state k/user-id)
+                                      :user-token (get-in app-state k/user-token)}
+                                     #(messages/handle-message e/flow--orderdetails--resulted {:orders (:results %)})
+                                     #(messages/handle-message e/flash-show-failure
+                                                               {:message (str "Unable to retrieve order. Please contact support.")}))))
          :clj nil))))
 
 (defmethod transitions/transition-state e/flow--orderdetails--resulted
@@ -510,14 +517,5 @@
   (assoc-in app-state [:models :order-details :vouchers] vouchers))
 
 (defmethod transitions/transition-state e/flow--orderdetails--stylist-resulted
-  [_ _ {:keys [address store-slug store-nickname salon stylist-id]} app-state]
-  (let [{:keys [name city state zipcode address-1 address-2]} salon]
-    (assoc-in app-state
-              [:models :appointment :stylist]
-              {:nickname      store-nickname
-               :phone         (f/phone-number (:phone address))
-               :salon-name    name
-               :slug          store-slug
-               :salon-address [address-1
-                               (when (seq address-2) address-2)
-                               (str city ", " state " " zipcode)]})))
+  [_ _ stylist app-state]
+  (assoc-in app-state [:models :order-details :stylist] stylist))
