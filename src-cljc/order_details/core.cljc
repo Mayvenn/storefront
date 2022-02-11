@@ -52,7 +52,7 @@
 ;; TODO: break this apart
 (defn order-details-template
   [{:order-details/keys [id
-                         fulfillments
+                         shipments
                          order-number
                          placed-at
                          shipping-address
@@ -66,50 +66,26 @@
         (when placed-at
           (titled-content "Placed On" placed-at))
         (titled-content "Shipping Address" (address-copy shipping-address))
-        (if (seq fulfillments)
-          (for [{:keys [url carrier tracking-number shipping-estimate cart-items]} fulfillments]
-            [:div
-             ;; TODO: Why are there two sections labeled "shipment"?
-             (titled-content "Shipment"
-                             [:div
-                              (interpose
-                               [:div.flex.bg-white
-                                [:div {:style {:width "75px"}}]
-                                [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto]]
-                               (for [[index cart-item] (map-indexed vector cart-items)
-                                     :let              [react-key (:react/key cart-item)]
-                                     :when             react-key]
-                                 [:div.mxn2
-                                  {:key (str index "-cart-item-" react-key)}
-                                  (c/build cart-item-v202004/organism {:cart-item cart-item}
-                                           (c/component-id (str index "-cart-item-" react-key)))]))
-                              (titled-subcontent "Shipping Estimate" shipping-estimate)
-                              (if url
-                                [:div
-                                 carrier
-                                 " Tracking: "
-                                 [:a
-                                  (utils/fake-href e/external-redirect-url {:url url})
-                                  tracking-number]]
-                                (titled-subcontent "Tracking:" "Waiting for Shipment"))])])
-          (titled-subcontent "Tracking:" "Waiting for Shipment"))
-
-        (when (seq pending-cart-items)
-          [:div
-           (titled-content "Shipment"
-                           [:div
-                            (for [[index cart-item] (map-indexed vector pending-cart-items)
-                                  :let              [react-key (:react/key cart-item)]
-                                  :when             react-key]
-                              [:div
-                               {:key (str index "-cart-item-" react-key)}
-                               (when-not (zero? index)
-                                 [:div.flex.bg-white
-                                  [:div.ml2 {:style {:width "75px"}}]
-                                  [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
-                               (c/build cart-item-v202004/organism {:cart-item cart-item}
-                                        (c/component-id (str index "-cart-item-" react-key)))])
-                            (titled-subcontent "Tracking:" "Waiting for Shipment")])])
+        (for [{:keys [fulfillments number title] :as shipment} shipments]
+          (titled-content title
+                          (into [:div]
+                                (for [{:keys [title url carrier tracking-number cart-items type] :as fulf} fulfillments]
+                                  (titled-subcontent title
+                                                     [:div
+                                                      (when url [:a.content-2
+                                                                 (utils/fake-href e/external-redirect-url {:url url})
+                                                                 tracking-number])
+                                                      (interpose
+                                                       [:div.flex
+                                                        [:div {:style {:width "75px"}}]
+                                                        [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto]]
+                                                       (for [[index cart-item] (map-indexed vector cart-items)
+                                                             :let              [react-key (:react/key cart-item)]
+                                                             :when             react-key]
+                                                         [:div.mxn2
+                                                          {:key (str index "-cart-item-" react-key)}
+                                                          (c/build cart-item-v202004/organism {:cart-item cart-item}
+                                                                   (c/component-id (str index "-cart-item-" react-key)))]))])))))
         (titled-content "Payment" [:div
                                    (titled-subcontent "Total" (mf/as-money total))])]))
 
@@ -233,7 +209,8 @@
   (when (date? dt)
     (str (f/day->day-abbr dt) ", " #?(:cljs (f/long-date dt)))))
 
-(defn ->shipping-days-estimate [drop-shipping?
+;; TODO: reintroduce a shipping estimate
+#_(defn ->shipping-days-estimate [drop-shipping?
                                 shipping-sku
                                 placed-at]
   (let [{:keys [weekday hour]} #?(:cljs
@@ -292,11 +269,9 @@
          :cart-item-square-thumbnail/ucare-id      (->> (get skus (:sku line-item)) (catalog-images/image images "cart") :ucare/id)}))))
 
 (defn pending-fulfillment-query
-  [app-state shipments]
-  (let [images                    (get-in app-state keypaths/v2-images)
-        skus                      (get-in app-state keypaths/v2-skus)
-        all-line-items            (mapcat :line-items shipments)
-        pending-line-items        (remove #(some? (:line-item-id %)) all-line-items)]
+  [app-state pending-line-items]
+  (let [images (get-in app-state keypaths/v2-images)
+        skus   (get-in app-state keypaths/v2-skus)]
     (for [{:keys [sku] :as line-item} pending-line-items]
       (when-not (line-items/shipping-method? line-item)
         {:react/key                                (str "pending-" sku)
@@ -406,35 +381,47 @@
       (and user-verified?
            order)
       (merge #:order-details
-             {:id                 "order-details"
-              :order-number       order-number
-              :placed-at          (long-date placed-at)
-              :shipments          shipments
-              :shipping-address   shipping-address
-              :total              total
-              :skus               skus
-              :images-catalog     images-catalog
-              :pending-cart-items (pending-fulfillment-query app-state shipments)
-              :fulfillments       (for [{:keys [carrier tracking-number
-                                                shipment-number
-                                                line-item-ids]} fulfillments
-                                        :let                    [shipment (->> shipments
-                                                                               (filter (fn [s] (= shipment-number (:number s))))
-                                                                               first)
-                                                                 shipping-sku (->> shipment :line-items first :sku)]]
-                                    (let [drop-shipping? (->> (map :variant-attrs (:line-items shipment))
-                                                              (catalog/select {:warehouse/slug #{"factory-cn"}})
-                                                              boolean)
-                                          url            (generate-tracking-url carrier tracking-number)]
-                                      {:shipping-estimate (when (date? placed-at)
-                                                             (-> placed-at
-                                                                 date/to-datetime
-                                                                 (date/add-delta {:days (->shipping-days-estimate drop-shipping? shipping-sku placed-at)})
-                                                                 long-date))
-                                       :url               url
-                                       :carrier           carrier
-                                       :tracking-number   tracking-number
-                                       :cart-items        (fulfillment-items-query app-state line-item-ids shipments)}))}
+             {:id               "order-details"
+              :order-number     order-number
+              :placed-at        (long-date placed-at)
+              :shipping-address shipping-address
+              :total            total
+              :skus             skus
+              :images-catalog   images-catalog
+              :shipments        (for [{:keys [number
+                                              created-at
+                                              state
+                                              line-items]
+                                       :as   shipment} shipments
+                                      :let             [shipment-fulfillments  (filter #(= number (:shipment-number %)) fulfillments)
+                                                        physical-fulfillments  (filter #(= "physical" (:type %)) shipment-fulfillments)
+                                                        voucher-fulfillments   (filter #(= "voucher" (:type %)) shipment-fulfillments)
+                                                        unfulfilled-line-items (filter #(and (nil? (:line-item-id %))
+                                                                                             (= "spree" (:source %))) line-items)]
+                                      :when            (not= "pending" state)]
+                                  {:number       number
+                                   :title        (cond
+                                                   (= 1 (count shipments)) "Order"
+                                                   (= "S1" number)         "Original Order"
+                                                   (= 2 (count shipments)) "Replacement Order"
+                                                   :else                   (str "Replacement Order #" (-> number (subs 1) spice/parse-int dec)))
+                                   :fulfillments (concat
+                                                  (for [{:keys [carrier
+                                                                carrier-service
+                                                                tracking-number
+                                                                line-item-ids]} physical-fulfillments]
+                                                    {:title           (when (and carrier carrier-service)
+                                                                        (str carrier " - " carrier-service))
+                                                     :url             (generate-tracking-url carrier tracking-number)
+                                                     :carrier         carrier
+                                                     :tracking-number tracking-number
+                                                     :cart-items      (fulfillment-items-query app-state line-item-ids shipments)})
+                                                  (for [{:keys [line-item-ids]} voucher-fulfillments]
+                                                    {:title      "Service"
+                                                     :cart-items (fulfillment-items-query app-state line-item-ids shipments)})
+                                                  (when-let [line-items (seq unfulfilled-line-items)]
+                                                    [{:title      "Pending"
+                                                      :cart-items (pending-fulfillment-query app-state line-items)}]))})}
              (appointment-details-query app-state)
              (stylist-details-query app-state)
              (vouchers-details-query app-state)
