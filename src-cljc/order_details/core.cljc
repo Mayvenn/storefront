@@ -314,8 +314,8 @@
     {:stylist-details/spinning? true}
 
     (get-in app-state [:models :appointment :stylist])
-    (let [{:keys [nickname phone salon-name salon-address stylist-id]} (get-in app-state [:models :appointment :stylist])]
-      {:stylist-details/id            (str "stylist-details-" stylist-id)
+    (let [{:keys [nickname phone salon-name salon-address slug]} (get-in app-state [:models :appointment :stylist])]
+      {:stylist-details/id            (str "stylist-details-" slug)
        :stylist-details/nickname      nickname
        :stylist-details/salon-name    salon-name
        :stylist-details/phone         phone
@@ -517,6 +517,7 @@
               {:nickname      store-nickname
                :phone         (f/phone-number (:phone address))
                :salon-name    name
+               :slug          store-slug
                :salon-address [address-1
                                (when (seq address-2) address-2)
                                (str city ", " state " " zipcode)]})))
