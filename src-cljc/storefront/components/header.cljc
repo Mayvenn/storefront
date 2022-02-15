@@ -246,7 +246,7 @@
     (when label-icon
       (svg/symbolic->html [label-icon {:style {:width "0.7em" :height "0.7em"} :class "mx1"}]))
     (when new-label
-      [:span.p-color.pr1 new-label])
+      [:span.p-color.pr1.shout new-label])
     content]
    [:div.absolute.left-0.z2
     {:style {:padding-left "24px"}}
@@ -450,7 +450,7 @@
                                   [{:slide-out-nav-menu-item/target      [events/navigate-shopping-quiz-unified-freeinstall-intro
                                                                           {:query-params {:location "hamburger"}}]
                                     :slide-out-nav-menu-item/id          "menu-shop-quiz-unified-fi"
-                                    :slide-out-nav-menu-item/new-primary "NEW"
+                                    :slide-out-nav-menu-item/new-primary "New"
                                     :slide-out-nav-menu-item/primary     "Start Hair Quiz"}]
                                   [{:slide-out-nav-menu-item/target  [events/navigate-adventure-find-your-stylist]
                                     :slide-out-nav-menu-item/id      "menu-shop-find-stylist"
@@ -475,7 +475,7 @@
                                  (concat
                                   [{:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug "wigs" :catalog/category-id "13"}]
                                     :slide-out-nav-menu-item/id          "menu-shop-wigs"
-                                    :slide-out-nav-menu-item/new-primary (if sale-shop-hair? "SALE" "NEW")
+                                    :slide-out-nav-menu-item/new-primary (if sale-shop-hair? "Sale" "New")
                                     :slide-out-nav-menu-item/nested?     false
                                     :slide-out-nav-menu-item/primary     "Wigs"}
                                    {:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug "human-hair-bundles" :catalog/category-id "27"}]
@@ -512,7 +512,7 @@
                             [{:header-menu-item/navigation-target [events/navigate-shopping-quiz-unified-freeinstall-intro
                                                                    {:query-params {:location "desktop_header"}}]
                               :header-menu-item/id                "desktop-shop-quiz-unified-fi"
-                              :header-menu-item/new-label         "NEW"
+                              :header-menu-item/new-label         "New"
                               :header-menu-item/content           "Start Hair Quiz"}]
                             [{:header-menu-item/navigation-target [events/navigate-adventure-find-your-stylist]
                               :header-menu-item/id                "desktop-shop-find-stylist"

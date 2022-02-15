@@ -36,7 +36,7 @@
                 :data-test (str "menu-step-" key))
          [:span.flex-auto.titleize
           (when new?
-            [:span.p-color "NEW "])
+            [:span.p-color.shout "New "])
           copy])])]]])
 
 (defn category-query [data]

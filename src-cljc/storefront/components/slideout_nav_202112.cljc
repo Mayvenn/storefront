@@ -102,7 +102,7 @@
                nested?       (apply utils/fake-href target)
                :else         (apply utils/route-to target)))
       [:div.col-2.px2.flex.items-center.justify-end
-       (when new-primary [:div.title-3.proxima.center new-primary])
+       (when new-primary [:div.title-3.proxima.center.shout new-primary])
        (when label-icon (svg/symbolic->html [label-icon {:style {:width "1em" :height "1em"}}]))]
       (if nested?
         (caretize-content primary)
@@ -230,7 +230,7 @@
                                           :slide-out-nav-menu-item/id      "account-settings"
                                           :slide-out-nav-menu-item/primary "Account"}
                                          {:slide-out-nav-menu-item/target      [events/navigate-yourlooks-order-details]
-                                          :slide-out-nav-menu-item/new-primary "NEW"
+                                          :slide-out-nav-menu-item/new-primary "New"
                                           :slide-out-nav-menu-item/id          "my-recent-order"
                                           :slide-out-nav-menu-item/primary     "My Recent Order"}])
                                       (when (and (= :stylist user-type)
@@ -240,7 +240,7 @@
                                           :slide-out-nav-menu-item/primary "Redeem Client Voucher"}])
                                       (when (= :stylist user-type)
                                         [{:slide-out-nav-menu-item/target      [events/navigate-yourlooks-order-details]
-                                          :slide-out-nav-menu-item/new-primary "NEW"
+                                          :slide-out-nav-menu-item/new-primary "New"
                                           :slide-out-nav-menu-item/id          "my-recent-order"
                                           :slide-out-nav-menu-item/primary     "My Recent Order"}
                                          {:slide-out-nav-menu-item/target  [events/navigate-stylist-account-profile]

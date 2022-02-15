@@ -52,7 +52,7 @@
                    :data-test data-test}
                   (apply utils/route-to nav-message))
            (when new-link?
-             [:span.p-color "NEW "])
+             [:span.p-color.shout "New "])
            title])])]]))
 
 (defcomponent contacts-section [{:keys [call-number sms-number contact-email business-hours]} _ _]
@@ -116,7 +116,7 @@
                    (when nav-message (apply utils/route-to nav-message))
                    (when nav-href {:href nav-href}))
     (when new-link?
-      [:span.p-color "NEW "])
+      [:span.p-color.shout "New "])
     (str title)]))
 
 (defcomponent dtc-shop-section [{:keys [link-columns]} _ _]

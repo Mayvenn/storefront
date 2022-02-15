@@ -92,7 +92,7 @@
            :disabled  disabled?}
           (ui/check-box {:label [:span
                                  (when new?
-                                   [:span.mr1.p-color "NEW"])
+                                   [:span.mr1.p-color.shout "New"])
                                  label]
                          :value     selected?
                          :disabled  disabled?
