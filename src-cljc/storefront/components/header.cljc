@@ -345,11 +345,12 @@
 
 ;; NOTE: This a-la-carte does not mean services, it refers to not using shared-carts/looks
 (defn shop-a-la-carte-flyout-query [data]
-  {:header-menu-item/flyout-menu-path keypaths/shop-a-la-carte-menu-expanded
-   :header-menu-item/new-label        (when (experiments/sale-shop-hair? data) "SALE")
-   :header-menu-item/content          "Shop hair"
-   :header-menu-item/id               "desktop-shop-hair"
-   :flyout/items                      (->> (get-in data keypaths/categories)
+  {:header-menu-item/flyout-menu-path  keypaths/shop-a-la-carte-menu-expanded
+   :header-menu-item/new-label         (when (experiments/sale-shop-hair? data) "SALE")
+   :header-menu-item/navigation-target "#" ; needed for tab navigation through menu
+   :header-menu-item/content           "Shop hair"
+   :header-menu-item/id                "desktop-shop-hair"
+   :flyout/items                       (->> (get-in data keypaths/categories)
                                            (filter :flyout-menu/order)
                                            (filter (fn [category]
                                                      (or (auth/stylist? (auth/signed-in data))
@@ -370,7 +371,7 @@
                                                                      [events/navigate-category category]))
                                                     :copy        title
                                                     :new?        new?})))
-   :flyout/id                         (when (get-in data keypaths/shop-a-la-carte-menu-expanded)
+   :flyout/id                          (when (get-in data keypaths/shop-a-la-carte-menu-expanded)
                                         "shop-a-la-carte-menu-expanded")})
 
 (defn shop-looks-query [data]
@@ -379,22 +380,23 @@
    :header-menu-item/content           "Shop by look"})
 
 (defn shop-bundle-sets-query [data]
-  {:header-menu-item/flyout-menu-path keypaths/shop-bundle-sets-menu-expanded
-   :header-menu-item/id               "desktop-shop-bundle-sets"
-   :header-menu-item/content          "Shop bundle sets"
-   :flyout/items                      [{:key         "all"
-                                        :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]
-                                        :new?        false
-                                        :copy        "All Bundle Sets"}
-                                       {:key         "straight"
-                                        :nav-message [events/navigate-shop-by-look {:album-keyword :straight-bundle-sets}]
-                                        :new?        false
-                                        :copy        "Straight Bundle Sets"}
-                                       {:key         "curly"
-                                        :nav-message [events/navigate-shop-by-look {:album-keyword :wavy-curly-bundle-sets}]
-                                        :new?        false
-                                        :copy        "Wavy & Curly Bundle Sets"}]
-   :flyout/id                         (when (get-in data keypaths/shop-bundle-sets-menu-expanded)
+  {:header-menu-item/flyout-menu-path  keypaths/shop-bundle-sets-menu-expanded
+   :header-menu-item/id                "desktop-shop-bundle-sets"
+   :header-menu-item/content           "Shop bundle sets"
+   :header-menu-item/navigation-target "#" ; needed for tab navigation through menu
+   :flyout/items                       [{:key         "all"
+                                         :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]
+                                         :new?        false
+                                         :copy        "All Bundle Sets"}
+                                        {:key         "straight"
+                                         :nav-message [events/navigate-shop-by-look {:album-keyword :straight-bundle-sets}]
+                                         :new?        false
+                                         :copy        "Straight Bundle Sets"}
+                                        {:key         "curly"
+                                         :nav-message [events/navigate-shop-by-look {:album-keyword :wavy-curly-bundle-sets}]
+                                         :new?        false
+                                         :copy        "Wavy & Curly Bundle Sets"}]
+   :flyout/id                          (when (get-in data keypaths/shop-bundle-sets-menu-expanded)
                                         "shop-bundle-sets-menu-expanded")})
 
 (defn basic-query [data]
