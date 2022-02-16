@@ -100,7 +100,7 @@
       (signup-molecule data "on-mb")]
      [:div.bg-gray-mask
       [:div.px3.container
-       [:span.py2.flex.items-center.gray {:key "minimal"}
+       [:span.py2.flex.items-center.white {:key "minimal"}
         "©" (date/year (date/now)) " " "Mayvenn"]]]]))
 
 (defn ^:private invalid-email? [email]
