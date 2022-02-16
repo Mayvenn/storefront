@@ -297,7 +297,8 @@
 (defn appointment-details-query
   [app-state]
   (when-let [{:keys [appointment-date canceled-at]} (get-in app-state [:models :appointment :date])]
-    (when (and appointment-date
+    (when (and false ; Disabled due to Kustomer ingestion irregularities. GROT when resolved.
+               appointment-date
                (not canceled-at))
       {:appointment-details/id "appointment-details"
        :appointment-details/date (f/short-date appointment-date)
