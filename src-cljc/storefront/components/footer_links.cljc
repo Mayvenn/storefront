@@ -29,7 +29,7 @@
     :footer.email-signup.button/keys    [label placeholder target focus-target disabled?]} view]
   (when id
     (component/html
-     [:div.mb5.dark-gray
+     [:div.mb5.gray
       [:div.content-2 primary]
       [:form
        {:on-submit (apply utils/send-event-callback target)}
