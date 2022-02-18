@@ -6,30 +6,6 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]))
 
-(defn promo-entry
-  [{:keys [focused coupon-code field-errors updating? applying? error-message] :as promo-data}]
-  [:form.mt2.bg-white
-   {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
-   (ui/input-group
-    {:keypath       keypaths/cart-coupon-code
-     :wrapper-class "flex-grow-5 clearfix"
-     :class         "h6"
-     :data-test     "promo-code"
-     :focused       focused
-     :label         "Promo code"
-     :value         coupon-code
-     :errors        (when (get field-errors ["promo-code"])
-                      [{:long-message error-message
-                        :path         ["promo-code"]}])
-     :data-ref      "promo-code"}
-    {:ui-element ui/button-large-primary
-     :content    "Apply"
-     :args       {:on-click    (utils/send-event-callback events/control-cart-update-coupon)
-                  :class       "flex justify-center items-center"
-                  :data-test   "cart-apply-promo"
-                  :disabled?   updating?
-                  :spinning?   applying?}})])
-
 (defn cart-summary-line-molecule
   [{:cart-summary-line/keys
     [id label sublabel icon value action-id action-target action-icon class]}]

@@ -122,7 +122,6 @@
      (component/build suggestions/component suggestions nil)]
 
     [:div.col-on-tb-dt.col-6-on-tb-dt.px3
-
      (component/build cart-summary/component cart-summary nil)
 
      #?@(:cljs

@@ -46,10 +46,9 @@
                       [{:long-message error-message
                         :path         ["promo-code"]}])
      :data-ref      "promo-code"}
-    {:ui-element ui/button-large-primary
-     :content    "Apply"
+    {:content    "Apply"
      :args       {:on-click    (utils/send-event-callback events/control-cart-update-coupon)
-                  :class       "flex justify-center items-center"
+                  :class       "flex justify-center items-center bg-p-color btn-p-color" ; a11y: p-color for the text contrast
                   :data-test   "cart-apply-promo"
                   :disabled?   updating?
                   :spinning?   applying?}})])
