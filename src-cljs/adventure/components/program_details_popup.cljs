@@ -21,7 +21,7 @@
     {:key (str key-prefix idx)}
     [:div.title-2.canela.py1
      (str "0" (inc idx))]
-    [:div.title-2.proxima.py1.shout
+    [:h3.title-2.proxima.py1.shout
      title]
     [:div.content-2.proxima
      body]]))
@@ -37,9 +37,9 @@
 
     [:div.col-12.bg-cool-gray.center.flex.flex-column.items-center.p2
      [:div.mt2
-      [:h2.title-1.canela
+      [:h1.title-1.canela
        "You buy the hair, we cover the service."]
-      [:div.title-1.proxima.shout.sub.my1
+      [:h2.title-1.proxima.shout.sub.my1
        "Here's how it works."]]
 
      [:div.col-10.flex.flex-column.items-center
@@ -59,9 +59,9 @@
 (def mayvenn-guarantees
   [:div.col-12.center.flex.flex-column.items-center.py6
    [:div.mt5.mb3
-    [:h2.title-1.proxima.shout.pb1
+    [:title-1.proxima.shout.pb1
      [:div.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "29px"}}]]
-    [:div.title-1.canela.shout
+    [:h2.title-1.canela.shout
      "guarantees"]]
    [:div.col-8.flex.flex-column.items-center
     [:div.pb1.pt6
@@ -70,7 +70,7 @@
       (svg/heart {:class  "fill-p-color"
                   :width  "32px"
                   :height "29px"})]
-     [:div.title-2.proxima.py1.shout
+     [:h3.title-2.proxima.py1.shout
       "Top-Notch Customer Service"]
      [:p.content-2.py1.mx-auto
       "Our team is made up of hair experts ready to help you by phone, text, and email."]]
@@ -81,7 +81,7 @@
       (svg/calendar {:class  "fill-p-color"
                      :width  "30px"
                      :height "33px"})]
-     [:div.title-2.proxima.py1.shout
+     [:h3.title-2.proxima.py1.shout
       "30 Day Guarantee"]
      [:p.content-2.py1.mx-auto
       "Wear it, dye it, even cut it! If you're not satisfied we'll exchange it within 30 days."]]
@@ -92,7 +92,7 @@
       (svg/worry-free {:class  "fill-p-color"
                        :width  "35px"
                        :height "36px"})]
-     [:div.title-2.proxima.py1.shout
+     [:h3.title-2.proxima.py1.shout
       "100% Virgin Hair"]
      [:p.content-2.py1.mx-auto
       "Our hair is gently steam-processed and can last up to a year. Available in 8 textures and 5 shades."]]
@@ -103,7 +103,7 @@
       (svg/mirror {:class  "fill-p-color"
                    :width  "30px"
                    :height "34px"})]
-     [:div.title-2.proxima.py1.shout
+     [:h3.title-2.proxima.py1.shout
       "Certified Stylists"]
      [:p.content-2.py1.mx-auto
       "Our stylists are chosen because of their industry-leading standards. Both our hair and service are quality guaranteed."]]]])
@@ -116,7 +116,7 @@
 
 (defmethod popup/component :consolidated-cart-free-install
   [{:keys [faq-data video-navigate] :as queried-data} owner _]
-  (ui/modal {:col-class   "col-12 col-10-on-tb col-10-on-dt my8-on-tb-dt flex justify-center"
+  (ui/modal {:col-class   "col-12 col-10-on-tb-dt my8-on-tb-dt flex justify-center"
              :close-attrs (utils/fake-href events/control-consolidated-cart-free-install-dismiss)
              :bg-class    "bg-darken-4"}
             [:div.bg-cool-gray
