@@ -382,7 +382,7 @@
         :cart-item-floating-box/id       "line-item-freeinstall-price"
         :cart-item-floating-box/contents (if required-hair-quantity-met?
                                            [{:text price :attrs {:class "strike"}}
-                                            {:text "FREE" :attrs {:class "s-color"}}]
+                                            {:text "Free" :attrs {:class "p-color shout"}}]
                                            [{:text price}])
         :cart-item-service-thumbnail/id          "freeinstall"
         :cart-item-service-thumbnail/image-url   (hacky-cart-image free-service)}

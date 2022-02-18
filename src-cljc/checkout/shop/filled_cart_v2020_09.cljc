@@ -86,7 +86,7 @@
 (defn physical-items-component
   [physical-items suggestions]
   [:div
-   [:div.title-2.proxima.mb1 "Items"]
+   [:h2.title-2.proxima.mb1 "Items"]
    (if (seq physical-items)
      (for [[index cart-item] (map-indexed vector physical-items)
            :let              [react-key (:react/key cart-item)]
@@ -110,7 +110,7 @@
   (when service-section-id
     [:div.mb3
      {:data-test service-section-id}
-     [:div.title-2.proxima.mb1 "Services"]
+     [:h2.title-2.proxima.mb1 "Services"]
      (component/build cart-item-v202004/stylist-organism stylist nil)
      (component/build cart-item-v202004/no-stylist-organism stylist nil)
 
@@ -335,7 +335,7 @@
       :cart-item-floating-box/id               "line-item-freeinstall-price"
       :cart-item-floating-box/contents         (if required-hair-quantity-met?
                                                  [{:text price :attrs {:class "strike"}}
-                                                  {:text "FREE" :attrs {:class "s-color"}}]
+                                                  {:text "Free" :attrs {:class "p-color shout"}}]
                                                  [{:text price}])
       :cart-item-remove-action/id              "line-item-remove-freeinstall"
       :cart-item-remove-action/spinning?       (boolean (get delete-line-item-requests id))

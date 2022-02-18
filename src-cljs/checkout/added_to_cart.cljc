@@ -232,7 +232,7 @@
                                                                       essential-price
                                                                       unit-price) $/as-money)
                                                       :attrs {:class "strike"}}
-                                                     {:text "FREE" :attrs {:class "s-color"}}]
+                                                     {:text "Free" :attrs {:class "p-color shout"}}]
              :cart-item-service-thumbnail/id        (str "line-item-thumbnail-" sku-id)
              :cart-item-service-thumbnail/image-url (hacky-cart-image free-service-item)
              :cart-item-title/id                    (str "line-item-title-" sku-id)

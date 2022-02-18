@@ -35,7 +35,7 @@
      [:div.proxima.content-2
       {:data-test id}
       primary]
-     [:div.dark-gray secondary]]))
+     [:div.dark-dark-gray secondary]]))
 
 (defn cart-item-square-thumbnail-molecule
   [{:cart-item-square-thumbnail/keys
