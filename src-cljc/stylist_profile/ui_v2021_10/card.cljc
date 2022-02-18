@@ -15,10 +15,10 @@
   [{:circle-portrait/keys [portrait]}]
   [:div
    [:div.hide-on-mb
-    (ui/circle-picture {:width "160px"}
+    (ui/circle-picture {:width "160px" :alt ""}
                        (ui/square-image portrait 160))]
    [:div.hide-on-tb-dt
-    (ui/circle-picture {:width "78px"}
+    (ui/circle-picture {:width "78px" :alt ""}
                        (ui/square-image portrait 72))]])
 
 (defn ^:private stylist-title

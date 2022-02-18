@@ -686,14 +686,15 @@
 
 (defn circle-picture
   ([src] (circle-picture {} src))
-  ([{:keys [width overlay-copy] :as attrs :or {width "4em"}} src]
+  ([{:keys [width overlay-copy alt] :as attrs :or {width "4em"}} src]
    (component/html
     [:div.circle.bg-cool-gray.overflow-hidden.relative
      ^:attrs (merge {:style {:width width :height width}}
                     (dissoc attrs :width :overlay-copy))
      (if src
-       [:img {:style {:width width :height width} :src src}]
-       (ucare-img {:style {:width width :height width}} "9664879b-07e0-432e-9c09-b2cf4c899b10"))
+       [:img {:style {:width width :height width}  :alt alt :src src}]
+       (ucare-img {:style {:width width :height width}
+                   :alt   alt} "9664879b-07e0-432e-9c09-b2cf4c899b10"))
      (when overlay-copy
        [:div.absolute.overlay.bg-darken-2
         [:div.absolute.m-auto.overlay {:style {:height "50%"}} overlay-copy]])])))
@@ -703,14 +704,16 @@
    :alt (:alt img)})
 
 ;; GROT: Will be rendered useless post consolidated-cart
-(defn ^:private counter-button [spinning? data-test f content]
+(defn ^:private counter-button [spinning? data-test f content action]
+  (prn action)
   (component/html
    [:a.col.inherit-color
-    {:href "#"
-     :data-test data-test
-     :style {:border-color "gray"}
-     :disabled spinning?
-     :on-click (if spinning? utils/noop-callback f)}
+    {:href       "#"
+     :data-test  data-test
+     :aria-label (case action :inc "add one" :dec "remove one")
+     :style      {:border-color "gray"}
+     :disabled   spinning?
+     :on-click   (if spinning? utils/noop-callback f)}
     content]))
 
 (defn ^:private counter-value [spinning? value]
@@ -722,9 +725,9 @@
 (defn counter [{:keys [data-test spinning?]} value dec-fn inc-fn]
   (component/html
    [:div
-    (counter-button spinning? (str "quantity-dec-" data-test) dec-fn (svg/counter-dec {:title "Decrement bag item count"}))
+    (counter-button spinning? (str "quantity-dec-" data-test) dec-fn (svg/counter-dec {:title "Decrement bag item count"}) :dec)
     (counter-value spinning? value)
-    (counter-button spinning? (str "quantity-inc-" data-test) inc-fn (svg/counter-inc {:title "Increment bag item count"}))]))
+    (counter-button spinning? (str "quantity-inc-" data-test) inc-fn (svg/counter-inc {:title "Increment bag item count"}) :inc)]))
 
 ;; GROT: Will be rendered useless post consolidated-cart
 (defn auto-complete-counter [{:keys [data-test spinning?]} value dec-fn inc-fn]
@@ -732,20 +735,23 @@
    [:div
     (counter-button spinning? (str "quantity-dec-" data-test) dec-fn
                     (svg/minus-sign {:height "18px"
-                                     :width  "18px"}))
+                                     :width  "18px"})
+                    :dec)
     (counter-value spinning? value)
     (counter-button spinning? (str "quantity-inc-" data-test) inc-fn
                     (svg/plus-sign {:height "18px"
                                     :width  "18px"
-                                    :class "fill-black stroke-black"}))]))
+                                    :class "fill-black stroke-black"})
+                    :inc)]))
 
-(defn ^:private consolidated-cart-counter-button [spinning? data-test f content]
+(defn ^:private consolidated-cart-counter-button [spinning? data-test f content action]
   (component/html
    [:a.inherit-color.flex.items-center
-    {:href "#"
-     :data-test data-test
-     :disabled spinning?
-     :on-click (if spinning? utils/noop-callback f)}
+    {:href       "#"
+     :data-test  data-test
+     :aria-label (case action :inc "add one" :dec "remove one")
+     :disabled   spinning?
+     :on-click   (if spinning? utils/noop-callback f)}
     content]))
 
 (defn consolidated-cart-auto-complete-counter [{:keys [data-test spinning?]} value dec-fn inc-fn]
@@ -754,13 +760,15 @@
     [:div.border.border-pale-purple
      (consolidated-cart-counter-button spinning? (str "quantity-dec-" data-test) dec-fn
                                        (svg/minus-sign {:height "18px"
-                                                        :width  "18px"}))]
+                                                        :width  "18px"})
+                                       :dec)]
     (counter-value spinning? value)
     [:div.border.border-pale-purple
      (consolidated-cart-counter-button spinning? (str "quantity-inc-" data-test) inc-fn
                                        (svg/plus-sign {:height "18px"
                                                        :width  "18px"
-                                                       :class "fill-black stroke-black"}))]]))
+                                                       :class "fill-black stroke-black"})
+                                       :inc)]]))
 
 (defn note-box [{:keys [color data-test]} contents]
   (component/html

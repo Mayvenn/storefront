@@ -37,8 +37,9 @@
      :class (if saving? "border-cool-gray" "border-p-color")}
     [:div.circle.border-cool-gray.border.content-box.border-width-2.overflow-hidden {:style {:width "96px" :height "96px"}}
      (ui/circle-picture {:width        "96px"
+                         :alt          "Your profile picture"
                          :overlay-copy (case status
-                                         "pending" [:span.white.medium "Approval Pending"]
+                                         "pending"  [:span.white.medium "Approval Pending"]
                                          "rejected" [:span.error.bold.h6 "Try a different image"]
                                          nil)}
                         (ui/square-image portrait 96))]]

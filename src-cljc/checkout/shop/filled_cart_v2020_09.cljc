@@ -156,7 +156,7 @@
          {:data-test "checkout-caption"}
          [:div.pr2
           (ui/circle-picture
-           {:width 50}
+           {:width 50 :alt   ""}
            ;; Note: We are not using ucare-id because stylist portraits may have
            ;; ucarecdn crop parameters saved into the url
            (ui/square-image {:resizable-url servicing-stylist-portrait-url} 50))]
@@ -338,6 +338,7 @@
                                                   {:text "Free" :attrs {:class "p-color shout"}}]
                                                  [{:text price}])
       :cart-item-remove-action/id              "line-item-remove-freeinstall"
+      :cart-item-remove-action/aria-label      "remove freeinstall"
       :cart-item-remove-action/spinning?       (boolean (get delete-line-item-requests id))
       :cart-item-remove-action/target          [events/control-cart-remove variant-id]
       :cart-item-service-thumbnail/id          "freeinstall"
@@ -371,6 +372,7 @@
                                              {:id    (str "line-item-quantity-" sku-id)
                                               :value (str "qty. " quantity)}]
      :cart-item-remove-action/id            (str "line-item-remove-" sku-id)
+     :cart-item-remove-action/aria-label    (str "remove " (or cart-title product-name))
      :cart-item-remove-action/spinning?     (boolean (get delete-line-item-requests id))
      :cart-item-remove-action/target        [events/control-cart-remove id]
      :cart-item-service-thumbnail/id        sku-id
@@ -445,6 +447,7 @@
      :cart-item-adjustable-quantity/decrement-target [events/control-cart-line-item-dec qty-adjustment-args]
      :cart-item-adjustable-quantity/increment-target [events/control-cart-line-item-inc qty-adjustment-args]
      :cart-item-remove-action/id                     (str "line-item-remove-" sku-id)
+     :cart-item-remove-action/aria-label             (str "remove " (or cart-title product-name))
      :cart-item-remove-action/spinning?              removing?
      :cart-item-remove-action/target                 [events/control-cart-remove id]}))
 

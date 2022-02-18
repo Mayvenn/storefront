@@ -60,7 +60,8 @@
          :key       (str "cart-item-square-thumbnail-" sku-id)
          :data-test (str "line-item-img-" sku-id)}
         (ui/ucare-img {:width "48"
-                       :class "block border border-cool-gray"}
+                       :class "block border border-cool-gray"
+                       :alt   ""}
                       ucare-id)]])))
 
 (defn cart-item-service-thumbnail-molecule
@@ -72,11 +73,10 @@
               :height        "60px"}}
 
      [:div.relative
-      (ui/ucare-img {:width "56"
-                     :class "mtp2"} image-url)]]))
+      (ui/ucare-img {:width "56" :class "mtp2" :alt ""} image-url)]]))
 
 (defn cart-item-remove-action-molecule
-  [{:cart-item-remove-action/keys [id target spinning?]}]
+  [{:cart-item-remove-action/keys [id target spinning? aria-label]}]
   (when target
     (if spinning?
       [:div.h3.flex
@@ -84,7 +84,8 @@
        ui/spinner]
       [:div
        [:a.gray.medium
-        (merge {:data-test id}
+        (merge {:data-test  id
+                :aria-label aria-label}
                (apply utils/fake-href target))
         (svg/line-item-delete {:width  "16px"
                                :height "17px"})]])))
@@ -179,7 +180,7 @@
   (cond
     ;; Continue to take up space as if the remove icon is there.
     (not id)
-    [:div {:width "14px"
+    [:div {:width  "14px"
            :height "14px"}]
 
     spinning?
@@ -189,20 +190,22 @@
 
     :else
     [:a.block.gray.medium.p1.flex.justify-center.items-center
-     (merge {:data-test id
-             :on-click  (apply utils/send-event-callback target)})
-     (svg/x-sharp {:width  "14px"
-                   :height "14px"
+     (merge {:data-test  id
+             :on-click   (apply utils/send-event-callback target)
+             :aria-label "remove stylist"})
+     (svg/x-sharp {:width        "14px"
+                   :height       "14px"
                    :stroke-width "0.4"
-                   :class  "fill-dark-gray stroke-dark-gray"})]))
+                   :class        "fill-dark-gray stroke-dark-gray"})]))
 
 (component/defcomponent stylist-swap-molecule
   [{:servicing-stylist-banner.swap-icon/keys [id target]} _ _]
   (when id
     [:a.block.gray.medium.p1.flex.justify-center.items-baseline
-     (merge {:data-test id
-             :href      (routes/path-for events/navigate-adventure-find-your-stylist)
-             :on-click  (apply utils/send-event-callback target)})
+     (merge {:data-test  id
+             :href       (routes/path-for events/navigate-adventure-find-your-stylist)
+             :on-click   (apply utils/send-event-callback target)
+             :aria-label "swap stylist"})
      (svg/swap-arrows {:width  "18px"
                        :height "22px"
                        :class  "fill-dark-gray stroke-dark-gray"})]))
@@ -226,12 +229,13 @@
      {:data-test id}
      (if title-and-image-target
        [:a.py2
-        (merge {:style {:min-width "70px"}}
+        (merge {:style      {:min-width "70px"}
+                :aria-label (str "go to " title "'s stylist profile")}
                (apply utils/route-to title-and-image-target))
-        (ui/circle-picture {:width 56} (ui/square-image {:resizable-url image-url} 50))]
+        (ui/circle-picture {:width 56 :alt ""} (ui/square-image {:resizable-url image-url} 50))]
        [:div.py2
         {:style {:min-width "70px"}}
-        (ui/circle-picture {:width 56} (ui/square-image {:resizable-url image-url} 50))])
+        (ui/circle-picture {:width 56 :alt ""} (ui/square-image {:resizable-url image-url} 50))])
      [:div.flex-auto
       [:div.flex.flex-auto.pr2.py2
        [:div.flex.flex-grow-1.items-center

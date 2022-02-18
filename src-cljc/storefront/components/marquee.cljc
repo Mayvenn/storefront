@@ -15,7 +15,8 @@
 
 (defn stylist-portrait [portrait]
   (ui/circle-picture {:class "mx-auto"
-                      :width (str ui/header-image-size "px")}
+                      :width (str ui/header-image-size "px")
+                      :alt   ""}
                      (ui/square-image portrait ui/header-image-size)))
 
 (def add-portrait-cta
