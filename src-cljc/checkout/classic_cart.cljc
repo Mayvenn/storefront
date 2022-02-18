@@ -148,7 +148,7 @@
                                :spinning? redirecting-to-paypal?
                                :disabled? updating?
                                :data-test "paypal-checkout"}
-                              [:div
+                              [:div.bg-paypal
                                "Check out with "
                                [:span.medium.italic "PayPal™"]])]
 

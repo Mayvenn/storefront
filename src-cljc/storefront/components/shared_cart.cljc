@@ -373,7 +373,7 @@
               :spinning? spinning?
               :data-test id}
              (component/html
-              [:div
+              [:div.bg-paypal
                "Check out with "
                [:span.medium.italic "PayPal™"]]))]])
 

@@ -1,5 +1,6 @@
 .bg-fb-blue                 { background-color: var(--facebook-blue); }
 .bg-quadpay-blue            { background-color: var(--quadpay-blue); }
+.bg-paypal                  { background-color: var(--paypal); }
 .bg-twitter-blue            { background-color: var(--twitter-blue); }
 .bg-sms-green               { background-color: var(--sms-green); }
 .bg-error                   { background-color: var(--light-red); }
@@ -53,7 +54,7 @@
     --red:          #f94941;
     --pink:         #f4c3d6;
     --light-red:    #fef7fa;
-    --paypal:       #49bbf0;
+    --paypal:       #00297c;
     --pale-purple:  #dedbe5;
     --deep-purple:  #4e4899;
     --white:        #ffffff;

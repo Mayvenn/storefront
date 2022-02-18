@@ -73,7 +73,7 @@
               (when spinning? {:spinning? spinning?})
               {:on-click (apply utils/send-event-callback target)})
        (c/html
-        [:div
+        [:div.bg-paypal
          "Check out with "
          [:span.medium.italic "PayPal™"]]))])))
 
