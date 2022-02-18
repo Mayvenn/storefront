@@ -600,11 +600,12 @@
                                     :wrapper-class "col-12 bg-white"
                                     :type          "text"}
                                    :button-attrs
-                                   {:args    {:data-test "cart-apply-promo"
-                                              :disabled? disabled?
-                                              :on-click  (utils/send-event-callback events/control-cart-update-coupon)
-                                              :style     {:width   "55px"
-                                                          :padding "0"}}
+                                   {:args    {:data-test  "cart-apply-promo"
+                                              :disabled?  disabled?
+                                              :aria-label "apply promo code"
+                                              :on-click   (utils/send-event-callback events/control-cart-update-coupon)
+                                              :style      {:width   "55px"
+                                                           :padding "0"}}
                                     :content (svg/forward-arrow {:class (if disabled?
                                                                           "fill-gray"
                                                                           "fill-white")

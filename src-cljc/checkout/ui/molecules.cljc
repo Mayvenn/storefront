@@ -95,12 +95,13 @@
                 :style {:min-width "170px"})
          cta-label)
         (when secondary-link-id
-          [:div.s-color.flex.items-center.px2.button-font-3.shout
+          [:div.p-color.flex.items-center.px2.button-font-3.shout
            [:a
             ^:attrs (merge
                      (apply utils/fake-href secondary-link-target)
-                     {:class     "inherit-color border-bottom border-width-2"
-                      :data-test secondary-link-id})
+                     {:class      "inherit-color border-bottom border-width-2"
+                      :data-test  secondary-link-id
+                      :aria-label "Learn More about Free Install"})
             secondary-link-label]])]
        [:div.content-4.black fine-print]]])))
 
