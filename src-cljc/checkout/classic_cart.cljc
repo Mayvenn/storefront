@@ -33,12 +33,12 @@
 (defn display-adjustable-line-items
   [line-items skus images update-line-item-requests delete-line-item-requests]
   (for [{sku-id :sku variant-id :id :as line-item} line-items
-        :let [sku                  (get skus sku-id)
-              price                (or (:sku/price line-item)
-                                       (:unit-price line-item))
-              removing?            (get delete-line-item-requests variant-id)
-              updating?            (get update-line-item-requests sku-id)
-              length-circle-value  (-> sku :hair/length first)]]
+        :let                                       [sku                  (get skus sku-id)
+                                                    price                (or (:sku/price line-item)
+                                                                             (:unit-price line-item))
+                                                    removing?            (get delete-line-item-requests variant-id)
+                                                    updating?            (get update-line-item-requests sku-id)
+                                                    length-circle-value  (-> sku :hair/length first)]]
     [:div.pt1.pb2 {:key (str sku-id "-" (:quantity line-item))}
      [:div.left.pr1
       (when-not length-circle-value
@@ -58,7 +58,8 @@
         :data-test (str "line-item-img-" (:catalog/sku-id sku))
         :style     {:width "79px" :height "74px"}}
        (ui/ucare-img
-        {:width 75}
+        {:width 75
+         :alt   ""}
         (->> sku (catalog-images/image images "cart") :ucare/id))]]
 
      [:div {:style {:margin-top "-14px"}}
@@ -75,7 +76,8 @@
          (if removing?
            [:div.h3 {:style {:width "1.2em"}} ui/spinner]
            [:a.gray.medium
-            (merge {:data-test (str "line-item-remove-" sku-id)}
+            (merge {:data-test  (str "line-item-remove-" sku-id)
+                    :aria-label "remove"}
                    (utils/fake-href events/control-cart-remove (:id line-item)))
             ^:inline (svg/trash-can {:height "1.1em"
                                      :width  "1.1em"
