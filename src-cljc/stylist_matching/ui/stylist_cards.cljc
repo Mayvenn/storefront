@@ -37,10 +37,12 @@
      [:a.block.px1
       (merge
        (apply utils/route-to target)
-       {:key id})
+       {:key        id
+        :aria-label "See larger version of photo in gallery"})
       (ui/aspect-ratio
        1 1
        [:img {:src   (str ucare-id "-/scale_crop/216x216/-/format/auto/")
+              :alt   "stylist's previous work"
               :class "col-12"}])])))
 
 (defn desktop-stylist-card-gallery-molecule
@@ -82,11 +84,12 @@
 
 (defn stylist-card-thumbnail-molecule
   "We want ucare-ids here but we do not have them"
-  [{:stylist-card.thumbnail/keys [id ucare-id] :as data}]
+  [{:stylist-card.thumbnail/keys [id ucare-id alt] :as data}]
   (when id
     (component/html
      (if (:screen/seen? data)
-       (ui/circle-picture {:width "72px"}
+       (ui/circle-picture {:width "72px"
+                           :alt   alt}
                           (ui/square-image {:resizable-url ucare-id}
                                            72))
        [:div {:style {:height "72px" :width "72px"}}]))))

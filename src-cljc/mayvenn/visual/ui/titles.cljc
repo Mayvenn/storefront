@@ -113,7 +113,7 @@
       [:div {:class (class< :icon styling)}
        (when icon
          (svg/symbolic->html icon))
-       (build-if-value :div
+       (build-if-value :h2
                (merge {:class (class< :primary styling)}
                       (when id
                         {:data-test id}))

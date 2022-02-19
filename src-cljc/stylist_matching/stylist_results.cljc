@@ -242,7 +242,7 @@
                                                    (or (and stylist-results-test? just-added-only?)
                                                        (and stylist-results-test? just-added-experience?)))
         years-of-experience                   (some->> stylist-since (- (date/year (date/now))))
-        {:keys      [latitude longitude]}     salon
+        {:keys [latitude longitude]}     salon
         {:keys [specialty-sew-in-leave-out
                 specialty-sew-in-closure
                 specialty-sew-in-360-frontal
@@ -254,6 +254,7 @@
             :stylist-card.header/id          (str "stylist-card-header-" store-slug)
             :stylist-card.thumbnail/id       (str "stylist-card-thumbnail-" store-slug)
             :stylist-card.thumbnail/ucare-id (-> stylist :portrait :resizable-url)
+            :stylist-card.thumbnail/alt      (str (stylists/->display-name stylist) "'s profile picture")
 
             :stylist-card.title/id      "stylist-name"
             :stylist-card.title/primary (stylists/->display-name stylist)
@@ -330,11 +331,11 @@
              (within :stylist-card.top-stylist
                      (merge
                       (within :badge
-                              {:id "top-stylist-badge"
+                              {:id      "top-stylist-badge"
                                :primary "Top Stylist"
-                               :icon [:svg/crown {:class "fill-white mr1"
-                                                  :width "15px"
-                                                  :height "10px"}]})
+                               :icon    [:svg/crown {:class  "fill-white mr1"
+                                                     :width  "15px"
+                                                     :height "10px"}]})
                       (within :laurels
                               {:points [{:icon    [:svg/calendar {:style {:height "1.2em"}
                                                                   :class "fill-s-color mr1"}]
@@ -447,10 +448,11 @@
   (component/html
    [:div.flex.flex-wrap
     [:div
-     (ui/button-pill {:class     "p1 mr1"
-                      :key       "filters-key"
-                      :data-test "button-show-stylist-search-filters"
-                      :on-click  (utils/send-event-callback e/control-show-stylist-search-filters)}
+     (ui/button-pill {:class      "p1 mr1"
+                      :key        "filters-key"
+                      :data-test  "button-show-stylist-search-filters"
+                      :aria-label "filter results"
+                      :on-click   (utils/send-event-callback e/control-show-stylist-search-filters)}
                      [:div.flex.items-center.px1
                       (svg/funnel {:class  "mrp3"
                                    :height "9px"
@@ -463,7 +465,8 @@
        [:div {:class "btn-pill content-3 black p1 mr1"}
         [:div.flex.pl1 primary
          [:a.flex.items-center.pl1
-          ^:attrs (merge {:data-test id}
+          ^:attrs (merge {:data-test id
+                          :aria-label (str "remove filter for " primary)}
                          (apply utils/fake-href target))
           (svg/close-x {:class  "stroke-white fill-gray"
                         :width  "13px"
