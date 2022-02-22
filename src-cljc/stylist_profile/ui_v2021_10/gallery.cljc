@@ -42,6 +42,7 @@
                      (ui/aspect-ratio
                       1 1
                       (ui/img {:src   ucare-img-url
+                               :alt   "stylist's previous work"
                                :style {:object-position "50% 25%"
                                        :object-fit      "cover"}
                                :class "col-12 container-size"})))])))

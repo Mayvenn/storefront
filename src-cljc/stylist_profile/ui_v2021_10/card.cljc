@@ -49,12 +49,14 @@
     (salon (with :salon data))]
    [:div
     [:div.hide-on-mb
-     ^:inline (ui/img {:src   desktop-ucare-id
-                       :class "block col-12"
+     ^:inline (ui/img {:src    desktop-ucare-id
+                       :alt    ""
+                       :class  "block col-12"
                        :height 410})]
     [:div.hide-on-tb-dt
-     ^:inline (ui/img {:src   ucare-id
-                       :class "block col-12"
+     ^:inline (ui/img {:src    ucare-id
+                       :alt    ""
+                       :class  "block col-12"
                        :height 196})]]])
 
 (defn ^:private star-rating
