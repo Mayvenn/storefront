@@ -52,7 +52,7 @@
         ;; User portrait will go here
         [:div.flex.justify-between.items-baseline
          [:div.content-3.bold.proxima reviewer-name]
-         [:div.dark-gray.right-align review-date]]
+         [:div.dark-dark-gray.right-align review-date]]
         [:div.flex.justify-between
          (install-type->display-name install-type)
          (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars stars "11px" {:class "fill-p-color"})]
