@@ -96,7 +96,7 @@
   [{:keys [id primary secondary]}]
   (c/html
    [:div.pt5
-    [:div.title-2.proxima.shout
+    [:h2.title-2.proxima.shout
      {:data-test id
       :key       id}
      primary]

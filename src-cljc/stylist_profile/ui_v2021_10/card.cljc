@@ -23,11 +23,12 @@
 
 (defn ^:private stylist-title
   [{:title/keys [primary id]}]
-  [:div.title-2.proxima.shout.mt1 {:data-test id} primary])
+  [:h1.title-2.proxima.shout.mt1 {:data-test id} primary])
 
 (defn ^:private rating-count
   [{:keys [rating-count]}]
   [:div.title-3.proxima.p-color.pl1
+   {:aria-label "6 ratings"}
    "(" rating-count ")"])
 
 (defn ^:private salon

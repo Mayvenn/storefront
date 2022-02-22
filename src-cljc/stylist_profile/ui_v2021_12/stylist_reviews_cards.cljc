@@ -18,7 +18,7 @@
 
 (defn avg-rating-and-rating-count [rating rating-count]
   [:div.flex.items-center.mx3.my2
-   [:div.flex.items-center.mr1
+   [:h2.flex.items-center.mr1
     (svg/symbolic->html [:svg/whole-star {:class "fill-p-color mr1"
                                           :style {:height "0.8em"
                                                   :width  "0.9em"}}])

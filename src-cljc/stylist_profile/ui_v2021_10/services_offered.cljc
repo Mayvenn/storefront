@@ -4,7 +4,7 @@
 (defn services-title-molecule
   [{:title/keys [id primary]}]
   (c/html
-   [:div.title-2.proxima.shout
+   [:h2.title-2.proxima.shout
     {:data-test id
      :key       id}
     primary]))
