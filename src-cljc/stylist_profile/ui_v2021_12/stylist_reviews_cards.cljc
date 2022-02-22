@@ -91,7 +91,7 @@
       [:div.border-top.border-cool-gray.pt6.mt2.mb8.hide-on-tb-dt
        [:div
         {:key      id
-         :id       "reviews"
+         :id       id
          :data-ref "reviews"}
         (avg-rating-and-rating-count rating rating-count)
         (c/build

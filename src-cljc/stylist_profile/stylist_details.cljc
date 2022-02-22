@@ -226,7 +226,8 @@
 
 (defn ^:private reviews<-
   [{:stylist.rating/keys [publishable? score cardinality] diva-stylist :diva/stylist}
-   {stylist-reviews :reviews :as paginated-reviews}]
+   {stylist-reviews :reviews :as paginated-reviews}
+   desktop?]
   (let [max-reviews-shown         3
         max-desktop-reviews-shown 6
         stylist-id                (:stylist-id diva-stylist)
@@ -235,7 +236,7 @@
     (when (and publishable?
                (seq stylist-reviews))
       (merge
-       {:reviews/id           "stylist-reviews"
+       {:reviews/id           (if desktop? "stylist-reviews-desktop" "stylist-reviews-mobile")
         :reviews/rating       score
         :reviews/rating-count cardinality
         :reviews/reviews      (->> stylist-reviews
@@ -354,7 +355,9 @@
         from-cart-or-direct-load? (or (= (first (:navigation-message (first undo-history))) e/navigate-cart)
                                       (nil? (first undo-history)))
 
-        instagram-stylist-profile? (experiments/instagram-stylist-profile? state)]
+        instagram-stylist-profile? (experiments/instagram-stylist-profile? state)
+        desktop?                   #?(:cljs (> (.-innerWidth js/window) 749)
+                                   :clj nil)]
     (merge {:footer footer<-}
            (if from-cart-or-direct-load?
              {:mayvenn-header {:forced-mobile-layout? true
@@ -363,13 +366,12 @@
            (when detailed-stylist
              (merge
               (shop-discountable-services<- skus-db detailed-stylist)
-              {:desktop?           #?(:cljs (> (.-innerWidth js/window) 749)
-                                      :clj nil)
+              {:desktop?           desktop?
                :licenses/id        "stylist-license"
                :licenses/primary   "Licenses / Certifications"
                :licenses/secondary "Cosmetology license, Mayvenn Certified"
                :gallery            (gallery<- detailed-stylist instagram-stylist-profile?)
-               :stylist-reviews    (reviews<- detailed-stylist paginated-reviews)
+               :stylist-reviews    (reviews<- detailed-stylist paginated-reviews desktop?)
 
                :card                  (within :stylist-profile.card (card<- detailed-stylist))
                :experience            (experience<- detailed-stylist)
