@@ -20,7 +20,7 @@
         ^:inline (storefront-header/account-info signed-in user vouchers? stylist-experience past-appointments?)]]]
      [:div.flex.justify-between.px8.mb4
       [:div {:style {:width "33px"}}]
-      [:h1.flex-grow-1 {:key "logo"}
+      [:div.flex-grow-1 {:key "logo"}
        (ui/clickable-logo {:event events/navigate-home
                            :data-test "desktop-header-logo"
                            :height "44px"})]
