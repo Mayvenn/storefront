@@ -110,12 +110,13 @@
   ;; padding hack to preserve pre-load image aspect ratio
   [:picture.ml1
    {:data-ref (str "offset-" idx)
-    :style    {:top 0
+    :style    {:top    0
                :bottom 0}}
    [:source {:src-set
              (str url "-/scale_crop/1160x1160/smart/ 2x," url "-/scale_crop/580x580/smart/ 1x")}]
-   [:img {:src (str url "-/scale_crop/580x580/smart/")
-          :style {:width "32%"}}]])
+   [:img {:src   (str url "-/scale_crop/580x580/smart/")
+          :style {:width "32%"}
+          :alt   "stylist's preveious work"}]])
 
 (defcomponent component
   [data owner opts]
