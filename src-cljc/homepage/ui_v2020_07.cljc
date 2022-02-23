@@ -150,11 +150,16 @@
    :contact-us.title/secondary "We're here to help"
    :contact-us.body/primary    "Have Questions?"
    :list/contact-methods
-   [{:contact-us.contact-method/uri        (ui/sms-url "346-49")
-     :contact-us.contact-method/svg-symbol [:svg/icon-sms {:height 51
-                                                           :width  56}]
-     :contact-us.contact-method/title      "Live Chat"
-     :contact-us.contact-method/copy       "Text: 346-49"}
+   [{:contact-us.contact-method/uri         (ui/sms-url "346-49")
+     :contact-us.contact-method/svg-symbol  [:svg/icon-sms {:height 51
+                                                            :width  56}]
+     :contact-us.contact-method/title       "Live Chat"
+     :contact-us.contact-method/copy        "Text: 346-49"
+     :contact-us.contact-method/legal-copy  "Message & data rates may apply."
+     :contact-us.contact-method/legal-links [{:copy   "terms"
+                                              :target [e/navigate-content-tos]}
+                                             {:copy   "privacy policy"
+                                              :target [e/navigate-content-privacy]}]}
     {:contact-us.contact-method/uri        (ui/phone-url "1 (855) 287-6868")
      :contact-us.contact-method/svg-symbol [:svg/icon-call {:class  "bg-white fill-black stroke-black circle"
                                                             :height 57

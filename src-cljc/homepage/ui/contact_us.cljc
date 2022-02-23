@@ -1,17 +1,32 @@
 (ns homepage.ui.contact-us
   (:require [storefront.component :as c]
-            [storefront.components.svg :as svg]))
+            [storefront.components.svg :as svg]
+            [storefront.platform.component-utils :as utils]))
 
 (defn ^:private contact-us-contact-method-molecule
-  [{:contact-us.contact-method/keys [uri title copy svg-symbol]} id]
-  [:a.block.py3.col-12.col-4-on-tb-dt.black
-   {:href uri
-    :key  id}
-   [:div.mt6-on-dt.mb4-on-dt (svg/symbolic->html svg-symbol)]
-   [:div.proxima.title-2.mt1
-    title]
-   [:div.col-8.mx-auto.p-color.content-2
-    copy]])
+  [{:contact-us.contact-method/keys [uri title copy svg-symbol legal-copy legal-links]} id]
+  (let [legal? (boolean (or legal-copy legal-links))]
+    [:div.col-12.col-4-on-tb-dt
+     {:class (if legal? "mb3" "")}
+     [:a.pt3.block.black
+      {:href  uri
+       :key   id
+       :class (if legal? "" "pb3")}
+      [:div.mt6-on-dt.mb4-on-dt (svg/symbolic->html svg-symbol)]
+      [:div.proxima.title-2.mt1
+       title]
+      [:div.col-8.mx-auto.p-color.content-2
+       copy]]
+     (when legal?
+       [:div.col-8.mx-auto.p-color.content-3.pt1.black
+        (str legal-copy)
+        (when legal-links
+          [:span
+           [:br]
+           "See "
+           (interpose " & " (for [{:keys [copy target]} legal-links]
+                              [:a (apply utils/route-to target) (str copy)]))
+           "."])]) ]))
 
 (defn ^:private contact-us-title-molecule
   [{:contact-us.title/keys [primary secondary]}]

@@ -165,13 +165,14 @@
                         sections)}
     {:opts {:section-click-event events/faq-section-selected}})])
 
-(defn ^:private contact-us-block [idx {:as data :keys [url title copy]}]
+(defn ^:private contact-us-block [idx {:as data :keys [url title copy legal]}]
   [:a.block.py3.col-12.col-4-on-tb-dt.black
    {:href url
     :key idx}
    (svg/symbolic->html (:svg/symbol data))
    [:div.proxima.title-2.mt1 title]
-   [:div.col-8.mx-auto.p-color.content-2 copy]])
+   [:div.col-8.mx-auto.p-color.content-2 copy]
+   (when legal [:div.col-8.mx-auto.content-2.dark-dark-gray legal])])
 
 (def shop-contact-query
   {:title/value        "Contact Us"
@@ -182,7 +183,8 @@
      :svg/symbol [:svg/icon-sms {:height 51
                                  :width  56}]
      :title      "Live Chat"
-     :copy       "Text: 346-49"}
+     :copy       "Text: 346-49"
+     :legal      "Message & data rates may apply. See Terms & Privacy Policy."}
     {:url        (ui/phone-url config/support-phone-number)
      :svg/symbol [:svg/icon-call {:class  "bg-white fill-black stroke-black circle"
                                   :height 57
