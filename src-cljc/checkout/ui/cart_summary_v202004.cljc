@@ -12,7 +12,7 @@
     :keys              [promo-field-data]} owner _]
   [:div {:data-test id}
    [:div.py1.bg-refresh-gray.px4
-    [:h2.title-2.proxima.my2.hide-on-mb "Order Summary"]
+    [:div.title-2.proxima.my2.hide-on-mb "Order Summary"]
     [:table.col-12
      [:tbody
       (for [line lines]

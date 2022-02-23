@@ -86,7 +86,7 @@
 (defn physical-items-component
   [physical-items suggestions]
   [:div
-   [:h2.title-2.proxima.mb1 "Items"]
+   [:div.title-2.proxima.mb1 "Items"]
    (if (seq physical-items)
      (for [[index cart-item] (map-indexed vector physical-items)
            :let              [react-key (:react/key cart-item)]
@@ -110,7 +110,7 @@
   (when service-section-id
     [:div.mb3
      {:data-test service-section-id}
-     [:h2.title-2.proxima.mb1 "Services"]
+     [:div.title-2.proxima.mb1 "Services"]
      (component/build cart-item-v202004/stylist-organism stylist nil)
      (component/build cart-item-v202004/no-stylist-organism stylist nil)
 
