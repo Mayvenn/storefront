@@ -18,6 +18,7 @@
    "/help"              (edn->bidi events/navigate-content-help)
    "/about-us"          (edn->bidi events/navigate-content-about-us)
    "/policy/privacy"    (edn->bidi events/navigate-content-privacy)
+   "/policy/privacy/v2" (edn->bidi events/navigate-content-privacyv2)
    "/policy/privacy/v1" (edn->bidi events/navigate-content-privacyv1)
    "/policy/tos"        (edn->bidi events/navigate-content-tos)
    "/ugc-usage-terms"   (edn->bidi events/navigate-content-ugc-usage-terms)

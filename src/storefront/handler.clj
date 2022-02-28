@@ -823,6 +823,7 @@
    events/navigate-content-help                      generic-server-render
    events/navigate-content-about-us                  generic-server-render
    events/navigate-content-privacy                   generic-server-render
+   events/navigate-content-privacyv2                 generic-server-render
    events/navigate-content-privacyv1                 generic-server-render
    events/navigate-content-tos                       generic-server-render
    events/navigate-content-guarantee                 generic-server-render

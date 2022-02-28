@@ -33,7 +33,8 @@
     ;; The modal links to these, so we don't show on these pages (instead of dismissing the modal).
     e/navigate-content-tos
     e/navigate-content-privacy
-    e/navigate-content-privacyv1})
+    e/navigate-content-privacyv1
+    e/navigate-content-privacyv2})
 
 (def adventure-and-quiz-pages
   #{e/navigate-adventure

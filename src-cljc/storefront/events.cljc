@@ -62,6 +62,7 @@
 (defpath navigate-content-about-us)
 (defpath navigate-content-guarantee)
 (defpath navigate-content-privacy)
+(defpath navigate-content-privacyv2)
 (defpath navigate-content-privacyv1)
 (defpath navigate-content-tos)
 (defpath navigate-content-ugc-usage-terms)

@@ -98,6 +98,7 @@
    events/navigate-content-guarantee       (constantly content/built-component)
    events/navigate-content-help            (constantly content/built-component)
    events/navigate-content-privacy         (constantly content/built-component)
+   events/navigate-content-privacyv2       (constantly content/built-component)
    events/navigate-content-privacyv1       (constantly content/built-component)
    events/navigate-content-tos             (constantly content/built-component)
    events/navigate-content-about-us        (constantly content/built-component)
