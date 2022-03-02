@@ -297,12 +297,14 @@
 (defn appointment-details-query
   [app-state]
   (when-let [{:keys [appointment-date canceled-at]} (get-in app-state [:models :appointment :date])]
-    (when (and false ; Disabled due to Kustomer ingestion irregularities. GROT when resolved.
-               appointment-date
-               (not canceled-at))
-      {:appointment-details/id "appointment-details"
-       :appointment-details/date (f/short-date appointment-date)
-       :appointment-details/time (f/time-12-hour appointment-date)})))
+    (when (and appointment-date (not canceled-at))
+      #?(:cljs
+         (let [pacific-time (-> (js/Date. "2021-02-10T18:00:00.000Z")
+                                (.toLocaleString "en-US" (clj->js {:timeZone "America/Los_Angeles"})))]
+           {:appointment-details/id   "appointment-details"
+            :appointment-details/date (f/short-date pacific-time)
+            :appointment-details/time (f/time-12-hour pacific-time)})
+         :clj nil))))
 
 (defn stylist-details-query
   [app-state]
