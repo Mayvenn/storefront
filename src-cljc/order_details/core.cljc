@@ -299,7 +299,7 @@
   (when-let [{:keys [appointment-date canceled-at]} (get-in app-state [:models :appointment :date])]
     (when (and appointment-date (not canceled-at))
       #?(:cljs
-         (let [pacific-time (-> (js/Date. "2021-02-10T18:00:00.000Z")
+         (let [pacific-time (-> (js/Date. appointment-date)
                                 (.toLocaleString "en-US" (clj->js {:timeZone "America/Los_Angeles"})))]
            {:appointment-details/id   "appointment-details"
             :appointment-details/date (f/short-date pacific-time)
