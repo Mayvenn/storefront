@@ -112,9 +112,16 @@ query($preview: Boolean, $path: String) {
             block {
               ...Content
             }
+            hyperlink {
+              sys { id }
+              __typename
+              ...on StaticPage {
+                path
+                title
+              }
+            }
           }
           assets {
-            # hyperlink {}
             block {
               sys { id }
               url

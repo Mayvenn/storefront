@@ -52,7 +52,7 @@
 (def dependency-map
   {:app-handler       [:logger :exception-handler :contentful :launchdarkly :sitemap-cache :static-pages-repo]
    :contentful        [:logger :exception-handler :scheduler]
-   :static-pages-repo [:scheduler]
+   :static-pages-repo [:scheduler :exception-handler]
    :scheduler         [:logger :exception-handler]
    :embedded-server   {:app :app-handler}})
 

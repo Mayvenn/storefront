@@ -35,6 +35,7 @@
 
 (defn- content-html
   "Converts contentful linked structure into a hiccup-like format for page rendering"
+  ([c] (content-html c (content-map c) (fn [& args])))
   ([c exception-handler] (content-html c (content-map c) exception-handler))
   ([c id->entry exception-handler]
    ;; Meander crash course:
@@ -68,9 +69,9 @@
      [:div.content-richtext
       (when (pos? (count ?title)) [:h1.h1.my4 ?title])
       [:div {:class (case ?align
-                      "left" ""
+                      "left"   ""
                       "center" "center"
-                      "right" "right")}
+                      "right"  "right")}
        ?html]]
 
      {:__typename "Variable" :type "static" :value ?value}
@@ -94,8 +95,29 @@
                                                                                      :alt    (str (:title asset))
                                                                                      :width  (:width asset)
                                                                                      :height (:height asset)}]])
-     {:nodeType "embedded-entry-block" :data {:target {:sys {:id ?id}}}}        [:div.block (content-html (id->entry ?id) c)]
-     {:nodeType "embedded-entry-inline" :data {:target {:sys {:id ?id}}}}       (content-html (id->entry ?id) c)
+     {:nodeType "embedded-entry-block" :data {:target {:sys {:id ?id}}}}        [:div.block (if-let [sc (id->entry ?id)]
+                                                                                              (content-html sc id->entry exception-handler)
+                                                                                              (do (println "Missing id->entry entry in `content-html`.embedded-entry-block for" (pr-str ?id))
+                                                                                                  (exception-handler (IllegalArgumentException. (format "Missing id->entry entry in `content-html`.embedded-entry-block for" (pr-str ?id))))
+                                                                                                  [:div.bg-red.white "Unrecognized entry-block content type id: " (pr-str ?id)]))]
+     {:nodeType "embedded-entry-inline" :data {:target {:sys {:id ?id}}}}       (if-let [sc (id->entry ?id)]
+                                                                                  (content-html sc id->entry exception-handler)
+                                                                                  (do (println "Missing id->entry entry in `content-html`.embedded-entry-inline for" (pr-str ?id))
+                                                                                      (exception-handler (IllegalArgumentException. (format "Missing id->entry entry in `content-html`.embedded-entry-inline for" (pr-str ?id))))
+                                                                                      [:div.bg-red.white "Unrecognized entry-inline content type id: " (pr-str ?id)]))
+     {:nodeType "entry-hyperlink"
+      :data     {:target {:sys {:id ?id}}}
+      :content  [(m/cata !content) ...]}                                        (let [e (id->entry ?id)]
+                                                                                  (if (= (:__typename e) "StaticPage")
+                                                                                    (m/subst
+                                                                                      [:a.p-color.button-font-2.border-bottom.border-width-2.border-p-color
+                                                                                       {:href  ~(str (:path e))
+                                                                                        :title ~(str (:title e))}
+                                                                                       . !content ...])
+                                                                                    (do (println "Missing id->entry entry in `content-html`.entry-hyperlink for" (pr-str ?id))
+                                                                                        (exception-handler (IllegalArgumentException. (format "Missing id->entry entry in `content-html`.entry-hyperlink for" (pr-str ?id))))
+                                                                                        [:div.bg-red.white "Unrecognized entry-hyperlink content type id: " (pr-str ?id)])))
+
      {:nodeType "hyperlink" :content [(m/cata !content) ...] :data {:uri ?uri}} (m/subst [:a.p-color.button-font-2.border-bottom.border-width-2.border-p-color
                                                                                           {:href ?uri} . !content ...])
      {:nodeType "hyperlink" :content [(m/cata !content) ...]}                   (m/subst [:a . !content ...])
@@ -106,8 +128,8 @@
      {:nodeType "text" :value ?text :marks []}                                  ?text
      {:nodeType "text" :value ?text :marks [{:type !marks} ...]}                (let [m (set !marks)]
                                                                                   [:span {:class (cond-> ""
-                                                                                                   (m "bold") (str " bold")
-                                                                                                   (m "italic") (str " italic")
+                                                                                                   (m "bold")      (str " bold")
+                                                                                                   (m "italic")    (str " italic")
                                                                                                    (m "underline") (str " underline"))}
                                                                                    ?text])
      {:json (m/cata ?json)}                                                     ?json
@@ -116,7 +138,7 @@
      ?x (do
           (println "Missing clause in `content-html` for" (pr-str ?x))
           (exception-handler (IllegalArgumentException. (format "Missing clause in `content-html` for" (pr-str ?x))))
-          [:div.bg-red.white "Unrecognized content type: " (pr-str ?x)]))))
+          [:div.bg-red.white "Unrecognized content type: " (pr-str c)]))))
 (when-not (= (env :environment) "development")
   (tracer/instrument! content-html))
 
@@ -187,7 +209,8 @@
 
   (def r (gql/query (:contentful (:static-pages-repo dev-system/the-system))
                     "static_page.gql" {"preview" true
-                                       "path"    "/policy/privacy"}))
+                                       "path"    "/policy/sms"}))
+
   (content-map r)
   (def r (available-pages (:contentful dev-system/the-system) {"$preview" true}))
 
