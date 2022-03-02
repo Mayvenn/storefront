@@ -825,6 +825,7 @@
    events/navigate-content-privacy                   generic-server-render
    events/navigate-content-privacyv2                 generic-server-render
    events/navigate-content-privacyv1                 generic-server-render
+   events/navigate-content-sms                       generic-server-render
    events/navigate-content-tos                       generic-server-render
    events/navigate-content-guarantee                 generic-server-render
    events/navigate-content-ugc-usage-terms           generic-server-render

@@ -101,6 +101,7 @@
    events/navigate-content-privacyv2       (constantly content/built-component)
    events/navigate-content-privacyv1       (constantly content/built-component)
    events/navigate-content-tos             (constantly content/built-component)
+   events/navigate-content-sms             (constantly content/built-component)
    events/navigate-content-about-us        (constantly content/built-component)
    events/navigate-content-ugc-usage-terms (constantly content/built-component)
    events/navigate-content-voucher-terms   (constantly content/built-component)

@@ -21,6 +21,7 @@
    "/policy/privacy/v2" (edn->bidi events/navigate-content-privacyv2)
    "/policy/privacy/v1" (edn->bidi events/navigate-content-privacyv1)
    "/policy/tos"        (edn->bidi events/navigate-content-tos)
+   "/policy/sms"        (edn->bidi events/navigate-content-sms)
    "/ugc-usage-terms"   (edn->bidi events/navigate-content-ugc-usage-terms)
    "/voucher-terms"     (edn->bidi events/navigate-content-voucher-terms)
    "/program-terms"     (edn->bidi events/navigate-content-program-terms)
