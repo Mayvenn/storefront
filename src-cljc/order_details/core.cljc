@@ -296,8 +296,8 @@
 
 (defn appointment-details-query
   [app-state]
-  (when-let [{:keys [appointment-date appointment-date-timezone canceled-at]} (get-in app-state [:models :appointment :date])]
-    (when (and appointment-date-timezone ; if no timezone, the datetime is not appropriately formed WRT timezone, so don't show it
+  (when-let [{:keys [appointment-date canceled-at]} (get-in app-state [:models :appointment :date])]
+    (when (and false ; Disabled due to Kustomer ingestion irregularities. GROT when resolved.
                appointment-date
                (not canceled-at))
       {:appointment-details/id "appointment-details"
