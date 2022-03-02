@@ -73,9 +73,12 @@
                       "right" "right")}
        ?html]]
 
+     {:__typename "Variable" :type "static" :value ?value}
+     [:span.inline (str ?value)]
+
      ;; rich text field's structure
      {:nodeType "document" :content [(m/cata !content) ...]}                    (m/subst [:div.inline . !content ...])
-     {:nodeType "heading-1" :content [(m/cata !content) ...]}                   (m/subst [:h1.title-1.canela.my4 . !content ...])
+     {:nodeType "heading-1" :content [(m/cata !content) ...]}                   (m/subst [:h1.title-1.canela.my4.center . !content ...])
      {:nodeType "heading-2" :content [(m/cata !content) ...]}                   (m/subst [:h2.title-2.canela.my4 . !content ...])
      {:nodeType "heading-3" :content [(m/cata !content) ...]}                   (m/subst [:h3.title-3.canela.my4 . !content ...])
      {:nodeType "heading-4" :content [(m/cata !content) ...]}                   (m/subst [:h4.title-3.canela.my3 . !content ...])
@@ -84,12 +87,13 @@
      {:nodeType "blockquote" :content [(m/cata !content) ...]}                  (m/subst [:blockquote . !content ...])
      {:nodeType "paragraph" :content [(m/cata !content) ...]}                   (m/subst [:p.content-2.my2 . !content ...])
      {:nodeType "embedded-asset-block" :data {:target {:sys {:id ?id}}}}        (let [asset (id->entry ?id)]
-                                                                                  [:img.block.col-12
-                                                                                   {:style  {:height "auto"}
-                                                                                    :src    (:url asset)
-                                                                                    :alt    (str (:title asset))
-                                                                                    :width  (:width asset)
-                                                                                    :height (:height asset)}])
+                                                                                  [:p.block.col-12
+                                                                                   [:img.mx-auto.block
+                                                                                    {:style  {:height "auto"}
+                                                                                     :src    (:url asset)
+                                                                                     :alt    (str (:title asset))
+                                                                                     :width  (:width asset)
+                                                                                     :height (:height asset)}]])
      {:nodeType "embedded-entry-block" :data {:target {:sys {:id ?id}}}}        [:div.block (content-html (id->entry ?id) c)]
      {:nodeType "embedded-entry-inline" :data {:target {:sys {:id ?id}}}}       (content-html (id->entry ?id) c)
      {:nodeType "hyperlink" :content [(m/cata !content) ...] :data {:uri ?uri}} (m/subst [:a.p-color.button-font-2.border-bottom.border-width-2.border-p-color
