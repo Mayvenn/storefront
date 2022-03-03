@@ -75,7 +75,7 @@
           (into [:div]
                 (for [{:keys [title url carrier tracking-number cart-items type] :as fulf} fulfillments]
                   [:div.my4.bg-refresh-gray
-                   (when url [:div "Tracking: "
+                   (when url [:div.p2 "Tracking: "
                               [:a.content-2
                                (merge (utils/fake-href e/external-redirect-url {:url url})
                                       {:aria-label "Track Shipment"})
@@ -83,7 +83,7 @@
                    (for [[index cart-item] (map-indexed vector cart-items)
                          :let              [react-key (:react/key cart-item)]
                          :when             react-key]
-                     [:div
+                     [:div.pb2
                       {:key (str index "-cart-item-" react-key)}
                       (c/build cart-item-v202203/organism {:cart-item cart-item}
                                (c/component-id (str index "-cart-item-" react-key)))])])))
@@ -204,39 +204,6 @@
 (defn long-date [dt]
   (when (date? dt)
     (str (f/day->day-abbr dt) ", " #?(:cljs (f/long-date dt)))))
-
-;; TODO: reintroduce a shipping estimate
-#_(defn ->shipping-days-estimate [drop-shipping?
-                                shipping-sku
-                                placed-at]
-  (let [{:keys [weekday hour]} #?(:cljs
-                                  (->> (.formatToParts
-                                        (js/Intl.DateTimeFormat
-                                         "en-US" #js
-                                                  {:timeZone "America/New_York"
-                                                   :weekday  "short"
-                                                   :hour     "numeric"
-                                                   :hour12   false}) placed-at)
-                                       js->clj
-                                       (mapv js->clj)
-                                       (mapv (fn [{:strs [type value]}]
-                                               {(keyword type) value}))
-                                       (reduce merge {}))
-                                  :clj nil)
-        weekday?               (contains? #{"Mon" "Tue" "Wed" "Thu" "Fri"} weekday)
-        parsed-hour            (spice/parse-int hour)
-        {:keys [saturday-delivery?
-                max-delivery]} (checkout-delivery/shipping-method-rules shipping-sku drop-shipping?)
-        in-window?             (and weekday?
-                                    hour
-                                    (< parsed-hour 13)
-                                    (or (not (= "Fri" weekday))
-                                        (< parsed-hour 10)))]
-    (checkout-delivery/number-of-days-to-ship
-     weekday
-     in-window?
-     saturday-delivery?
-     max-delivery)))
 
 (defn fulfillment-items-query
   [app-state line-item-ids shipments]
