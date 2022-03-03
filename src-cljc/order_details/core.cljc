@@ -1,6 +1,5 @@
 (ns order-details.core
   (:require #?@(:cljs [[storefront.api :as api]
-                       [storefront.hooks.google-maps :as google-maps]
                        [storefront.history :as history]])
             [api.catalog :as catalog]
             [catalog.images :as catalog-images]
@@ -30,8 +29,7 @@
             [storefront.effects :as storefront.effects]
             [storefront.request-keys :as request-keys]
             [storefront.components.flash :as flash]
-            [stylist-matching.search.accessors.filters :as stylist-filters]
-            [adventure.stylist-matching.maps :as stylist-maps]))
+            [stylist-matching.search.accessors.filters :as stylist-filters]))
 
 (defn titled-content
   ([title content] (titled-content nil title content))
@@ -126,8 +124,7 @@
       "Stylist"
       [:div
        [:div.my2 nickname ", " [:a {:href (ui/phone-url phone) :aria-label (str "Phone number " phone)}
-                                phone]]
-       (c/build stylist-maps/component-v2 map)])]))
+                                phone]]])]))
 
 (defn vouchers-details-template
   [{:vouchers-details/keys [id spinning? vouchers]}]
@@ -318,13 +315,7 @@
                   longitude]} salon]
       {:stylist-details/id       (str "stylist-details-" store-slug)
        :stylist-details/nickname store-nickname
-       :stylist-details/phone    (f/phone-number (:phone address))
-       :stylist-details/map      {:salon     salon
-                                  :latitude  latitude
-                                  :longitude longitude
-                                  :loaded?   (and (get-in app-state storefront.keypaths/loaded-google-maps)
-                                                  (some? latitude)
-                                                  (some? longitude))}})))
+       :stylist-details/phone    (f/phone-number (:phone address))})))
 
 ;; Voucher states: pending, active, redeemed, expired, canceled, new
 
@@ -456,20 +447,19 @@
       (messages/handle-message e/biz|email-verification|verified {:evt evt})
 
       user-verified-at
-      #?(:cljs (do (google-maps/insert)
-                   (if order-number
-                     (api/get-order {:number     order-number
-                                     :user-id    (get-in app-state k/user-id)
-                                     :user-token (get-in app-state k/user-token)}
-                                    {:handler       #(messages/handle-message e/flow--orderdetails--resulted {:orders [%]})
-                                     :error-handler #(messages/handle-message e/flash-show-failure
-                                                                              {:message (str "Unable to retrieve order " order-number ". Please contact support.")})})
-                     (api/get-orders {:limit      1
-                                      :user-id    (get-in app-state k/user-id)
-                                      :user-token (get-in app-state k/user-token)}
-                                     #(messages/handle-message e/flow--orderdetails--resulted {:orders (:results %)})
-                                     #(messages/handle-message e/flash-show-failure
-                                                               {:message (str "Unable to retrieve order. Please contact support.")}))))
+      #?(:cljs (if order-number
+                 (api/get-order {:number     order-number
+                                 :user-id    (get-in app-state k/user-id)
+                                 :user-token (get-in app-state k/user-token)}
+                                {:handler       #(messages/handle-message e/flow--orderdetails--resulted {:orders [%]})
+                                 :error-handler #(messages/handle-message e/flash-show-failure
+                                                                          {:message (str "Unable to retrieve order " order-number ". Please contact support.")})})
+                 (api/get-orders {:limit      1
+                                  :user-id    (get-in app-state k/user-id)
+                                  :user-token (get-in app-state k/user-token)}
+                                 #(messages/handle-message e/flow--orderdetails--resulted {:orders (:results %)})
+                                 #(messages/handle-message e/flash-show-failure
+                                                           {:message (str "Unable to retrieve order. Please contact support.")})))
          :clj nil))))
 
 (defmethod transitions/transition-state e/flow--orderdetails--resulted
