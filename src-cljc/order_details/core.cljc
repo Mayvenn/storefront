@@ -37,19 +37,20 @@
   ([title content] (titled-content nil title content))
   ([dt title content]
    [:div.my6 (when dt {:data-test dt})
-    [:div.title-2.shout.proxima title]
-    [:div.content-1.proxima content]]))
+    [:h2.title-2.proxima.border-bottom.border-gray.my2 title]
+    [:div.content-2.proxima content]]))
 
 (defn titled-subcontent
   ([title content] (titled-subcontent nil title content))
   ([dt title content]
    [:div.my3 (when dt {:data-test dt})
-    [:div.title-3.shout.proxima title]
-    [:div.content-1.proxima content]]))
+    [:div.title-3.proxima title]
+    [:div.content-2.proxima content]]))
 
 
 (defn address-copy [{:keys [address1 city state zipcode address2]}]
-  (str address1 ", " (when (not-empty address2) address2 ",") city ", " state ", " zipcode))
+  [:div "Shipping Address:"
+   [:div (str address1 ", " (when (not-empty address2) address2 ",") city ", " state ", " zipcode)]])
 
 (defn your-looks-title-template
   [{:your-looks-title/keys [id copy]}]
@@ -68,33 +69,26 @@
   (when id
        [:div.my6.max-960.mx-auto
         {:key id}
-        [:div.title-1.canela "My Recent Order"]
-        (titled-content (str "order-" order-number) "Order Number" order-number)
-        (when placed-at
-          (titled-content "placed-at" "Placed On" placed-at))
-        (titled-content "Shipping Address" (address-copy shipping-address))
+        [:h1.title-1.canela.mb2 "Order Details"]
+        [:div "Order Number: " order-number]
+        (when placed-at [:div "Order Placed: " placed-at])
+        (titled-content "Shipping" (address-copy shipping-address))
         (for [{:keys [fulfillments number title] :as shipment} shipments]
-          (titled-content title
-                          (into [:div]
-                                (for [{:keys [title url carrier tracking-number cart-items type] :as fulf} fulfillments]
-                                  (titled-subcontent title
-                                                     [:div
-                                                      (when url [:a.content-2
-                                                                 (utils/fake-href e/external-redirect-url {:url url})
-                                                                 tracking-number])
-                                                      (interpose
-                                                       [:div.flex
-                                                        [:div {:style {:width "75px"}}]
-                                                        [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto]]
-                                                       (for [[index cart-item] (map-indexed vector cart-items)
-                                                             :let              [react-key (:react/key cart-item)]
-                                                             :when             react-key]
-                                                         [:div.mxn2
-                                                          {:key (str index "-cart-item-" react-key)}
-                                                          (c/build cart-item-v202004/organism {:cart-item cart-item}
-                                                                   (c/component-id (str index "-cart-item-" react-key)))]))])))))
+          (into [:div]
+                (for [{:keys [title url carrier tracking-number cart-items type] :as fulf} fulfillments]
+                  [:div.my2
+                   (when url [:a.content-2
+                              (utils/fake-href e/external-redirect-url {:url url})
+                              tracking-number])
+                   (for [[index cart-item] (map-indexed vector cart-items)
+                         :let              [react-key (:react/key cart-item)]
+                         :when             react-key]
+                     [:div.mxn2
+                      {:key (str index "-cart-item-" react-key)}
+                      (c/build cart-item-v202004/organism {:cart-item cart-item}
+                               (c/component-id (str index "-cart-item-" react-key)))])])))
         (titled-content "Payment" [:div {:data-test "payment-total"}
-                                   (titled-subcontent "Total" (mf/as-money total))])]))
+                                   [:div "Total: "(mf/as-money total)]])]))
 
 (defn no-orders-details-template
   [{:no-orders-details/keys [id]}]
@@ -124,14 +118,14 @@
 
     id
     [:div.my6.max-960.mx-auto
-     {:key id
+     {:key       id
       :data-test id}
-     (titled-content "Stylist Info"
-                     [:div
-                      [:div nickname]
-                      [:div [:a {:href (ui/phone-url phone)}
-                             phone]]
-                      (c/build stylist-maps/component-v2 map)])]))
+     (titled-content
+      "Stylist"
+      [:div
+       [:div nickname ", " [:a {:href (ui/phone-url phone)}
+                            phone]]
+       (c/build stylist-maps/component-v2 map)])]))
 
 (defn vouchers-details-template
   [{:vouchers-details/keys [id spinning? vouchers]}]
@@ -416,11 +410,6 @@
                                                                                              (= "spree" (:source %))) line-items)]
                                       :when            (not= "pending" state)]
                                   {:number       number
-                                   :title        (cond
-                                                   (= 1 (count shipments)) "Order"
-                                                   (= "S1" number)         "Original Order"
-                                                   (= 2 (count shipments)) "Replacement Order"
-                                                   :else                   (str "Replacement Order #" (-> number (subs 1) spice/parse-int dec)))
                                    :fulfillments (concat
                                                   (for [{:keys [carrier
                                                                 carrier-service
