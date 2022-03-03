@@ -4,7 +4,7 @@
                        [storefront.history :as history]])
             [api.catalog :as catalog]
             [catalog.images :as catalog-images]
-            [checkout.ui.cart-item-v202004 :as cart-item-v202004]
+            [checkout.ui.cart-item-v202203 :as cart-item-v202203]
             [clojure.string :as string]
             [spice.core :as spice]
             [spice.maps :as maps]
@@ -76,16 +76,16 @@
         (for [{:keys [fulfillments number title] :as shipment} shipments]
           (into [:div]
                 (for [{:keys [title url carrier tracking-number cart-items type] :as fulf} fulfillments]
-                  [:div.my2
+                  [:div.my4.bg-refresh-gray
                    (when url [:a.content-2
                               (utils/fake-href e/external-redirect-url {:url url})
                               tracking-number])
                    (for [[index cart-item] (map-indexed vector cart-items)
                          :let              [react-key (:react/key cart-item)]
                          :when             react-key]
-                     [:div.mxn2
+                     [:div
                       {:key (str index "-cart-item-" react-key)}
-                      (c/build cart-item-v202004/organism {:cart-item cart-item}
+                      (c/build cart-item-v202203/organism {:cart-item cart-item}
                                (c/component-id (str index "-cart-item-" react-key)))])])))
         (titled-content "Payment" [:div {:data-test "payment-total"}
                                    [:div "Total: "(mf/as-money total)]])]))
@@ -123,8 +123,8 @@
      (titled-content
       "Stylist"
       [:div
-       [:div nickname ", " [:a {:href (ui/phone-url phone)}
-                            phone]]
+       [:div.my2 nickname ", " [:a {:href (ui/phone-url phone)}
+                                phone]]
        (c/build stylist-maps/component-v2 map)])]))
 
 (defn vouchers-details-template
