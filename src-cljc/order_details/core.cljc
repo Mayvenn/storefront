@@ -77,9 +77,11 @@
           (into [:div]
                 (for [{:keys [title url carrier tracking-number cart-items type] :as fulf} fulfillments]
                   [:div.my4.bg-refresh-gray
-                   (when url [:a.content-2
-                              (utils/fake-href e/external-redirect-url {:url url})
-                              tracking-number])
+                   (when url [:div "Tracking: "
+                              [:a.content-2
+                               (merge (utils/fake-href e/external-redirect-url {:url url})
+                                      {:aria-label "Track Shipment"})
+                               tracking-number]])
                    (for [[index cart-item] (map-indexed vector cart-items)
                          :let              [react-key (:react/key cart-item)]
                          :when             react-key]
@@ -123,7 +125,7 @@
      (titled-content
       "Stylist"
       [:div
-       [:div.my2 nickname ", " [:a {:href (ui/phone-url phone)}
+       [:div.my2 nickname ", " [:a {:href (ui/phone-url phone) :aria-label (str "Phone number " phone)}
                                 phone]]
        (c/build stylist-maps/component-v2 map)])]))
 
