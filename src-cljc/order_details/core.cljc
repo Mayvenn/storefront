@@ -24,7 +24,6 @@
             [mayvenn.concept.follow :as follow]
             [mayvenn.concept.hard-session :as hard-session]
             [email-verification.core :as email-verification]
-            [storefront.keypaths :as keypaths]
             [storefront.accessors.auth :as auth]
             [storefront.effects :as storefront.effects]
             [storefront.request-keys :as request-keys]
@@ -63,6 +62,7 @@
                          placed-at
                          shipping-address
                          total
+                         returns
                          pending-cart-items]}]
   (when id
        [:div.my6.max-960.mx-auto
@@ -73,13 +73,14 @@
         (titled-content "Shipping" (address-copy shipping-address))
         (for [{:keys [fulfillments number title] :as shipment} shipments]
           (into [:div]
-                (for [{:keys [title url carrier tracking-number cart-items type] :as fulf} fulfillments]
+                (for [{:keys [status delivery-message url carrier tracking-number cart-items type] :as fulf} fulfillments]
                   [:div.my4.bg-refresh-gray
-                   (when url [:div.p2 "Tracking: "
-                              [:a.content-2
-                               (merge (utils/fake-href e/external-redirect-url {:url url})
-                                      {:aria-label "Track Shipment"})
-                               tracking-number]])
+                   (when status [:div.p2 status " "
+                                 (when url[:a.content-2
+                                           (merge (utils/fake-href e/external-redirect-url {:url url})
+                                                  {:aria-label "Track Shipment"})
+                                           (str "#" tracking-number)])])
+                   (when delivery-message [:div delivery-message])
                    (for [[index cart-item] (map-indexed vector cart-items)
                          :let              [react-key (:react/key cart-item)]
                          :when             react-key]
@@ -87,6 +88,18 @@
                       {:key (str index "-cart-item-" react-key)}
                       (c/build cart-item-v202203/organism {:cart-item cart-item}
                                (c/component-id (str index "-cart-item-" react-key)))])])))
+        (when (seq returns)
+          [:div (titled-content "Returns" "")
+           (for [{:return/keys [date items]} returns]
+             [:div.bg-refresh-gray
+              [:div.p2 "Return started on "date]
+              (for [[index returned-item] (map-indexed vector items)
+                    :let              [react-key (:react/key returned-item)]
+                    :when             react-key]
+                [:div.pb2
+                 {:key (str index "-returned-item-" react-key)}
+                 (c/build cart-item-v202203/organism {:cart-item returned-item}
+                          (c/component-id (str index "-returned-item-" react-key)))])])])
         (titled-content "Payment" [:div {:data-test "payment-total"}
                                    [:div "Total: "(mf/as-money total)]])]))
 
@@ -207,8 +220,8 @@
 
 (defn fulfillment-items-query
   [app-state line-item-ids shipments]
-  (let [images (get-in app-state keypaths/v2-images)
-        skus   (get-in app-state keypaths/v2-skus)]
+  (let [images (get-in app-state k/v2-images)
+        skus   (get-in app-state k/v2-skus)]
     (for [line-item-id line-item-ids
           :let         [all-line-items (mapcat :line-items shipments)
                         line-item (first (filter #(= line-item-id (:line-item-id %))
@@ -233,8 +246,8 @@
 
 (defn pending-fulfillment-query
   [app-state pending-line-items]
-  (let [images (get-in app-state keypaths/v2-images)
-        skus   (get-in app-state keypaths/v2-skus)]
+  (let [images (get-in app-state k/v2-images)
+        skus   (get-in app-state k/v2-skus)]
     (for [{:keys [sku] :as line-item} pending-line-items]
       (when-not (line-items/shipping-method? line-item)
         {:react/key                                (str "pending-" sku)
@@ -253,6 +266,36 @@
          :cart-item-square-thumbnail/sticker-label (when-let [length-circle-value (-> (:sku line-item) :hair/length first)]
                                                      (str length-circle-value "”"))
          :cart-item-square-thumbnail/ucare-id      (->> (get skus sku) (catalog-images/image images "cart") :ucare/id)}))))
+
+(defn ->returns-query
+  [app-state]
+  (let [order          (first (get-in app-state k/order-history))
+        images         (get-in app-state k/v2-images)
+        skus           (get-in app-state k/v2-skus)
+        returns        (:returns order)
+        all-line-items (mapcat :line-items (:shipments order))]
+    (when returns
+      (for [{:keys [returned-at line-items]} returns]
+        {:return/date  (long-date returned-at)
+         :return/items (for [returned-item line-items]
+                         (let [complete-line-item (first (filter (fn[line-item] (= (:id line-item) (:id returned-item))) all-line-items))
+                               sku                (:sku complete-line-item)]
+                           {:react/key                                (str "pending-" sku)
+                            :cart-item-title/id                       (str "pending-" sku)
+                            :cart-item-title/primary                  (or (:product-title complete-line-item)
+                                                                          (:product-name complete-line-item))
+                            :cart-item-copy/lines                     [{:id    (str "quantity-" sku)
+                                                                        :value (str "qty. " (:quantity returned-item))}]
+                            :cart-item-title/secondary                (ui/sku-card-secondary-text complete-line-item)
+                            :cart-item-floating-box/id                (str "line-item-price-ea-with-label-" sku)
+                            :cart-item-floating-box/contents          [{:text  (mf/as-money (:unit-price complete-line-item))
+                                                                        :attrs {:data-test (str "line-item-price-ea-" sku)}}
+                                                                       {:text " each" :attrs {:class "proxima content-4"}}]
+                            :cart-item-square-thumbnail/id            sku
+                            :cart-item-square-thumbnail/sku-id        sku
+                            :cart-item-square-thumbnail/sticker-label (when-let [length-circle-value (-> (:sku complete-line-item) :hair/length first)]
+                                                                        (str length-circle-value "”"))
+                            :cart-item-square-thumbnail/ucare-id      (->> (get skus sku) (catalog-images/image images "cart") :ucare/id)}))}))))
 
 (defn appointment-details-query
   [app-state]
@@ -326,8 +369,8 @@
   (let [user-verified?       (boolean (get-in app-state k/user-verified-at))
         order-number         (or (:order-number (last (get-in app-state k/navigation-message)))
                                  (-> app-state (get-in k/order-history) first :number))
-        images-catalog       (get-in app-state keypaths/v2-images)
-        skus                 (get-in app-state keypaths/v2-skus)
+        images-catalog       (get-in app-state k/v2-images)
+        skus                 (get-in app-state k/v2-skus)
         {:as   order
          :keys [fulfillments
                 placed-at
@@ -336,7 +379,7 @@
                 total]}      (->> (get-in app-state k/order-history)
                                   (filter (fn [o] (= order-number (:number o))))
                                   first)
-        verif-status-message (-> app-state (get-in keypaths/navigation-message) second :query-params :stsm)]
+        verif-status-message (-> app-state (get-in k/navigation-message) second :query-params :stsm)]
     (cond-> {}
       (not user-verified?)
       (merge {:your-looks-title/id   "verify-email-title"
@@ -358,6 +401,7 @@
               :total            total
               :skus             skus
               :images-catalog   images-catalog
+              :returns          (->returns-query app-state)
               :shipments        (for [{:keys [number
                                               created-at
                                               state
@@ -443,7 +487,7 @@
 (defmethod effects/perform-effects e/flow--orderdetails--resulted
   [_ _ args _ app-state]
   (let [most-recent-open-order (first (get-in app-state k/order-history))
-        api-cache              (get-in app-state keypaths/api-cache)]
+        api-cache              (get-in app-state k/api-cache)]
     (messages/handle-message e/ensure-sku-ids {:sku-ids (->> most-recent-open-order
                                                              :shipments
                                                              (mapcat :line-items)
