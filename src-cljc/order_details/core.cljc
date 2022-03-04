@@ -34,16 +34,15 @@
   ([title content] (titled-content nil title content))
   ([dt title content]
    [:div.my6 (when dt {:data-test dt})
-    [:h2.title-2.proxima.border-bottom.border-gray.my2 title]
+    [:h2.title-2.proxima.border-bottom.border-gray.my2.shout title]
     [:div.content-2.proxima content]]))
 
 (defn titled-subcontent
   ([title content] (titled-subcontent nil title content))
   ([dt title content]
-   [:div.my3 (when dt {:data-test dt})
-    [:div.title-3.proxima title]
+   [:div.my2 (when dt {:data-test dt})
+    [:div.title-3.proxima.shout title]
     [:div.content-2.proxima content]]))
-
 
 (defn address-copy [{:keys [address1 city state zipcode address2]}]
   [:div "Shipping Address:"
@@ -63,6 +62,7 @@
                          shipping-address
                          total
                          returns
+                         canceled
                          pending-cart-items]}]
   (when id
        [:div.my6.max-960.mx-auto
@@ -80,20 +80,31 @@
                                    (str "#" tracking-number)])])
            (when delivery-message [:div delivery-message])
            (for [[index cart-item] (map-indexed vector cart-items)
-                   :let              [react-key (:react/key cart-item)]
-                   :when             react-key]
+                 :let              [react-key (:react/key cart-item)]
+                 :when             react-key]
                [:div.pb2
                 {:key (str index "-cart-item-" react-key)}
                 (c/build cart-item-v202203/organism {:cart-item cart-item}
                          (c/component-id (str index "-cart-item-" react-key)))])])
+        (when (spice.core/spy canceled)
+          (let [{:canceled/keys [items]} canceled]
+            [:div.bg-refresh-gray.p2
+             (titled-subcontent "Canceled" "")
+             (for [[index canceled-item] (map-indexed vector items)
+                   :let                  [react-key (:react/key canceled-item)]
+                   :when                 react-key]
+               [:div.pb2
+                {:key (str index "-canceled-item-" react-key)}
+                (c/build cart-item-v202203/organism {:cart-item canceled-item}
+                         (c/component-id (str index "-canceled-item-" react-key)))])]))
         (when (seq returns)
           [:div (titled-content "Returns" "")
            (for [{:return/keys [date items]} returns]
              [:div.bg-refresh-gray
               [:div.p2 "Return started on "date]
               (for [[index returned-item] (map-indexed vector items)
-                    :let              [react-key (:react/key returned-item)]
-                    :when             react-key]
+                    :let                  [react-key (:react/key returned-item)]
+                    :when                 react-key]
                 [:div.pb2
                  {:key (str index "-returned-item-" react-key)}
                  (c/build cart-item-v202203/organism {:cart-item returned-item}
@@ -295,6 +306,32 @@
                                                                         (str length-circle-value "”"))
                             :cart-item-square-thumbnail/ucare-id      (->> (get skus sku) (catalog-images/image images "cart") :ucare/id)}))}))))
 
+(defn ->canceled-query
+  [app-state canceled-shipment]
+  (let [order          (first (get-in app-state k/order-history))
+        images         (get-in app-state k/v2-images)
+        skus           (get-in app-state k/v2-skus)
+        all-line-items (mapcat :line-items (:shipments order))]
+    (when-let [{:keys [line-items]} canceled-shipment]
+      {:canceled/items (for [{:keys [id sku] :as item} line-items
+                             :when (> id 0)]
+                         {:react/key                                (str "pending-" sku)
+                          :cart-item-title/id                       (str "pending-" sku)
+                          :cart-item-title/primary                  (or (:product-title item)
+                                                                        (:product-name item))
+                          :cart-item-copy/lines                     [{:id    (str "quantity-" sku)
+                                                                      :value (str "qty. " (:quantity item))}]
+                          :cart-item-title/secondary                (ui/sku-card-secondary-text item)
+                          :cart-item-floating-box/id                (str "line-item-price-ea-with-label-" sku)
+                          :cart-item-floating-box/contents          [{:text  (mf/as-money (:unit-price item))
+                                                                      :attrs {:data-test (str "line-item-price-ea-" sku)}}
+                                                                     {:text " each" :attrs {:class "proxima content-4"}}]
+                          :cart-item-square-thumbnail/id            sku
+                          :cart-item-square-thumbnail/sku-id        sku
+                          :cart-item-square-thumbnail/sticker-label (when-let [length-circle-value (-> (:sku item) :hair/length first)]
+                                                                      (str length-circle-value "”"))
+                          :cart-item-square-thumbnail/ucare-id      (->> (get skus sku) (catalog-images/image images "cart") :ucare/id)})})))
+
 (defn appointment-details-query
   [app-state]
   (when-let [{:keys [appointment-date canceled-at]} (get-in app-state [:models :appointment :date])]
@@ -377,40 +414,42 @@
                 total]}      (->> (get-in app-state k/order-history)
                                   (filter (fn [o] (= order-number (:number o))))
                                   first)
-        verif-status-message (-> app-state (get-in k/navigation-message) second :query-params :stsm)]
-    (cond-> {}
-      (not user-verified?)
-      (merge {:your-looks-title/id   "verify-email-title"
-              :your-looks-title/copy "Verify Your Email"})
+        verif-status-message (-> app-state (get-in k/navigation-message) second :query-params :stsm)
+        canceled-shipment    (first (filter #(= "canceled" (:state %)) shipments))]
+        (cond-> {}
+          (not user-verified?)
+          (merge {:your-looks-title/id   "verify-email-title"
+                  :your-looks-title/copy "Verify Your Email"})
 
-      (and user-verified?
-           (not order))
-      (merge {:no-orders-details/id  "no-orders-details"
-              :your-looks-title/id   "no-order-title"
-              :your-looks-title/copy "Your Recent Order"})
+          (and user-verified?
+               (not order))
+          (merge {:no-orders-details/id  "no-orders-details"
+                  :your-looks-title/id   "no-order-title"
+                  :your-looks-title/copy "Your Recent Order"})
 
-      (and user-verified?
-           order)
-      (merge #:order-details
-             {:id               "order-details"
-              :order-number     order-number
-              :placed-at        (long-date placed-at)
-              :shipping-address shipping-address
-              :total            total
-              :skus             skus
-              :images-catalog   images-catalog
-              :returns          (->returns-query app-state)
-              :fulfillments     (for [{:keys [carrier tracking-number line-item-ids]} fulfillments]
-                                  {:url              (generate-tracking-url carrier tracking-number)
-                                   :carrier          carrier
-                                   :status           nil ; for when we have aftership
-                                   :delivery-message nil ; for when we have aftership
-                                   :cart-items       (fulfillment-items-query app-state line-item-ids shipments)})}
-             (appointment-details-query app-state)
-             (stylist-details-query app-state)
-             (vouchers-details-query app-state)
+          (and user-verified?
+               order)
+          (merge #:order-details
+                 {:id               "order-details"
+                  :order-number     order-number
+                  :placed-at        (long-date placed-at)
+                  :shipping-address shipping-address
+                  :total            total
+                  :skus             skus
+                  :images-catalog   images-catalog
+                  :returns          (->returns-query app-state)
+                  :fulfillments     (for [{:keys [carrier tracking-number line-item-ids]} fulfillments]
+                                      {:url              (generate-tracking-url carrier tracking-number)
+                                       :carrier          carrier
+                                       :status           nil ; for when we have aftership
+                                       :delivery-message nil ; for when we have aftership
+                                       :cart-items       (fulfillment-items-query app-state line-item-ids shipments)})
+                  :canceled         (->canceled-query app-state canceled-shipment)}
+                 (appointment-details-query app-state)
+                 (stylist-details-query app-state)
+                 (vouchers-details-query app-state)
 
-             {:verif-status-message/copy (when (= "verif-success" verif-status-message) "Your email was successfully verified.")}))))
+                 {:verif-status-message/copy (when (= "verif-success" verif-status-message) "Your email was successfully verified.")}))))
 
 (defn ^:export page
   [app-state]
