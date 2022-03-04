@@ -57,7 +57,7 @@
 ;; TODO: break this apart
 (defn order-details-template
   [{:order-details/keys [id
-                         shipments
+                         fulfillments
                          order-number
                          placed-at
                          shipping-address
@@ -71,23 +71,21 @@
         [:div "Order Number: " order-number]
         (when placed-at [:div "Order Placed: " placed-at])
         (titled-content "Shipping" (address-copy shipping-address))
-        (for [{:keys [fulfillments number title] :as shipment} shipments]
-          (into [:div]
-                (for [{:keys [status delivery-message url carrier tracking-number cart-items type] :as fulf} fulfillments]
-                  [:div.my4.bg-refresh-gray
-                   (when status [:div.p2 status " "
-                                 (when url[:a.content-2
-                                           (merge (utils/fake-href e/external-redirect-url {:url url})
-                                                  {:aria-label "Track Shipment"})
-                                           (str "#" tracking-number)])])
-                   (when delivery-message [:div delivery-message])
-                   (for [[index cart-item] (map-indexed vector cart-items)
-                         :let              [react-key (:react/key cart-item)]
-                         :when             react-key]
-                     [:div.pb2
-                      {:key (str index "-cart-item-" react-key)}
-                      (c/build cart-item-v202203/organism {:cart-item cart-item}
-                               (c/component-id (str index "-cart-item-" react-key)))])])))
+        (for [{:keys [status delivery-message url tracking-number cart-items] :as fulfillment} (spice.core/spy fulfillments)]
+          [:div.my4.bg-refresh-gray
+           (when status [:div.p2 status " "
+                         (when url[:a.content-2
+                                   (merge (utils/fake-href e/external-redirect-url {:url url})
+                                          {:aria-label "Track Shipment"})
+                                   (str "#" tracking-number)])])
+           (when delivery-message [:div delivery-message])
+           (for [[index cart-item] (map-indexed vector cart-items)
+                   :let              [react-key (:react/key cart-item)]
+                   :when             react-key]
+               [:div.pb2
+                {:key (str index "-cart-item-" react-key)}
+                (c/build cart-item-v202203/organism {:cart-item cart-item}
+                         (c/component-id (str index "-cart-item-" react-key)))])])
         (when (seq returns)
           [:div (titled-content "Returns" "")
            (for [{:return/keys [date items]} returns]
@@ -402,35 +400,12 @@
               :skus             skus
               :images-catalog   images-catalog
               :returns          (->returns-query app-state)
-              :shipments        (for [{:keys [number
-                                              created-at
-                                              state
-                                              line-items]
-                                       :as   shipment} shipments
-                                      :let             [shipment-fulfillments  (filter #(= number (:shipment-number %)) fulfillments)
-                                                        physical-fulfillments  (filter #(= "physical" (:type %)) shipment-fulfillments)
-                                                        voucher-fulfillments   (filter #(= "voucher" (:type %)) shipment-fulfillments)
-                                                        unfulfilled-line-items (filter #(and (nil? (:line-item-id %))
-                                                                                             (= "spree" (:source %))) line-items)]
-                                      :when            (not= "pending" state)]
-                                  {:number       number
-                                   :fulfillments (concat
-                                                  (for [{:keys [carrier
-                                                                carrier-service
-                                                                tracking-number
-                                                                line-item-ids]} physical-fulfillments]
-                                                    {:title           (when (and carrier carrier-service)
-                                                                        (str carrier " - " carrier-service))
-                                                     :url             (generate-tracking-url carrier tracking-number)
-                                                     :carrier         carrier
-                                                     :tracking-number tracking-number
-                                                     :cart-items      (fulfillment-items-query app-state line-item-ids shipments)})
-                                                  (for [{:keys [line-item-ids]} voucher-fulfillments]
-                                                    {:title      "Service"
-                                                     :cart-items (fulfillment-items-query app-state line-item-ids shipments)})
-                                                  (when-let [line-items (seq unfulfilled-line-items)]
-                                                    [{:title      "Pending"
-                                                      :cart-items (pending-fulfillment-query app-state line-items)}]))})}
+              :fulfillments     (for [{:keys [carrier tracking-number line-item-ids]} fulfillments]
+                                  {:url              (generate-tracking-url carrier tracking-number)
+                                   :carrier          carrier
+                                   :status           nil ; for when we have aftership
+                                   :delivery-message nil ; for when we have aftership
+                                   :cart-items       (fulfillment-items-query app-state line-item-ids shipments)})}
              (appointment-details-query app-state)
              (stylist-details-query app-state)
              (vouchers-details-query app-state)
