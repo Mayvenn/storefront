@@ -3,7 +3,7 @@
                        [storefront.history :as history]])
             [api.catalog :as catalog]
             [catalog.images :as catalog-images]
-            [checkout.ui.cart-item-v202203 :as cart-item-v202203]
+            [checkout.ui.cart-item-v202004 :as cart-item-v202004]
             [clojure.string :as string]
             [spice.core :as spice]
             [spice.maps :as maps]
@@ -34,13 +34,13 @@
   ([title content] (titled-content nil title content))
   ([dt title content]
    [:div.my6 (when dt {:data-test dt})
-    [:h2.title-2.proxima.border-bottom.border-gray.my2.shout title]
+    [:h2.title-2.proxima.my2.shout title]
     [:div.content-2.proxima content]]))
 
 (defn titled-subcontent
   ([title content] (titled-subcontent nil title content))
   ([dt title content]
-   [:div.my2 (when dt {:data-test dt})
+   [:div.p2.bg-white (when dt {:data-test dt})
     [:div.title-3.proxima.shout title]
     [:div.content-2.proxima content]]))
 
@@ -72,42 +72,42 @@
         (when placed-at [:div "Order Placed: " placed-at])
         (titled-content "Shipping" (address-copy shipping-address))
         (for [{:keys [status delivery-message url tracking-number cart-items] :as fulfillment} fulfillments]
-          [:div.my4.bg-refresh-gray
-           (when status [:div.p2 status " "
-                         (when url[:a.content-2
-                                   (merge (utils/fake-href e/external-redirect-url {:url url})
-                                          {:aria-label "Track Shipment"})
-                                   (str "#" tracking-number)])])
+          [:div.my4.bg-white
+           (when status [:div.p2.border-bottom.border-refresh-gray status " "
+                         (when url [:a.content-2.shout.primary.bold
+                                    (merge (utils/fake-href e/external-redirect-url {:url url})
+                                           {:aria-label "Track Shipment"})
+                                    (str "#" tracking-number)])])
            (when delivery-message [:div delivery-message])
            (for [[index cart-item] (map-indexed vector cart-items)
                  :let              [react-key (:react/key cart-item)]
                  :when             react-key]
                [:div.pb2
                 {:key (str index "-cart-item-" react-key)}
-                (c/build cart-item-v202203/organism {:cart-item cart-item}
+                (c/build cart-item-v202004/organism {:cart-item cart-item}
                          (c/component-id (str index "-cart-item-" react-key)))])])
-        (when (spice.core/spy canceled)
+        (when canceled
           (let [{:canceled/keys [items]} canceled]
-            [:div.bg-refresh-gray.p2
-             (titled-subcontent "Canceled" "")
+            [:div.bg-white
+             [:div.border-refresh-gray.border-bottom (titled-subcontent "Canceled" "")]
              (for [[index canceled-item] (map-indexed vector items)
                    :let                  [react-key (:react/key canceled-item)]
                    :when                 react-key]
                [:div.pb2
                 {:key (str index "-canceled-item-" react-key)}
-                (c/build cart-item-v202203/organism {:cart-item canceled-item}
+                (c/build cart-item-v202004/organism {:cart-item canceled-item}
                          (c/component-id (str index "-canceled-item-" react-key)))])]))
         (when (seq returns)
           [:div (titled-content "Returns" "")
            (for [{:return/keys [date items]} returns]
-             [:div.bg-refresh-gray
-              [:div.p2 "Return started on "date]
+             [:div.bg-white
+              [:div.p2.border-bottom.border-refresh-gray "Return started on "date]
               (for [[index returned-item] (map-indexed vector items)
                     :let                  [react-key (:react/key returned-item)]
                     :when                 react-key]
                 [:div.pb2
                  {:key (str index "-returned-item-" react-key)}
-                 (c/build cart-item-v202203/organism {:cart-item returned-item}
+                 (c/build cart-item-v202004/organism {:cart-item returned-item}
                           (c/component-id (str index "-returned-item-" react-key)))])])])
         (titled-content "Payment" [:div {:data-test "payment-total"}
                                    [:div "Total: "(mf/as-money total)]])]))
@@ -186,7 +186,7 @@
 
 (c/defcomponent template
   [data _ _]
-  [:div.py2.px8.max-960.mx-auto
+  [:div.py2.px8.max-960.mx-auto.bg-refresh-gray
    {:key "your-look"}
    (let [copy (:verif-status-message/copy data)]
      (when copy (flash/success-box {} copy)))

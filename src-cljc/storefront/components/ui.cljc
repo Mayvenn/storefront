@@ -705,7 +705,6 @@
 
 ;; GROT: Will be rendered useless post consolidated-cart
 (defn ^:private counter-button [spinning? data-test f content action]
-  (prn action)
   (component/html
    [:a.col.inherit-color
     {:href       "#"
