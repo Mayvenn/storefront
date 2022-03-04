@@ -71,7 +71,7 @@
         [:div "Order Number: " order-number]
         (when placed-at [:div "Order Placed: " placed-at])
         (titled-content "Shipping" (address-copy shipping-address))
-        (for [{:keys [status delivery-message url tracking-number cart-items] :as fulfillment} (spice.core/spy fulfillments)]
+        (for [{:keys [status delivery-message url tracking-number cart-items] :as fulfillment} fulfillments]
           [:div.my4.bg-refresh-gray
            (when status [:div.p2 status " "
                          (when url[:a.content-2
