@@ -73,11 +73,11 @@
         (titled-content "Shipping" (address-copy shipping-address))
         (for [{:keys [status delivery-message url tracking-number cart-items] :as fulfillment} fulfillments]
           [:div.my4.bg-white
-           (when status [:div.p2.border-bottom.border-refresh-gray status " "
-                         (when url [:a.content-2.shout.primary.bold
-                                    (merge (utils/fake-href e/external-redirect-url {:url url})
-                                           {:aria-label "Track Shipment"})
-                                    (str "#" tracking-number)])])
+           (when url [:div.p2.border-bottom.border-refresh-gray status " "
+                      [:a.content-2.shout.primary.bold
+                       (merge (utils/fake-href e/external-redirect-url {:url url})
+                              {:aria-label "Track Shipment"})
+                       (str "#" tracking-number)]])
            (when delivery-message [:div delivery-message])
            (for [[index cart-item] (map-indexed vector cart-items)
                  :let              [react-key (:react/key cart-item)]
@@ -458,6 +458,7 @@
                   :fulfillments     (for [{:keys [carrier tracking-number line-item-ids]} fulfillments]
                                       {:url              (generate-tracking-url carrier tracking-number)
                                        :carrier          carrier
+                                       :tracking-number  tracking-number
                                        :status           nil ; for when we have aftership
                                        :delivery-message nil ; for when we have aftership
                                        :cart-items       (fulfillment-items-query app-state line-item-ids shipments)})
