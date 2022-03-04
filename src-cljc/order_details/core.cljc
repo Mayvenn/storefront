@@ -86,7 +86,7 @@
                 {:key (str index "-cart-item-" react-key)}
                 (c/build cart-item-v202004/organism {:cart-item cart-item}
                          (c/component-id (str index "-cart-item-" react-key)))])])
-        (when (seq pending)
+        (when pending
           (let [{:pending/keys [items]} pending]
             [:div.bg-white
              [:div.border-refresh-gray.border-bottom (titled-subcontent "Not Yet Shipped" "")]
@@ -268,25 +268,26 @@
   [app-state pending-line-items]
   (let [images (get-in app-state k/v2-images)
         skus   (get-in app-state k/v2-skus)]
-    {:pending/items
-     (for [{:keys [sku] :as line-item} pending-line-items]
-       (when-not (line-items/shipping-method? line-item)
-         {:react/key                                (str "pending-" sku)
-          :cart-item-title/id                       (str "pending-" sku)
-          :cart-item-title/primary                  (or (:product-title line-item)
-                                                        (:product-name line-item))
-          :cart-item-copy/lines                     [{:id    (str "quantity-" sku)
-                                                      :value (str "qty. " (:quantity line-item))}]
-          :cart-item-title/secondary                (ui/sku-card-secondary-text line-item)
-          :cart-item-floating-box/id                (str "line-item-price-ea-with-label-" sku)
-          :cart-item-floating-box/contents          [{:text  (mf/as-money (:unit-price line-item))
-                                                      :attrs {:data-test (str "line-item-price-ea-" sku)}}
-                                                     {:text " each" :attrs {:class "proxima content-4"}}]
-          :cart-item-square-thumbnail/id            sku
-          :cart-item-square-thumbnail/sku-id        sku
-          :cart-item-square-thumbnail/sticker-label (when-let [length-circle-value (-> (:sku line-item) :hair/length first)]
-                                                      (str length-circle-value "”"))
-          :cart-item-square-thumbnail/ucare-id      (->> (get skus sku) (catalog-images/image images "cart") :ucare/id)}))}))
+    (when (seq pending-line-items)
+      {:pending/items
+       (for [{:keys [sku] :as line-item} pending-line-items]
+         (when-not (line-items/shipping-method? line-item)
+           {:react/key                                (str "pending-" sku)
+            :cart-item-title/id                       (str "pending-" sku)
+            :cart-item-title/primary                  (or (:product-title line-item)
+                                                          (:product-name line-item))
+            :cart-item-copy/lines                     [{:id    (str "quantity-" sku)
+                                                        :value (str "qty. " (:quantity line-item))}]
+            :cart-item-title/secondary                (ui/sku-card-secondary-text line-item)
+            :cart-item-floating-box/id                (str "line-item-price-ea-with-label-" sku)
+            :cart-item-floating-box/contents          [{:text  (mf/as-money (:unit-price line-item))
+                                                        :attrs {:data-test (str "line-item-price-ea-" sku)}}
+                                                       {:text " each" :attrs {:class "proxima content-4"}}]
+            :cart-item-square-thumbnail/id            sku
+            :cart-item-square-thumbnail/sku-id        sku
+            :cart-item-square-thumbnail/sticker-label (when-let [length-circle-value (-> (:sku line-item) :hair/length first)]
+                                                        (str length-circle-value "”"))
+            :cart-item-square-thumbnail/ucare-id      (->> (get skus sku) (catalog-images/image images "cart") :ucare/id)}))})))
 
 (defn ->returns-query
   [app-state]
