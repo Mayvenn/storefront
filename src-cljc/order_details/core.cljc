@@ -63,7 +63,7 @@
                          total
                          returns
                          canceled
-                         pending-cart-items]}]
+                         pending]}]
   (when id
        [:div.my6.max-960.mx-auto
         {:key id}
@@ -86,6 +86,17 @@
                 {:key (str index "-cart-item-" react-key)}
                 (c/build cart-item-v202004/organism {:cart-item cart-item}
                          (c/component-id (str index "-cart-item-" react-key)))])])
+        (when (seq pending)
+          (let [{:pending/keys [items]} pending]
+            [:div.bg-white
+             [:div.border-refresh-gray.border-bottom (titled-subcontent "Not Yet Shipped" "")]
+             (for [[index pending-item] (map-indexed vector items)
+                   :let                  [react-key (:react/key pending-item)]
+                   :when                 react-key]
+               [:div.pb2
+                {:key (str index "-pending-item-" react-key)}
+                (c/build cart-item-v202004/organism {:cart-item pending-item}
+                         (c/component-id (str index "-pending-item-" react-key)))])]))
         (when canceled
           (let [{:canceled/keys [items]} canceled]
             [:div.bg-white
@@ -253,28 +264,29 @@
                                                      (str length-circle-value "”"))
          :cart-item-square-thumbnail/ucare-id      (->> (get skus (:sku line-item)) (catalog-images/image images "cart") :ucare/id)}))))
 
-(defn pending-fulfillment-query
+(defn ->pending-fulfillment-query
   [app-state pending-line-items]
   (let [images (get-in app-state k/v2-images)
         skus   (get-in app-state k/v2-skus)]
-    (for [{:keys [sku] :as line-item} pending-line-items]
-      (when-not (line-items/shipping-method? line-item)
-        {:react/key                                (str "pending-" sku)
-         :cart-item-title/id                       (str "pending-" sku)
-         :cart-item-title/primary                  (or (:product-title line-item)
-                                                       (:product-name line-item))
-         :cart-item-copy/lines                     [{:id    (str "quantity-" sku)
-                                                     :value (str "qty. " (:quantity line-item))}]
-         :cart-item-title/secondary                (ui/sku-card-secondary-text line-item)
-         :cart-item-floating-box/id                (str "line-item-price-ea-with-label-" sku)
-         :cart-item-floating-box/contents          [{:text  (mf/as-money (:unit-price line-item))
-                                                     :attrs {:data-test (str "line-item-price-ea-" sku)}}
-                                                    {:text " each" :attrs {:class "proxima content-4"}}]
-         :cart-item-square-thumbnail/id            sku
-         :cart-item-square-thumbnail/sku-id        sku
-         :cart-item-square-thumbnail/sticker-label (when-let [length-circle-value (-> (:sku line-item) :hair/length first)]
-                                                     (str length-circle-value "”"))
-         :cart-item-square-thumbnail/ucare-id      (->> (get skus sku) (catalog-images/image images "cart") :ucare/id)}))))
+    {:pending/items
+     (for [{:keys [sku] :as line-item} pending-line-items]
+       (when-not (line-items/shipping-method? line-item)
+         {:react/key                                (str "pending-" sku)
+          :cart-item-title/id                       (str "pending-" sku)
+          :cart-item-title/primary                  (or (:product-title line-item)
+                                                        (:product-name line-item))
+          :cart-item-copy/lines                     [{:id    (str "quantity-" sku)
+                                                      :value (str "qty. " (:quantity line-item))}]
+          :cart-item-title/secondary                (ui/sku-card-secondary-text line-item)
+          :cart-item-floating-box/id                (str "line-item-price-ea-with-label-" sku)
+          :cart-item-floating-box/contents          [{:text  (mf/as-money (:unit-price line-item))
+                                                      :attrs {:data-test (str "line-item-price-ea-" sku)}}
+                                                     {:text " each" :attrs {:class "proxima content-4"}}]
+          :cart-item-square-thumbnail/id            sku
+          :cart-item-square-thumbnail/sku-id        sku
+          :cart-item-square-thumbnail/sticker-label (when-let [length-circle-value (-> (:sku line-item) :hair/length first)]
+                                                      (str length-circle-value "”"))
+          :cart-item-square-thumbnail/ucare-id      (->> (get skus sku) (catalog-images/image images "cart") :ucare/id)}))}))
 
 (defn ->returns-query
   [app-state]
@@ -289,8 +301,8 @@
          :return/items (for [returned-item line-items]
                          (let [complete-line-item (first (filter (fn[line-item] (= (:id line-item) (:id returned-item))) all-line-items))
                                sku                (:sku complete-line-item)]
-                           {:react/key                                (str "pending-" sku)
-                            :cart-item-title/id                       (str "pending-" sku)
+                           {:react/key                                (str "return-" sku)
+                            :cart-item-title/id                       (str "return-" sku)
                             :cart-item-title/primary                  (or (:product-title complete-line-item)
                                                                           (:product-name complete-line-item))
                             :cart-item-copy/lines                     [{:id    (str "quantity-" sku)
@@ -315,8 +327,8 @@
     (when-let [{:keys [line-items]} canceled-shipment]
       {:canceled/items (for [{:keys [id sku] :as item} line-items
                              :when (> id 0)]
-                         {:react/key                                (str "pending-" sku)
-                          :cart-item-title/id                       (str "pending-" sku)
+                         {:react/key                                (str "canceled-" sku)
+                          :cart-item-title/id                       (str "canceled-" sku)
                           :cart-item-title/primary                  (or (:product-title item)
                                                                         (:product-name item))
                           :cart-item-copy/lines                     [{:id    (str "quantity-" sku)
@@ -415,7 +427,11 @@
                                   (filter (fn [o] (= order-number (:number o))))
                                   first)
         verif-status-message (-> app-state (get-in k/navigation-message) second :query-params :stsm)
-        canceled-shipment    (first (filter #(= "canceled" (:state %)) shipments))]
+        canceled-shipment    (first (filter #(= "canceled" (:state %)) shipments))
+        pending-line-items   (->> shipments
+                                  (filter #(= "pending" (:state %)))
+                                  (mapcat :line-items)
+                                  (filter #(= "spree" (:source %))))]
         (cond-> {}
           (not user-verified?)
           (merge {:your-looks-title/id   "verify-email-title"
@@ -444,7 +460,8 @@
                                        :status           nil ; for when we have aftership
                                        :delivery-message nil ; for when we have aftership
                                        :cart-items       (fulfillment-items-query app-state line-item-ids shipments)})
-                  :canceled         (->canceled-query app-state canceled-shipment)}
+                  :canceled         (->canceled-query app-state canceled-shipment)
+                  :pending          (->pending-fulfillment-query app-state pending-line-items)}
                  (appointment-details-query app-state)
                  (stylist-details-query app-state)
                  (vouchers-details-query app-state)
