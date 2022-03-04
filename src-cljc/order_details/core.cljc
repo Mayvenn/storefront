@@ -73,7 +73,7 @@
         (titled-content "Shipping" (address-copy shipping-address))
         (for [{:keys [status delivery-message url tracking-number cart-items] :as fulfillment} fulfillments]
           [:div.my4.bg-white
-           (when url [:div.p2.border-bottom.border-refresh-gray status " "
+           (when url [:div.p2.border-bottom.border-refresh-gray status "Tracking: "
                       [:a.content-2.shout.primary.bold
                        (merge (utils/fake-href e/external-redirect-url {:url url})
                               {:aria-label "Track Shipment"})
