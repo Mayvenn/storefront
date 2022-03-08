@@ -785,7 +785,7 @@
    "/v2/update-addresses"
    request-keys/update-addresses
    {:params (-> order
-                (select-keys [:number :token :billing-address :shipping-address :phone-marketing-opt-in])
+                (select-keys [:number :token :billing-address :shipping-address :phone-marketing-opt-in :phone-txn-opt-in])
                 (update :shipping-address dissoc :latitude :longitude)
                 (update :billing-address dissoc :latitude :longitude)
                 (assoc :session-id session-id))
@@ -799,7 +799,7 @@
    "/v2/guest-update-addresses"
    request-keys/update-addresses
    {:params (-> order
-                (select-keys [:number :token :email :billing-address :shipping-address :phone-marketing-opt-in])
+                (select-keys [:number :token :email :billing-address :shipping-address :phone-marketing-opt-in :phone-txn-opt-in])
                 (update :shipping-address dissoc :latitude :longitude)
                 (update :billing-address dissoc :latitude :longitude)
                 (assoc :session-id session-id))

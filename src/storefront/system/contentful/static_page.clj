@@ -110,6 +110,7 @@
       :content  [(m/cata !content) ...]}                                        (let [e (id->entry ?id)]
                                                                                   (if (= (:__typename e) "StaticPage")
                                                                                     (m/subst
+                                                                                      ;; TODO(jeff): SPA-style page loading would be nice
                                                                                       [:a.p-color.button-font-2.border-bottom.border-width-2.border-p-color
                                                                                        {:href  ~(str (:path e))
                                                                                         :title ~(str (:title e))}

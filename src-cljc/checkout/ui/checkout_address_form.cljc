@@ -91,22 +91,45 @@
      (address-city billing-address-city)
      (address-state billing-address-state)])
 
-(defn ^:private marketing-opt-in
-  [{:marketing-opt-in/keys [id label copy value keypath]}]
+(defn ^:private opt-in
+  [{:keys [id label value keypath terms-nav privacy-nav]}]
   (when id
     [:div.flex.flex-column.items-center.col-12
-     [:span.content-3 copy]
-     [:div.col-12.my1
-      [:label.h6.py1
-       [:div.mr1
-        (ui/check-box
-         {:type          "checkbox"
-          :label         label
-          :label-classes "line-height-3"
-          :id            id
-          :data-test     id
-          :value         value
-          :keypath       keypath})]]]]))
+     [:div.col-12.h6.my1.py1.mr1
+      (ui/check-box
+       {:type      "checkbox"
+        :label     [:span label
+                    " See "
+                    [:a.underline.p-color (apply utils/route-to terms-nav) "Terms"]
+                    " & "
+                    [:a.underline.p-color (apply utils/route-to privacy-nav) "Privacy Policy"]
+                    " for more details. "]
+        :id        id
+        :data-test id
+        :value     value
+        :keypath   keypath})]]))
+
+;; TODO(jeff): seems like a good use for spice.maps/with, but some compile error occurs when importing that namespace
+(defn ^:private transactional-opt-in
+  [{:transactional-opt-in/keys [id label copy value keypath terms-nav privacy-nav]}]
+  (opt-in {:id          id
+           :label       label
+           :copy        copy
+           :value       value
+           :keypath     keypath
+           :terms-nav   terms-nav
+           :privacy-nav privacy-nav}))
+
+;; TODO(jeff): seems like a good use for spice.maps/with, but some compile error occurs when importing that namespace
+(defn ^:private marketing-opt-in
+  [{:marketing-opt-in/keys [id label copy value keypath terms-nav privacy-nav]}]
+  (opt-in {:id          id
+           :label       label
+           :copy        copy
+           :value       value
+           :keypath     keypath
+           :terms-nav   terms-nav
+           :privacy-nav privacy-nav}))
 
 (defn ^:private continue-to-payment
   [{:continue-to-pay-cta/keys [spinning? label data-test id]}]
@@ -124,6 +147,7 @@
                                             {:become-guest? become-guest?})
       :data-test "address-form"}
      (shipping-address data)
+     (transactional-opt-in data)
      (marketing-opt-in data)
      (billing-address data)
      (continue-to-payment data)]]])

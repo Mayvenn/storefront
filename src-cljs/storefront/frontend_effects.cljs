@@ -644,17 +644,19 @@
     (history/enqueue-navigate events/navigate-gallery-edit)))
 
 (defmethod effects/perform-effects events/control-checkout-update-addresses-submit [_ event args _ app-state]
-  (let [guest-checkout?        (get-in app-state keypaths/checkout-as-guest)
-        billing-address        (get-in app-state keypaths/checkout-billing-address)
-        shipping-address       (get-in app-state keypaths/checkout-shipping-address)
-        phone-marketing-opt-in (get-in app-state keypaths/checkout-phone-marketing-opt-in)
-        update-addresses       (if guest-checkout? api/guest-update-addresses api/update-addresses)]
+  (let [guest-checkout?            (get-in app-state keypaths/checkout-as-guest)
+        billing-address            (get-in app-state keypaths/checkout-billing-address)
+        shipping-address           (get-in app-state keypaths/checkout-shipping-address)
+        phone-marketing-opt-in     (get-in app-state keypaths/checkout-phone-marketing-opt-in)
+        phone-transactional-opt-in (get-in app-state keypaths/checkout-phone-transactional-opt-in)
+        update-addresses           (if guest-checkout? api/guest-update-addresses api/update-addresses)]
     (update-addresses
      (get-in app-state keypaths/session-id)
      (cond-> (merge (select-keys (get-in app-state keypaths/order) [:number :token])
                     {:billing-address billing-address
                      :shipping-address shipping-address
-                     :phone-marketing-opt-in phone-marketing-opt-in})
+                     :phone-marketing-opt-in phone-marketing-opt-in
+                     :phone-txn-opt-in phone-transactional-opt-in})
        guest-checkout?
        (assoc :email (get-in app-state keypaths/checkout-guest-email))
 

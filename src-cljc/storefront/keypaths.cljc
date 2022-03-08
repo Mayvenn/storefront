@@ -60,6 +60,7 @@
 (def order-user-id (conj order-user :id))
 (def order-user-email (conj order-user :email))
 (def order-phone-marketing-opt-in (conj order :phone-marketing-opt-in))
+(def order-phone-transactional-opt-in (conj order :phone-transactional-opt-in))
 
 (def stripe-card-element [:stripe :card-element])
 
@@ -224,6 +225,7 @@
 (def checkout-selected-shipping-method-sku (conj checkout-selected-shipping-method :sku))
 (def checkout-selected-payment-methods (conj checkout :payment-methods))
 (def checkout-phone-marketing-opt-in (conj checkout :phone-marketing-opt-in))
+(def checkout-phone-transactional-opt-in (conj checkout :phone-transactional-opt-in))
 
 (def flash (conj ui :flash))
 (def flash-now (conj flash :now))

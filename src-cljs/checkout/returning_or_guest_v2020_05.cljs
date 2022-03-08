@@ -64,6 +64,7 @@
    focused
    saving?
    show-phone-marketing-opt-in?
+   phone-transactional-opt-in-value
    phone-marketing-opt-in-value]
   (cond->
       (merge
@@ -178,6 +179,7 @@
         :continue-to-pay-cta/data-test "address-form-submit"
         :continue-to-pay-cta/id        "address-form-submit"
         :become-guest?                 true}
+       (checkout-address/phone-transactional-opt-in-query phone-transactional-opt-in-value)
        (when show-phone-marketing-opt-in?
          (checkout-address/phone-marketing-opt-in-query phone-marketing-opt-in-value)))
 
@@ -286,20 +288,21 @@
                                   :value           (:address1 billing-address)}})))
 
 (defn query [app-state]
-  (let [facebook-loaded?             (get-in app-state k/loaded-facebook)
-        current-nav-event            (get-in app-state k/navigation-event)
-        shipping-address             (get-in app-state k/checkout-shipping-address)
-        billing-address              (get-in app-state k/checkout-billing-address)
-        bill-to-shipping-address?    (get-in app-state k/checkout-bill-to-shipping-address)
-        states                       (map (juxt :name :abbr) (get-in app-state k/states))
-        email                        (get-in app-state k/checkout-guest-email)
-        google-maps-loaded?          (get-in app-state k/loaded-google-maps)
-        field-errors                 (get-in app-state k/field-errors)
-        focused                      (get-in app-state k/ui-focus)
-        saving?                      (utils/requesting? app-state request-keys/update-addresses)
-        phone-marketing-opt-in-value (get-in app-state k/checkout-phone-marketing-opt-in)
-        show-phone-marketing-opt-in? (not= "retail-location" (get-in app-state k/store-experience))
-        free-install-added?          (:free-install-added (get-in app-state k/navigation-query-params))]
+  (let [facebook-loaded?                 (get-in app-state k/loaded-facebook)
+        current-nav-event                (get-in app-state k/navigation-event)
+        shipping-address                 (get-in app-state k/checkout-shipping-address)
+        billing-address                  (get-in app-state k/checkout-billing-address)
+        bill-to-shipping-address?        (get-in app-state k/checkout-bill-to-shipping-address)
+        states                           (map (juxt :name :abbr) (get-in app-state k/states))
+        email                            (get-in app-state k/checkout-guest-email)
+        google-maps-loaded?              (get-in app-state k/loaded-google-maps)
+        field-errors                     (get-in app-state k/field-errors)
+        focused                          (get-in app-state k/ui-focus)
+        saving?                          (utils/requesting? app-state request-keys/update-addresses)
+        phone-transactional-opt-in-value (get-in app-state k/checkout-phone-transactional-opt-in)
+        phone-marketing-opt-in-value     (get-in app-state k/checkout-phone-marketing-opt-in)
+        show-phone-marketing-opt-in?     (not= "retail-location" (get-in app-state k/store-experience))
+        free-install-added?              (:free-install-added (get-in app-state k/navigation-query-params))]
     {:free-install-added    (free-install-added-query free-install-added?)
      :secure-checkout       (secure-checkout-query facebook-loaded?)
      :checkout-steps        (checkout-steps-query current-nav-event)
@@ -313,4 +316,5 @@
                                                          focused
                                                          saving?
                                                          show-phone-marketing-opt-in?
+                                                         phone-transactional-opt-in-value
                                                          phone-marketing-opt-in-value)}))
