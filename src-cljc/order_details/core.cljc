@@ -461,7 +461,7 @@
                                        :carrier          carrier
                                        :tracking-number  tracking-number
                                        :status           (if tracking-status tracking-status "Shipment Pending")
-                                       :delivery-message (if (= "Delivered" tracking-status)
+                                       :delivery-message (if (= "Delivered " tracking-status)
                                                            (str "Delivered by " carrier " on " expected-delivery-date)
                                                            (str "Estimated Delivery Date: " (if expected-delivery-date expected-delivery-date "Pending")))
                                        :cart-items       (fulfillment-items-query app-state line-item-ids shipments)})
