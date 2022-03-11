@@ -456,14 +456,14 @@
                   :skus             skus
                   :images-catalog   images-catalog
                   :returns          (->returns-query app-state)
-                  :fulfillments     (for [{:keys [carrier tracking-number line-item-ids tracking-status estimated-delivery-date]} fulfillments]
+                  :fulfillments     (for [{:keys [carrier tracking-number line-item-ids tracking-status expected-delivery-date]} fulfillments]
                                       {:url              (generate-tracking-url carrier tracking-number)
                                        :carrier          carrier
                                        :tracking-number  tracking-number
                                        :status           (if tracking-status tracking-status "Shipment Pending")
                                        :delivery-message (if (= "Delivered" tracking-status)
-                                                           (str "Delivered by " carrier " on " estimated-delivery-date)
-                                                           (str "Estimated Delivery Date: " (if estimated-delivery-date estimated-delivery-date "Pending")))
+                                                           (str "Delivered by " carrier " on " expected-delivery-date)
+                                                           (str "Estimated Delivery Date: " (if expected-delivery-date expected-delivery-date "Pending")))
                                        :cart-items       (fulfillment-items-query app-state line-item-ids shipments)})
                   :canceled         (->canceled-query app-state canceled-shipment)
                   :pending          (->pending-fulfillment-query app-state pending-line-items)}
