@@ -88,9 +88,10 @@
       ::marquee/show-what-we-have [:div.left.pr2 ^:inline (marquee/stylist-portrait portrait)]
       ::marquee/ask-for-portrait  [:div.left.pr2 ^:inline marquee/add-portrait-cta]
       ::marquee/show-nothing      [:div.left {:style {:height (str ui/header-image-size "px")}}])
-    [:div "Welcome to " [:span.black.medium {:data-test "nickname"} store-nickname "'s"] " shop"
-     (when expandable?
-       [:span.ml1 ^:inline (ui/expand-icon expanded?)])]]))
+    (if expandable?
+      [:a.inherit-color {:href "#"} "Welcome to " [:span.black.medium {:data-test "nickname"} store-nickname "'s"] " shop"
+       [:span.ml1 ^:inline (ui/expand-icon expanded?)]]
+      [:div "Welcome to " [:span.black.medium {:data-test "nickname"} store-nickname "'s"] " shop"])]))
 
 (defn store-info [signed-in {:keys [expanded?] :as store}]
   (c/html
