@@ -95,7 +95,7 @@
                                  :data-test          (str "add-" (name position))
                                  :data-test-disabled (and (not this-is-adding-to-bag?) any-adding-to-bag?)
                                  :style              {:margin-top "-10px"}}
-                                "Add")]]]))
+                                "add")]]]))
 
 (defcomponent component
   [{:keys [suggestions]} _ _]
