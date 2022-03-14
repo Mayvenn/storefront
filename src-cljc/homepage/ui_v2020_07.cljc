@@ -157,7 +157,7 @@
      :contact-us.contact-method/copy        "Text: 346-49"
      :contact-us.contact-method/legal-copy  "Message & data rates may apply."
      :contact-us.contact-method/legal-links [{:copy   "terms"
-                                              :target [e/navigate-content-tos]}
+                                              :target [e/navigate-content-sms]}
                                              {:copy   "privacy policy"
                                               :target [e/navigate-content-privacy]}]}
     {:contact-us.contact-method/uri        (ui/phone-url "1 (855) 287-6868")
