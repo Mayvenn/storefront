@@ -17,6 +17,7 @@
   [{:category-hero.icon/keys [image-src]}]
   (when image-src
     [:div.mt4 [:img {:src   image-src
+                     :alt   ""
                      :style {:width "54px"}}]]))
 
 (defn ^:private category-hero-body-molecule

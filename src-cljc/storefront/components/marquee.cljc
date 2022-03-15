@@ -23,6 +23,7 @@
   (component/html
    [:a (merge (utils/route-to events/navigate-stylist-account-profile) {:aria-label "Add Profile Image"})
     [:img {:width (str ui/header-image-size "px")
+           :alt   "profile image"
            :src   "//ucarecdn.com/81bd063f-56ba-4e9c-9aef-19a1207fd422/-/format/auto/stylist-bug-no-pic-fallback"}]]))
 
 (defn portrait-status [stylist-on-own-store? portrait]
