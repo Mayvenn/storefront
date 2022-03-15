@@ -1086,6 +1086,9 @@
      :catalog/department  #{"hair"}
      :category/new?       false
 
+     :subsections/subsection-selectors [{:subsection/title    "Seamless Clip-Ins"
+                                         :subsection/selector {:hair/family #{"seamless-clip-ins"}}}]
+
      :hair/family         #{"seamless-clip-ins"}
      :selector/essentials [:catalog/department :hair/family]
      :selector/electives  [:hair/weight :hair/texture :hair/color]
