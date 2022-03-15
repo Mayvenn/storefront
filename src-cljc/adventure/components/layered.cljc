@@ -172,7 +172,7 @@
    (svg/symbolic->html (:svg/symbol data))
    [:div.proxima.title-2.mt1 title]
    [:div.col-8.mx-auto.p-color.content-2 copy]
-   (when legal [:div.col-8.mx-auto.content-2.dark-dark-gray legal])])
+   (when legal [:div.col-8.mx-auto.content-2.black legal])])
 
 (def shop-contact-query
   {:title/value        "Contact Us"
