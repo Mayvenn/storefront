@@ -5,7 +5,7 @@
   "Don't apply the update if the key doesn't exist. Prevents keys being added
   when they shouldn't be"
   [m k & args]
-  (if (contains? m k)
+  (if (and (associative? m) (contains? m k))
     (apply update m k args)
     m))
 
