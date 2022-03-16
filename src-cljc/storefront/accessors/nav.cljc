@@ -6,6 +6,7 @@
 (def ^:private plain-auth-events
   #{events/navigate-sign-in
     events/navigate-sign-up
+    events/navigate-sign-up-order-link
     events/navigate-sign-out
     events/navigate-forgot-password
     events/navigate-reset-password

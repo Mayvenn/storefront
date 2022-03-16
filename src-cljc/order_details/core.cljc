@@ -1,5 +1,6 @@
 (ns order-details.core
   (:require #?@(:cljs [[storefront.api :as api]
+                       [storefront.accessors.auth :as auth]
                        [storefront.history :as history]])
             [api.catalog :as catalog]
             [catalog.images :as catalog-images]
@@ -429,13 +430,15 @@
                                   (filter (fn [o] (= order-number (:number o))))
                                   first)
         verif-status-message (-> app-state (get-in k/navigation-message) second :query-params :stsm)
+        guest-link?          (-> app-state (get-in k/navigation-message) second :query-params :g)
         canceled-shipment    (first (filter #(= "canceled" (:state %)) shipments))
         pending-line-items   (->> shipments
                                   (filter #(= "pending" (:state %)))
                                   (mapcat :line-items)
                                   (filter #(= "spree" (:source %))))]
         (cond-> {}
-          (not user-verified?)
+          (and (not guest-link?)
+               (not user-verified?))
           (merge {:your-looks-title/id   "verify-email-title"
                   :your-looks-title/copy "Verify Your Email"})
 
@@ -483,8 +486,13 @@
   [_ event {:keys [order-number query-params] :as args} _ app-state]
   (let [user-verified-at (get-in app-state k/user-verified-at)
         evt              (:evt query-params)
+        guest-link?       (:g query-params)
         sign-in-data     (hard-session/signed-in app-state)]
     (cond
+      (and guest-link?
+           (not (::auth/at-all sign-in-data)))
+      (messages/handle-message e/navigate-sign-up-order-link)
+
       (not (hard-session/allow? sign-in-data event))
       (effects/redirect e/navigate-sign-in)
 

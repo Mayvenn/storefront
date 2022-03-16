@@ -38,6 +38,7 @@
             storefront.components.shared-cart
             [storefront.components.sign-in :as sign-in]
             [storefront.components.sign-up :as sign-up]
+            [storefront.components.sign-up-order-link :as sign-up-order-link]
             [storefront.components.slideout-nav :as slideout-nav]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -109,6 +110,7 @@
    events/navigate-content-our-hair        (constantly content/built-component)
    events/navigate-sign-in                 (constantly sign-in/built-component)
    events/navigate-sign-up                 (constantly sign-up/built-component)
+   events/navigate-sign-up-order-link      (constantly sign-up-order-link/built-component)
    events/navigate-forgot-password         (constantly forgot-password/built-component)
    events/navigate-store-gallery           (constantly gallery/built-component)
    events/navigate-gallery-edit            #(ui/lazy-load-component :dashboard 'storefront.components.gallery-v202105/built-component events/navigate-gallery-edit)
