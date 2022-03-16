@@ -57,7 +57,22 @@ select:focus,
 }
 
 select:focus.invisible-select {
+  /* do we need this? we seem to already be using absolute when we add the invisible-select class */
   position: absolute;
+}
+
+.focus-within:focus-within {
+    /* Start with spec, mostly for Firefox */
+    outline: solid auto 2px;
+
+    /* Reset offset, selects and inputs differ */
+    outline-offset: 0px;
+
+    /* Webkit has a nice glow ring */
+    outline: -webkit-focus-ring-color auto 5px;
+
+    /* z2 puts the glowing field above the field inset but below the error icon */
+    z-index: 2;
 }
 
 .StripeElement--focus,

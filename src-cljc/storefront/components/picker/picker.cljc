@@ -100,14 +100,15 @@
 (defn field
   ([html-widget] (field nil html-widget))
   ([attrs html-widget]
-   [:div.flex.items-center
+   [:div.focus-within.flex.items-center.inherit-color
     (merge {:style {:height "75px"}}
            attrs)
     html-widget]))
 
 (defn invisible-select [{:keys [on-change options value label]}]
-  [:select.absolute.invisible-select.overlay
+  [:select.absolute.invisible-select.overlay.pointer
    {:on-change  on-change
+    :id         (str "selector-" label)
     :value      value
     :aria-label label
     :style      {:opacity 0
