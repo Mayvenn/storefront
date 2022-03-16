@@ -3,6 +3,7 @@
                 [[storefront.components.places :as places]])
             [storefront.component :as c :refer [defcomponent]]
             [storefront.platform.component-utils :as utils]
+            [storefront.platform.messages :refer [handle-message]]
             [storefront.events :as e]
             [storefront.components.ui :as ui]))
 
@@ -91,45 +92,69 @@
      (address-city billing-address-city)
      (address-state billing-address-state)])
 
-(defn ^:private opt-in
-  [{:keys [id label value keypath terms-nav privacy-nav]}]
+(c/defcomponent ^:private opt-in
+  [{:keys [id label copy value keypath]} _ _]
   (when id
-    [:div.flex.flex-column.items-center.col-12
-     [:div.col-12.h6.my1.py1.mr1
-      (ui/check-box
-       {:type      "checkbox"
-        :label     [:span label
-                    " See "
-                    [:a.underline.p-color (apply utils/route-to terms-nav) "Terms"]
-                    " & "
-                    [:a.underline.p-color (apply utils/route-to privacy-nav) "Privacy Policy"]
-                    " for more details. "]
-        :id        id
-        :data-test id
-        :value     value
-        :keypath   keypath})]]))
+    [:div.flex.items-center.col-12.flex-column-on-mb.my3-on-mb
+     [:div.h6.my1.py1.mr1.flex
+      [:div.mr3
+       (ui/radio-section
+        {:id           id
+         :name         id
+         :data-test-id id
+         :checked      (boolean value)
+         :on-change    (fn [e] (handle-message e/control-change-state
+                                               {:keypath keypath
+                                                :value   true}))}
+        "Yes")]
+      [:div.mr3
+       (ui/radio-section
+        {:id           id
+         :name         id
+         :data-test-id id
+         :checked      (not (boolean value))
+         :on-change    (fn [e] (handle-message e/control-change-state
+                                               {:keypath keypath
+                                                :value   false}))}
+        "No")]]
+     [:span.content-2.col-10.col-12-on-tb-dt.center-align-on-mb.mtn2.mt0-on-tb-dt
+      label]]))
 
-;; TODO(jeff): seems like a good use for spice.maps/with, but some compile error occurs when importing that namespace
-(defn ^:private transactional-opt-in
-  [{:transactional-opt-in/keys [id label copy value keypath terms-nav privacy-nav]}]
-  (opt-in {:id          id
-           :label       label
-           :copy        copy
-           :value       value
-           :keypath     keypath
-           :terms-nav   terms-nav
-           :privacy-nav privacy-nav}))
+(c/defcomponent opt-in-section
+  [{:opt-in-legalese/keys [terms-nav privacy-nav]
+    :as                   options}
+   _ _]
+  [:div.flex.flex-column.col-12.mb2
+   [:div.col-12.my1.proxima.title-3.shout.bold "Would you like to receive text notifications from us?"]
+   [:span.content-3 
+    "Message & data rates may apply. Message frequency varies. Reply HELP for help or STOP to cancel."
+    " See "
+    [:a.underline.p-color (apply utils/route-to terms-nav) "Terms"]
+    " & "
+    [:a.underline.p-color (apply utils/route-to privacy-nav) "Privacy Policy"]
+    " for more details. "]
+   ;; TODO(jeff): seems like a good use for spice.maps/with, but some compile error occurs when importing that namespace
+   (let [{:transactional-opt-in/keys [id label copy value keypath]}
+         options]
+     (c/build opt-in {:id          id
+                      :label       label
+                      :copy        copy
+                      :value       value
+                      :keypath     keypath
+                      :terms-nav   terms-nav
+                      :privacy-nav privacy-nav}))
+   ;; TODO(jeff): seems like a good use for spice.maps/with, but some compile error occurs when importing that namespace
+   (let [{:marketing-opt-in/keys [id label copy value keypath]}
+         options]
+     (when id
+       (c/build opt-in {:id          id
+                        :label       label
+                        :copy        copy
+                        :value       value
+                        :keypath     keypath
+                        :terms-nav   terms-nav
+                        :privacy-nav privacy-nav})))])
 
-;; TODO(jeff): seems like a good use for spice.maps/with, but some compile error occurs when importing that namespace
-(defn ^:private marketing-opt-in
-  [{:marketing-opt-in/keys [id label copy value keypath terms-nav privacy-nav]}]
-  (opt-in {:id          id
-           :label       label
-           :copy        copy
-           :value       value
-           :keypath     keypath
-           :terms-nav   terms-nav
-           :privacy-nav privacy-nav}))
 
 (defn ^:private continue-to-payment
   [{:continue-to-pay-cta/keys [spinning? label data-test id]}]
@@ -147,7 +172,6 @@
                                             {:become-guest? become-guest?})
       :data-test "address-form"}
      (shipping-address data)
-     (transactional-opt-in data)
-     (marketing-opt-in data)
      (billing-address data)
+     (c/build opt-in-section data)
      (continue-to-payment data)]]])

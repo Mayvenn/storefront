@@ -179,9 +179,9 @@
         :continue-to-pay-cta/data-test "address-form-submit"
         :continue-to-pay-cta/id        "address-form-submit"
         :become-guest?                 true}
-       (checkout-address/phone-transactional-opt-in-query phone-transactional-opt-in-value)
-       (when show-phone-marketing-opt-in?
-         (checkout-address/phone-marketing-opt-in-query phone-marketing-opt-in-value)))
+       (checkout-address/opt-in-query show-phone-marketing-opt-in?
+                                      phone-transactional-opt-in-value
+                                      phone-marketing-opt-in-value))
 
     (not bill-to-shipping-address?)
     (merge

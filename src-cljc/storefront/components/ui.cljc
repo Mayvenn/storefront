@@ -501,7 +501,7 @@
                 (assoc :key key)
                 data-test-id
                 (assoc :data-test-id data-test-id))
-      [:div.left.mr3.pp2
+      [:div.left.mr2.pp2
        [:div.circle.bg-white.border.flex.items-center.justify-center
         ^:attrs (merge {:style {:height "22px" :width "22px"}}
                        (when disabled {:class "bg-cool-gray border-gray"}))

@@ -1,5 +1,6 @@
 (ns storefront.components.checkout-address
   (:require [checkout.ui.molecules :as molecules]
+            [checkout.ui.checkout-address-form :refer [opt-in-section]]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
@@ -264,47 +265,6 @@
                          :required    true
                          :value       (:state billing-address)})]])])
 
-(defcomponent ^:private opt-in
-  [{:keys [id label copy value keypath terms-nav privacy-nav]} _ _]
-  (when id
-    [:div.flex.flex-column.items-center.col-12
-     [:span.content-3 copy]
-     [:div.col-12.h6.my1.py1.mr1
-      (ui/check-box
-       {:type      "checkbox"
-        :label     [:span label
-                    " See "
-                    [:a.underline.p-color (apply utils/route-to terms-nav) "Terms"]
-                    " & "
-                    [:a.underline.p-color (apply utils/route-to privacy-nav) "Privacy Policy"]
-                    " for more details. "]
-        :id        id
-        :data-test id
-        :value     value
-        :keypath   keypath})]]))
-
-;; TODO(jeff): seems like a good use for spice.maps/with, but some compile error occurs when importing that namespace
-(defn ^:private transactional-opt-in
-  [{:transactional-opt-in/keys [id label copy value keypath terms-nav privacy-nav]}]
-  (component/build opt-in {:id          id
-                           :label       label
-                           :copy        copy
-                           :value       value
-                           :keypath     keypath
-                           :terms-nav   terms-nav
-                           :privacy-nav privacy-nav}))
-
-;; TODO(jeff): seems like a good use for spice.maps/with, but some compile error occurs when importing that namespace
-(defn ^:private marketing-opt-in
-  [{:marketing-opt-in/keys [id label copy value keypath terms-nav privacy-nav]}]
-  (component/build opt-in {:id          id
-                           :label       label
-                           :copy        copy
-                           :value       value
-                           :keypath     keypath
-                           :terms-nav   terms-nav
-                           :privacy-nav privacy-nav}))
-
 (defcomponent component
   [{:keys [saving? step-bar billing-address-data shipping-address-data free-install-added] :as data} _ _]
   [:div.container
@@ -320,32 +280,26 @@
 
       (component/build shipping-address-component shipping-address-data)
       [:div.bg-read
-       (transactional-opt-in data)
-       (marketing-opt-in data)
-       (component/build billing-address-component billing-address-data)]
+       (component/build billing-address-component billing-address-data)
+       (component/build opt-in-section data)]
 
       [:div.my2.col-12.col-8-on-tb-dt.mx-auto
        (ui/submit-button "Continue to Payment" {:spinning? saving?
                                                 :data-test "address-form-submit"})]]]]])
 
-(defn phone-transactional-opt-in-query [phone-transactional-opt-in-value]
-  {:transactional-opt-in/id          "phone-transactional-opt-in"
-   :transactional-opt-in/label       (str "I want to receive updates about my order via SMS. Message frequency varies. "
-                                      "SMS & data rates may apply.")
-   :transactional-opt-in/value       phone-transactional-opt-in-value
-   :transactional-opt-in/keypath     keypaths/checkout-phone-transactional-opt-in
-   :transactional-opt-in/terms-nav   [events/navigate-content-sms]
-   :transactional-opt-in/privacy-nav [events/navigate-content-privacy]})
-
-(defn phone-marketing-opt-in-query [phone-marketing-opt-in-value]
-  {:marketing-opt-in/id          "phone-marketing-opt-in"
-   :marketing-opt-in/label       (str "I agree to receive information and recurring automated marketing SMS "
-                                      "& phone calls from Mayvenn at the number provided above. "
-                                      "Consent is not a condition of any purchase. SMS & data rates may apply.")
-   :marketing-opt-in/value       phone-marketing-opt-in-value
-   :marketing-opt-in/keypath     keypaths/checkout-phone-marketing-opt-in
-   :marketing-opt-in/terms-nav   [events/navigate-content-sms]
-   :marketing-opt-in/privacy-nav [events/navigate-content-privacy]})
+(defn opt-in-query [prompt-marketing-opt-in? phone-transactional-opt-in-value phone-marketing-opt-in-value]
+  (merge
+   (when prompt-marketing-opt-in?
+     {:marketing-opt-in/id              "phone-marketing-opt-in"
+      :marketing-opt-in/label           "… text me recurring automated marketing promotions, surveys and personalized messages."
+      :marketing-opt-in/value           phone-marketing-opt-in-value
+      :marketing-opt-in/keypath         keypaths/checkout-phone-marketing-opt-in})
+   {:transactional-opt-in/id          "phone-transactional-opt-in"
+    :transactional-opt-in/label       "… text me updates about my order."
+    :transactional-opt-in/value       phone-transactional-opt-in-value
+    :transactional-opt-in/keypath     keypaths/checkout-phone-transactional-opt-in
+    :opt-in-legalese/terms-nav        [events/navigate-content-sms]
+    :opt-in-legalese/privacy-nav      [events/navigate-content-privacy]}))
 
 (defn ^:private free-install-added-query
   [free-install-added?]
@@ -376,8 +330,9 @@
                               :field-errors        field-errors
                               :focused             (get-in data keypaths/ui-focus)}
       :free-install-added (free-install-added-query free-install-added?)}
-     (phone-transactional-opt-in-query (get-in data keypaths/checkout-phone-transactional-opt-in))
-     (phone-marketing-opt-in-query (get-in data keypaths/checkout-phone-marketing-opt-in)))))
+     (opt-in-query true
+                   (get-in data keypaths/checkout-phone-transactional-opt-in)
+                   (get-in data keypaths/checkout-phone-marketing-opt-in)))))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data)))
