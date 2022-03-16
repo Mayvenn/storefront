@@ -49,8 +49,9 @@
     [:section.center.mt3.col-11.mx-auto
      [:h1.canela.title-2.mt4 "Sign Up"]
      [:p.col-10.col-9-on-tb-dt.proxima.content-3.my3.mx-auto
-      "Take advantage of express checkout, order tracking, and more when you sign up."]
-     (sign-up/form sign-up-data {:sign-up-text "Create my account"})]))
+      "Create a Mayvenn.com account below and enjoy faster checkout, order history, and more."]
+     (sign-up/form sign-up-data {:sign-up-text "Create my account"
+                                 :hide-email?  true})]))
 
 
 (defcomponent component

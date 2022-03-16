@@ -11,19 +11,19 @@
            email
            password
            show-password?]}
-   {:keys [sign-up-text]}]
+   {:keys [sign-up-text hide-email?]}]
   [:form.col-12.flex.flex-column.items-center
    {:on-submit (utils/send-event-callback events/control-sign-up-submit)}
-
-   (ui/text-field {:data-test  "user-email"
-                   :errors     (get field-errors ["email"])
-                   :keypath    keypaths/sign-up-email
-                   :focused    focused
-                   :label      "Email"
-                   :name       "email"
-                   :required   true
-                   :type       "email"
-                   :value      email})
+   ((if hide-email? ui/hidden-field ui/text-field)
+    {:data-test  "user-email"
+     :errors     (get field-errors ["email"])
+     :keypath    keypaths/sign-up-email
+     :focused    focused
+     :label      "Email"
+     :name       "email"
+     :required   true
+     :type       "email"
+     :value      email})
 
    (ui/text-field {:data-test "user-password"
                    :errors    (get field-errors ["password"])
@@ -52,7 +52,7 @@
     [:h1.h2.center.mt2.mb3 "Sign up for an account"]
 
     [:div
-     [:div.h5.center.light.my2 "Create a Mayvenn.com account below and enjoy faster checkout, order history, and more."]
+     [:div.h4.center.light.my2 "Create a Mayvenn.com account below and enjoy faster checkout, order history, and more."]
 
      (form data {:sign-up-text "Sign Up"})]
 
