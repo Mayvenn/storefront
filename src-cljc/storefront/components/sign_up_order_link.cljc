@@ -52,7 +52,8 @@
 (defcomponent component [data _ _]
   (ui/narrow-container
    [:div.p2
-    [:h1.h2.center.mt2.mb3 "Sign up for an account"]
+    [:div.h1.center.mt2.mb3 "Sign up for order details"]
+    [:div.h4.center.my4 "Please sign up with the email associated with your order to view your order details."]
 
      (form data {:sign-up-text "Sign Up"})]))
 
