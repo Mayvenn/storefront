@@ -45,7 +45,7 @@
 (defpath navigate-sign-in)
 (defpath navigate-sign-out)
 (defpath navigate-sign-up)
-(defpath navigate-sign-up-order-link)
+(defpath navigate-order-details-sign-up)
 (defpath navigate-forgot-password)
 (defpath navigate-reset-password)
 (defpath navigate-force-set-password)

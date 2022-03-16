@@ -491,7 +491,7 @@
     (cond
       (and guest-link?
            (not (::auth/at-all sign-in-data)))
-      (messages/handle-message e/navigate-sign-up-order-link)
+      (messages/handle-message e/navigate-order-details-sign-up)
 
       (not (hard-session/allow? sign-in-data event))
       (effects/redirect e/navigate-sign-in)

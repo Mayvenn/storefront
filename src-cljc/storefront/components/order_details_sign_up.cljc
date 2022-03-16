@@ -1,4 +1,4 @@
-(ns storefront.components.sign-up-order-link
+(ns storefront.components.order-details-sign-up
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.facebook :as facebook]
             [storefront.effects :as effects]
