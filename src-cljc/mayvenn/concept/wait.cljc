@@ -13,7 +13,7 @@
   (let [result (get-in state (conj k/models-wait id) ::no-such-wait)]
     (when (= ::no-such-wait result)
       #?(:cljs
-         (js/console.warn "Attempting to check status of a wait that does not exist.")))
+         (js/console.warn "Attempting to check status of a wait that does not exist. ID: " id)))
     result))
 
 (defmethod t/transition-state e/flow|wait|begun
