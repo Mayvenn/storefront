@@ -70,9 +70,9 @@
                                 :image-attrs   image-attrs
                                 :image-src     image-src
                                 :label         primary}]
-    [:div.bg-white.my2
+    [:div.bg-white.my2.focus-within
      {:key id}
-     [:div.hide-on-tb-dt
+     [:a.hide-on-tb-dt.inherit-color
       (merge {:data-test id}
              (apply utils/fake-href open-target))
       (picker-face face-data)]
@@ -176,7 +176,7 @@
       :data-test id)
      primary)))
 
-"picker dialog as in https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b15c08f4819592903cb1348"
+;; "picker dialog as in https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b15c08f4819592903cb1348"
 (component/defdynamic-component ^:private picker-dialog
   (did-mount [_]
     #?(:cljs (scroll/disable-body-scrolling)))

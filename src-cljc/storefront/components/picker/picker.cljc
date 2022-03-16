@@ -39,8 +39,11 @@
                        :width  "13px"}) )
 
 (defn color-mobile-dropdown [label-html selected-value-html selected-color-swatch]
-  [:div.flex.items-center.flex-auto
-   {:style {:height "100%"}}
+  [:a.flex.items-center.flex-auto.inherit-color
+   (merge
+    (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/color})
+    {:style {:height "100%"}
+     :data-test "picker-color"})
    label-html
    [:img.border.border-gray.ml4.mr1
     {:height "20px"
@@ -51,7 +54,7 @@
    [:div.self-center ^:inline picker-chevron]])
 
 (defn color-desktop-dropdown [label-html selected-value-html select-html selected-color-swatch]
-  [:div.flex.flex-column.relative.flex-auto {:style {:height "100%"}}
+  [:div.focus-within.flex.flex-column.relative.flex-auto {:style {:height "100%"}}
    [:div.flex.items-center
     {:style {:height "100%"}}
     label-html
@@ -65,8 +68,10 @@
    select-html])
 
 (defn base-material-mobile-dropdown [label-html selected-value-html]
-  [:div.flex.items-center.flex-auto
-   {:style {:height "100%"}}
+  [:a.flex.items-center.flex-auto
+   (merge (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/base-material})
+          {:style {:height "100%"}
+           :data-test "picker-material"})
    label-html
    [:div.ml2.flex-auto selected-value-html]
    [:div.self-center ^:inline picker-chevron]])
@@ -80,16 +85,16 @@
     [:div.self-center ^:inline picker-chevron]]
    select-html])
 
-(defn mobile-dropdown [label-html selected-value-html]
-  [:div.flex.items-center.flex-auto
-   {:style {:height "100%"}}
+(defn mobile-dropdown [attrs label-html selected-value-html]
+  [:a.flex.items-center.flex-auto.inherit-color
+   (merge attrs {:style {:height "100%"}})
    label-html
 
    [:div.ml2.flex-auto selected-value-html]
    [:div.self-center ^:inline picker-chevron]])
 
 (defn desktop-dropdown [label-html selected-value-html select-html]
-  [:div.flex.flex-column.relative.flex-auto {:style {:height "100%"}}
+  [:div.focus-within.flex.flex-column.relative.flex-auto {:style {:height "100%"}}
    [:div.flex.items-center
     {:style {:height "100%"}}
     label-html
@@ -100,7 +105,7 @@
 (defn field
   ([html-widget] (field nil html-widget))
   ([attrs html-widget]
-   [:div.focus-within.flex.items-center.inherit-color
+   [:div.flex.items-center.inherit-color
     (merge {:style {:height "75px"}}
            attrs)
     html-widget]))
@@ -164,28 +169,27 @@
   [{:keys [selected-length product-sold-out-style sku-quantity]}]
   [:div.flex.hide-on-tb-dt.items-center.border-top.border-cool-gray.border-width-2
    (field
-    (merge
-     {:class     " col-7 py2"
-      :data-test "picker-length"}
-     (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/length}))
+    {:class     "col-7 py2"
+     :data-test "picker-length"}
     (mobile-dropdown
+     (merge
+      (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/length})
+      {:data-test (str "picker-selected-length-" (:option/slug selected-length))})
      [:div.h8.proxima.title-3.shout "Length"]
      [:span.medium.canela.content-2
-      (merge
-       {:data-test (str "picker-selected-length-" (:option/slug selected-length))}
-       product-sold-out-style)
+      product-sold-out-style
       (:option/name selected-length)]))
    vertical-border
    [:div.flex-auto
     (field
-     (merge {:data-test "picker-quantity"}
-            (utils/fake-href events/control-product-detail-picker-open {:facet-slug :item/quantity}))
+     {:data-test "picker-quantity"}
      (mobile-dropdown
+      (merge
+       (utils/fake-href events/control-product-detail-picker-open {:facet-slug :item/quantity})
+       {:data-test (str "picker-selected-quantity-" sku-quantity)})
       [:div.h8.proxima.title-3.shout "Qty"]
       [:span.medium
-       (merge
-        {:data-test (str "picker-selected-quantity-" sku-quantity)}
-        product-sold-out-style)
+       product-sold-out-style
        sku-quantity]))]])
 
 (defn desktop-color-picker-row
@@ -214,8 +218,6 @@
   [{:keys [selected-color product-sold-out-style]}]
   [:div.hide-on-tb-dt.border-top.border-cool-gray.border-width-2
    (field
-    (merge {:data-test "picker-color"}
-           (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/color}))
     (color-mobile-dropdown
      [:span.proxima.title-3.shout
       "Color"]
@@ -250,8 +252,6 @@
   [{:keys [selected-base-material product-sold-out-style]}]
   [:div.hide-on-tb-dt.border-top.border-cool-gray.border-width-2
    (field
-    (merge {:data-test "picker-material"}
-           (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/base-material}))
     (base-material-mobile-dropdown
      [:span.proxima.title-3.shout
       "Base Material"]
@@ -284,7 +284,7 @@
 
 (defn quantity-option [{:keys [key quantity primary-label checked? close-event select-event]}]
   (let [label-style (cond
-                      checked?  "medium"
+                      checked? "medium"
                       :else     nil)]
     [:div {:key       key
            :data-test (str "picker-quantity-" quantity)}
