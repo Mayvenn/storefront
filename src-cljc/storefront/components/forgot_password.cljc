@@ -1,6 +1,5 @@
 (ns storefront.components.forgot-password
   (:require [storefront.component :as component :refer [defcomponent]]
-            [storefront.components.facebook :as facebook]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -24,16 +23,10 @@
                      :value     email})
 
      [:div.col-12.col-8-on-tb-dt.mx-auto
-      (ui/submit-button "Reset my password" {:data-test "forgot-password-submit"})]]
-
-    [:div.h5.center.light.my2 "OR"]
-
-    [:div.col-12.col-8-on-tb-dt.mx-auto
-     (facebook/sign-in-button facebook-loaded?)]]))
+      (ui/submit-button "Reset my password" {:data-test "forgot-password-submit"})]]]))
 
 (defn query [data]
-  {:facebook-loaded? (get-in data keypaths/loaded-facebook)
-   :email            (get-in data keypaths/forgot-password-email)
+  {:email            (get-in data keypaths/forgot-password-email)
    :field-errors     (get-in data keypaths/field-errors)
    :focused          (get-in data keypaths/ui-focus)})
 

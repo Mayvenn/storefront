@@ -1,6 +1,5 @@
 (ns storefront.components.sign-up
   (:require [storefront.component :as component :refer [defcomponent]]
-            [storefront.components.facebook :as facebook]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -53,10 +52,7 @@
     [:h1.h2.center.mt2.mb3 "Sign up for an account"]
 
     [:div
-     [:div.col-12.col-8-on-tb-dt.mx-auto
-      (facebook/sign-in-button facebook-loaded?)]
-
-     [:div.h5.center.light.my2 "OR"]
+     [:div.h5.center.light.my2 "Create a Mayvenn.com account below and enjoy faster checkout, order history, and more."]
 
      (form data {:sign-up-text "Sign Up"})]
 

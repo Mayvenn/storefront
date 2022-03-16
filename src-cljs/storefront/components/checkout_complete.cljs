@@ -42,34 +42,14 @@
            (merge (apply utils/route-to target)
                   {:data-test id}) label)]))]))
 
-(defcomponent facebook-cta [{:facebook-cta/keys [id]} _ _]
-  (when id
-    (ui/button-medium-facebook-blue
-     {:on-click  (utils/send-event-callback events/control-facebook-sign-in)
-      :data-test id}
-     [:div.mx-auto
-      (svg/button-facebook-f {:width "7px" :height "14px"})
-      [:span.ml2 "Facebook Sign Up"]])))
-
 (defcomponent guest-sign-up
   [{:guest-sign-up/keys [id sign-up-data]
     :as data} _ _]
   (when id
     [:section.center.mt3.col-11.mx-auto
-     [:h1.canela.title-2.mt4
-      "Sign Up"]
-     [:p.col-10.col-9-on-tb-dt.proxima.content-3.mt3.mx-auto
+     [:h1.canela.title-2.mt4 "Sign Up"]
+     [:p.col-10.col-9-on-tb-dt.proxima.content-3.my3.mx-auto
       "Take advantage of express checkout, order tracking, and more when you sign up."]
-
-     [:div.col-10.col-9-on-tb-dt.mx-auto.mt6
-      (component/build facebook-cta data nil)]
-
-     [:div.mx-auto.col-10.col-9-on-tb-dt.pb2.flex.items-center.justify-between.mt3
-      ^:inline (divider)
-      [:span.proxima.content-3.px2 "or"]
-      ^:inline (divider)]
-
-     [:p.canela.title-3.mt2.mb3 "Create an Account"]
      (sign-up/form sign-up-data {:sign-up-text "Create my account"})]))
 
 
@@ -116,9 +96,7 @@
        (let [sign-up-data (sign-up/query data)]
          (merge
           {:guest-sign-up/id           "guest-sign-up"
-           :guest-sign-up/sign-up-data (sign-up/query data)}
-          (when (:facebook-loaded? sign-up-data)
-            {:facebook-cta/id "facebook-button"}))))
+           :guest-sign-up/sign-up-data (sign-up/query data)})))
 
       shop?
       (merge (shop-query data)))))
