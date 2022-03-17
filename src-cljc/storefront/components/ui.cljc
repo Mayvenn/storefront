@@ -874,10 +874,11 @@
 (defn option
   [{:keys [key disabled? height on-click]} & content]
   (component/html
-   [:a.block.relative.my1.mx2
+   [:a.block.relative.my1.mx2.inherit-color
     ^:attrs (merge
              {:key      key
               :style    {:height height}
+              :href     "#"
               :on-click (if disabled? utils/noop-callback on-click)}
              (when disabled?
                {:data-test-disabled "disabled"}))
