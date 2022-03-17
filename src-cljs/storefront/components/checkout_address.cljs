@@ -295,7 +295,7 @@
       :marketing-opt-in/value           phone-marketing-opt-in-value
       :marketing-opt-in/keypath         keypaths/checkout-phone-marketing-opt-in})
    {:transactional-opt-in/id          "phone-transactional-opt-in"
-    :transactional-opt-in/label       "… text me updates about my order."
+    :transactional-opt-in/label       "… text me updates about my order (delivery and feedback)."
     :transactional-opt-in/value       phone-transactional-opt-in-value
     :transactional-opt-in/keypath     keypaths/checkout-phone-transactional-opt-in
     :opt-in-legalese/terms-nav        [events/navigate-content-sms]
