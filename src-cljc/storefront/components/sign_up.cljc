@@ -46,7 +46,7 @@
     (ui/submit-button sign-up-text
                       {:data-test "user-submit"})]])
 
-(defcomponent component [{:keys [facebook-loaded?] :as data} _ _]
+(defcomponent component [data _ _]
   (ui/narrow-container
    [:div.p2
     [:h1.h2.center.mt2.mb3 "Sign up for an account"]
@@ -63,7 +63,6 @@
   {:email            (get-in data keypaths/sign-up-email)
    :password         (get-in data keypaths/sign-up-password)
    :show-password?   (get-in data keypaths/account-show-password? true)
-   :facebook-loaded? (get-in data keypaths/loaded-facebook)
    :field-errors     (get-in data keypaths/field-errors)
    :focused          (get-in data keypaths/ui-focus)})
 
