@@ -79,6 +79,7 @@
     :as                                  data} _ {:keys [id]}]
   [:a.col-12.mb2.flex
    {:on-click  (apply utils/send-event-callback target)
+    :href      "#"
     :data-test (:facet-filtering.section.filter/id data)
     :key       id}
    [:div (ui/check-box {:value value :id (str "filter-" primary "-mobile")})]
@@ -122,6 +123,7 @@
   [{:facet-filtering.section.filter/keys [primary target value icon-url]} _ {:keys [id]}]
   [:a.col-12.mb2.flex
    {:on-click (apply utils/send-event-callback target)
+    :href     "#"
     :key      id}
    [:div (ui/check-box {:value     value
                         :id        (str "filter-" primary "-desktop")
