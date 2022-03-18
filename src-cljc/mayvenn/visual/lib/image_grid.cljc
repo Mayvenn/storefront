@@ -75,7 +75,7 @@
 (defn ^:private hair-image-molecule
   [{:keys [image-url length grid-area id]}]
   [:div.relative
-   {:id    id
+   {:id    (str image-url "-" id)
     :style {:grid-area grid-area}}
    (ui/img
     {:key   id
