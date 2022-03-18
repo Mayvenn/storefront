@@ -75,12 +75,13 @@
 (defn ^:private hair-image-molecule
   [{:keys [image-url length grid-area id]}]
   [:div.relative
-   {:id id
+   {:id    id
     :style {:grid-area grid-area}}
    (ui/img
-      {:key           id
-       :class "container-size"
-     :src           image-url})
+    {:key   id
+     :alt   "" ; decorative images get empty alt text
+     :class "container-size"
+     :src   image-url})
    [:div.absolute.top-0.right-0.content-4.m1 length]])
 
 (defcomponent square-hero-with-right-tiled-column-molecule
@@ -107,6 +108,7 @@
                :style    {:object-position "50% 25%"
                           :object-fit      "cover"}
                :src      (:hero/image-url data)
+               :alt      ""
                :max-size 749})
       [:div.absolute.bottom-0.m1.justify-start
        {:style {:height "22px"
@@ -118,8 +120,8 @@
           (map-indexed (fn [ix image]
                          (let [row-start (inc ix)
                                col-start col-count
-                               row-end (inc row-start)
-                               col-end (inc col-start)]
+                               row-end   (inc row-start)
+                               col-end   (inc col-start)]
                            (assoc image
                                   :grid-area (string/join " / " [row-start col-start row-end col-end])
                                   :id ix))))
