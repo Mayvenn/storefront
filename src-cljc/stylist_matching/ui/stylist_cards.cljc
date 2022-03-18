@@ -170,7 +170,7 @@
   [{:keys [stylist-card-header/id] :as data} _ {:keys [id]}]
   (let [data (assoc data :desktop? true)]
     [:div.flex.left-align.border.border-warm-gray.mx3.mt1.mb3.bg-white
-     {:id        id
+     {:id        (str "desktop-" id)
       :data-test id}
      [:div.flex-column
       {:style {:max-width 360}}
