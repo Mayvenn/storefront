@@ -288,26 +288,28 @@
   (merge
    (progress< quiz-progression)
    (header< undo-history (apply max quiz-progression))
-   {:stylist-search-inputs (stylist-results/stylist-search-inputs<-
-                            matching
-                            google-loaded?
-                            skus-db
-                            address-field-errors)
-    :spinning?             (or (empty? (:status matching))
-                               requesting?
-                               (and (not convert-loaded?)
-                                    stylist-results-test?
-                                    (or (not just-added-control?)
-                                        (not just-added-only?)
-                                        (not just-added-experience?))))
+   {:stylist-search-inputs         (stylist-results/stylist-search-inputs<-
+                                    false
+                                    matching
+                                    google-loaded?
+                                    skus-db
+                                    address-field-errors)
 
-    :scrim?          (contains? (:status matching)
-                                :results.presearch/name)
-    :results         (stylist-results/results< matching
-                                               just-added-only?
-                                               just-added-experience?
-                                               stylist-results-test?
-                                               top-stylist-v2?)}))
+    :spinning? (or (empty? (:status matching))
+                   requesting?
+                   (and (not convert-loaded?)
+                        stylist-results-test?
+                        (or (not just-added-control?)
+                            (not just-added-only?)
+                            (not just-added-experience?))))
+
+    :scrim?  (contains? (:status matching)
+                        :results.presearch/name)
+    :results (stylist-results/results< matching
+                                       just-added-only?
+                                       just-added-experience?
+                                       stylist-results-test?
+                                       top-stylist-v2?)}))
 
 ;; Template: 3/Find your stylist
 
