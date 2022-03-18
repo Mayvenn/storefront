@@ -454,7 +454,7 @@
      (ui/button-pill {:class      "p1 mr1"
                       :key        "filters-key"
                       :data-test  "button-show-stylist-search-filters"
-                      :aria-label "filter results"
+                      :aria-label (str "Stylist Filters Applied - " (count preferences))
                       :on-click   (utils/send-event-callback e/control-show-stylist-search-filters)}
                      [:div.flex.items-center.px1
                       (svg/funnel {:class  "mrp3"
