@@ -79,7 +79,7 @@
    [:div.bg-white
     [:div.flex.p3
      [:div.mr4
-      (ui/img {:src ucare-id :width "80px"})]
+      (ui/img {:src ucare-id :width "80px" :alt ""})]
      [:div.flex.flex-column
       [:div primary]
       [:div secondary]
