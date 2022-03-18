@@ -112,10 +112,10 @@
 ;; --------------------- Address Input behavior
 
 (defmethod effects/perform-effects e/stylist-results-address-component-mounted
-  [_ _ {:keys [component]} _ _]
+  [_ _ {:keys [component id]} _ _]
   #?(:cljs
      (google-maps/attach "geocode"
-                         "stylist-search-input"
+                         id
                          k/google-location
                          #(publish e/stylist-results-address-selected)
                          ;; HACK: in order to bypass google maps' default enter behavior
@@ -421,7 +421,10 @@
                {:enter-key-pressed? false})
   (did-mount
    [this]
-   (publish e/stylist-results-address-component-mounted {:component this}))
+   (let [{:stylist-results.address-input/keys [id]}
+         (component/get-props this)]
+     (publish e/stylist-results-address-component-mounted {:component this
+                                                           :id id})))
   (render
    [this]
    (let [{:stylist-results.address-input/keys [id value errors keypath]}
