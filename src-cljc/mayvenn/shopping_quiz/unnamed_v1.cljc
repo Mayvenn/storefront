@@ -83,7 +83,7 @@
      [:div.flex.flex-column
       [:div primary]
       [:div secondary]
-      [:div.content-1 tertiary [:span.ml2.s-color.content-2 tertiary-note]]
+      [:div.content-1 tertiary [:span.ml2.p-color.content-2 tertiary-note]]
       (ui/button-small-primary (merge {:data-test id
                                        :class     "mt2 col-8"}
                                       (apply utils/fake-href cta-target)) cta-label)]]]])

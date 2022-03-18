@@ -32,7 +32,7 @@
       [:div primary]
       [:div secondary]
       [:div.content-1 tertiary]
-      [:div.s-color.content-2 tertiary-note]
+      [:div.p-color.content-2 tertiary-note]
       [:div
        {:style {:width "175px"}}
        (actions/small-primary (with :action data))]]]]])
