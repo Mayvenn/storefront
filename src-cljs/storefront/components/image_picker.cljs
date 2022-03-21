@@ -24,7 +24,7 @@
                 {:return-link/id            (:back-copy back-link)
                  :return-link/copy          (:back-copy back-link)
                  :return-link/event-message [(:navigation-event back-link)]})]
-              [:div.bg-warm-gray.border-top.border-gray
+              [:div.bg-white.border-top.border-gray
                [:div.mt8.mb1.title-1.canela.center "Select a source"]
                [:div.mb3.col-8.mx-auto.content-2.proxima.center "Click an icon below to select your photo source"]
                [:div {:id selector} ui/nbsp]]]))))

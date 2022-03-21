@@ -18,15 +18,15 @@
 
 .uploadcare--menu_opened
 .uploadcare--menu__toggle {
-    background-color: var(--warm-gray);
+    background-color: var(--white);
 }
 
 .uploadcare--menu__items {
-    background-color: var(--warm-gray);
+    background-color: var(--white);
 }
 
 .uploadcare--menu__item {
-    background-color: var(--warm-gray);
+    background-color: var(--white);
 }
 
 @media (--on-mobile) {
@@ -66,7 +66,6 @@
     -webkit-tap-highlight-color: rgba(0,0,0,0.5);
     user-select: none;
     border-radius: 0px;
-    border-image-source: svg-load(var(--oct-button-medium-svg), fill=var(--p-color), stroke=none);
 	  border-image-slice: 15 fill;
     border-image-width: 15px;
     padding-top: 15px;
@@ -77,8 +76,7 @@
     padding-right: 30px;
 
     border-image-repeat: stretch;
-
-    background: none;
+    background-color: var(--p-color) !important;
     background-image: none;
 }
 
@@ -96,7 +94,7 @@
 }
 
 .source-facebook, .source-instagram {
-    background-color: var(--warm-gray);
+    background-color: var(--white);
 }
 
 .uploadcare--draganddrop__title {
@@ -107,6 +105,10 @@
     text-align: center;
 }
 
+.uploadcare--text_size_small {
+    color: #000 !important;
+}
+
 .uploadcare--menu_item_tab_preview.uploadcare--tab_current .uploadcare--widget-circle--canvas {
     color: var(--primary);
 }
@@ -114,7 +116,7 @@
 .uploadcare--draganddrop .uploadcare--draganddrop__supported {
     /* Dotted border around drag-and-drop area. Though it's supported, we don't want to encourage drag-and-drop. Besides, the dotted border is ugly. */
     border: none;
-    background-color: var(--warm-gray);
+    background-color: var(--white);
 }
 
 .uploadcare--clouds-tip {
