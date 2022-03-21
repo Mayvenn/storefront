@@ -61,7 +61,7 @@
         [:div.content-2.strike {:data-test (str "primary-struck-" id)}
          primary-struck])]
      (drawer-contents-condition-progress-molecule data)]
-    [:div.content-3.dark-gray {:data-test (str "secondary-" id)}
+    [:div.content-3.dark-dark-gray {:data-test (str "secondary-" id)}
      secondary]]))
 
 (defcomponent drawer-contents-condition-organism

@@ -44,7 +44,7 @@
       (if id
         [:div.px4.mtj1
          {:data-test id}
-         [:div.canela.title-3.center "FREE Mayvenn Service Tracker"]
+         [:div.canela.title-3.center [:span.shout "Free "] "Mayvenn Service Tracker"]
          (c/elements drawer-contents/drawer-contents-condition-organism data
                      :promotion-helper.ui.drawer-contents/conditions)]
         [:div])))))
