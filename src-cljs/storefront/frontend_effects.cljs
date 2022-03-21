@@ -781,8 +781,12 @@
   (messages/handle-message events/flash-later-show-success
                            {:message "Logged in successfully"}))
 
-(defmethod effects/perform-effects events/api-success-auth-sign-up [dispatch event args _ app-state]
-  (messages/handle-message events/flash-later-show-success {:message "Welcome! You have signed up successfully."}))
+(defmethod effects/perform-effects events/api-success-auth-sign-up
+  [dispatch event args _ app-state]
+  (messages/handle-message events/flash-later-show-success
+                           {:message (str "Please click the link we've emailed to "
+                                          (-> args :user :email)
+                                          " to verify your email address.")}))
 
 (defmethod effects/perform-effects events/api-success-auth-reset-password [dispatch event args _ app-state]
   (messages/handle-message events/flash-later-show-success {:message "Your password was changed successfully. You are now signed in."}))

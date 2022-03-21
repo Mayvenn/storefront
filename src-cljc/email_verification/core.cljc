@@ -18,7 +18,7 @@
 
 (component/defcomponent template
   [{:email-verification/keys      [id email-address]
-    :email-verification--cta/keys [spinning? disabled?]
+    :email-verification--cta/keys [spinning? disabled? copy]
     :as                           data} _ _]
   (when id
     [:div {:key id}
@@ -27,7 +27,7 @@
      [:div.mb4 (ui/button-medium-primary (merge (utils/fake-href events/biz|email-verification|initiated {})
                                                 {:spinning? spinning?
                                                  :data-test "email-verification-initiate"
-                                                 :disabled? disabled?}) "Send verification email")]
+                                                 :disabled? disabled?}) copy)]
      (let [{:email-verification--status-message/keys [fail-copy success-copy]} data]
        [(when fail-copy (flash/error-box {} fail-copy))
         (when success-copy (flash/success-box {} success-copy))])
@@ -45,8 +45,10 @@
    "verif-success" "Your email was successfully verified."})
 
 (defn query [app-state]
-  (let [user           (get-in app-state keypaths/user)
-        status-message (-> app-state (get-in keypaths/navigation-message) second :query-params :stsm)]
+  (let [user                  (get-in app-state keypaths/user)
+        status-message        (-> app-state (get-in keypaths/navigation-message) second :query-params :stsm)
+        ;; If the flash is showing, it's because we got here from sign-in and the user is already prompted to check their email.
+        flash-prompt-showing? (seq (get-in app-state keypaths/flash-now-success-message))]
     (when (and (:id user)
                (not (:verified-at user)))
       {:email-verification/id                           "email-verification"
@@ -55,6 +57,9 @@
                                                           (get status-messages status-message))
        :email-verification--status-message/success-copy (when (and status-message (string/ends-with? status-message "success"))
                                                           (get status-messages status-message))
+       :email-verification--cta/copy                    (str (if flash-prompt-showing?
+                                                               "Resend"
+                                                               "Send") " Verification Email")
        :email-verification--cta/spinning?               (utils/requesting? app-state request-keys/email-verification-initiate)
        :email-verification--cta/disabled?               (= "init-success" status-message)})))
 
