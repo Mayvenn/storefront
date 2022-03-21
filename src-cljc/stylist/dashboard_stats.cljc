@@ -41,8 +41,10 @@
    instapay-balance-too-low?
    {:as earnings :keys [cash-balance lifetime-earnings monthly-earnings]}
    {:as services :keys [lifetime-services monthly-services]}]
-  (let [toggle-expand (utils/fake-href events/control-v2-stylist-dashboard-section-toggle
-                                       {:keypath keypaths/v2-ui-dashboard-cash-balance-section-expanded?})]
+  (let [toggle-expand (merge
+                       {:aria-label (str "Expand cash balance details for balance of " (mf/as-money cash-balance))}
+                       (utils/fake-href events/control-v2-stylist-dashboard-section-toggle
+                                              {:keypath keypaths/v2-ui-dashboard-cash-balance-section-expanded?}))]
     [:div.h6.px2.pt2.pb3
      [:div.letter-spacing-1.shout.mbnp5.flex.items-center
       [:a.inherit-color toggle-expand
@@ -68,7 +70,7 @@
            :disabled?      disabled?
            :spinning?      cashing-out?}
           [:div.flex.items-center.justify-center.regular.h5
-           (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "3d651ddf-b37d-441b-a162-b83728f2a2eb")
+           (ui/ucare-img {:width "28" :class "mr2 flex items-center" :alt ""} "3d651ddf-b37d-441b-a162-b83728f2a2eb")
            "Cash Out"])
          [:div.h8
           "Cash out now with " [:a.p-color (utils/fake-href events/navigate-stylist-account-payout) "Mayvenn InstaPay"]])]]
@@ -91,8 +93,10 @@
           (earnings-count "Lifetime Services" lifetime-services)]])]]))
 
 (defn ^:private store-credit-balance-card [total-available-store-credit lifetime-earned expanded?]
-  (let [toggle-expand (utils/fake-href events/control-v2-stylist-dashboard-section-toggle
-                                       {:keypath keypaths/v2-ui-dashboard-store-credit-section-expanded?})]
+  (let [toggle-expand (merge
+                       {:aria-label (str "Expand credit balance details for balance of " (mf/as-money total-available-store-credit))}
+                       (utils/fake-href events/control-v2-stylist-dashboard-section-toggle
+                                        {:keypath keypaths/v2-ui-dashboard-store-credit-section-expanded?}))]
     [:div.h6.bg-cool-gray.px2.pt2.pb3
      [:div.letter-spacing-1.shout.mbnp5.flex.items-center
       [:a.inherit-color toggle-expand
@@ -109,7 +113,7 @@
       [:div.col-5
        (ui/button-medium-primary (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
                                  [:div.flex.items-center.justify-center.regular.h5
-                                  (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "81775e67-9a83-46b7-b2ae-1cdb5a737876")
+                                  (ui/ucare-img {:width "28" :class "mr2 flex items-center" :alt ""} "81775e67-9a83-46b7-b2ae-1cdb5a737876")
                                   "Shop"])]]
      [:div.flex.pt2 {:class (when-not expanded? "hide")}
       [:div.col-7
