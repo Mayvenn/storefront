@@ -99,7 +99,7 @@
      [:div.h6.my1.py1.mr1.flex
       [:div.mr3
        (ui/radio-section
-        {:id           id
+        {:id           (str id "-yes")
          :name         id
          :data-test-id id
          :checked      (boolean value)
@@ -109,7 +109,7 @@
         "Yes")]
       [:div.mr3
        (ui/radio-section
-        {:id           id
+        {:id           (str id "-no")
          :name         id
          :data-test-id id
          :checked      (not (boolean value))
