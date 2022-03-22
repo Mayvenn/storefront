@@ -76,7 +76,7 @@
   [{:keys [image-url length grid-area id main-image-id]}]
   [:div.relative
    {:id    (str main-image-id "-" image-url "-" id)
-    :style {:grid-area grid/spy-area}}
+    :style {:grid-area grid-area}}
    (ui/img
     {:key   id
      :alt   "" ; decorative images get empty alt text
