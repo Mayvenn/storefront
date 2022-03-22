@@ -15,31 +15,33 @@
   [:form.col-12.flex.flex-column.items-center
    {:on-submit (utils/send-event-callback events/control-sign-up-submit)}
    ((if hide-email? ui/hidden-field ui/text-field)
-    {:data-test  "user-email"
-     :errors     (get field-errors ["email"])
-     :keypath    keypaths/sign-up-email
-     :focused    focused
-     :label      "Email"
-     :name       "email"
-     :required   true
-     :type       "email"
-     :value      email})
+    {:data-test    "user-email"
+     :autocomplete "username"
+     :errors       (get field-errors ["email"])
+     :keypath      keypaths/sign-up-email
+     :focused      focused
+     :label        "Email"
+     :name         "email"
+     :required     true
+     :type         "email"
+     :value        email})
 
-   (ui/text-field {:data-test "user-password"
-                   :errors    (get field-errors ["password"])
-                   :keypath   keypaths/sign-up-password
-                   :focused   focused
-                   :label     "Password"
-                   :name      "password"
-                   :required  true
-                   :type      "password"
-                   :value     password
-                   :hint      (when show-password? password)})
+   (ui/text-field {:data-test    "user-password"
+                   :autocomplete "current-password"
+                   :errors       (get field-errors ["password"])
+                   :keypath      keypaths/sign-up-password
+                   :focused      focused
+                   :label        "Password"
+                   :name         "password"
+                   :required     true
+                   :type         "password"
+                   :value        password
+                   :hint         (when show-password? password)})
 
    [:div.mt2.mb2.col-12.left
-    (ui/check-box {:label   "Show password"
-                   :keypath keypaths/account-show-password?
-                   :value   show-password?
+    (ui/check-box {:label         "Show password"
+                   :keypath       keypaths/account-show-password?
+                   :value         show-password?
                    :label-classes "proxima content-1"})]
 
    [:div.col-12.col-8-on-tb-dt
