@@ -89,9 +89,9 @@
        :data-test data-test
        :class     (:background styles)
        :style     (when non-clickable? {:pointer-events "none"})})
-     (ui/ucare-img {:width 20} icon)
+     (ui/ucare-img {:width 20 :alt ""} icon)
      [:div.flex-auto.mx3
-      [:h5.medium {:class (:title-color styles)} title]
+      [:div.title-3.canela {:class (:title-color styles)} title]
       [:div.flex.h8
        [:div.mr4 #?(:cljs (f/long-date date))]
        subtitle]]
@@ -112,8 +112,8 @@
 
 (def empty-payments
   [:div.my6.center
-   [:h4.gray.bold.p1 "No payments yet"]
-   [:h6.col-5.mx-auto.line-height-2 "Payments and bonus activity will appear here"]])
+   [:div.canela.title-3.dark-dark-gray.bold.p1 "No payments yet"]
+   [:div.content-3.col-5.mx-auto.line-height-2 "Payments and bonus activity will appear here"]])
 
 (defn payments-table [pending-voucher-row balance-transfers pagination fetching?]
   (let [payments (map balance-transfer->payment balance-transfers)
