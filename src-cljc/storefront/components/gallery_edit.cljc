@@ -9,7 +9,7 @@
             [storefront.platform.component-utils :as utils]))
 
 (def add-photo-square
-  [:a.block.col-4.pp1.bg-pale-purple.white
+  [:a.block.col-4.pp1.bg-deep-purple.white
    (merge (utils/route-to events/navigate-gallery-image-picker)
           {:data-test "add-to-gallery-link"})
    (ui/aspect-ratio 1 1
@@ -40,6 +40,7 @@
                                                                         :object-fit      "cover"}
                                         :preserve-url-transformations? true
                                         :src                           resizable-url
+                                        :alt                           "Your gallery image"
                                         :max-size                      749})
                                pending-approval))]))])
 
