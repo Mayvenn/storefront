@@ -73,10 +73,10 @@
                             :images)])]))
 
 (defn ^:private hair-image-molecule
-  [{:keys [image-url length grid-area id]}]
+  [{:keys [image-url length grid-area id main-image-id]}]
   [:div.relative
-   {:id    (str image-url "-" id)
-    :style {:grid-area grid-area}}
+   {:id    (str main-image-id "-" image-url "-" id)
+    :style {:grid-area grid/spy-area}}
    (ui/img
     {:key   id
      :alt   "" ; decorative images get empty alt text
@@ -124,5 +124,6 @@
                                col-end   (inc col-start)]
                            (assoc image
                                   :grid-area (string/join " / " [row-start col-start row-end col-end])
+                                  :main-image-id (:hero/image-url data)
                                   :id ix))))
           (map hair-image-molecule))]))
