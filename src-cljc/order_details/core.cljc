@@ -72,7 +72,10 @@
         [:div
          {:data-test (str "order-" order-number)}
          "Order Number: " order-number]
-        (when placed-at [:div "Order Placed: " placed-at])
+        (when placed-at
+          [:div
+           {:data-test "placed-at"}
+           "Order Placed: " placed-at])
         (titled-content "Shipping" (address-copy shipping-address))
         (for [{:keys [status delivery-message url tracking-number cart-items] :as fulfillment} fulfillments]
           [:div.my4.bg-white
