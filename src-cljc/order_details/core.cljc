@@ -125,7 +125,7 @@
                  (c/build cart-item-v202004/organism {:cart-item returned-item}
                           (c/component-id (str index "-returned-item-" react-key)))])])])
         (titled-content "Payment" [:div {:data-test "payment-total"}
-                                   [:div "Total: "(mf/as-money total)]])]))
+                                   "Total: "(mf/as-money total)])]))
 
 (defn no-orders-details-template
   [{:no-orders-details/keys [id]}]
