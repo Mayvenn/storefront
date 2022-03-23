@@ -565,7 +565,7 @@
                                       selected-hair-length])))
           (-> picker-data
               (update :primary str " - Unavailable")
-              (assoc :primary-attrs {:class "red"}  ;; TODO: too low contrast
+              (assoc :primary-attrs {:class "dark-dark-gray"}
                      :image-attrs {:style {:opacity "50%"}}))
 
           (not (boolean
@@ -575,7 +575,7 @@
                                       :inventory/in-stock?])))
           (-> picker-data
               (update :primary str " - Sold Out")
-              (assoc :primary-attrs {:class "red"}  ;; TODO: too low contrast
+              (assoc :primary-attrs {:class "dark-dark-gray"}
                      :image-attrs {:style {:opacity "50%"}}))
 
           :else picker-data)))

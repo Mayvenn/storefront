@@ -411,13 +411,13 @@
                                                                 (and selection unavailable?)
                                                                 (-> picker-base
                                                                     (update :primary str " - Unavailable")
-                                                                    (assoc :primary-attrs {:class "red"}  ;; TODO: too low contrast
+                                                                    (assoc :primary-attrs {:class "dark-dark-gray"}
                                                                            :image-attrs {:style {:opacity "50%"}}))
 
                                                                 (and selection sold-out?)
                                                                 (-> picker-base
                                                                     (update :primary str " - Sold Out")
-                                                                    (assoc :primary-attrs {:class "red"}  ;; TODO: too low contrast
+                                                                    (assoc :primary-attrs {:class "dark-dark-gray"}
                                                                            :image-attrs {:style {:opacity "50%"}}))
 
                                                                 :else picker-base)))
