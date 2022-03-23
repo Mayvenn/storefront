@@ -13,6 +13,7 @@ pom.xml.asc
 .cljs_rhino_repl
 .DS_Store
 .clj-kondo/.cache
+*~undo-tree~
 
 *.log
 resources/public/js/out
