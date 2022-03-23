@@ -77,7 +77,7 @@
 (c/defcomponent section-filter-molecule
   [{:facet-filtering.section.filter/keys [primary target value icon-url]
     :as                                  data} _ {:keys [id]}]
-  [:a.col-12.mb2.flex
+  [:a.col-12.mb2.flex.inherit-color
    {:on-click  (apply utils/send-event-callback target)
     :href      "#"
     :data-test (:facet-filtering.section.filter/id data)
@@ -121,7 +121,7 @@
 
 (c/defcomponent desktop-section-filter-molecule
   [{:facet-filtering.section.filter/keys [primary target value icon-url]} _ {:keys [id]}]
-  [:a.col-12.mb2.flex
+  [:a.col-12.mb2.flex.inherit-color
    {:on-click (apply utils/send-event-callback target)
     :href     "#"
     :key      id}
