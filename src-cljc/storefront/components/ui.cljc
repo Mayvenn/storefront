@@ -346,7 +346,7 @@
                              (dissoc :label :keypath :value :errors)
                              (update :wrapper-class str " x-group-item")
                              (assoc-in [:wrapper-style :border-right] "none")))
-       (button-square args content)]
+       (button-square (merge {:type "submit"} args) content)]
       (field-error-message error "input-group")])))
 
 (defn input-with-charms
