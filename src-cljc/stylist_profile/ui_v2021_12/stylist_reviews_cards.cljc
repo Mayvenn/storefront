@@ -86,7 +86,7 @@
           [:div.mx3.my4.mx-auto.col-2.flex.justify-center
            (ui/button-small-underline-primary
             (merge (apply utils/route-to cta-target)
-                   {:data-test cta-id})
+                   {:data-test (str cta-id "-dt")})
             cta-label)])]]
       [:div.border-top.border-cool-gray.pt6.mt2.mb8.hide-on-tb-dt
        [:div
