@@ -35,7 +35,6 @@
             [stylist-profile.ui-v2021-10.sticky-select-stylist :as sticky-select-stylist-v2]
             [stylist-profile.ui-v2021-10.gallery :as gallery]
             [stylist-profile.ui-v2021-10.services-offered :as services-offered]
-            [stylist-profile.ui-v2021-10.stylist-reviews-cards :as stylist-reviews-cards-v2]
             [stylist-profile.ui-v2021-12.stylist-reviews-cards :as stylist-reviews-cards-v3]
             [stylist-profile.ui.footer :as footer]))
 
@@ -136,10 +135,7 @@
       (c/build maps/component-v3 google-maps)
       (c/build maps/component-v2 google-maps))
     clear-float-atom
-    [:div.hide-on-mb
-     (c/build stylist-reviews-cards-v3/organism stylist-reviews)]
-    [:div.hide-on-tb-dt
-     (c/build stylist-reviews-cards-v2/organism stylist-reviews)]
+    (c/build stylist-reviews-cards-v3/organism stylist-reviews)
     ui-dividers/green]
    (c/build footer/organism footer)
    (c/build sticky-select-stylist-v2/organism sticky-select-stylist)])
