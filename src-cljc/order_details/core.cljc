@@ -69,7 +69,9 @@
        [:div.my6.max-960.mx-auto
         {:key id}
         [:h1.title-1.canela.mb2 "Order Details"]
-        [:div "Order Number: " order-number]
+        [:div
+         {:data-test (str "order-" order-number)}
+         "Order Number: " order-number]
         (when placed-at [:div "Order Placed: " placed-at])
         (titled-content "Shipping" (address-copy shipping-address))
         (for [{:keys [status delivery-message url tracking-number cart-items] :as fulfillment} fulfillments]
