@@ -128,7 +128,7 @@
         (if (seq? content)
           (into [:span] content)
           content)]
-       [:a (merge (if disabled? {:aria-disabled true :role "link"} {:href "#"}) attrs) ; a11y: when disabled, links have aria-disabled true
+       [:a (merge (if disabled? {:aria-disabled true :role "link" :disabled true} {:href "#"}) attrs) ; a11y: when disabled, links have aria-disabled true
         ;; FIXME: the button helper functions with & content force us to do this for consistency
         (if (seq? content)
           (into [:span] content)

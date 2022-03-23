@@ -174,7 +174,7 @@
                                       :on-click  (apply utils/send-event-callback target)}
                                      content)
             (when disabled-reason
-              [:div.red.content-3.mt2
+              [:div.content-2.mt2
                {:data-test "checkout-disabled-reason"}
                disabled-reason])]))
 
