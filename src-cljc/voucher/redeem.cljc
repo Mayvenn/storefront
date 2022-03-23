@@ -32,8 +32,8 @@
 (defn ^:private inactive-qr-section []
   (component/html
    [:div.col-10.mx-auto.p4
-    [:h3.mt8.title-2.canela "Scan the QR Code to Redeem a Voucher"]
-    [:h6.content-3.proxima.mt1 "Your camera will be used as the scanner."]
+    [:h1.mt8.title-2.canela "Scan the QR Code to Redeem a Voucher"]
+    [:div.content-3.proxima.mt1 "Your camera will be used as the scanner."]
     [:div.flex.justify-center.mt10 (svg/qr-code-icon {:width "50px"
                                                      :height "50px"})]
     [:div.mx-auto.col-12.col-3-on-tb-dt.mt6.mb2
@@ -59,7 +59,7 @@
      ^:inline (divider)]]
    [:div.p4.col-4-on-tb-dt.center.mx-auto
     [:div.hide-on-mb-tb.py4]
-    [:h3.mb2 "Enter the 8-digit code"]
+    [:div.canela.title-3.mb2 "Enter the 8-digit code"]
     [:form
      {:on-submit (utils/send-event-callback events/control-voucher-redeem {:code code})}
      [:div.col-10.mx-auto
@@ -78,11 +78,12 @@
                                      :height "15px"})
         :args    {:class     ""
                   :style     {:width "47px"}
+                  :type      "submit"
                   :on-click  (utils/send-event-callback events/control-voucher-redeem {:code code})
                   :spinning? redeeming-voucher?
                   :data-test "voucher-redeem"}})]]
 
-    [:h6.mt6.proxima.content-4.dark-gray.left-align
+    [:div.mt6.proxima.content-4.dark-dark-gray.left-align
      "Vouchers are sent to Mayvenn customers via text and/or email when they buy 3 or more bundles and use a special promo code."]]])
 
 (def ^:private missing-service-menu
