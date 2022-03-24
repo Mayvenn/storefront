@@ -95,7 +95,8 @@
             (adjustments/display-adjustment-name adjustment)
             (when coupon-code
               [:a.ml1.h6.gray.flex.items-center
-               (merge {:data-test "cart-remove-promo"}
+               (merge {:data-test "cart-remove-promo"
+                       :aria-label "remove promo from cart"}
                       (utils/fake-href events/control-checkout-remove-promotion
                                        {:code coupon-code}))
                (svg/close-x {:class "stroke-white fill-gray"})])]
