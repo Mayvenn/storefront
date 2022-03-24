@@ -184,7 +184,7 @@
     #?(:cljs (scroll/enable-body-scrolling)))
   (render [this]
           (let [{:keys [title items wrap? close-target]
-                 :as data}
+                 :as   data}
                 (component/get-props this)
                 {:keys [cell-component-fn]} (component/get-opts this)]
             (component/html
@@ -200,8 +200,9 @@
                [:div.flex.justify-end
                 {:style {:min-width "96px"}}
                 [:a.flex.items-center.justify-center.medium
-                 (merge {:style     {:height "55px" :width "55px"}
-                         :data-test "picker-close"}
+                 (merge {:style      {:height "55px" :width "55px"}
+                         :data-test  "picker-close"
+                         :aria-label (str "Close " title " Picker")}
                         (apply utils/fake-href close-target))
                  (svg/x-sharp {:height "12px" :width "12px"})]]]
               [:div.py3.px1 ;; body
