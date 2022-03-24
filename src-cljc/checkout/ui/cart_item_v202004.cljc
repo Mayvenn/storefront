@@ -192,7 +192,7 @@
     [:a.block.gray.medium.p1.flex.justify-center.items-center
      (merge {:data-test  id
              :on-click   (apply utils/send-event-callback target)
-             :aria-label "remove stylist"})
+             :aria-label "remove stylist from order"})
      (svg/x-sharp {:width        "14px"
                    :height       "14px"
                    :stroke-width "0.4"
