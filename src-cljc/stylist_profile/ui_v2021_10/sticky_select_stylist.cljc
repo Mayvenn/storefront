@@ -25,15 +25,15 @@
              #?(:cljs
                 (let [observer (-> this c/get-state :observer)
                       ;; HACK: Do two observers need to exist??
-                      page_cta_1 (.querySelector js/document "#nonsticky-select-stylist-1")
-                      page_cta_2 (.querySelector js/document "#nonsticky-select-stylist-2")]
+                      page_cta_1 (.querySelector js/document "#stylist-profile-cta")
+                      page_cta_2 (.querySelector js/document "#stylist-profile-cta-desktop")]
                   (.observe observer page_cta_1)
                   (.observe observer page_cta_2))))
   #?(:cljs
      (will-unmount [this]
                    (let [observer (-> this c/get-state :observer)
-                         page_cta_1 (.querySelector js/document "#nonsticky-select-stylist-1")
-                         page_cta_2 (.querySelector js/document "#nonsticky-select-stylist-2")]
+                         page_cta_1 (.querySelector js/document "#stylist-profile-cta")
+                         page_cta_2 (.querySelector js/document "#stylist-profile-cta-desktop")]
                      (when (and observer (or page_cta_1 page_cta_2))
                        (.unobserve observer page_cta_1)
                        (.unobserve observer page_cta_2)

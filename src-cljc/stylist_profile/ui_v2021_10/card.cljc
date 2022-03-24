@@ -75,11 +75,13 @@
 (defn ^:private cta
   [{:keys [id primary target]}]
   [:div
-   [:div.mx-auto.col-3.mx3.mt3.mb7#nonsticky-select-stylist-1.hide-on-mb
-    {:data-test id}
+   [:div.mx-auto.col-3.mx3.mt3.mb7.hide-on-mb
+    {:data-test (str id "-desktop")
+     :id        (str id "-desktop")}
     (ui/button-medium-primary (apply utils/fake-href target) primary)]
-   [:div.mx3.mt3.mb7#nonsticky-select-stylist-2.hide-on-tb-dt
-    {:data-test id}
+   [:div.mx3.mt3.mb7.hide-on-tb-dt
+    {:data-test id
+     :id        id}
     (ui/button-medium-primary (apply utils/fake-href target) primary)]])
 
 (defn top-stylist-information-points-grid-molecule
