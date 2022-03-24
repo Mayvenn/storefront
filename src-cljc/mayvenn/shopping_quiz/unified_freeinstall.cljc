@@ -492,45 +492,47 @@
                                                     :on/success
                                                     [e/navigate-shopping-quiz-unified-freeinstall-summary]}]})
 
-    :suggestions-v2 (for [looks-suggestion looks-suggestions
-                          :let             [{:product/keys [sku-ids]
-                                             :hair/keys    [origin texture]
-                                             img-id        :img.v2/id} looks-suggestion
-                                            skus                  (mapv skus-db sku-ids)
-                                            service-sku           (get skus-db (:service/sku-id looks-suggestion))
-                                            discounted-price (->> skus
-                                                                  (remove #(= "service" (first (:catalog/department %))))
-                                                                  (map :sku/price)
-                                                                  (apply +))
-                                            retail-price (+ discounted-price
-                                                            (:sku/price service-sku))
-                                            review-sku (first skus)
-                                            review-product  (products/find-product-by-sku-id products-db (:catalog/sku-id review-sku))]]
-                      (merge
-                       (within :image-grid {:gap-px 3})
-                       (within :image-grid.hero {:image-url img-id
-                                                 :badge-url nil})
-                       (within :image-grid.hair-column {:images (map (fn [sku]
-                                                                       (let [image (catalog-images/image images-db "cart" sku)]
-                                                                         {:image-url (:ucare/id image)
-                                                                          :length    (str (first (:hair/length sku)) "\"")}))
-                                                                     skus)})
-                       (within :title {:primary (str origin " " texture " hair + free install service")})
-                       (within :price {:discounted-price (mf/as-money discounted-price)
-                                       :retail-price     (mf/as-money retail-price)})
-                       (within :line-item-summary {:primary (str (count sku-ids) " products in this look")})
-                       (within :action {:id     shopping-quiz-id
-                                        :label  "Choose this look"
-                                        :target [e/biz|looks-suggestions|selected
-                                                 {:id            shopping-quiz-id
-                                                  :selected-look looks-suggestion
-                                                  :on/success
-                                                  [e/navigate-shopping-quiz-unified-freeinstall-summary]}]})
-                       #?(:cljs
-                          (within :review (let [review-data (reviews/yotpo-data-attributes review-product skus-db)]
-                                            {:yotpo-reviews-summary/product-title (some-> review-data :data-name)
-                                             :yotpo-reviews-summary/product-id    (some-> review-data :data-product-id)
-                                             :yotpo-reviews-summary/data-url      (some-> review-data :data-url)})))))}))
+    :suggestions-v2 (map-indexed
+                     (fn [idx looks-suggestion]
+                       (let [{:product/keys [sku-ids]
+                              :hair/keys    [origin texture]
+                              img-id        :img.v2/id} looks-suggestion
+                             skus                  (mapv skus-db sku-ids)
+                             service-sku           (get skus-db (:service/sku-id looks-suggestion))
+                             discounted-price (->> skus
+                                                   (remove #(= "service" (first (:catalog/department %))))
+                                                   (map :sku/price)
+                                                   (apply +))
+                             retail-price (+ discounted-price
+                                             (:sku/price service-sku))]
+                         (merge
+                          (within :image-grid {:gap-px 3})
+                          (within :image-grid.hero {:image-url img-id
+                                                    :badge-url nil})
+                          (within :image-grid.hair-column {:images (map (fn [sku]
+                                                                          (let [image (catalog-images/image images-db "cart" sku)]
+                                                                            {:image-url (:ucare/id image)
+                                                                             :length    (str (first (:hair/length sku)) "\"")}))
+                                                                        skus)})
+                          (within :title {:primary (str origin " " texture " hair + free install service")})
+                          (within :price {:discounted-price (mf/as-money discounted-price)
+                                          :retail-price     (mf/as-money retail-price)})
+                          (within :line-item-summary {:primary (str (count sku-ids) " products in this look")})
+                          (within :action {:id     (str "result-option-" idx)
+                                           :label  "Choose this look"
+                                           :target [e/biz|looks-suggestions|selected
+                                                    {:id            shopping-quiz-id
+                                                     :selected-look looks-suggestion
+                                                     :on/success
+                                                     [e/navigate-shopping-quiz-unified-freeinstall-summary]}]})
+                          #?(:cljs
+                             (within :review (let [review-sku     (first skus)
+                                                   review-product (products/find-product-by-sku-id products-db (:catalog/sku-id review-sku))
+                                                   review-data    (reviews/yotpo-data-attributes review-product skus-db)]
+                                               {:yotpo-reviews-summary/product-title (some-> review-data :data-name)
+                                                :yotpo-reviews-summary/product-id    (some-> review-data :data-product-id)
+                                                :yotpo-reviews-summary/data-url      (some-> review-data :data-url)}))))))
+                     looks-suggestions)}))
 
 ;; Template: 1/Questions
 

@@ -28,7 +28,7 @@
      [:div.mr4
       (ui/img {:src ucare-id :width "80px" :alt ""})]
      [:div.flex.flex-column
-      {:style {:mind-width "175px"}}
+      {:style {:min-width "175px"}}
       [:div primary]
       [:div secondary]
       [:div.content-1 tertiary]
