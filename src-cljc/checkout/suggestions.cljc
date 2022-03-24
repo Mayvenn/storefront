@@ -134,7 +134,8 @@
        {:key       (str "thumbnail-" sku-id)
         :data-test (str "line-item-img-" sku-id)}
        (ui/ucare-img {:width image-width
-                      :class "border border-cool-gray"} ucare-id)]]))
+                      :class "border border-cool-gray"
+                      :alt   ""} ucare-id)]]))
 
 (defn ->consolidated-suggested-bundles
   "TODO Heat needs to be updated to use new dt"
