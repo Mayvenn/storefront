@@ -99,9 +99,9 @@
      [:div.h6.my1.py1.mr1.flex
       [:div.mr3
        (ui/radio-section
-        {:id           (str id "-yes")
+        {:id           (str id "-yes-radio")
          :name         id
-         :data-test-id id
+         :data-test    (str id "-yes")
          :checked      (boolean value)
          :on-change    (fn [e] (handle-message e/control-change-state
                                                {:keypath keypath
@@ -109,9 +109,9 @@
         "Yes")]
       [:div.mr3
        (ui/radio-section
-        {:id           (str id "-no")
+        {:id           (str id "-no-radio")
          :name         id
-         :data-test-id id
+         :data-test    (str id "-no")
          :checked      (not (boolean value))
          :on-change    (fn [e] (handle-message e/control-change-state
                                                {:keypath keypath
