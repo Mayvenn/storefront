@@ -132,6 +132,7 @@
              :height   "100px"
              :width    "110"
              :src      image-src
+             :alt      (str label "hair color swatch")
              :max-size 110})]
    [:div.py1.h6.ml3.self-start
     (when checked? {:class "bold"}) label]])
@@ -155,7 +156,8 @@
                    [:div.circle  ; checkmark circle
                     (ui/ucare-img {:width           "30"
                                    :retina-quality  "better"
-                                   :default-quality "better"}
+                                   :default-quality "better"
+                                   :alt             "Checked selection"}
                                   "9e2a48b3-9811-46d2-840b-31c9f85670ad")]]])])])
 
 (defn ^:private slide-animate [enabled? content]
