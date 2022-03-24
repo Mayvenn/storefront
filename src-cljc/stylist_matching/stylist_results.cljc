@@ -447,13 +447,13 @@
                       :type          "text"}})))))
 
 (defn stylist-results-service-filters-molecule
-  [{:stylist-results.service-filters/keys [preferences]}]
+  [{:stylist-results.service-filters/keys [id preferences]}]
   (component/html
    [:div.flex.flex-wrap
     [:div
      (ui/button-pill {:class      "p1 mr1"
                       :key        "filters-key"
-                      :data-test  "button-show-stylist-search-filters"
+                      :data-test  id
                       :aria-label (str "Stylist Filters Applied - " (count preferences))
                       :on-click   (utils/send-event-callback e/control-show-stylist-search-filters)}
                      [:div.flex.items-center.px1
@@ -613,7 +613,8 @@
      {:stylist-results.name-input/id      (make-id "stylist-search-name-input")
       :stylist-results.name-input/value   presearch-input
       :stylist-results.name-input/keypath k/presearch-name
-      :stylist-results.name-input/errors  []}
+      :stylist-results.name-input/errors  []
+      :stylist-results.service-filters/id "button-show-stylist-search-filters"}
      (when google-loaded?
        {:stylist-results.address-input/id      (make-id "stylist-search-input")
         :stylist-results.address-input/value   address-input
@@ -711,7 +712,7 @@
    [:div.relative.col-6.px3
     (stylist-results-name-presearch-results-molecule data)
     (stylist-results-empty-name-presearch-results-molecule data)
-    (stylist-results-service-filters-molecule data)]])
+    (stylist-results-service-filters-molecule (update data :stylist-results.service-filters/id (partial str "desktop-")))]])
 
 (defcomponent search-inputs-organism
   [data _ _]
