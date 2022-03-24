@@ -116,6 +116,7 @@
       base
       {:description            description
        :cta/button-type        :p-color-button
+       :cta/aria-label         "Buy this look"
        :cta/navigation-message (-> base :cta/navigation-message)}))))
 
 (defn album-kw->homepage-social-cards

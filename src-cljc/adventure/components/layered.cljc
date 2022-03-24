@@ -143,7 +143,8 @@
     (for [{:keys [alt image-url] :as image-data} (:images data)]
       [:a.col-6.col-3-on-tb-dt.p1
        (merge (apply utils/route-to (:cta/navigation-message image-data))
-              {:key (str image-url)})
+              {:key        (str image-url)
+               :aria-label (:cta/aria-label image-data)})
        (ui/screen-aware
         ugc-image
         {:image-url image-url
