@@ -56,6 +56,8 @@
       (when text
         [:div.mb7.mtn2 text])])))
 
+(def ^:private dns-url "https://mayvenn.wirewheel.io/privacy-page/5f22b71054ee7d0012420211")
+
 (defcomponent component [{:keys [minimal?] :as data} owner opts]
   (if minimal?
     [:div.content-3.proxima.center
@@ -73,16 +75,16 @@
     [:div.flex-column.content-3.white.bg-black.pt6
      [:div.p3.container
       [:div.flex.justify-between
-       [:div.col-6
+       [:div.col-12.col-6-on-dt
         ^:inline (svg/mayvenn-text-logo {:height "29px"
                                         :width  "115px"
                                          :class  "fill-white"})
         [:div.flex.mt4.mb3.col-12-on-dt
-       [:div.col-4 {:key "full"}
+       [:div.col-3 {:key "full"}
         ^:inline (footer-link (merge {:aria-label "About Mayvenn"} (utils/route-to events/navigate-content-about-us)) "About")
         ^:inline (footer-link {:href "https://jobs.mayvenn.com"} "Careers")
         ^:inline (footer-link (utils/route-to events/navigate-content-help) "Contact")]
-       [:div.col-4 {:key "standard"}
+       [:div.col-3 {:key "standard"}
         ^:inline (footer-link (assoc (utils/route-to events/navigate-content-privacy)
                                      :data-test "content-privacy") "Privacy")
         ^:inline (footer-link (assoc (utils/route-to events/navigate-content-tos)
@@ -90,10 +92,11 @@
 
         ;; use traditional page load so anchors work
         ^:inline (footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#our-ads")} "Our Ads")]
-       [:div.col-4
+       [:div.col-6
         ;; use traditional page load so anchors work
         ^:inline (footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#ca-privacy-rights")}
-                              "CA Privacy Rights")]]]
+                              "CA Privacy Rights")
+        ^:inline (footer-link {:href dns-url} "Do Not Sell My Personal Information")]]]
        [:div.px3.col-6-on-tb-dt.hide-on-mb
         (signup-molecule data "on-tb-dt")]]]
      [:div.px3.hide-on-tb-dt
