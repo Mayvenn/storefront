@@ -77,7 +77,7 @@
       [:div.flex.justify-between
        [:div.col-12.col-6-on-dt
         ^:inline (svg/mayvenn-text-logo {:height "29px"
-                                        :width  "115px"
+                                         :width  "115px"
                                          :class  "fill-white"})
         [:div.flex.mt4.mb3.col-12-on-dt
        [:div.col-3 {:key "full"}
