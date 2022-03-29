@@ -118,6 +118,7 @@
               ["/m/" :reset-token]                                (edn->bidi events/navigate-reset-password)
               ["/c/" :shared-cart-id]                             (edn->bidi events/navigate-shared-cart)
               "/account/edit"                                     (edn->bidi events/navigate-account-manage)
+              "/account/email-verification"                       (edn->bidi events/navigate-account-email-verification)
               ["/your-looks/order/" :order-number]                (edn->bidi events/navigate-yourlooks-order-details)
               ["/your-looks/"]                                    (edn->bidi events/navigate-yourlooks-order-details)
               "/cart"                                             (edn->bidi events/navigate-cart)

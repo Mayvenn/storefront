@@ -117,6 +117,7 @@
 
 (defpath navigate-account)
 (defpath navigate-account-manage)
+(defpath navigate-account-email-verification)
 
 (defpath navigate-yourlooks-order-details)
 

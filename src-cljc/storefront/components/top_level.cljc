@@ -25,7 +25,7 @@
             [appointment-booking.core :as booking.core]
             mayvenn.shopping-quiz.unnamed-v1
             mayvenn.shopping-quiz.unified-freeinstall
-
+            [email-verification.core :as email-verification]
             [storefront.components.ui :as ui]
             [storefront.components.content :as content]
             [storefront.components.flash :as flash]
@@ -79,64 +79,65 @@
         events/navigate-checkout-confirmation                      #(ui/lazy-load-component :checkout 'checkout.confirmation/built-component events/navigate-checkout-confirmation)
         events/navigate-order-complete                             #(ui/lazy-load-component :checkout 'storefront.components.checkout-complete/built-component events/navigate-order-complete)])
 
-   events/navigate-home                    #(ui/lazy-load-component :homepage
+   events/navigate-home                       #(ui/lazy-load-component :homepage
                                                                     'homepage.core/page
                                                                     events/navigate-home)
-   events/navigate-about-mayvenn-install   (constantly mayvenn-install.about/built-component)
-   events/navigate-shop-by-look            #(ui/lazy-load-component :catalog 'catalog.looks/built-component
+   events/navigate-about-mayvenn-install      (constantly mayvenn-install.about/built-component)
+   events/navigate-shop-by-look               #(ui/lazy-load-component :catalog 'catalog.looks/built-component
                                                                     events/navigate-shop-by-look)
-   events/navigate-shop-by-look-details    #(ui/lazy-load-component :catalog 'catalog.look-details-v202105/built-component
+   events/navigate-shop-by-look-details       #(ui/lazy-load-component :catalog 'catalog.look-details-v202105/built-component
                                                                     events/navigate-shop-by-look-details)
-   events/navigate-category                #(ui/lazy-load-component :catalog  'catalog.category/built-component events/navigate-category)
-   events/navigate-product-details         #(ui/lazy-load-component :catalog  'catalog.product-details/built-component events/navigate-product-details)
-   events/navigate-shared-cart             #(ui/lazy-load-component :catalog  'storefront.components.shared-cart/built-component events/navigate-shared-cart)
-   events/navigate-checkout-processing     #(ui/lazy-load-component :checkout 'checkout.processing/built-component events/navigate-checkout-processing)
-   events/navigate-cart                    #(ui/lazy-load-component :catalog  'checkout.classic-cart/built-component events/navigate-cart)
-   events/navigate-checkout-add            #(ui/lazy-load-component :checkout 'checkout.add/built-component events/navigate-checkout-add)
-   events/navigate-checkout-free-install   #(ui/lazy-load-component :checkout 'checkout.free-install/built-component events/navigate-checkout-free-install)
-   events/navigate-voucher-redeem          #(ui/lazy-load-component :redeem   'voucher.redeem/built-component events/navigate-voucher-redeem)
-   events/navigate-voucher-redeemed        #(ui/lazy-load-component :redeem   'voucher.redeemed/built-component events/navigate-voucher-redeemed)
-   events/navigate-content-guarantee       (constantly content/built-component)
-   events/navigate-content-help            (constantly content/built-component)
-   events/navigate-content-privacy         (constantly content/built-component)
-   events/navigate-content-privacyv2       (constantly content/built-component)
-   events/navigate-content-privacyv1       (constantly content/built-component)
-   events/navigate-content-tos             (constantly content/built-component)
-   events/navigate-content-sms             (constantly content/built-component)
-   events/navigate-content-about-us        (constantly content/built-component)
-   events/navigate-content-ugc-usage-terms (constantly content/built-component)
-   events/navigate-content-voucher-terms   (constantly content/built-component)
-   events/navigate-content-program-terms   (constantly content/built-component)
-   events/navigate-content-our-hair        (constantly content/built-component)
-   events/navigate-sign-in                 (constantly sign-in/built-component)
-   events/navigate-sign-up                 (constantly sign-up/built-component)
-   events/navigate-order-details-sign-up   (constantly order-details-sign-up/built-component)
-   events/navigate-forgot-password         (constantly forgot-password/built-component)
-   events/navigate-store-gallery           (constantly gallery/built-component)
-   events/navigate-gallery-edit            #(ui/lazy-load-component :dashboard 'storefront.components.gallery-v202105/built-component events/navigate-gallery-edit)
-   events/navigate-gallery-appointments    #(ui/lazy-load-component :dashboard 'storefront.components.gallery-v202105/built-component events/navigate-gallery-appointments)
-   events/navigate-gallery-photo           (constantly gallery-photo/built-component)
-   events/navigate-yourlooks-order-details #(ui/lazy-load-component :dashboard 'order-details.core/page events/navigate-yourlooks-order-details)
+   events/navigate-category                   #(ui/lazy-load-component :catalog  'catalog.category/built-component events/navigate-category)
+   events/navigate-product-details            #(ui/lazy-load-component :catalog  'catalog.product-details/built-component events/navigate-product-details)
+   events/navigate-shared-cart                #(ui/lazy-load-component :catalog  'storefront.components.shared-cart/built-component events/navigate-shared-cart)
+   events/navigate-checkout-processing        #(ui/lazy-load-component :checkout 'checkout.processing/built-component events/navigate-checkout-processing)
+   events/navigate-cart                       #(ui/lazy-load-component :catalog  'checkout.classic-cart/built-component events/navigate-cart)
+   events/navigate-checkout-add               #(ui/lazy-load-component :checkout 'checkout.add/built-component events/navigate-checkout-add)
+   events/navigate-checkout-free-install      #(ui/lazy-load-component :checkout 'checkout.free-install/built-component events/navigate-checkout-free-install)
+   events/navigate-voucher-redeem             #(ui/lazy-load-component :redeem   'voucher.redeem/built-component events/navigate-voucher-redeem)
+   events/navigate-voucher-redeemed           #(ui/lazy-load-component :redeem   'voucher.redeemed/built-component events/navigate-voucher-redeemed)
+   events/navigate-content-guarantee          (constantly content/built-component)
+   events/navigate-content-help               (constantly content/built-component)
+   events/navigate-content-privacy            (constantly content/built-component)
+   events/navigate-content-privacyv2          (constantly content/built-component)
+   events/navigate-content-privacyv1          (constantly content/built-component)
+   events/navigate-content-tos                (constantly content/built-component)
+   events/navigate-content-sms                (constantly content/built-component)
+   events/navigate-content-about-us           (constantly content/built-component)
+   events/navigate-content-ugc-usage-terms    (constantly content/built-component)
+   events/navigate-content-voucher-terms      (constantly content/built-component)
+   events/navigate-content-program-terms      (constantly content/built-component)
+   events/navigate-content-our-hair           (constantly content/built-component)
+   events/navigate-sign-in                    (constantly sign-in/built-component)
+   events/navigate-sign-up                    (constantly sign-up/built-component)
+   events/navigate-account-email-verification (constantly email-verification/built-component)
+   events/navigate-order-details-sign-up      (constantly order-details-sign-up/built-component)
+   events/navigate-forgot-password            (constantly forgot-password/built-component)
+   events/navigate-store-gallery              (constantly gallery/built-component)
+   events/navigate-gallery-edit               #(ui/lazy-load-component :dashboard 'storefront.components.gallery-v202105/built-component events/navigate-gallery-edit)
+   events/navigate-gallery-appointments       #(ui/lazy-load-component :dashboard 'storefront.components.gallery-v202105/built-component events/navigate-gallery-appointments)
+   events/navigate-gallery-photo              (constantly gallery-photo/built-component)
+   events/navigate-yourlooks-order-details    #(ui/lazy-load-component :dashboard 'order-details.core/page events/navigate-yourlooks-order-details)
 
    events/navigate-info-certified-stylists (constantly adventure.informational.certified-stylists/built-component)
    events/navigate-info-about-our-hair     (constantly adventure.informational.about-our-hair/built-component)
 
-   events/navigate-adventure-find-your-stylist #(ui/lazy-load-component :catalog
+   events/navigate-adventure-find-your-stylist       #(ui/lazy-load-component :catalog
                                                                         'stylist-matching.find-your-stylist/page
                                                                         events/navigate-adventure-find-your-stylist)
-   events/navigate-adventure-stylist-results   #(ui/lazy-load-component :catalog
+   events/navigate-adventure-stylist-results         #(ui/lazy-load-component :catalog
                                                                         'stylist-matching.stylist-results/page
                                                                         events/navigate-adventure-stylist-results)
-   events/navigate-adventure-match-success     #(ui/lazy-load-component :catalog
+   events/navigate-adventure-match-success           #(ui/lazy-load-component :catalog
                                                                         'stylist-matching.match-success/page
                                                                         events/navigate-adventure-match-success)
-   events/navigate-adventure-stylist-profile   #(ui/lazy-load-component :catalog
+   events/navigate-adventure-stylist-profile         #(ui/lazy-load-component :catalog
                                                                         'stylist-profile.core/page
                                                                         events/navigate-adventure-stylist-profile)
-   events/navigate-adventure-stylist-profile-reviews   #(ui/lazy-load-component :catalog
+   events/navigate-adventure-stylist-profile-reviews #(ui/lazy-load-component :catalog
                                                                                 'stylist-profile.stylist-reviews-v2021-10/page
                                                                                 events/navigate-adventure-stylist-profile-reviews)
-   events/navigate-adventure-stylist-gallery   #(ui/lazy-load-component :catalog
+   events/navigate-adventure-stylist-gallery         #(ui/lazy-load-component :catalog
                                                                         'adventure.stylist-matching.stylist-gallery/built-component
                                                                         events/navigate-adventure-stylist-gallery)
 

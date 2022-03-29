@@ -24,7 +24,6 @@
             [storefront.platform.component-utils :as utils]
             [mayvenn.concept.follow :as follow]
             [mayvenn.concept.hard-session :as hard-session]
-            [email-verification.core :as email-verification]
             [storefront.accessors.auth :as auth]
             [storefront.effects :as storefront.effects]
             [storefront.request-keys :as request-keys]
@@ -218,8 +217,7 @@
     (ui/link :link/email :a {} "help@mayvenn.com")
     " or "
     (ui/link :link/phone :a.inherit-color {} config/support-phone-number)
-    "."]
-   (c/build email-verification/template data)])
+    "."]])
 
 (defn generate-tracking-url [carrier tracking-number]
   (when tracking-number
@@ -442,10 +440,6 @@
                                   (mapcat :line-items)
                                   (filter #(= "spree" (:source %))))]
         (cond-> {}
-          (and (not guest-link?)
-               (not user-verified?))
-          (merge {:your-looks-title/id   "verify-email-title"
-                  :your-looks-title/copy "Verify Your Email"})
 
           (and user-verified?
                (not order))
@@ -479,20 +473,20 @@
                  (stylist-details-query app-state)
                  (vouchers-details-query app-state)
 
-                 {:verif-status-message/copy (when (= "verif-success" verif-status-message) "Your email was successfully verified.")}))))
+                 {:verif-status-message/copy (when (= "verif-success" verif-status-message)
+                                               "Your email was successfully verified.")}))))
 
 (defn ^:export page
   [app-state]
-  (c/build template (merge (query app-state)
-                           (email-verification/query app-state))))
+  (c/build template (query app-state)))
 
 (defmethod effects/perform-effects e/navigate-yourlooks-order-details
   ;; evt = email validation token
   [_ event {:keys [order-number query-params] :as args} _ app-state]
-  (let [user-verified-at (get-in app-state k/user-verified-at)
-        evt              (:evt query-params)
-        guest-link?       (:g query-params)
-        sign-in-data     (hard-session/signed-in app-state)]
+  (let [user-verified-at         (get-in app-state k/user-verified-at)
+        email-verification-token (:evt query-params)
+        guest-link?              (:g query-params)
+        sign-in-data             (hard-session/signed-in app-state)]
     (cond
       (and guest-link?
            (not (::auth/at-all sign-in-data)))
@@ -502,9 +496,9 @@
       (effects/redirect e/navigate-sign-in)
 
       (and (not user-verified-at)
-           evt
+           email-verification-token
            (not (utils/requesting? app-state request-keys/email-verification-verify)))
-      (messages/handle-message e/biz|email-verification|verified {:evt evt})
+      (messages/handle-message e/biz|email-verification|verified {:evt email-verification-token})
 
       user-verified-at
       #?(:cljs (if order-number
@@ -520,6 +514,12 @@
                                  #(messages/handle-message e/flow--orderdetails--resulted {:orders (:results %)})
                                  #(messages/handle-message e/flash-show-failure
                                                            {:message (str "Unable to retrieve order. Please contact support.")})))
+         :clj nil)
+
+      (and (not guest-link?)
+           (not user-verified-at))
+      ;; TODO: consider whether this should be redirect?
+      #?(:cljs (history/enqueue-navigate e/navigate-account-email-verification)
          :clj nil))))
 
 (defmethod transitions/transition-state e/flow--orderdetails--resulted

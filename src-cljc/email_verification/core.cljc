@@ -6,7 +6,7 @@
             [storefront.components.ui :as ui]
             [storefront.config :as config]
             [storefront.platform.component-utils :as utils]
-            [storefront.events :as events]
+            [storefront.events :as e]
             [storefront.effects :as effects]
             [storefront.utils.query :as query]
             [storefront.keypaths :as keypaths]
@@ -24,7 +24,7 @@
     [:div {:key id}
      [:div.center.mb4.content-3 "To continue, please verify your email address"]
      [:div.center.bold.mb6 {:data-test "email-address"} email-address]
-     [:div.mb4 (ui/button-medium-primary (merge (utils/fake-href events/biz|email-verification|initiated {})
+     [:div.mb4 (ui/button-medium-primary (merge (utils/fake-href e/biz|email-verification|initiated {})
                                                 {:spinning? spinning?
                                                  :data-test "email-verification-initiate"
                                                  :disabled? disabled?}) copy)]
@@ -45,10 +45,10 @@
    "verif-success" "Your email was successfully verified."})
 
 (defn query [app-state]
-  (let [user                  (get-in app-state keypaths/user)
-        status-message        (-> app-state (get-in keypaths/navigation-message) second :query-params :stsm)
+  (let [user                  (get-in app-state k/user)
+        status-message        (-> app-state (get-in k/navigation-message) second :query-params :stsm)
         ;; If the flash is showing, it's because we got here from sign-in and the user is already prompted to check their email.
-        flash-prompt-showing? (seq (get-in app-state keypaths/flash-now-success-message))]
+        flash-prompt-showing? (seq (get-in app-state k/flash-now-success-message))]
     (when (and (:id user)
                (not (:verified-at user)))
       {:email-verification/id                           "email-verification"
@@ -63,15 +63,27 @@
        :email-verification--cta/spinning?               (utils/requesting? app-state request-keys/email-verification-initiate)
        :email-verification--cta/disabled?               (= "init-success" status-message)})))
 
-(defmethod effects/perform-effects events/biz|email-verification|initiated
-  [_ _ _ _ app-state]
-  #?(:cljs (api/email-verification-initiate (get-in app-state keypaths/user-token)
-                                            (get-in app-state keypaths/user-id))))
+(defn built-component
+  [app-state opts]
+  [:div.p4
+   (component/build template (query app-state) opts)])
 
-(defmethod effects/perform-effects events/biz|email-verification|verified
+(defmethod effects/perform-effects e/navigate-account-email-verification
+  [_ _ _ _ app-state]
+  ;; Note: navigate-account redirects to sign-in if user is signed out
+  #?(:cljs
+     (when (get-in app-state k/user-verified-at)
+       (history/enqueue-redirect e/navigate-home))))
+
+(defmethod effects/perform-effects e/biz|email-verification|initiated
+  [_ _ _ _ app-state]
+  #?(:cljs (api/email-verification-initiate (get-in app-state k/user-token)
+                                            (get-in app-state k/user-id))))
+
+(defmethod effects/perform-effects e/biz|email-verification|verified
   [_ _ {:keys [evt]} _ app-state]
-  #?(:cljs (api/email-verification-verify (get-in app-state keypaths/user-token)
-                                          (get-in app-state keypaths/user-id)
+  #?(:cljs (api/email-verification-verify (get-in app-state k/user-token)
+                                          (get-in app-state k/user-id)
                                           evt)))
 
 (defn set-messaging
@@ -81,27 +93,27 @@
                                                            (dissoc :evt)
                                                            (assoc :stsm status-message-id)))])
 
-(defmethod effects/perform-effects events/api-failure-email-verification-initiate
+(defmethod effects/perform-effects e/api-failure-email-verification-initiate
   [_ _ _ _ app-state]
-  #?(:cljs (apply history/enqueue-redirect (set-messaging (get-in app-state keypaths/navigation-message) "init-fail"))))
+  #?(:cljs (apply history/enqueue-redirect (set-messaging (get-in app-state k/navigation-message) "init-fail"))))
 
-(defmethod effects/perform-effects events/api-success-email-verification-initiate
+(defmethod effects/perform-effects e/api-success-email-verification-initiate
   [_ _ _ _ app-state]
-  #?(:cljs (apply history/enqueue-redirect (set-messaging (get-in app-state keypaths/navigation-message) "init-success"))))
+  #?(:cljs (apply history/enqueue-redirect (set-messaging (get-in app-state k/navigation-message) "init-success"))))
 
-(defmethod effects/perform-effects events/api-failure-email-verification-verify
+(defmethod effects/perform-effects e/api-failure-email-verification-verify
   [_ _ _ _ app-state]
-  #?(:cljs (apply history/enqueue-redirect (set-messaging (get-in app-state keypaths/navigation-message) "verif-fail"))))
+  #?(:cljs (apply history/enqueue-redirect (set-messaging (get-in app-state k/navigation-message) "verif-fail"))))
 
-(defmethod transitions/transition-state events/api-success-email-verification-verify
+(defmethod transitions/transition-state e/api-success-email-verification-verify
   [_ _ {:keys [user] :as args} app-state]
   (-> app-state
-      #_(assoc-in keypaths/flash-now-success-message "Email address verified!")
-      #_(assoc-in keypaths/flash-now-failure-message nil)
-      (assoc-in keypaths/user-verified-at (:verified-at user))))
+      #_(assoc-in k/flash-now-success-message "Email address verified!")
+      #_(assoc-in k/flash-now-failure-message nil)
+      (assoc-in k/user-verified-at (:verified-at user))))
 
-(defmethod effects/perform-effects events/api-success-email-verification-verify
+(defmethod effects/perform-effects e/api-success-email-verification-verify
   [_ _ user _ app-state]
-  #?(:cljs (cookie-jar/save-user (get-in app-state keypaths/cookie)
-                                 (get-in app-state keypaths/user)))
-  #?(:cljs (apply history/enqueue-redirect (set-messaging (get-in app-state keypaths/navigation-message) "verif-success"))))
+  #?(:cljs (cookie-jar/save-user (get-in app-state k/cookie)
+                                 (get-in app-state k/user)))
+  #?(:cljs (apply history/enqueue-redirect (set-messaging (get-in app-state k/navigation-message) "verif-success"))))
