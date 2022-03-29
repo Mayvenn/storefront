@@ -9,7 +9,7 @@
             [storefront.events :as e]
             [storefront.effects :as effects]
             [storefront.utils.query :as query]
-            [storefront.keypaths :as keypaths]
+            [storefront.keypaths :as k]
             [storefront.transitions :as transitions]
             [storefront.component :as component]
             [storefront.request-keys :as request-keys]
