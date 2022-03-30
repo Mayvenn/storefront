@@ -241,6 +241,11 @@
         (assoc-in keypaths/checkout-phone-transactional-opt-in phone-transactional-opt-in)
         (assoc-in keypaths/checkout-phone-marketing-opt-in phone-marketing-opt-in))))
 
+(defmethod transition-state events/navigate-sign-in [_ event args app-state]
+  (if-let [signed-in-email (get-in app-state keypaths/user-email)]
+    (assoc-in app-state keypaths/sign-in-email signed-in-email)
+    app-state))
+
 (defmethod transition-state events/navigate-checkout-sign-in [_ event args app-state]
   (ensure-direct-load-of-checkout-auth-advances-to-checkout-flow app-state))
 
