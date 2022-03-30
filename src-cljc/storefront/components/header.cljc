@@ -130,9 +130,14 @@
                (c/html
                 [:div.bg-white.absolute.right-0.top-lit
                  [:div
-                  ^:inline (drop-down-row (utils/route-to events/navigate-account-manage) "Account")]
+                  ^:inline (drop-down-row (utils/route-to events/navigate-account-manage)
+                                          "Account")]
                  [:div.border-top.border-gray
-                  ^:inline (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
+                  ^:inline (drop-down-row (utils/route-to events/navigate-yourlooks-order-details)
+                                          "My Recent Order")]
+                 [:div.border-top.border-gray
+                  ^:inline (drop-down-row (utils/fake-href events/control-sign-out)
+                                          "Sign out")]]))
 
      :stylist (ui/drop-down
                expanded?
