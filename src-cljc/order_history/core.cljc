@@ -44,7 +44,7 @@
           [:div placed-at]
           [:div shipping-status]
           [:div total]]
-         [:div.flex.justify-between.content-3.bold
+         [:div.flex.justify-between.content-3
           [:div appointment-notice]
           [:div appointment-date]]]
         [:div.pl1.self-center
