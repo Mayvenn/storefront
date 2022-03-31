@@ -30,7 +30,7 @@
 
 (c/defcomponent template
   [{:keys [orders count]} _ _]
-  [:div.py2.max-960.mx-auto.bg-white
+  [:div.py2.max-960.mx-auto.bg-white.max-580
    [:h1.title-1.canela.m2 "Order History"]
    (for [{:keys [number placed-at shipping-status total appointment-notice appointment-date open?]} orders]
      [:a.py2.inherit-color.block.border-top.border-refresh-gray.px4.flex
