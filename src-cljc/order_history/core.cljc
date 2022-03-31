@@ -34,8 +34,8 @@
    [:h1.title-1.canela.m2 "Order History"]
    (for [{:keys [number placed-at shipping-status total appointment-notice appointment-date open?]} orders]
      [:a.py2.inherit-color.block.border-top.border-refresh-gray.px4.flex
-      (merge {:data-test (str "order-" number)
-              :key       (str "order-" number)}
+      (merge {:data-test (str "order-details-row-" number)
+              :key       (str "order-details-row-" number)}
              (when open? {:class "bold"})
              (utils/route-to e/navigate-yourlooks-order-details {:order-number number}))
       [:div.flex-auto
