@@ -64,7 +64,9 @@
 
 (defmethod effects/perform-effects e/api-success-email-verification-initiate
   [_ _ _ _ app-state]
-  #?(:cljs (apply history/enqueue-redirect (get-in app-state k/navigation-message) {:query-params {:stsm "init-success"}})))
+  #?(:cljs (let [[event args] (get-in app-state k/navigation-message)]
+             (history/enqueue-redirect event
+                                       (assoc-in args [:query-params :stsm] "init-success")))))
 
 (defmethod transitions/transition-state e/api-failure-email-verification-verify
   [_ _ {:keys [user] :as args} app-state]
