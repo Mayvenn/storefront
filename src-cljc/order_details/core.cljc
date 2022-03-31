@@ -129,12 +129,6 @@
         (titled-content "Payment" [:div {:data-test "payment-total"}
                                    "Total: "(mf/as-money total)])]))
 
-(defn no-orders-details-template
-  [{:no-orders-details/keys [id]}]
-  (when id
-    [[:div.center.mb4.content-3 "You have no recent orders"]
-     (ui/button-medium-primary (utils/route-to e/navigate-category {:page/slug "mayvenn-install" :catalog/category-id "23"}) "Browse Products")]))
-
 ;; TODO: does appointment status header need to be there when there's no appt set?
 (defn appointment-details-template
   [{:appointment-details/keys [id spinning? date time]}]
@@ -207,7 +201,6 @@
    {:key "your-look"}
    (your-looks-title-template data)
    (order-details-template data)
-   (no-orders-details-template data)
    (appointment-details-template data)
    (stylist-details-template data)
    (vouchers-details-template data)
@@ -435,34 +428,29 @@
                                     (filter #(= "pending" (:state %)))
                                     (mapcat :line-items)
                                     (filter #(= "spree" (:source %))))]
-      (if order
-        (merge #:order-details
-               {:id               "order-details"
-                :order-number     order-number
-                :placed-at        (long-date placed-at)
-                :shipping-address shipping-address
-                :total            total
-                :skus             skus
-                :images-catalog   images-catalog
-                :returns          (->returns-query app-state)
-                :fulfillments     (for [{:keys [carrier tracking-number line-item-ids tracking-status expected-delivery-date]} fulfillments]
-                                    {:url              (generate-tracking-url carrier tracking-number)
-                                     :carrier          carrier
-                                     :tracking-number  tracking-number
-                                     :status           (if tracking-status tracking-status "Shipment Pending")
-                                     :delivery-message (if (= "Delivered " tracking-status)
-                                                         (str "Delivered by " carrier " on " expected-delivery-date)
-                                                         (str "Estimated Delivery Date: " (if expected-delivery-date (long-date expected-delivery-date) "Pending")))
-                                     :cart-items       (fulfillment-items-query app-state line-item-ids shipments)})
-                :canceled         (->canceled-query app-state canceled-shipment)
-                :pending          (->pending-fulfillment-query app-state pending-line-items)}
-               (appointment-details-query app-state)
-               (stylist-details-query app-state)
-               (vouchers-details-query app-state))
-
-        {:no-orders-details/id  "no-orders-details"
-         :your-looks-title/id   "no-order-title"
-         :your-looks-title/copy "Your Recent Order"}))))
+      (merge #:order-details
+             {:id               "order-details"
+              :order-number     order-number
+              :placed-at        (long-date placed-at)
+              :shipping-address shipping-address
+              :total            total
+              :skus             skus
+              :images-catalog   images-catalog
+              :returns          (->returns-query app-state)
+              :fulfillments     (for [{:keys [carrier tracking-number line-item-ids tracking-status expected-delivery-date]} fulfillments]
+                                  {:url              (generate-tracking-url carrier tracking-number)
+                                   :carrier          carrier
+                                   :tracking-number  tracking-number
+                                   :status           (if tracking-status tracking-status "Shipment Pending")
+                                   :delivery-message (if (= "Delivered " tracking-status)
+                                                       (str "Delivered by " carrier " on " expected-delivery-date)
+                                                       (str "Estimated Delivery Date: " (if expected-delivery-date (long-date expected-delivery-date) "Pending")))
+                                   :cart-items       (fulfillment-items-query app-state line-item-ids shipments)})
+              :canceled         (->canceled-query app-state canceled-shipment)
+              :pending          (->pending-fulfillment-query app-state pending-line-items)}
+             (appointment-details-query app-state)
+             (stylist-details-query app-state)
+             (vouchers-details-query app-state)))))
 
 (defn ^:export page
   [app-state]
