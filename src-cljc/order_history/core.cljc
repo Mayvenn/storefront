@@ -49,7 +49,7 @@
       [:div.pl1.self-center
        (ui/forward-caret {})]])
    (when (> count 10)
-         [:div.content-4.px4 "We are only able to provide the 10 most recent orders from your order history. For questions regarding older orders
+         [:div.content-4.px4.center.border-top.border-refresh-gray "We are only able to provide the 10 most recent orders from your order history. For questions regarding older orders
 please refer to your order confirmation emails or contact customer service: "
           (ui/link :link/phone :a.inherit-color {} config/support-phone-number)])])
 
