@@ -68,6 +68,14 @@
     #?(:cljs (format-date {:month "numeric" :day "numeric"} date)
        :clj (.print (org.joda.time.format.DateTimeFormat/forPattern "M/d") date))))
 
+(defn slash-date [date-like]
+  #?(:clj date-like
+     :cljs
+     (let [{:keys [month day year]}
+           (format-date-to-parts {:month "numeric" :day "numeric" :year "2-digit"}
+                                 date-like)]
+       (string/join "/" [month day year]))))
+
 (defn short-date [date-like]
   #?(:clj date-like
      :cljs

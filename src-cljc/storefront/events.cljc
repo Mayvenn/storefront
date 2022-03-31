@@ -120,6 +120,7 @@
 (defpath navigate-account-email-verification)
 
 (defpath navigate-yourlooks-order-details)
+(defpath navigate-yourlooks-order-history)
 
 (defpath navigate-checkout)
 (defpath navigate-checkout-sign-in)
@@ -175,6 +176,7 @@
 (defpath flow--orderdetails--resulted)
 (defpath flow--orderdetails--stylist-resulted)
 (defpath flow--orderdetails--vouchers-resulted)
+(defpath flow--orderhistory--resulted)
 
 (defpath poll-stylist-portrait)
 (defpath poll-gallery)

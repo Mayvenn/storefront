@@ -208,6 +208,7 @@
          (for [shipment shipments]
            (let [nth-shipment (some-> shipment :number (subs 1) spice/parse-int fmt-with-leading-zero)]
              [:div.pt3.h6
+              {:key (str "shipment-" nth-shipment)}
               {:data-test (str "shipment-" nth-shipment)}
               [:span.bold.shout (when (= nth-shipment shipment-count) "Latest ") "Shipment "]
               [:span nth-shipment

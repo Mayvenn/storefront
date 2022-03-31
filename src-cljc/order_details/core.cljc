@@ -452,7 +452,7 @@
                                      :status           (if tracking-status tracking-status "Shipment Pending")
                                      :delivery-message (if (= "Delivered " tracking-status)
                                                          (str "Delivered by " carrier " on " expected-delivery-date)
-                                                         (str "Estimated Delivery Date: " (if expected-delivery-date expected-delivery-date "Pending")))
+                                                         (str "Estimated Delivery Date: " (if expected-delivery-date (long-date expected-delivery-date) "Pending")))
                                      :cart-items       (fulfillment-items-query app-state line-item-ids shipments)})
                 :canceled         (->canceled-query app-state canceled-shipment)
                 :pending          (->pending-fulfillment-query app-state pending-line-items)}
@@ -482,19 +482,12 @@
       (effects/redirect e/navigate-sign-in)
 
       email-verified?
-      #?(:cljs (if order-number
-                 (api/get-order {:number     order-number
-                                 :user-id    (get-in app-state k/user-id)
-                                 :user-token (get-in app-state k/user-token)}
-                                {:handler       #(messages/handle-message e/flow--orderdetails--resulted {:orders [%]})
-                                 :error-handler #(messages/handle-message e/flash-show-failure
-                                                                          {:message (str "Unable to retrieve order " order-number ". Please contact support.")})})
-                 (api/get-orders {:limit      1
-                                  :user-id    (get-in app-state k/user-id)
-                                  :user-token (get-in app-state k/user-token)}
-                                 #(messages/handle-message e/flow--orderdetails--resulted {:orders (:results %)})
-                                 #(messages/handle-message e/flash-show-failure
-                                                           {:message (str "Unable to retrieve order. Please contact support.")})))
+      #?(:cljs (api/get-order {:number     order-number
+                               :user-id    (get-in app-state k/user-id)
+                               :user-token (get-in app-state k/user-token)}
+                              {:handler       #(messages/handle-message e/flow--orderdetails--resulted {:orders [%]})
+                               :error-handler #(messages/handle-message e/flash-show-failure
+                                                                        {:message (str "Unable to retrieve order " order-number ". Please contact support.")})})
          :clj nil)
 
       (not (:evt query-params))

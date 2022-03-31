@@ -133,8 +133,8 @@
                   ^:inline (drop-down-row (utils/route-to events/navigate-account-manage)
                                           "Account")]
                  [:div.border-top.border-gray
-                  ^:inline (drop-down-row (utils/route-to events/navigate-yourlooks-order-details)
-                                          "My Recent Order")]
+                  ^:inline (drop-down-row (utils/route-to events/navigate-yourlooks-order-history)
+                                          "My Order History")]
                  [:div.border-top.border-gray
                   ^:inline (drop-down-row (utils/fake-href events/control-sign-out)
                                           "Sign out")]]))

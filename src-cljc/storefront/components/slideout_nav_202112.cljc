@@ -229,20 +229,20 @@
                                         [{:slide-out-nav-menu-item/target  [events/navigate-account-manage]
                                           :slide-out-nav-menu-item/id      "account-settings"
                                           :slide-out-nav-menu-item/primary "Account"}
-                                         {:slide-out-nav-menu-item/target      [events/navigate-yourlooks-order-details]
+                                         {:slide-out-nav-menu-item/target      [events/navigate-yourlooks-order-history]
                                           :slide-out-nav-menu-item/new-primary "New"
-                                          :slide-out-nav-menu-item/id          "my-recent-order"
-                                          :slide-out-nav-menu-item/primary     "My Recent Order"}])
+                                          :slide-out-nav-menu-item/id          "my-order-history"
+                                          :slide-out-nav-menu-item/primary     "My Order History"}])
                                       (when (and (= :stylist user-type)
                                                  vouchers?)
                                         [{:slide-out-nav-menu-item/target  [events/navigate-voucher-redeem]
                                           :slide-out-nav-menu-item/id      "redeem-voucher"
                                           :slide-out-nav-menu-item/primary "Redeem Client Voucher"}])
                                       (when (= :stylist user-type)
-                                        [{:slide-out-nav-menu-item/target      [events/navigate-yourlooks-order-details]
+                                        [{:slide-out-nav-menu-item/target      [events/navigate-yourlooks-order-history]
                                           :slide-out-nav-menu-item/new-primary "New"
-                                          :slide-out-nav-menu-item/id          "my-recent-order"
-                                          :slide-out-nav-menu-item/primary     "My Recent Order"}
+                                          :slide-out-nav-menu-item/id          "my-order-history"
+                                          :slide-out-nav-menu-item/primary     "My Order History"}
                                          {:slide-out-nav-menu-item/target  [events/navigate-stylist-account-profile]
                                           :slide-out-nav-menu-item/id      "account-settings"
                                           :slide-out-nav-menu-item/primary "Settings"}
