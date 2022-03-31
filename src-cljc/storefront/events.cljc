@@ -824,6 +824,7 @@
 
 ;; Email verification
 (defpath biz|email-verification|initiated)
+(defpath biz|email-verification|verified)
 
 (defpath slideout-nav-tab-selected)
 

@@ -205,6 +205,8 @@
   [data _ _]
   [:div.py2.px8.max-960.mx-auto.bg-refresh-gray
    {:key "your-look"}
+   (let [copy (:verif-status-message/copy data)]
+     (when copy (flash/success-box {} copy)))
    (your-looks-title-template data)
    (order-details-template data)
    (no-orders-details-template data)
@@ -417,71 +419,88 @@
                                      (get-in app-state [:models :order-details :vouchers]))}))
 
 (defn query [app-state]
-  (when (boolean (get-in app-state k/user-verified-at))
-    (let [order-number         (or (:order-number (last (get-in app-state k/navigation-message)))
-                                   (-> app-state (get-in k/order-history) first :number))
-          images-catalog       (get-in app-state k/v2-images)
-          skus                 (get-in app-state k/v2-skus)
-          {:as   order
-           :keys [fulfillments
-                  placed-at
-                  shipments
-                  shipping-address
-                  total]}      (->> (get-in app-state k/order-history)
-                                    (filter (fn [o] (= order-number (:number o))))
-                                    first)
-          canceled-shipment    (first (filter #(= "canceled" (:state %)) shipments))
-          pending-line-items   (->> shipments
-                                    (filter #(= "pending" (:state %)))
-                                    (mapcat :line-items)
-                                    (filter #(= "spree" (:source %))))]
-      (if order
-        (merge #:order-details
-               {:id               "order-details"
-                :order-number     order-number
-                :placed-at        (long-date placed-at)
-                :shipping-address shipping-address
-                :total            total
-                :skus             skus
-                :images-catalog   images-catalog
-                :returns          (->returns-query app-state)
-                :fulfillments     (for [{:keys [carrier tracking-number line-item-ids tracking-status expected-delivery-date]} fulfillments]
-                                    {:url              (generate-tracking-url carrier tracking-number)
-                                     :carrier          carrier
-                                     :tracking-number  tracking-number
-                                     :status           (if tracking-status tracking-status "Shipment Pending")
-                                     :delivery-message (if (= "Delivered " tracking-status)
-                                                         (str "Delivered by " carrier " on " expected-delivery-date)
-                                                         (str "Estimated Delivery Date: " (if expected-delivery-date expected-delivery-date "Pending")))
-                                     :cart-items       (fulfillment-items-query app-state line-item-ids shipments)})
-                :canceled         (->canceled-query app-state canceled-shipment)
-                :pending          (->pending-fulfillment-query app-state pending-line-items)}
-               (appointment-details-query app-state)
-               (stylist-details-query app-state)
-               (vouchers-details-query app-state))
+  (let [user-verified?       (boolean (get-in app-state k/user-verified-at))
+        order-number         (or (:order-number (last (get-in app-state k/navigation-message)))
+                                 (-> app-state (get-in k/order-history) first :number))
+        images-catalog       (get-in app-state k/v2-images)
+        skus                 (get-in app-state k/v2-skus)
+        {:as   order
+         :keys [fulfillments
+                placed-at
+                shipments
+                shipping-address
+                total]}      (->> (get-in app-state k/order-history)
+                                  (filter (fn [o] (= order-number (:number o))))
+                                  first)
+        verif-status-message (-> app-state (get-in k/navigation-message) second :query-params :stsm)
+        guest-link?          (-> app-state (get-in k/navigation-message) second :query-params :g)
+        canceled-shipment    (first (filter #(= "canceled" (:state %)) shipments))
+        pending-line-items   (->> shipments
+                                  (filter #(= "pending" (:state %)))
+                                  (mapcat :line-items)
+                                  (filter #(= "spree" (:source %))))]
+        (cond-> {}
 
-        {:no-orders-details/id  "no-orders-details"
-         :your-looks-title/id   "no-order-title"
-         :your-looks-title/copy "Your Recent Order"}))))
+          (and user-verified?
+               (not order))
+          (merge {:no-orders-details/id  "no-orders-details"
+                  :your-looks-title/id   "no-order-title"
+                  :your-looks-title/copy "Your Recent Order"})
+
+          (and user-verified?
+               order)
+          (merge #:order-details
+                 {:id               "order-details"
+                  :order-number     order-number
+                  :placed-at        (long-date placed-at)
+                  :shipping-address shipping-address
+                  :total            total
+                  :skus             skus
+                  :images-catalog   images-catalog
+                  :returns          (->returns-query app-state)
+                  :fulfillments     (for [{:keys [carrier tracking-number line-item-ids tracking-status expected-delivery-date]} fulfillments]
+                                      {:url              (generate-tracking-url carrier tracking-number)
+                                       :carrier          carrier
+                                       :tracking-number  tracking-number
+                                       :status           (if tracking-status tracking-status "Shipment Pending")
+                                       :delivery-message (if (= "Delivered " tracking-status)
+                                                           (str "Delivered by " carrier " on " expected-delivery-date)
+                                                           (str "Estimated Delivery Date: " (if expected-delivery-date expected-delivery-date "Pending")))
+                                       :cart-items       (fulfillment-items-query app-state line-item-ids shipments)})
+                  :canceled         (->canceled-query app-state canceled-shipment)
+                  :pending          (->pending-fulfillment-query app-state pending-line-items)}
+                 (appointment-details-query app-state)
+                 (stylist-details-query app-state)
+                 (vouchers-details-query app-state)
+
+                 {:verif-status-message/copy (when (= "verif-success" verif-status-message)
+                                               "Your email was successfully verified.")}))))
 
 (defn ^:export page
   [app-state]
   (c/build template (query app-state)))
 
 (defmethod effects/perform-effects e/navigate-yourlooks-order-details
+  ;; evt = email validation token
   [_ event {:keys [order-number query-params] :as args} _ app-state]
-  (let [email-verified?        (boolean (get-in app-state k/user-verified-at))
-        order-placed-as-guest? (:g query-params)
-        sign-in-data            (hard-session/signed-in app-state)]
+  (let [user-verified-at         (get-in app-state k/user-verified-at)
+        email-verification-token (:evt query-params)
+        guest-link?              (:g query-params)
+        sign-in-data             (hard-session/signed-in app-state)]
     (cond
-      (and order-placed-as-guest?
+      (and guest-link?
            (not (::auth/at-all sign-in-data)))
       (messages/handle-message e/navigate-order-details-sign-up)
 
       (not (hard-session/allow? sign-in-data event))
       (effects/redirect e/navigate-sign-in)
 
-      email-verified?
+      (and (not user-verified-at)
+           email-verification-token
+           (not (utils/requesting? app-state request-keys/email-verification-verify)))
+      (messages/handle-message e/biz|email-verification|verified {:evt email-verification-token})
+
+      user-verified-at
       #?(:cljs (if order-number
                  (api/get-order {:number     order-number
                                  :user-id    (get-in app-state k/user-id)
@@ -497,7 +516,9 @@
                                                            {:message (str "Unable to retrieve order. Please contact support.")})))
          :clj nil)
 
-      (not (:evt query-params))
+      (and (not guest-link?)
+           (not user-verified-at))
+      ;; TODO: consider whether this should be redirect?
       #?(:cljs (history/enqueue-navigate e/navigate-account-email-verification)
          :clj nil))))
 

@@ -228,12 +228,7 @@
     (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)})
 
     (cookie-jar/save-user cookie (get-in app-state keypaths/user))
-    (if-let [email-verification-token (and (not (get-in app-state keypaths/user-verified-at))
-                                           (:evt query-params))]
-      (api/email-verification-verify (get-in app-state keypaths/user-token)
-                                     (get-in app-state keypaths/user-id)
-                                     email-verification-token)
-      (refresh-account app-state))
+    (refresh-account app-state)
 
     (email-capture/refresh-short-timers cookie)
     (when (:em_hash query-params)
