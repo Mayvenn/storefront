@@ -70,6 +70,8 @@
 (def completed-order-servicing-stylist-id (conj completed-order :servicing-stylist-id))
 
 (def order-history [:order-history])
+(def order-history-orders (conj order-history :orders))
+(def order-history-count (conj order-history :count))
 
 (def pending-promo-code [:pending-promo-code])
 (def promotions [:promotions])

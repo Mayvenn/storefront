@@ -29,13 +29,13 @@
             [stylist-matching.search.accessors.filters :as stylist-filters]))
 
 (c/defcomponent template
-  [{:keys [orders]} _ _]
+  [{:keys [orders count]} _ _]
   [:div.py2.max-960.mx-auto.bg-white
    [:h1.title-1.canela.m2 "Order History"]
    (for [{:keys [number placed-at shipping-status total appointment-notice appointment-date open?]} orders]
      [:a.py2.inherit-color.block.border-top.border-refresh-gray.px4.flex
       (merge {:data-test (str "order-" number)
-              :key (str "order-" number)}
+              :key       (str "order-" number)}
              (when open? {:class "bold"})
              (utils/route-to e/navigate-yourlooks-order-details {:order-number number}))
       [:div.flex-auto
@@ -48,8 +48,10 @@
         [:div appointment-date]]]
       [:div.pl1.self-center
        (ui/forward-caret {})]])
-   (when (> (count orders) 10)
-     [:div.px4 "Older orders not yet available for viewing."])])
+   (when (> count 10)
+         [:div.content-4.px4 "We are only able to provide the 10 most recent orders from your order history. For questions regarding older orders
+please refer to your order confirmation emails or contact customer service: "
+          (ui/link :link/phone :a.inherit-color {} config/support-phone-number)])])
 
 (defn order-query [order]
   (let [{:keys [number placed-at appointment total]}     order
@@ -84,9 +86,9 @@
                        (and tracking-status (not (#{"Delivered" "Expired"} tracking-status))))})))
 
 (defn query [app-state]
-  (let [orders (take 10 (get-in app-state k/order-history))]
-    {:orders (sort :open? (mapv order-query orders))}))
-
+  (let [orders (take 10 (get-in app-state k/order-history-orders))]
+    {:count  (get-in app-state k/order-history-count)
+     :orders (sort :open? (mapv order-query orders))}))
 
 (defn ^:export page
   [app-state]
@@ -112,7 +114,8 @@
       #?(:cljs (api/get-orders {:limit      10
                                 :user-id    (get-in app-state k/user-id)
                                 :user-token (get-in app-state k/user-token)}
-                               #(messages/handle-message e/flow--orderdetails--resulted {:orders (:results %)})
+                               #(messages/handle-message e/flow--orderdetails--resulted {:orders (:results %)
+                                                                                         :count (:count %)})
                                #(messages/handle-message e/flash-show-failure
                                                          {:message (str "Unable to retrieve orders. Please contact support.")}))
          :clj nil)

@@ -294,7 +294,7 @@
 
 (defn ->returns-query
   [app-state]
-  (let [order          (first (get-in app-state k/order-history))
+  (let [order          (first (get-in app-state k/order-history-orders))
         images         (get-in app-state k/v2-images)
         skus           (get-in app-state k/v2-skus)
         returns        (:returns order)
@@ -324,7 +324,7 @@
 
 (defn ->canceled-query
   [app-state canceled-shipment]
-  (let [order          (first (get-in app-state k/order-history))
+  (let [order          (first (get-in app-state k/order-history-orders))
         images         (get-in app-state k/v2-images)
         skus           (get-in app-state k/v2-skus)
         all-line-items (mapcat :line-items (:shipments order))]
@@ -419,7 +419,7 @@
 (defn query [app-state]
   (when (boolean (get-in app-state k/user-verified-at))
     (let [order-number         (or (:order-number (last (get-in app-state k/navigation-message)))
-                                   (-> app-state (get-in k/order-history) first :number))
+                                   (-> app-state (get-in k/order-history-orders) first :number))
           images-catalog       (get-in app-state k/v2-images)
           skus                 (get-in app-state k/v2-skus)
           {:as   order
@@ -427,7 +427,7 @@
                   placed-at
                   shipments
                   shipping-address
-                  total]}      (->> (get-in app-state k/order-history)
+                  total]}      (->> (get-in app-state k/order-history-orders)
                                     (filter (fn [o] (= order-number (:number o))))
                                     first)
           canceled-shipment    (first (filter #(= "canceled" (:state %)) shipments))
@@ -495,19 +495,20 @@
          :clj nil))))
 
 (defmethod transitions/transition-state e/flow--orderdetails--resulted
-  [_ _ {:keys [orders]} app-state]
-  (let [old-orders (maps/index-by :number (get-in app-state k/order-history))
+  [_ _ {:keys [orders count]} app-state]
+  (let [old-orders (maps/index-by :number (get-in app-state k/order-history-orders))
         new-orders (maps/index-by :number orders)
         order-history (->> (merge old-orders new-orders)
                            vals
                            (sort-by :placed-at >))]
     (-> app-state
-        (assoc-in k/order-history order-history)
+        (assoc-in k/order-history-count count)
+        (assoc-in k/order-history-orders order-history)
         (assoc-in [:models :appointment :date] (:appointment (first order-history))))))
 
 (defmethod effects/perform-effects e/flow--orderdetails--resulted
   [_ _ args _ app-state]
-  (let [most-recent-open-order (first (get-in app-state k/order-history))
+  (let [most-recent-open-order (first (get-in app-state k/order-history-orders))
         api-cache              (get-in app-state k/api-cache)]
     (messages/handle-message e/ensure-sku-ids {:sku-ids (->> most-recent-open-order
                                                              :shipments
