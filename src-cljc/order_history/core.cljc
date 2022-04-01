@@ -13,37 +13,40 @@
             [storefront.effects :as effects]
             [storefront.platform.messages :as messages]
             [storefront.keypaths :as k]
-            [storefront.effects :as fx]
+            [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
             [storefront.platform.component-utils :as utils]
-            [mayvenn.concept.hard-session :as hard-session]
-            [storefront.accessors.auth :as auth]
-            [storefront.effects :as storefront.effects]))
+            [mayvenn.concept.hard-session :as hard-session]))
 
 (c/defcomponent template
-  [{:keys [orders count]} _ _]
+  [{:keys [spinning? orders count]} _ _]
   [:div.py2.max-960.mx-auto.bg-white.max-580
    [:h1.title-1.canela.m2 "Order History"]
-   (if (> count 0)
-     (for [{:keys [number placed-at shipping-status total appointment-notice appointment-date open?]} orders]
-       [:a.py2.inherit-color.block.border-top.border-refresh-gray.px4.flex
-        (merge {:data-test (str "order-details-row-" number)
-                :key       (str "order-details-row-" number)}
-               (when open? {:class "bold"})
-               (utils/route-to e/navigate-yourlooks-order-details {:order-number number}))
-        [:div.flex-auto
-         [:div.flex.justify-between
-          [:div.col-2 placed-at]
-          [:div.col-8.center shipping-status]
-          [:div.col-2.right-align total]]
-         [:div.flex.justify-between.content-3
-          [:div appointment-notice]
-          [:div appointment-date]]]
-        [:div.pl1.self-center
-         (ui/forward-caret {})]])
-     [:div.p4
-      [:div.center.mb4.content-2 "You have no recent orders"]
-      (ui/button-medium-primary (utils/route-to e/navigate-category {:page/slug "mayvenn-install" :catalog/category-id "23"}) "Browse Products")])
+   (if spinning?
+     [:div
+      {:style {:min-height "400px"}}
+      ui/spinner]
+
+     (if (> count 0)
+       (for [{:keys [number placed-at shipping-status total appointment-notice appointment-date open?]} orders]
+         [:a.py2.inherit-color.block.border-top.border-refresh-gray.px4.flex
+          (merge {:data-test (str "order-details-row-" number)
+                  :key       (str "order-details-row-" number)}
+                 (when open? {:class "bold"})
+                 (utils/route-to e/navigate-yourlooks-order-details {:order-number number}))
+          [:div.flex-auto
+           [:div.flex.justify-between
+            [:div.col-2 placed-at]
+            [:div.col-8.center shipping-status]
+            [:div.col-2.right-align total]]
+           [:div.flex.justify-between.content-3
+            [:div appointment-notice]
+            [:div appointment-date]]]
+          [:div.pl1.self-center
+           (ui/forward-caret {})]])
+       [:div.p4
+        [:div.center.mb4.content-2 "You have no recent orders"]
+        (ui/button-medium-primary (utils/route-to e/navigate-category {:page/slug "mayvenn-install" :catalog/category-id "23"}) "Browse Products")]))
    (when (> count 10)
          [:div.content-4.px4.center.border-top.border-refresh-gray "We are only able to provide the 10 most recent orders from your order history. For questions regarding older orders
 please refer to your order confirmation emails or contact customer service: "
@@ -83,8 +86,9 @@ please refer to your order confirmation emails or contact customer service: "
 
 (defn query [app-state]
   (let [orders (take 10 (get-in app-state k/order-history-orders))]
-    {:count  (get-in app-state k/order-history-count)
-     :orders (sort :open? (mapv order-query orders))}))
+    {:spinning? (utils/requesting? app-state request-keys/get-orders)
+     :count     (get-in app-state k/order-history-count)
+     :orders    (sort :open? (mapv order-query orders))}))
 
 (defn ^:export page
   [app-state]
