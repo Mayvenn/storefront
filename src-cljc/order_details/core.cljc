@@ -80,10 +80,12 @@
           [:div.my4.bg-white
            [:div.border-bottom.border-refresh-gray.p2
             (when url [:div status
-                       [:a.content-2.shout.primary.bold
-                        (merge (utils/fake-href e/external-redirect-url {:url url})
-                               {:aria-label "Track Shipment"})
-                        (str "#" tracking-number)]])
+                       [:div "# "
+                        [:a.content-2.shout.primary.bold
+                         (merge (utils/fake-href e/external-redirect-url {:url url})
+                                {:aria-label "Track Shipment"
+                                 :style      {:word-break "break-all"}})
+                         tracking-number]]])
             (when delivery-message [:div delivery-message])]
            (for [[index cart-item] (map-indexed vector cart-items)
                  :let              [react-key (:react/key cart-item)]
