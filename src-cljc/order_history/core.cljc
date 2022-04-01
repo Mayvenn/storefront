@@ -2,12 +2,6 @@
   (:require #?@(:cljs [[storefront.api :as api]
                        [storefront.accessors.auth :as auth]
                        [storefront.history :as history]])
-            [api.catalog :as catalog]
-            [catalog.images :as catalog-images]
-            [checkout.ui.cart-item-v202004 :as cart-item-v202004]
-            [clojure.string :as string]
-            [spice.core :as spice]
-            [spice.maps :as maps]
             [spice.date :as date]
             [storefront.component :as c]
             [storefront.components.formatters :as f]
@@ -17,16 +11,12 @@
             [storefront.events :as e]
             [storefront.effects :as effects]
             [storefront.platform.messages :as messages]
-            [storefront.transitions :as transitions]
             [storefront.keypaths :as k]
             [storefront.effects :as fx]
             [storefront.platform.component-utils :as utils]
-            [mayvenn.concept.follow :as follow]
             [mayvenn.concept.hard-session :as hard-session]
             [storefront.accessors.auth :as auth]
-            [storefront.effects :as storefront.effects]
-            [storefront.request-keys :as request-keys]
-            [stylist-matching.search.accessors.filters :as stylist-filters]))
+            [storefront.effects :as storefront.effects]))
 
 (c/defcomponent template
   [{:keys [orders count]} _ _]
@@ -41,9 +31,9 @@
                (utils/route-to e/navigate-yourlooks-order-details {:order-number number}))
         [:div.flex-auto
          [:div.flex.justify-between
-          [:div placed-at]
-          [:div shipping-status]
-          [:div total]]
+          [:div.col-2 placed-at]
+          [:div.col-8.center shipping-status]
+          [:div.col-2.right-align total]]
          [:div.flex.justify-between.content-3
           [:div appointment-notice]
           [:div appointment-date]]]
