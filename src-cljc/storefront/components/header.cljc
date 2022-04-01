@@ -151,6 +151,9 @@
                  [:div
                   ^:inline (drop-down-row (utils/route-to events/navigate-v2-stylist-dashboard-orders) "My Dashboard")]
 
+                 [:div.border-top.border-gray
+                  ^:inline (drop-down-row (utils/route-to events/navigate-yourlooks-order-history)
+                                          "My Order History")]
                  (when vouchers?
                    [:div.border-top.border-gray
                     ^:inline (drop-down-row (utils/route-to events/navigate-voucher-redeem) "Redeem Client Voucher")])
