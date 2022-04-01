@@ -472,8 +472,7 @@
       #?(:cljs (api/get-order {:number     order-number
                                :user-id    (get-in app-state k/user-id)
                                :user-token (get-in app-state k/user-token)}
-                              {:handler       #(messages/handle-message e/flow--orderdetails--resulted {:orders (:results %)
-                                                                                                        :count  (:count %)})
+                              {:handler       #(messages/handle-message e/flow--orderdetails--resulted %)
                                :error-handler #(messages/handle-message e/flash-show-failure
                                                                         {:message (str "Unable to retrieve order " order-number ". Please contact support.")})})
          :clj nil)
@@ -483,8 +482,8 @@
          :clj nil))))
 
 (defmethod transitions/transition-state e/flow--orderdetails--resulted
-  [_ _ {:keys [orders count]} app-state]
-  (order-history/save-order-history orders count app-state))
+  [_ _ order app-state]
+  (order-history/save-order-history [order] nil app-state))
 
 (defmethod effects/perform-effects e/flow--orderdetails--resulted
   [_ _ args _ app-state]

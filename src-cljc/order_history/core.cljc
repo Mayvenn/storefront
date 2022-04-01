@@ -129,7 +129,8 @@ please refer to your order confirmation emails or contact customer service: "
                            vals
                            (sort-by :placed-at >))]
     (-> app-state
-        (assoc-in k/order-history-count count)
+        (update-in k/order-history-count (fn [existing-count]
+                                           (or count existing-count)))
         (assoc-in k/order-history-orders order-history)
         (assoc-in [:models :appointment :date] (:appointment (first order-history))))))
 
