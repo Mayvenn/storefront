@@ -473,7 +473,8 @@
       #?(:cljs (api/get-order {:number     order-number
                                :user-id    (get-in app-state k/user-id)
                                :user-token (get-in app-state k/user-token)}
-                              {:handler       #(messages/handle-message e/flow--orderdetails--resulted {:orders [%]})
+                              {:handler       #(messages/handle-message e/flow--orderhistory--resulted {:orders (:results %)
+                                                                                                        :count  (:count %)})
                                :error-handler #(messages/handle-message e/flash-show-failure
                                                                         {:message (str "Unable to retrieve order " order-number ". Please contact support.")})})
          :clj nil)
@@ -482,7 +483,7 @@
       #?(:cljs (history/enqueue-navigate e/navigate-account-email-verification)
          :clj nil))))
 
-(defmethod transitions/transition-state e/flow--orderdetails--resulted
+(defmethod transitions/transition-state e/flow--orderhistory--resulted
   [_ _ {:keys [orders count]} app-state]
   (let [old-orders (maps/index-by :number (get-in app-state k/order-history-orders))
         new-orders (maps/index-by :number orders)
@@ -494,7 +495,7 @@
         (assoc-in k/order-history-orders order-history)
         (assoc-in [:models :appointment :date] (:appointment (first order-history))))))
 
-(defmethod effects/perform-effects e/flow--orderdetails--resulted
+(defmethod effects/perform-effects e/flow--orderhistory--resulted
   [_ _ args _ app-state]
   (let [most-recent-open-order (first (get-in app-state k/order-history-orders))
         api-cache              (get-in app-state k/api-cache)]

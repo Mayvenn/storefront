@@ -39,7 +39,7 @@
           [:div appointment-date]]]
         [:div.pl1.self-center
          (ui/forward-caret {})]])
-     [:div.py4
+     [:div.p4
       [:div.center.mb4.content-2 "You have no recent orders"]
       (ui/button-medium-primary (utils/route-to e/navigate-category {:page/slug "mayvenn-install" :catalog/category-id "23"}) "Browse Products")])
    (when (> count 10)
@@ -90,10 +90,8 @@ please refer to your order confirmation emails or contact customer service: "
 
 (defmethod effects/perform-effects e/navigate-yourlooks-order-history
   ;; todo: this is almost the same as navigate order details . dry up
-
-  ;; evt = email validation token
   [_ event {:keys [query-params] :as args} _ app-state]
-(let [email-verified?        (boolean (get-in app-state k/user-verified-at))
+  (let [email-verified?        (boolean (get-in app-state k/user-verified-at))
         order-placed-as-guest? (:g query-params)
         sign-in-data            (hard-session/signed-in app-state)]
     (cond
@@ -108,8 +106,8 @@ please refer to your order confirmation emails or contact customer service: "
       #?(:cljs (api/get-orders {:limit      10
                                 :user-id    (get-in app-state k/user-id)
                                 :user-token (get-in app-state k/user-token)}
-                               #(messages/handle-message e/flow--orderdetails--resulted {:orders (:results %)
-                                                                                         :count (:count %)})
+                               #(messages/handle-message e/flow--orderhistory--resulted {:orders (:results %)
+                                                                                         :count  (:count %)})
                                #(messages/handle-message e/flash-show-failure
                                                          {:message (str "Unable to retrieve orders. Please contact support.")}))
          :clj nil)
