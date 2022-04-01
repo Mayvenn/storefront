@@ -41,28 +41,30 @@
   [{:cart-item-square-thumbnail/keys
     [id ucare-id sku-id sticker-label]}]
   (when id
-    (let [sticker-id (str "line-item-length-" sku-id)]
-      [:div.relative.pt1
-       {:style {:height "45px"
-                :width  "48px"}}
-       (when sticker-label
-         [:div.absolute.z1.circle.border.border-gray.bg-white.proxima.title-3.flex.items-center.justify-center
-          {:key       sticker-id
-           :data-test sticker-id
-           :style     {:height "26px"
-                       :width  "26px"
-                       :right  "-10px"
-                       :top    "-5px"}}
-          sticker-label])
-       [:div.flex.items-center.justify-center
-        {:style     {:height "45px"
-                     :width  "48px"}
-         :key       (str "cart-item-square-thumbnail-" sku-id)
-         :data-test (str "line-item-img-" sku-id)}
-        (ui/ucare-img {:width "48"
-                       :class "block border border-cool-gray"
-                       :alt   ""}
-                      ucare-id)]])))
+    (if ucare-id
+      (let [sticker-id (str "line-item-length-" sku-id)]
+        [:div.relative.pt1
+         {:style {:height "45px"
+                  :width  "48px"}}
+         (when sticker-label
+           [:div.absolute.z1.circle.border.border-gray.bg-white.proxima.title-3.flex.items-center.justify-center
+            {:key       sticker-id
+             :data-test sticker-id
+             :style     {:height "26px"
+                         :width  "26px"
+                         :right  "-10px"
+                         :top    "-5px"}}
+            sticker-label])
+         [:div.flex.items-center.justify-center
+          {:style     {:height "45px"
+                       :width  "48px"}
+           :key       (str "cart-item-square-thumbnail-" sku-id)
+           :data-test (str "line-item-img-" sku-id)}
+          (ui/ucare-img {:width "48"
+                         :class "block border border-cool-gray"
+                         :alt   ""}
+                        ucare-id)]])
+      [:div.flex.items-center.justify-center (svg/mayvenn-logo {:width "45px" :height "48px"})])))
 
 (defn cart-item-service-thumbnail-molecule
   [{:cart-item-service-thumbnail/keys [id image-url]}]
