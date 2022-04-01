@@ -64,7 +64,7 @@
                          :class "block border border-cool-gray"
                          :alt   ""}
                         ucare-id)]])
-      [:div.flex.items-center.justify-center (svg/mayvenn-logo {:width "45px" :height "48px"})])))
+      [:div.flex.items-center.justify-center (svg/mayvenn-logo {:width "48px" :height "45px"})])))
 
 (defn cart-item-service-thumbnail-molecule
   [{:cart-item-service-thumbnail/keys [id image-url]}]
