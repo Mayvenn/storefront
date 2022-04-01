@@ -72,6 +72,7 @@
 (def order-history [:order-history])
 (def order-history-orders (conj order-history :orders))
 (def order-history-count (conj order-history :count))
+(def order-history-stylists (conj order-history :stylists))
 
 (def pending-promo-code [:pending-promo-code])
 (def promotions [:promotions])

@@ -53,7 +53,7 @@
 please refer to your order confirmation emails or contact customer service: "
           (ui/link :link/phone :a.inherit-color {} config/support-phone-number)])])
 
-(defn order-query [order]
+(defn order-query [stylist-db order]
   (let [{:keys [number placed-at appointment total]}     order
         {:keys [tracking-status tracking-number method]} (->> order
                                                               :fulfillments
@@ -78,7 +78,8 @@ please refer to your order confirmation emails or contact customer service: "
                                              f/slash-date)
                       ;; TODO: add stylist if we can
                       appointment-notice (str (when upcoming-appointment? "Upcoming ")
-                                              "Appointment")]
+                                              "Appointment"
+                                              (some->> order :servicing-stylist-id stylist-db :store-nickname (str " with ")))]
                   {:appointment-notice appointment-notice
                    :appointment-date   appt-pacific-time}))
               :clj nil)
@@ -89,7 +90,7 @@ please refer to your order confirmation emails or contact customer service: "
   (let [orders (take 10 (get-in app-state k/order-history-orders))]
     {:spinning? (utils/requesting? app-state request-keys/get-orders)
      :count     (get-in app-state k/order-history-count)
-     :orders    (sort :open? (mapv order-query orders))}))
+     :orders    (sort :open? (mapv (partial order-query (get-in app-state k/order-history-stylists)) orders))}))
 
 (defn ^:export page
   [app-state]
@@ -138,3 +139,13 @@ please refer to your order confirmation emails or contact customer service: "
 (defmethod transitions/transition-state e/flow--orderhistory--resulted
   [_ _ {:keys [orders count]} app-state]
   (save-order-history orders count app-state))
+
+(defmethod effects/perform-effects e/flow--orderhistory--resulted
+  [_ _ {:keys [orders]} _ app-state]
+  #?(:cljs (api/fetch-stylists (get-in app-state storefront.keypaths/api-cache)
+                               (remove nil? (map :servicing-stylist-id orders))
+                               #(messages/handle-message e/flow--orderhistory--stylists--resulted (:stylists %)))))
+
+(defmethod transitions/transition-state e/flow--orderhistory--stylists--resulted
+  [_ _ stylists app-state]
+  (assoc-in app-state k/order-history-stylists (maps/index-by :stylist-id stylists)))
