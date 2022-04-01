@@ -77,7 +77,7 @@
 (def fetch-stylist [:fetch-stylist])
 (def fetch-vouchers-for-order [:fetch-vouchers-for-order])
 (def fetch-matched-stylist [:fetch-matched-stylist])
-(def fetch-matched-stylists [:fetch-matched-stylists])
+(def fetch-stylists [:fetch-stylists])
 (def fetch-stylist-reviews [:fetch-matched-stylist])
 (def new-order-from-sku-ids [:new-order-from-sku-ids])
 

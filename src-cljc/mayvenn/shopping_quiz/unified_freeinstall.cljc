@@ -671,7 +671,7 @@
 
               requesting?
               (or
-               (utils/requesting? state request-keys/fetch-matched-stylists)
+               (utils/requesting? state request-keys/fetch-stylists)
                (utils/requesting? state request-keys/fetch-stylists-matching-filters)
                (utils/requesting? state request-keys/get-products))
 

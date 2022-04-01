@@ -1186,12 +1186,12 @@
      :error-handler error-handler
      :cache/bypass? bypass?})))
 
-(defn fetch-matched-stylists [cache stylist-ids handler]
+(defn fetch-stylists [cache stylist-ids handler]
   (cache-req
    cache
    GET
    "/v1/stylist/matched-by-ids"
-   request-keys/fetch-matched-stylist
+   request-keys/fetch-stylists
    {:params  {:stylist-ids stylist-ids}
     :handler handler}))
 

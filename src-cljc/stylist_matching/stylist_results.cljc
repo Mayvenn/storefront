@@ -918,7 +918,7 @@
         (component/build template
                          {:gallery-modal (gallery-modal-query app-state)
                           :spinning?     (or (empty? (:status matching))
-                                             (utils/requesting? app-state request-keys/fetch-matched-stylists)
+                                             (utils/requesting? app-state request-keys/fetch-stylists)
                                              (utils/requesting? app-state request-keys/fetch-stylists-matching-filters)
                                              (utils/requesting? app-state request-keys/get-products)
                                              (and (not (get-in app-state storefront.keypaths/loaded-convert))

@@ -222,9 +222,9 @@
      (let [{:param/keys [ids location services] moniker :param/name} (stylist-matching<- state)]
        (cond
          ids
-         (api/fetch-matched-stylists (get-in state storefront.keypaths/api-cache)
-                                     ids
-                                     #(publish e/api-success-fetch-matched-stylists %))
+         (api/fetch-stylists (get-in state storefront.keypaths/api-cache)
+                             ids
+                             #(publish e/api-success-fetch-stylists %))
          location
          (let [query
                (-> location
@@ -377,7 +377,7 @@
 ;; -------------------------- stylist search by ids
 
 ;; TODO: perhaps add these stylist to the k/models-stylists?
-(defmethod fx/perform-effects e/api-success-fetch-matched-stylists
+(defmethod fx/perform-effects e/api-success-fetch-stylists
   [_ _ {:keys [stylists]} _]
   (publish e/flow|stylist-matching|resulted
            {:method  :by-ids

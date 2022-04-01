@@ -132,7 +132,7 @@
                      {:stylist-search (stylist-search<- place-autocomplete)
                       :flash          (flash/query state)
                       :query-spinner? (or (wait/<- state "location-submit")
-                                          (utils/requesting? state request-keys/fetch-matched-stylists)
+                                          (utils/requesting? state request-keys/fetch-stylists)
                                           (utils/requesting? state request-keys/fetch-stylists-matching-filters))
                       :maps-spinner   (maps-spinner<- state)
                       :header         (header<- current-order undo-history)})))
