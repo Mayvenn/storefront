@@ -4,6 +4,7 @@
                        [storefront.history :as history]])
             [spice.date :as date]
             [spice.maps :as maps]
+            [storefront.accessors.auth :as auth]
             [storefront.component :as c]
             [storefront.components.formatters :as f]
             [storefront.components.money-formatters :as mf]
