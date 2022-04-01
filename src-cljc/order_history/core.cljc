@@ -3,6 +3,7 @@
                        [storefront.accessors.auth :as auth]
                        [storefront.history :as history]])
             [spice.date :as date]
+            [spice.maps :as maps]
             [storefront.component :as c]
             [storefront.components.formatters :as f]
             [storefront.components.money-formatters :as mf]
@@ -13,6 +14,7 @@
             [storefront.platform.messages :as messages]
             [storefront.keypaths :as k]
             [storefront.effects :as fx]
+            [storefront.transitions :as transitions]
             [storefront.platform.component-utils :as utils]
             [mayvenn.concept.hard-session :as hard-session]
             [storefront.accessors.auth :as auth]
@@ -115,3 +117,18 @@ please refer to your order confirmation emails or contact customer service: "
       (not (:evt query-params))
       #?(:cljs (history/enqueue-navigate e/navigate-account-email-verification)
          :clj nil))))
+
+(defn save-order-history [orders count app-state]
+  (let [old-orders (maps/index-by :number (get-in app-state k/order-history-orders))
+        new-orders (maps/index-by :number orders)
+        order-history (->> (merge old-orders new-orders)
+                           vals
+                           (sort-by :placed-at >))]
+    (-> app-state
+        (assoc-in k/order-history-count count)
+        (assoc-in k/order-history-orders order-history)
+        (assoc-in [:models :appointment :date] (:appointment (first order-history))))))
+
+(defmethod transitions/transition-state e/flow--orderhistory--resulted
+  [_ _ {:keys [orders count]} app-state]
+  (save-order-history orders count app-state))

@@ -6,8 +6,8 @@
             [catalog.images :as catalog-images]
             [checkout.ui.cart-item-v202004 :as cart-item-v202004]
             [clojure.string :as string]
+            [order-history.core :as order-history]
             [spice.core :as spice]
-            [spice.maps :as maps]
             [spice.date :as date]
             [storefront.accessors.line-items :as line-items]
             [storefront.component :as c]
@@ -411,8 +411,7 @@
 
 (defn query [app-state]
   (when (boolean (get-in app-state k/user-verified-at))
-    (let [order-number         (or (:order-number (last (get-in app-state k/navigation-message)))
-                                   (-> app-state (get-in k/order-history-orders) first :number))
+    (let [order-number         (:order-number (last (get-in app-state k/navigation-message)))
           images-catalog       (get-in app-state k/v2-images)
           skus                 (get-in app-state k/v2-skus)
           {:as   order
@@ -473,7 +472,7 @@
       #?(:cljs (api/get-order {:number     order-number
                                :user-id    (get-in app-state k/user-id)
                                :user-token (get-in app-state k/user-token)}
-                              {:handler       #(messages/handle-message e/flow--orderhistory--resulted {:orders (:results %)
+                              {:handler       #(messages/handle-message e/flow--orderdetails--resulted {:orders (:results %)
                                                                                                         :count  (:count %)})
                                :error-handler #(messages/handle-message e/flash-show-failure
                                                                         {:message (str "Unable to retrieve order " order-number ". Please contact support.")})})
@@ -483,23 +482,18 @@
       #?(:cljs (history/enqueue-navigate e/navigate-account-email-verification)
          :clj nil))))
 
-(defmethod transitions/transition-state e/flow--orderhistory--resulted
+(defmethod transitions/transition-state e/flow--orderdetails--resulted
   [_ _ {:keys [orders count]} app-state]
-  (let [old-orders (maps/index-by :number (get-in app-state k/order-history-orders))
-        new-orders (maps/index-by :number orders)
-        order-history (->> (merge old-orders new-orders)
-                           vals
-                           (sort-by :placed-at >))]
-    (-> app-state
-        (assoc-in k/order-history-count count)
-        (assoc-in k/order-history-orders order-history)
-        (assoc-in [:models :appointment :date] (:appointment (first order-history))))))
+  (order-history/save-order-history orders count app-state))
 
-(defmethod effects/perform-effects e/flow--orderhistory--resulted
+(defmethod effects/perform-effects e/flow--orderdetails--resulted
   [_ _ args _ app-state]
-  (let [most-recent-open-order (first (get-in app-state k/order-history-orders))
-        api-cache              (get-in app-state k/api-cache)]
-    (messages/handle-message e/ensure-sku-ids {:sku-ids (->> most-recent-open-order
+  (let [order-number (:order-number (last (get-in app-state k/navigation-message)))
+        order        (->> (get-in app-state k/order-history-orders)
+                          (filter (fn [order] (= order-number (:number order))))
+                          first)
+        api-cache    (get-in app-state k/api-cache)]
+    (messages/handle-message e/ensure-sku-ids {:sku-ids (->> order
                                                              :shipments
                                                              (mapcat :line-items)
                                                              (filter line-items/product-or-service?)
@@ -507,10 +501,10 @@
     #?(:cljs
        (api/fetch-vouchers-for-order (get-in app-state k/user-id)
                                      (get-in app-state k/user-token)
-                                     (:number most-recent-open-order)
+                                     (:number order)
                                      {:success-handler #(messages/handle-message e/flow--orderdetails--vouchers-resulted %)
                                       :error-handler   identity}))
-    (when-let [ssid (:servicing-stylist-id most-recent-open-order)]
+    (when-let [ssid (:servicing-stylist-id order)]
       #?(:cljs
          (api/fetch-stylist api-cache
                             (get-in app-state k/user-id)

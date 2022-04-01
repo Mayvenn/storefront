@@ -174,6 +174,7 @@
 
 (defpath control-orderdetails-submit)
 (defpath flow--orderhistory--resulted)
+(defpath flow--orderdetails--resulted)
 (defpath flow--orderdetails--stylist-resulted)
 (defpath flow--orderdetails--vouchers-resulted)
 
