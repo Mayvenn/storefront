@@ -21,24 +21,34 @@
                     :class       "fill-black stroke-black"
                     :close-attrs close-dialog-href})])
 
-(defn bg-image [{:email-capture.photo/keys [uuid-mob uuid-dsk]}]
-  [:div
-   [:div.hide-on-mb
-    (ui/aspect-ratio 1 1
-                     (ui/img {:max-size "500px"
-                              :class    "col-12"
-                              :style    {:vertical-align "bottom"}
-                              :src      uuid-dsk
-                              ;; no alt for decorative image
-                              :alt      ""}))]
-   [:div.hide-on-tb-dt
-    (ui/aspect-ratio 4 3
-                     (ui/img {:max-size "500px"
-                              :class    "col-12"
-                              :style    {:vertical-align "bottom"}
-                              :src      uuid-mob
-                              ;; no alt for decorative image
-                              :alt      ""}))]])
+(defn bg-image
+  [{:email-capture.photo/keys [uuid-mob uuid-dsk]}]
+  (c/html
+   (if (not= uuid-mob uuid-dsk)
+     [:div
+      [:div.hide-on-mb
+       (ui/aspect-ratio 1 1
+                        (ui/img {:max-size "500px"
+                                 :class    "col-12"
+                                 :style    {:vertical-align "bottom"}
+                                 :src      uuid-dsk
+                                 ;; no alt for decorative image
+                                 :alt      ""}))]
+      [:div.hide-on-tb-dt
+       (ui/aspect-ratio 4 3
+                        (ui/img {:max-size "500px"
+                                 :class    "col-12"
+                                 :style    {:vertical-align "bottom"}
+                                 :src      uuid-mob
+                                 ;; no alt for decorative image
+                                 :alt      ""}))]]
+     (ui/aspect-ratio 4 3
+                      (ui/img {:max-size "500px"
+                               :class    "col-12"
+                               :style    {:vertical-align "bottom"}
+                               :src      uuid-mob
+                               ;; no alt for decorative image
+                               :alt      ""})))))
 
 (defn title [{:email-capture.title/keys [primary]}]
   [:div.proxima.title-1.mb3
@@ -109,6 +119,23 @@
    " and "
    [:a.p-color (utils/route-to e/navigate-content-privacy) "Privacy Policy"]
    ". Unsubscribe anytime."])
+
+(defn design-first-pageview-email-capture-2022-04
+  [{:keys [id] :as   data}]
+  (c/html
+   [:div.flex.flex-column
+    {:data-test (str id "-modal")}
+    (m-header id (apply utils/fake-href (:email-capture.dismiss/target data)))
+    (bg-image data)
+    [:div.p4.black.bg-cool-gray
+     [:form.col-12.center.px1
+      {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
+      (title data)
+      [:div.px3
+       (text-field data)
+       (cta-1 data)]]
+     hr-divider
+     fine-print-1]]))
 
 (defn design-adv-quiz-email-capture-2021-non-bf [{:keys [id] :as data}]
   [:div.bg-pale-purple.p4
@@ -372,6 +399,7 @@
        :col-class   "col-12 col-5-on-tb col-4-on-dt flex justify-center"
        :bg-class    "bg-darken-4"}
       ((case [capture-modal-id variant]
+         ["first-pageview-email-capture" "2022-04"]                design-first-pageview-email-capture-2022-04
          ["first-pageview-email-capture" "2021-pre-bf-lower-text"] design-first-pageview-email-capture-2021-pre-bf-lower-text
          ["adv-quiz-email-capture"       "2021-pre-bf-lower-text"] design-adv-quiz-email-capture-2021-pre-bf-lower-text
          ["first-pageview-email-capture" "2021-non-bf"]            design-first-pageview-email-capture-2021-non-bf
@@ -415,12 +443,14 @@
                (case capture-modal-id
 
                  "first-pageview-email-capture"
-                 {:email-capture.photo/uuid-mob "ef2a5a8b-6da2-4abd-af99-c33d485ac275"
-                  :email-capture.photo/uuid-dsk "1ba0870d-dad8-466a-adc9-0d5ec77c9944"
-                  :email-capture.title/primary  [:span "Join our email list and get "
-                                                 [:span.p-color "$35 OFF"]
-                                                 " your first order"]
-                  :email-capture.cta/value      "Sign Up"}
+                 {:email-capture.photo/uuid-mob "8b7a4f0c-1c62-4189-b76b-e6e94a5a41a7"
+                  :email-capture.photo/uuid-dsk "8b7a4f0c-1c62-4189-b76b-e6e94a5a41a7"
+                  :email-capture.title/primary  [:div
+                                                 [:div.title-2.proxima.shout "UNLOCK"]
+                                                 [:div.title-1.canela.p-color "$25 Off"]
+                                                 [:div.title-2.proxima
+                                                  "Plus get exclusive offers, updates on new products, and more."]]
+                  :email-capture.cta/value      "Sign me up"}
 
                  "adv-quiz-email-capture"
                  {:email-capture.cta/value "Sign Up"}
