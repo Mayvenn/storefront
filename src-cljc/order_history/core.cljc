@@ -2,6 +2,7 @@
   (:require #?@(:cljs [[storefront.api :as api]
                        [storefront.accessors.auth :as auth]
                        [storefront.history :as history]])
+            [clojure.string :as string]
             [spice.date :as date]
             [spice.maps :as maps]
             [storefront.accessors.auth :as auth]
@@ -72,7 +73,7 @@ please refer to your order confirmation emails or contact customer service: "
                                tracking-number       "Delivered")
             :total (mf/as-money-without-cents total)}
            #?(:cljs
-              (when appointment-date
+              (when (and stylist-db appointment-date)
                 (let [appt-pacific-time  (-> (js/Date. appointment-date)
                                              (.toLocaleString "en-US" (clj->js {:timeZone "America/Los_Angeles"}))
                                              f/slash-date)
@@ -142,9 +143,10 @@ please refer to your order confirmation emails or contact customer service: "
 
 (defmethod effects/perform-effects e/flow--orderhistory--resulted
   [_ _ {:keys [orders]} _ app-state]
-  #?(:cljs (api/fetch-stylists (get-in app-state storefront.keypaths/api-cache)
-                               (remove nil? (map :servicing-stylist-id orders))
-                               #(messages/handle-message e/flow--orderhistory--stylists--resulted (:stylists %)))))
+  #?(:cljs (when-let [servicing-stylist-ids (string/join "," (distinct (remove nil? (map :servicing-stylist-id orders))))]
+             (api/fetch-stylists (get-in app-state storefront.keypaths/api-cache)
+                                 servicing-stylist-ids
+                                 #(messages/handle-message e/flow--orderhistory--stylists--resulted (:stylists %))))))
 
 (defmethod transitions/transition-state e/flow--orderhistory--stylists--resulted
   [_ _ stylists app-state]
