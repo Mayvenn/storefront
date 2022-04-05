@@ -158,6 +158,7 @@
    in-window?
    drop-shipping?
    hide-delivery-date?
+   shipping-estimate-messaging?
    {:keys [sku price] :as shipping-method}]
   (let [{:keys [min-delivery
                 max-delivery
@@ -179,7 +180,7 @@
     {:react/key            sku
      :disabled/classes     (when disabled? "gray")
      :primary/data-test    (when selected? "selected-shipping-method")
-     :primary/copy         (shipping/names-with-time-range sku drop-shipping?)
+     :primary/copy         (shipping/names-with-time-range sku drop-shipping? shipping-estimate-messaging?)
      :secondary/copy       (when-not hide-delivery-date?
                              (str "Delivery Date: "
                                  (format-delivery-date (date/add-delta current-local-time {:days revised-min}))
@@ -242,7 +243,8 @@
         drop-shipping?                 (boolean (select {:warehouse/slug #{"factory-cn"}} items))
         hide-delivery-date?            (experiments/hide-delivery-date? data)
         inventory-count-shipping-halt? (experiments/inventory-count-shipping-halt? data)
-        hide-guaranteed-shipping?      (experiments/hide-guaranteed-shipping? data)]
+        hide-guaranteed-shipping?      (experiments/hide-guaranteed-shipping? data)
+        shipping-estimate-messaging?   (experiments/shipping-estimate-messaging? data)]
     (merge
      {:delivery/id      (when-not (and free-shipping? only-services?)
                           "shipping-method")
@@ -254,7 +256,8 @@
                                            east-coast-weekday
                                            in-window?
                                            drop-shipping?
-                                           hide-delivery-date?)))}
+                                           hide-delivery-date?
+                                           shipping-estimate-messaging?)))}
      (when-not hide-guaranteed-shipping?
        (if inventory-count-shipping-halt?
          {:delivery.note/id       "inventory-warning"
