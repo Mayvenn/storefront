@@ -143,9 +143,9 @@ please refer to your order confirmation emails or contact customer service: "
 
 (defmethod effects/perform-effects e/flow--orderhistory--resulted
   [_ _ {:keys [orders]} _ app-state]
-  #?(:cljs (when-let [servicing-stylist-ids (string/join "," (distinct (remove nil? (map :servicing-stylist-id orders))))]
+  #?(:cljs (when-let [servicing-stylist-ids (distinct (remove nil? (map :servicing-stylist-id orders)))]
              (api/fetch-stylists (get-in app-state storefront.keypaths/api-cache)
-                                 servicing-stylist-ids
+                                 (string/join "," servicing-stylist-ids)
                                  #(messages/handle-message e/flow--orderhistory--stylists--resulted (:stylists %))))))
 
 (defmethod transitions/transition-state e/flow--orderhistory--stylists--resulted
