@@ -229,6 +229,7 @@
 
     (cookie-jar/save-user cookie (get-in app-state keypaths/user))
     (if-let [email-verification-token (and (not (get-in app-state keypaths/user-verified-at))
+                                           (not (utils/requesting? app-state request-keys/email-verification-verify))
                                            (:evt query-params))]
       (api/email-verification-verify (get-in app-state keypaths/user-token)
                                      (get-in app-state keypaths/user-id)
