@@ -44,9 +44,11 @@
                      (.formatToParts date)))))
 
        (defn long-date [date-like]
+         ;; April 5, 2022
          (format-date {:dateStyle "long"} date-like))
 
        (defn abbr-date [date-like]
+         ;; Apr 5, 2022
          (format-date {:month "short"
                        :day   "numeric"
                        :year  "numeric"} date-like))
@@ -59,16 +61,19 @@
            (vec ((juxt :year :month :day) parts))))]))
 
 (defn day->day-abbr [date-like]
+  ;; Tue
   #?(:cljs
      (format-date {:weekday "short"} date-like)
      :clj nil))
 
 (defn month+day [date-like]
+  ;; 4/5
   (when-let [date (date/to-datetime date-like)]
     #?(:cljs (format-date {:month "numeric" :day "numeric"} date)
        :clj (.print (org.joda.time.format.DateTimeFormat/forPattern "M/d") date))))
 
 (defn slash-date [date-like]
+  ;; 4/5/22
   #?(:clj date-like
      :cljs
      (let [{:keys [month day year]}
@@ -77,6 +82,7 @@
        (string/join "/" [month day year]))))
 
 (defn short-date [date-like]
+  ;; 04.05.2022
   #?(:clj date-like
      :cljs
      (let [{:keys [month day year]}
@@ -85,6 +91,7 @@
        (string/join "." [month day year]))))
 
 (defn time-12-hour [date-like]
+  ;; 2:48 PM
   (when-let [datetime (date/to-datetime date-like)]
     #?(:cljs (format-date {:timeStyle "short"} datetime)
        :clj (.print (org.joda.time.format.DateTimeFormat/forPattern "h:mm a") datetime))))
