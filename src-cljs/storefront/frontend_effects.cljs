@@ -24,8 +24,6 @@
             [storefront.ugc :as ugc]
             [storefront.hooks.convert :as convert]
             [storefront.hooks.exception-handler :as exception-handler]
-            [storefront.hooks.facebook :as facebook]
-            [storefront.hooks.facebook-analytics :as facebook-analytics]
             [storefront.hooks.kustomer :as kustomer]
             [storefront.hooks.lucky-orange :as lucky-orange]
             [storefront.hooks.google-maps :as google-maps]
@@ -463,15 +461,11 @@
 
       (effects/redirect events/navigate-checkout-address))))
 
-(defmethod effects/perform-effects events/navigate-checkout-sign-in [_ event args _ app-state]
-  (facebook/insert))
-
 (defmethod effects/perform-effects events/navigate-checkout-returning-or-guest [_ event args _ app-state]
   (when (get-in app-state keypaths/user-id)
     (effects/redirect events/navigate-checkout-address args))
   (google-maps/remove-containers)
-  (api/get-states (get-in app-state keypaths/api-cache))
-  (facebook/insert))
+  (api/get-states (get-in app-state keypaths/api-cache)))
 
 (defn- fetch-saved-cards [app-state]
   (when-let [user-id (get-in app-state keypaths/user-id)]
@@ -510,8 +504,6 @@
   ;; TODO(corey) getting the current stylist here seems odd, may
   ;; want to fetch the previous-stylist instead
   (messages/handle-message events/cache|current-stylist|requested)
-  (when-not (get-in state keypaths/user-id)
-    (facebook/insert))
   (when (and number
              order-token)
     (api/get-completed-order number order-token))
@@ -534,24 +526,8 @@
     (messages/handle-message events/flash-later-show-success
                              {:message "You are already signed in."})))
 
-(defmethod effects/perform-effects events/navigate-sign-in [_ event args _ app-state]
-  (facebook/insert)
-  (redirect-when-signed-in app-state))
-
 (defmethod effects/perform-effects events/navigate-sign-out [_ _ _ _ app-state]
   (messages/handle-message events/sign-out))
-
-(defmethod effects/perform-effects events/navigate-sign-up [_ event args _ app-state]
-  (facebook/insert)
-  (redirect-when-signed-in app-state))
-
-(defmethod effects/perform-effects events/navigate-forgot-password [_ event args _ app-state]
-  (facebook/insert)
-  (redirect-when-signed-in app-state))
-
-(defmethod effects/perform-effects events/navigate-reset-password [_ event args _ app-state]
-  (facebook/insert)
-  (redirect-when-signed-in app-state))
 
 (defmethod effects/perform-effects events/navigate-not-found [_ event args _ app-state]
   (messages/handle-message events/flash-show-failure
@@ -576,31 +552,6 @@
                  (get-in app-state keypaths/store-stylist-id)
                  number
                  token)))
-
-(defmethod effects/perform-effects events/control-facebook-sign-in [_ event args _ app-state]
-  (facebook/start-log-in app-state))
-
-(defmethod effects/perform-effects events/control-facebook-reset [_ event args _ app-state]
-  (facebook/start-reset app-state))
-
-(defmethod effects/perform-effects events/facebook-success-sign-in [_ _ {:keys [authResponse]} _ app-state]
-  (let [{:keys [number token]} (or (get-in app-state keypaths/order)
-                                   (get-in app-state keypaths/completed-order))]
-    (api/facebook-sign-in (get-in app-state keypaths/session-id)
-                          (get-in app-state keypaths/stringer-browser-id)
-                          (:userID authResponse)
-                          (:accessToken authResponse)
-                          (get-in app-state keypaths/store-stylist-id)
-                          number
-                          token)))
-
-(defmethod effects/perform-effects events/facebook-failure-sign-in [_ _ args _ app-state]
-  (messages/handle-message events/flash-show-failure
-                           {:message "Could not sign in with Facebook.  Please try again, or sign in with email and password."}))
-
-(defmethod effects/perform-effects events/facebook-email-denied [_ _ args _ app-state]
-  (messages/handle-message events/flash-show-failure
-                           {:message "We need your Facebook email address to communicate with you about your orders. Please try again."}))
 
 (defn abort-pending-requests [requests]
   (doseq [{xhr :xhr} requests] (when xhr (ajax/abort xhr))))
@@ -640,16 +591,6 @@
                         (get-in app-state keypaths/order-number)
                         (get-in app-state keypaths/order-token)
                         (get-in app-state keypaths/store-stylist-id))))
-
-(defmethod effects/perform-effects events/facebook-success-reset [_ event facebook-response _ app-state]
-  (api/facebook-reset-password (get-in app-state keypaths/session-id)
-                               (get-in app-state keypaths/stringer-browser-id)
-                               (-> facebook-response :authResponse :userID)
-                               (-> facebook-response :authResponse :accessToken)
-                               (get-in app-state keypaths/reset-password-token)
-                               (get-in app-state keypaths/order-number)
-                               (get-in app-state keypaths/order-token)
-                               (get-in app-state keypaths/store-stylist-id)))
 
 (defmethod effects/perform-effects events/uploadcare-api-success-upload-gallery [_ event {:keys [cdnUrl]} _ app-state]
   (let [user-id    (get-in app-state keypaths/user-id)

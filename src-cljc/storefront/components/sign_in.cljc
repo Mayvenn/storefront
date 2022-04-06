@@ -1,6 +1,5 @@
 (ns storefront.components.sign-in
   (:require [storefront.component :as component :refer [defcomponent]]
-            [storefront.components.facebook :as facebook]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -50,12 +49,8 @@
                       {:data-test "user-submit"})]])
 
 (defcomponent form-component
-  [{:keys [facebook-loaded?] :as data} _ _]
+  [data _ _]
   [:div.flex.flex-column.items-center.col-12.mt1
-
-   [:div.col-12.col-8-on-tb-dt (facebook/sign-in-button facebook-loaded?)]
-   [:div.h5.light.my2 "OR"]
-
    (component/build password-component data nil)
 
    [:div.clearfix.center.my2 "Don't have an account? "
@@ -71,7 +66,6 @@
   {:email                   (get-in data keypaths/sign-in-email)
    :password                (get-in data keypaths/sign-in-password)
    :show-password?          (get-in data keypaths/account-show-password? true)
-   :facebook-loaded?        (get-in data keypaths/loaded-facebook)
    :focused                 (get-in data keypaths/ui-focus)
    :field-errors            (get-in data keypaths/field-errors)})
 

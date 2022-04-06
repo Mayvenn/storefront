@@ -36,15 +36,12 @@
   (when free-install-added?
     {:free-install-added/primary "Free Install Added to Order"}))
 
-(defn ^:private secure-checkout-query
-  [facebook-loaded?]
+(defn ^:private secure-checkout-query []
   {:secure-checkout.title/primary        "Secure Checkout"
    :secure-checkout.title/secondary      "Sign in or checkout as guest. You’ll have an opportunity to create an account after placing your order. "
    :secure-checkout.cta/id               "begin-password-sign-in-button"
    :secure-checkout.cta/value            "Sign in"
-   :secure-checkout.cta/target           e/navigate-checkout-sign-in
-   :secure-checkout.facebook-cta/id      "sign-in-facebook"
-   :secure-checkout.facebook-cta/loaded? facebook-loaded?})
+   :secure-checkout.cta/target           e/navigate-checkout-sign-in})
 
 ;; TODO(heather): refactor checkout_steps component so this query looks like the others
 (defn ^:private checkout-steps-query
@@ -288,8 +285,7 @@
                                   :value           (:address1 billing-address)}})))
 
 (defn query [app-state]
-  (let [facebook-loaded?                 (get-in app-state k/loaded-facebook)
-        current-nav-event                (get-in app-state k/navigation-event)
+  (let [current-nav-event                (get-in app-state k/navigation-event)
         shipping-address                 (get-in app-state k/checkout-shipping-address)
         billing-address                  (get-in app-state k/checkout-billing-address)
         bill-to-shipping-address?        (get-in app-state k/checkout-bill-to-shipping-address)
@@ -304,7 +300,7 @@
         show-phone-marketing-opt-in?     (not= "retail-location" (get-in app-state k/store-experience))
         free-install-added?              (:free-install-added (get-in app-state k/navigation-query-params))]
     {:free-install-added    (free-install-added-query free-install-added?)
-     :secure-checkout       (secure-checkout-query facebook-loaded?)
+     :secure-checkout       (secure-checkout-query)
      :checkout-steps        (checkout-steps-query current-nav-event)
      :checkout-address-form (checkout-address-form-query shipping-address
                                                          billing-address

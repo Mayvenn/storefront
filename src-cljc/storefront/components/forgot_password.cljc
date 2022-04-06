@@ -5,7 +5,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]))
 
-(defcomponent component [{:keys [email facebook-loaded? field-errors focused]} owner opts]
+(defcomponent component [{:keys [email field-errors focused]} owner opts]
   (ui/narrow-container
    [:div.p2
     [:h1.h2.center.my2.mb3 "Reset your password"]

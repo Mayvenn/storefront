@@ -1,7 +1,6 @@
 (ns storefront.components.checkout-returning-or-guest
   (:require [storefront.component :as component :refer [defcomponent]]
             [checkout.returning-or-guest-v2020-05 :as v2020-05]
-            [storefront.components.facebook :as facebook]
             [storefront.components.checkout-address :as checkout-address]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
@@ -15,7 +14,7 @@
    [:div.h4.mx2 "or"]
    [:div.flex-grow-1.border-bottom.border-gray]])
 
-(defcomponent component [{:keys [facebook-loaded? address]} owner _]
+(defcomponent component [{:keys [address]} owner _]
   [:div
    [:div.container ;; Tries to match what's going on in checkout-address/component
     [:div
@@ -31,16 +30,13 @@
          [:div.col-10.mx-auto.py1
           (ui/button-medium-primary (assoc (utils/route-to events/navigate-checkout-sign-in)
                                           :data-test "begin-password-sign-in-button")
-                                   "Sign in")]
-         [:div.col-10.mx-auto.py1
-          (facebook/narrow-sign-in-button facebook-loaded?)]]]
+                                   "Sign in")]]]
        or-separator]]]]
    (component/build checkout-address/component address)])
 
 (defn query [data]
-  {:facebook-loaded? (get-in data keypaths/loaded-facebook)
-   :address          (-> (checkout-address/query data)
-                         (assoc-in [:shipping-address-data :become-guest?] true))})
+  {:address (-> (checkout-address/query data)
+                (assoc-in [:shipping-address-data :become-guest?] true))})
 
 (defn ^:export built-component
   [data opts]

@@ -289,7 +289,6 @@
 
 (def loaded (conj ui :loaded))
 (def loaded-convert (conj loaded :convert))
-(def loaded-facebook (conj loaded :facebook))
 (def loaded-google-maps (conj loaded :google-maps))
 (def loaded-stripe (conj loaded :stripe))
 (def loaded-quadpay (conj loaded :quadpay))
@@ -301,8 +300,6 @@
 
 (def loaded-muuri (conj loaded :muuri))
 (def initialize-muuri (conj loaded :initialize-muuri))
-
-(def facebook-email-denied (conj ui :facebook-email-denied))
 
 (def footer-email-submitted [:footer :email :submitted])
 (def footer-email-ready [:footer :email :ready])

@@ -293,32 +293,6 @@
                                   select-auth-keys
                                   (assoc :flow "email-password")))}))
 
-(defn facebook-sign-in [session-id browser-id uid access-token stylist-id order-number order-token]
-  (storeback-api-req
-   POST
-   "/v2/login/facebook"
-   request-keys/facebook-sign-in
-   {:params
-    {:session-id session-id
-     :browser-id browser-id
-     :uid uid
-     :access-token access-token
-     :stylist-id stylist-id
-     :order-number order-number
-     :order-token order-token}
-    :handler
-    (fn [response]
-      (let [auth-keys (-> response
-                          (update :order orders/TEMP-pretend-service-items-do-not-exist)
-                          select-auth-keys
-                          (assoc :flow "facebook"))
-            ;; Since we use facebook sign-in for both sign-in and sign-up, we
-            ;; need to trigger the appropriate event. Diva tells us when this
-            ;; flow has created a new user.
-            new-user? (get-in auth-keys [:user :is-new-user])
-            success-event (if new-user? events/api-success-auth-sign-up events/api-success-auth-sign-in)]
-        (messages/handle-message success-event auth-keys)))}))
-
 (defn sign-up [session-id browser-id email password stylist-id order-number order-token]
   (storeback-api-req
    POST
@@ -358,27 +332,6 @@
                                   (update :order orders/TEMP-pretend-service-items-do-not-exist)
                                   select-auth-keys
                                   (assoc :flow "email-password")))}))
-
-(defn facebook-reset-password [session-id browser-id uid access-token reset-token order-number order-token stylist-id]
-  (storeback-api-req
-   POST
-   "/v2/reset_facebook"
-   request-keys/reset-facebook
-   {:params
-    {:session-id session-id
-     :browser-id browser-id
-     :uid uid
-     :access-token access-token
-     :reset-password-token reset-token
-     :order-number order-number
-     :order-token order-token
-     :stylist-id stylist-id}
-    :handler
-    #(messages/handle-message events/api-success-auth-reset-password
-                              (-> %
-                                  (update :order orders/TEMP-pretend-service-items-do-not-exist)
-                                  select-auth-keys
-                                  (assoc :flow "facebook")))}))
 
 (defn forgot-password [session-id email]
   (storeback-api-req

@@ -11,8 +11,6 @@
 (def sign-in [:sign-in])
 (def one-time-sign-in [:one-time-sign-in])
 (def sign-up [:sign-up])
-(def facebook-sign-in [:facebook-sign-in])
-(def reset-facebook [:reset-facebook])
 (def forgot-password [:forgot-password])
 (def reset-password [:reset-password])
 (def get-account [:get-account])

@@ -204,9 +204,6 @@
 (defpath control-force-set-password-submit)
 (defpath control-account-profile-submit)
 
-(defpath control-facebook-sign-in)
-(defpath control-facebook-reset)
-
 (defpath control-browse-variant)
 
 (defpath control-add-sku-to-bag)
@@ -423,12 +420,6 @@
 (defpath save-order)
 (defpath clear-order)
 
-(defpath facebook)
-(defpath facebook-success-sign-in)
-(defpath facebook-success-reset)
-(defpath facebook-failure-sign-in)
-(defpath facebook-email-denied)
-
 (defpath convert)
 (defpath enable-feature)
 (defpath clear-features)
@@ -437,7 +428,6 @@
 (defpath inserted)
 (defpath inserted-stringer)
 (defpath inserted-convert)
-(defpath inserted-facebook)
 (defpath inserted-google-maps)
 (defpath inserted-quadpay)
 (defpath inserted-stripe)

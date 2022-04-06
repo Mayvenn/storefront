@@ -1,10 +1,7 @@
 (ns storefront.components.order-details-sign-up
   (:require [storefront.component :as component :refer [defcomponent]]
-            [storefront.components.facebook :as facebook]
-            [storefront.effects :as effects]
             [storefront.events :as e]
             [storefront.components.ui :as ui]
-            [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]))
 
@@ -16,7 +13,7 @@
            show-password?]}
    {:keys [sign-up-text]}]
   [:form.col-12.flex.flex-column.items-center
-   {:on-submit (utils/send-event-callback events/control-sign-up-submit)}
+   {:on-submit (utils/send-event-callback e/control-sign-up-submit)}
 
    (ui/text-field {:data-test    "user-email"
                    :autocomplete "username"

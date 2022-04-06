@@ -564,23 +564,11 @@
 (defmethod transition-state events/inserted-uploadcare [_ _ _ app-state]
   (assoc-in app-state keypaths/loaded-uploadcare true))
 
-(defmethod transition-state events/inserted-facebook [_ event args app-state]
-  (assoc-in app-state keypaths/loaded-facebook true))
-
 (defmethod transition-state events/stripe-component-mounted [_ event {:keys [card-element]} app-state]
   (assoc-in app-state keypaths/stripe-card-element card-element))
 
 (defmethod transition-state events/stripe-component-will-unmount [_ event _ app-state]
   (update-in app-state keypaths/stripe-card-element dissoc))
-
-(defmethod transition-state events/facebook-success-sign-in [_ event args app-state]
-  (assoc-in app-state keypaths/facebook-email-denied nil))
-
-(defmethod transition-state events/facebook-failure-sign-in [_ event args app-state]
-  (assoc-in app-state keypaths/facebook-email-denied nil))
-
-(defmethod transition-state events/facebook-email-denied [_ event args app-state]
-  (assoc-in app-state keypaths/facebook-email-denied true))
 
 (defmethod transition-state events/sign-out [_ event args app-state]
   (-> app-state
@@ -591,8 +579,7 @@
       (assoc-in keypaths/stylist state/initial-stylist-state)
       (assoc-in keypaths/checkout state/initial-checkout-state)
       (assoc-in keypaths/billing-address {})
-      (assoc-in keypaths/shipping-address {})
-      (assoc-in keypaths/facebook-email-denied nil)))
+      (assoc-in keypaths/shipping-address {})))
 
 (defmethod transition-state events/stripe-failure-create-token [_ event stripe-response app-state]
   (let [{:keys [code message]} (:error stripe-response)]
