@@ -6,6 +6,7 @@
             [mayvenn.concept.email-capture :as email-capture]
             [mayvenn.concept.hard-session :as hard-session]
             [spice.maps :as maps]
+            [spice.date :as date]
             [lambdaisland.uri :as uri]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.credit-cards :as cc]
@@ -490,6 +491,15 @@
   (quadpay/insert))
 
 (defmethod effects/perform-effects events/navigate-checkout-confirmation [_ event args _ app-state]
+  ;; To guarantee that shipping times update
+  (messages/handle-later events/redirect
+                         {:nav-message [events/navigate-checkout-confirmation nil]}
+                         (let [now                   (date/now)
+                               minutes               (.getMinutes now)
+                               seconds               (.getSeconds now)
+                               seconds-past-the-hour (+ (* 60 minutes) seconds)
+                               seconds-til-the-hour  (spice.core/spy (inc (- 3600 seconds-past-the-hour)))]
+                           (* 1000 seconds-til-the-hour)))
   ;; TODO: get the credit card component to function correctly on direct page load
   (when (empty? (get-in app-state keypaths/order-cart-payments))
     (effects/redirect events/navigate-checkout-payment))
