@@ -161,7 +161,6 @@
    east-coast-weekday
    in-window?
    drop-shipping?
-   hide-delivery-date?
    shipping-estimate-messaging?
    {:keys [sku price] :as shipping-method}]
   (let [{:keys [min-delivery
@@ -202,13 +201,12 @@
                               :else "p-color")
       :detail/value (mf/as-money-or-free price)}
      (if shipping-estimate-messaging?
-       {:primary/copy         (when-not hide-delivery-date?
-                                #?(:clj nil
-                                   :cljs
-                                   (formatters/format-date {:weekday "short"
-                                                            :month "long"
-                                                            :day "numeric"}
-                                                           (date/add-delta current-local-time {:days revised-max}))))
+       {:primary/copy         #?(:clj nil
+                                 :cljs
+                                 (formatters/format-date {:weekday "short"
+                                                          :month "long"
+                                                          :day "numeric"}
+                                                         (date/add-delta current-local-time {:days revised-max})))
         :secondary/copy       (str (shipping/names-with-time-range sku
                                                                    drop-shipping?
                                                                    shipping-estimate-messaging?)
@@ -217,11 +215,10 @@
         :quaternary/copy      (when (and (not disabled?) drop-shipping?)
                                 "This order contains items that are only eligible for Free Standard Shipping.")}
        {:primary/copy         (shipping/names-with-time-range sku drop-shipping? shipping-estimate-messaging?)
-        :secondary/copy       (when-not hide-delivery-date?
-                                (str "Delivery Date: "
-                                     (format-delivery-date (date/add-delta current-local-time {:days revised-min}))
-                                     (when-not (= revised-min revised-max)
-                                       (str "–" (format-delivery-date (date/add-delta current-local-time {:days revised-max}))))))
+        :secondary/copy       (str "Delivery Date: "
+                                   (format-delivery-date (date/add-delta current-local-time {:days revised-min}))
+                                   (when-not (= revised-min revised-max)
+                                     (str "–" (format-delivery-date (date/add-delta current-local-time {:days revised-max})))))
         :tertiary/copy        (shipping/shipping-note sku)
         :quaternary/copy      (when (and (not disabled?) drop-shipping?)
                                 "This order contains items that are only eligible for Free Standard Shipping.")}))))
@@ -261,7 +258,6 @@
         free-shipping?                 (= "WAITER-SHIPPING-1" (:sku shipping))
         only-services?                 (every? line-items/service? (orders/product-and-service-items order))
         drop-shipping?                 (boolean (select {:warehouse/slug #{"factory-cn"}} items))
-        hide-delivery-date?            (experiments/hide-delivery-date? data)
         inventory-count-shipping-halt? (experiments/inventory-count-shipping-halt? data)
         hide-guaranteed-shipping?      (experiments/hide-guaranteed-shipping? data)
         shipping-estimate-messaging?   (experiments/shipping-estimate-messaging? data)]
@@ -278,7 +274,6 @@
                                            east-coast-weekday
                                            in-window?
                                            drop-shipping?
-                                           hide-delivery-date?
                                            shipping-estimate-messaging?)))
       :delivery/shipping-estimate-messaging? shipping-estimate-messaging?}
      (when-not hide-guaranteed-shipping?

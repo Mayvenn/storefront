@@ -137,10 +137,6 @@
   [data]
   (display-feature? data "fi-upsell-interstitial"))
 
-(defn hide-delivery-date?
-  [data]
-  (display-feature? data "shipping-delay"))
-
 (defn inventory-count-shipping-halt?
   [data]
   (display-feature? data "inventory-count-shipping-halt"))

@@ -31,16 +31,15 @@
     "WAITER-SHIPPING-4" "(No P.O. Box)"
     nil) )
 
-(defn timeframe [rate-sku drop-shipping? hide-delivery-date?]
-  (when-not hide-delivery-date?
-      (case rate-sku
-        "WAITER-SHIPPING-1" (if drop-shipping?
-                              "7-10 days"
-                              "4-6 days")
-        "WAITER-SHIPPING-7" "2-4 days"
-        "WAITER-SHIPPING-2" "1-2 business days"
-        "WAITER-SHIPPING-4" "1 business day"
-        nil)))
+(defn timeframe [rate-sku drop-shipping?]
+  (case rate-sku
+    "WAITER-SHIPPING-1" (if drop-shipping?
+                          "7-10 days"
+                          "4-6 days")
+    "WAITER-SHIPPING-7" "2-4 days"
+    "WAITER-SHIPPING-2" "1-2 business days"
+    "WAITER-SHIPPING-4" "1 business day"
+    nil))
 
 (defn shipping-details [shipment]
   (let [shipping-line-item    (->> shipment
