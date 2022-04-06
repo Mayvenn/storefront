@@ -5,6 +5,7 @@
             [cemerick.url :as url]
             [clojure.string :as string]
             [spice.core :as spice]
+            [spice.date :as date]
             [spice.maps :as maps]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
@@ -286,9 +287,35 @@
         (assoc-in keypaths/checkout-phone-marketing-opt-in phone-marketing-opt-in))))
 
 (defmethod transition-state events/navigate-checkout-confirmation [_ event args app-state]
-  (-> app-state
-      ensure-cart-has-shipping-method
-      (update-in keypaths/checkout-credit-card-existing-cards empty)))
+  (let [{east-coast-hour-str :hour
+         east-coast-weekday  :weekday} (->>  (date/now)
+                                             (.formatToParts
+                                              (js/Intl.DateTimeFormat
+                                               "en-US" #js
+                                               {:timeZone "America/New_York"
+                                                :weekday  "short"
+                                                :hour     "numeric"
+                                                :hour12   false}))
+                                             js->clj
+                                             (mapv js->clj)
+                                             (mapv (fn [{:strs [type value]}]
+                                                     {(keyword type) value}))
+                                             (reduce merge {}))
+        parsed-east-coast-hour         (spice/parse-int east-coast-hour-str)
+        mon-thu?                       (contains? #{"Mon" "Tue" "Wed" "Thu"} east-coast-weekday)
+        fri?                           (= "Fri" east-coast-weekday)
+        in-window?                     (or (and fri? (< parsed-east-coast-hour 10))
+                                           (and mon-thu? (< parsed-east-coast-hour 13)))
+        was-in-window?                 (-> app-state (get-in keypaths/checkout-shipping) :note (= :in-shipping-window))]
+    (-> app-state
+        ensure-cart-has-shipping-method
+        (assoc-in keypaths/checkout-shipping {:note               (cond
+                                                                    in-window?     :in-shipping-window
+                                                                    was-in-window? :was-in-shipping-window
+                                                                    :else          nil)
+                                              :east-coast-weekday east-coast-weekday
+                                              :now                (date/now)})
+        (update-in keypaths/checkout-credit-card-existing-cards empty))))
 
 (defmethod transition-state events/navigate-order-complete [_ event args app-state]
   (when-not (get-in app-state keypaths/user-id)

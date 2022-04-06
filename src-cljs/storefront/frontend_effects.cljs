@@ -487,12 +487,12 @@
 (defmethod effects/perform-effects events/navigate-checkout-confirmation [_ event args _ app-state]
   ;; To guarantee that shipping times update
   (messages/handle-later events/redirect
-                         {:nav-message [events/navigate-checkout-confirmation nil]}
+                         {:nav-message [events/navigate-checkout-confirmation]}
                          (let [now                   (date/now)
                                minutes               (.getMinutes now)
                                seconds               (.getSeconds now)
                                seconds-past-the-hour (+ (* 60 minutes) seconds)
-                               seconds-til-the-hour  (spice.core/spy (inc (- 3600 seconds-past-the-hour)))]
+                               seconds-til-the-hour  (inc (- 3600 seconds-past-the-hour))]
                            (* 1000 seconds-til-the-hour)))
   ;; TODO: get the credit card component to function correctly on direct page load
   (when (empty? (get-in app-state keypaths/order-cart-payments))

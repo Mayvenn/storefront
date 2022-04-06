@@ -138,6 +138,7 @@
 (def shop-a-la-carte-menu-expanded (conj ui :shop-a-la-carte-menu-expanded))
 (def shop-looks-menu-expanded (conj ui :shop-looks-menu-expanded))
 (def shop-bundle-sets-menu-expanded (conj ui :shop-bundle-sets-menu-expanded))
+(def checkout-shipping (conj ui :checkout-shipping))
 (def flyout-stuck-open? (conj ui :flyout-stuck-open?))
 (def popup (conj ui :popup))
 (def header-menus #{account-menu-expanded

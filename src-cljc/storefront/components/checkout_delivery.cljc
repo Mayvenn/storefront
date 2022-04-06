@@ -201,84 +201,69 @@
                               :else "p-color")
       :detail/value (mf/as-money-or-free price)}
      (if shipping-estimate-messaging?
-       {:primary/copy         #?(:clj nil
-                                 :cljs
-                                 (formatters/format-date {:weekday "short"
-                                                          :month "long"
-                                                          :day "numeric"}
-                                                         (date/add-delta current-local-time {:days revised-max})))
-        :secondary/copy       (str (shipping/names-with-time-range sku
-                                                                   drop-shipping?
-                                                                   shipping-estimate-messaging?)
-                                   " "
-                                   (shipping/shipping-note sku))
-        :quaternary/copy      (when (and (not disabled?) drop-shipping?)
-                                "This order contains items that are only eligible for Free Standard Shipping.")}
-       {:primary/copy         (shipping/names-with-time-range sku drop-shipping? shipping-estimate-messaging?)
-        :secondary/copy       (str "Delivery Date: "
-                                   (format-delivery-date (date/add-delta current-local-time {:days revised-min}))
-                                   (when-not (= revised-min revised-max)
-                                     (str "–" (format-delivery-date (date/add-delta current-local-time {:days revised-max})))))
-        :tertiary/copy        (shipping/shipping-note sku)
-        :quaternary/copy      (when (and (not disabled?) drop-shipping?)
-                                "This order contains items that are only eligible for Free Standard Shipping.")}))))
+       {:primary/copy    #?(:clj nil
+                            :cljs
+                            (formatters/format-date {:weekday "short"
+                                                     :month   "long"
+                                                     :day     "numeric"}
+                                                    (date/add-delta current-local-time {:days revised-max})))
+        :secondary/copy  (str (shipping/names-with-time-range sku
+                                                              drop-shipping?
+                                                              shipping-estimate-messaging?)
+                              " "
+                              (shipping/shipping-note sku))
+        :quaternary/copy (when (and (not disabled?) drop-shipping?)
+                           "This order contains items that are only eligible for Free Standard Shipping.")}
+       {:primary/copy    (shipping/names-with-time-range sku drop-shipping? shipping-estimate-messaging?)
+        :secondary/copy  (str "Delivery Date: "
+                              (format-delivery-date (date/add-delta current-local-time {:days revised-min}))
+                              (when-not (= revised-min revised-max)
+                                (str "–" (format-delivery-date (date/add-delta current-local-time {:days revised-max})))))
+        :tertiary/copy   (shipping/shipping-note sku)
+        :quaternary/copy (when (and (not disabled?) drop-shipping?)
+                           "This order contains items that are only eligible for Free Standard Shipping.")}))))
 
 (defn query [data]
-  (let [shipping-methods               (get-in data keypaths/shipping-methods)
-        selected-sku                   (get-in data keypaths/checkout-selected-shipping-method-sku)
-        now                            (date/now)
-        {east-coast-hour-str :hour
-         east-coast-weekday  :weekday} #?(:cljs
-                                          (->>  now
-                                                (.formatToParts
-                                                 (js/Intl.DateTimeFormat
-                                                 "en-US" #js
-                                                  {:timeZone "America/New_York"
-                                                   :weekday  "short"
-                                                   :hour     "numeric"
-                                                   :hour12   false}))
-                                                js->clj
-                                                (mapv js->clj)
-                                                (mapv (fn [{:strs [type value]}]
-                                                        {(keyword type) value}))
-                                                (reduce merge {}))
-                                          :clj nil)
-        parsed-east-coast-hour         (spice/parse-int east-coast-hour-str)
-        mon-thu?                       (contains? #{"Mon" "Tue" "Wed" "Thu"} east-coast-weekday)
-        fri?                           (= "Fri" east-coast-weekday)
-        in-window?                     (or (and fri? (< parsed-east-coast-hour 10))
-                                           (and mon-thu? (< parsed-east-coast-hour 13)))
-
+  (let [shipping-methods                           (get-in data keypaths/shipping-methods)
+        selected-sku                               (get-in data keypaths/checkout-selected-shipping-method-sku)
         {:order/keys [items] :waiter/keys [order]} (api.orders/current data)
-
-        shipping                       (orders/shipping-item order)
-        free-shipping?                 (= "WAITER-SHIPPING-1" (:sku shipping))
-        only-services?                 (every? line-items/service? (orders/product-and-service-items order))
-        drop-shipping?                 (boolean (select {:warehouse/slug #{"factory-cn"}} items))
-        inventory-count-shipping-halt? (experiments/inventory-count-shipping-halt? data)
-        show-guaranteed-shipping?      (not (experiments/hide-guaranteed-shipping? data))
-        shipping-estimate-messaging?   (experiments/shipping-estimate-messaging? data)]
+        shipping                                   (orders/shipping-item order)
+        free-shipping?                             (= "WAITER-SHIPPING-1" (:sku shipping))
+        only-services?                             (every? line-items/service? (orders/product-and-service-items order))
+        drop-shipping?                             (boolean (select {:warehouse/slug #{"factory-cn"}} items))
+        inventory-count-shipping-halt?             (experiments/inventory-count-shipping-halt? data)
+        show-guaranteed-shipping?                  (not (experiments/hide-guaranteed-shipping? data))
+        shipping-estimate-messaging?               (experiments/shipping-estimate-messaging? data)
+        {checkout-shipping-note :note
+         now                    :now
+         east-coast-weekday     :east-coast-weekday}   (get-in data keypaths/checkout-shipping)]
     (merge
      {:delivery/id                           (when-not (and free-shipping? only-services?)
-                          "shipping-method")
+                                               "shipping-method")
       :delivery/primary                      (if shipping-estimate-messaging?
-                          "Choose Delivery Date"
-                          "Shipping Method")
+                                               "Choose Delivery Date"
+                                               "Shipping Method")
       :delivery/options                      (->> shipping-methods
-                             (map (partial shipping-method->shipping-method-option
-                                           selected-sku
-                                           now
-                                           east-coast-weekday
-                                           in-window?
-                                           drop-shipping?
-                                           shipping-estimate-messaging?)))
+                                                  (map (partial shipping-method->shipping-method-option
+                                                                selected-sku
+                                                                now
+                                                                east-coast-weekday
+                                                                (= checkout-shipping-note :in-shipping-window)
+                                                                drop-shipping?
+                                                                shipping-estimate-messaging?)))
       :delivery/shipping-estimate-messaging? shipping-estimate-messaging?}
      (when show-guaranteed-shipping?
        (if inventory-count-shipping-halt?
          {:delivery.note/id       "inventory-warning"
           :delivery.note/copy     "Due to our annual year-end inventory count, Mayvenn will not be shipping new orders until Monday, December 13."
           :delivery.note/severity :warning}
-         {:delivery.note/id   (when in-window? "delivery-note")
-          :delivery.note/copy (if fri?
-                                "Order by 10am ET today to have the guaranteed delivery dates below"
-                                "Order by 1pm ET today to have the guaranteed delivery dates below")})))))
+         (cond
+           (= checkout-shipping-note :in-shipping-window)
+           {:delivery.note/id   "delivery-note"
+            :delivery.note/copy (if (= "Fri" east-coast-weekday)
+                                  "Order by 10am ET today to have the guaranteed delivery dates below"
+                                  "Order by 1pm ET today to have the guaranteed delivery dates below")}
+           (= checkout-shipping-note :was-in-shipping-window)
+           {:delivery.note/id       "delivery-note"
+            :delivery.note/severity :warning
+            :delivery.note/copy     "The estimated delivery dates below have been updated."}))))))
