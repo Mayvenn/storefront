@@ -75,7 +75,7 @@
 
 (defmethod t/transition-state e/biz|hard-session|end
   [_ _ args state]
-  (transitions/clear-sensitive-info state))
+  (t/clear-sensitive-info state))
 
 (defmethod fx/perform-effects e/biz|hard-session|timeout|begin
   [_ _ _ _ state]
