@@ -22,11 +22,10 @@
 
 
 (defn order-row
-  [{:keys [number placed-at shipping-status total appointment-notice open?]}]
+  [{:keys [number placed-at shipping-status total appointment-notice]}]
   [:a.block.flex.inherit-color.bg-white.my2.p2
    (merge {:data-test (str "order-history-row-" number)
            :key       (str "order-history-row-" number)}
-          (when open? {:class "bold"})
           (utils/route-to e/navigate-yourlooks-order-details {:order-number number}))
    [:div.flex-auto
     [:div.flex.justify-between.items-center
@@ -83,6 +82,7 @@ please refer to your order confirmation emails or contact customer service: "
             :shipping-status (cond
                                (seq tracking-status) tracking-status
                                (= "in-store" method) "In Store"
+                               ;; If there's a number but no tracking status, we can't track it and assume it was delivered.
                                tracking-number       "Delivered")
             :total           (mf/as-money total)}
            #?(:cljs
