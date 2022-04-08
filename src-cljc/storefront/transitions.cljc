@@ -66,6 +66,11 @@
       (assoc-in keypaths/flash-now-success nil)
       (assoc-in keypaths/flash-now-failure nil)))
 
+(defn clear-sensitive-info [app-state]
+  (-> app-state
+      ;; Vouchers are on order history
+      (assoc-in keypaths/order-history nil)))
+
 (defmethod transition-state events/navigate-shop-by-look
   [_ event {:keys [album-keyword query-params] :as args} app-state]
   (-> app-state

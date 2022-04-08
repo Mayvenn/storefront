@@ -599,10 +599,10 @@
 
 (defmethod transition-state events/sign-out [_ event args app-state]
   (-> app-state
+      transitions/clear-sensitive-info
       (assoc-in keypaths/v2-dashboard state/initial-dashboard-state)
       (assoc-in keypaths/user {})
       (assoc-in keypaths/completed-order nil)
-      (assoc-in keypaths/order-history {})
       (assoc-in keypaths/stylist state/initial-stylist-state)
       (assoc-in keypaths/checkout state/initial-checkout-state)
       (assoc-in keypaths/billing-address {})
