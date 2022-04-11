@@ -251,7 +251,7 @@
           {:page/title "360 Lace Frontals: Virgin Hair 360 Frontals | Mayvenn"}
           frontals-templates)
    (merge {:catalog/category-id           "1"
-           :copy/title                    "Hair Frontals"
+           :copy/title                    "Virgin Hair Frontals"
            :page/slug                     "virgin-frontals"
            :seo/title                     "Hair Frontals"
            :legacy/named-search-slug      "frontals"
