@@ -35,7 +35,6 @@
     {:title       (:footer/title category)
      :sort-order  (:footer/order category)
      :id          slug
-     :new-link?   new?
      :nav-message nav-message}))
 
 (defn shop-section [{:keys [link-columns]}]
@@ -45,14 +44,12 @@
     [:nav.black.clearfix {:aria-label "Shop Products"}
      (for [link-column link-columns]
        [:div.col.col-6 {:key (str "footer-column-" (-> link-column first :id))}
-        (for [{:keys [title new-link? nav-message id]} link-column
+        (for [{:keys [title nav-message id]} link-column
               :let [data-test (str "footer-link-" id)]]
           [:a.inherit-color.block.py1.light.titleize
            (merge {:key       data-test
                    :data-test data-test}
                   (apply utils/route-to nav-message))
-           (when new-link?
-             [:span.p-color.shout "New "])
            title])])]]))
 
 (defcomponent contacts-section [{:keys [call-number sms-number contact-email business-hours]} _ _]
@@ -108,15 +105,13 @@
    :business-hours "Monday - Friday, 11am - 8pm ET"
    :contact-email "help@mayvenn.com"})
 
-(defn dtc-link [{:keys [title new-link? nav-message nav-href id]}]
+(defn dtc-link [{:keys [title nav-message nav-href id]}]
   (component/html
    [:a.inherit-color.block.py2.light.pointer
     ^:attrs (merge {:data-test (str id "-footer-link")
                     :key       (str id "-footer-link")}
                    (when nav-message (apply utils/route-to nav-message))
                    (when nav-href {:href nav-href}))
-    (when new-link?
-      [:span.p-color.shout "New "])
     (str title)]))
 
 (defcomponent dtc-shop-section [{:keys [link-columns]} _ _]
@@ -173,23 +168,19 @@
                                      [{:title       "Start Hair Quiz"
                                        :sort-order  1
                                        :id          "quiz-unified-fi"
-                                       :new-link?   true
                                        :nav-message [events/navigate-shopping-quiz-unified-freeinstall-intro {:query-params {:location "footer"}}]}
                                       {:title       "Find a Stylist"
                                        :sort-order  1
                                        :id          "find-a-stylist"
-                                       :new-link?   false
                                        :nav-message [events/navigate-adventure-find-your-stylist]}])
                                    (when (not classic?)
                                      [{:title       "Shop By Look"
                                        :sort-order  3
                                        :id          "shop-by-look"
-                                       :new-link?   false
                                        :nav-message [events/navigate-shop-by-look {:album-keyword :look}]}
                                       {:title       "Shop Bundle Sets"
                                        :sort-order  4
                                        :id          "shop-bundle-sets"
-                                       :new-link?   false
                                        :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]}]))
         links              (->> categories
                                 (mapv (partial category->link))
