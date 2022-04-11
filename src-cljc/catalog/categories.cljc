@@ -171,7 +171,7 @@
    (merge {:catalog/category-id              "38"
            :copy/title                       "Standard Lace Closures"
            :page/slug                        "lace-closures"
-           :seo/title                        "Lace Closures"
+           :seo/title                        "Standard Lace Closures"
            :subcategory/image-id             "1ccd94c8-7e9b-4d92-bc74-908beb14e126"
            :subcategory/description          (copy "Lace closures mimic the color of your scalp for a natural hairline,"
                                                    "but are more transparent compared to silk bases.")
@@ -189,12 +189,12 @@
            :header/title                     "Lace Virgin Hair Closures"
 
            :contentful/faq-id :category-virgin-closures}
-          (category->seo "Lace Closures"
+          (category->seo "Standard Lace Closures"
                          (copy "Get your dream hair with Mayvenn’s 100% human hair lace closures"
                                "that blend seamlessly with our bundles for a unique look that’s"
                                "all your own.")
                          "//ucarecdn.com/12e8ebfe-06cd-411a-a6fb-909041723333/")
-          {:page/title "Lace Closures: Human Hair Lace Closures | Mayvenn"}
+          {:page/title "Standard Lace Closures: Human Hair Lace Closures | Mayvenn"}
           closures-templates)
    (merge {:catalog/category-id              "39"
            :copy/title                       "Silk Closures"
