@@ -75,7 +75,7 @@
   [:div.px2.pt4
    {:style {:color "#767676"
             :font  "10px/16px 'Proxima Nova', Arial, sans-serif"}}
-   "*$35 Off offer is for first-time subscribers only. $200 minimum purchase required. "
+   "*$25 Off offer is for first-time subscribers only. $200 minimum purchase required. "
    "Mayvenn may choose to modify the promotion at any time. "
    "*I consent to receive Mayvenn marketing content via email. "
    "For further information, please read our "
