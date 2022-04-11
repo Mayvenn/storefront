@@ -124,7 +124,7 @@
            :subcategories/layout             :list
            :selector/essentials              [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives               [:hair/origin :hair/texture :hair/color :hair/base-material]
-           :subsections/subsection-selectors [#:subsection{:title "Lace Closures" :selector #:hair{:base-material #{"lace"}}}
+           :subsections/subsection-selectors [#:subsection{:title "Standard Lace Closures" :selector #:hair{:base-material #{"lace"}}}
                                               #:subsection{:title "Silk Closures" :selector #:hair{:base-material #{"silk"}}}]
            :header/title                     "Virgin Hair Closures"
            :content-block/title              "Closures 101:"
@@ -169,7 +169,7 @@
           {:page/title "100% Virgin Hair Closures | Mayvenn"}
           closures-templates)
    (merge {:catalog/category-id              "38"
-           :copy/title                       "Lace Closures"
+           :copy/title                       "Standard Lace Closures"
            :page/slug                        "lace-closures"
            :seo/title                        "Lace Closures"
            :subcategory/image-id             "1ccd94c8-7e9b-4d92-bc74-908beb14e126"
@@ -275,11 +275,11 @@
            :selector/essentials           [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives            [:hair/origin :hair/texture :hair/color]
            :product-list/title            "Shop All Frontals"
-           :subcategories/ids             ["10" "29"]
+           :subcategories/ids             ["29" "10"]
            :subcategories/layout          :list
 
-           :subsections/subsection-selectors [#:subsection{:title "360 frontals" :selector #:hair{:family #{"360-frontals"}}}
-                                              #:subsection{:title "Frontals" :selector #:hair{:family #{"frontals"}}}]
+           :subsections/subsection-selectors [ #:subsection{:title "Standard Lace Frontals" :selector #:hair{:family #{"frontals"}}}
+                                              #:subsection{:title "360 frontals" :selector #:hair{:family #{"360-frontals"}}}]
 
            :content-block/type     :about-attributes
            :content-block/title    "Frontals 101:"
@@ -299,7 +299,7 @@
           {:page/title "100% Human Hair Lace Frontals | Mayvenn"}
           frontals-templates)
    (merge {:catalog/category-id      "29"
-           :copy/title               "Virgin Hair Lace Frontals"
+           :copy/title               "Standard Lace Frontals"
            :page/slug                "virgin-lace-frontals"
            :seo/title                "Virgin Hair Frontals"
            :legacy/named-search-slug "frontals"
