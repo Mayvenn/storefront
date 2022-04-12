@@ -400,6 +400,7 @@
        :bg-class    "bg-darken-4"}
       ((case [capture-modal-id variant]
          ["first-pageview-email-capture" "2022-04"]                design-first-pageview-email-capture-2022-04
+         ["adv-quiz-email-capture" "2022-04"]                      design-first-pageview-email-capture-2022-04
          ["first-pageview-email-capture" "2021-pre-bf-lower-text"] design-first-pageview-email-capture-2021-pre-bf-lower-text
          ["adv-quiz-email-capture"       "2021-pre-bf-lower-text"] design-adv-quiz-email-capture-2021-pre-bf-lower-text
          ["first-pageview-email-capture" "2021-non-bf"]            design-first-pageview-email-capture-2021-non-bf
