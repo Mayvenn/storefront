@@ -185,7 +185,7 @@
                                  :width  56}]
      :title      "Live Chat"
      :copy       "Text: 346-49"
-     :legal      "Message & data rates may apply. See Terms & Privacy Policy."}
+     :legal      "Message & data rates may apply. Message frequency varies. See Terms & Privacy Policy."}
     {:url        (ui/phone-url config/support-phone-number)
      :svg/symbol [:svg/icon-call {:class  "bg-white fill-black stroke-black circle"
                                   :height 57

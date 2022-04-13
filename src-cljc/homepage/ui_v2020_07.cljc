@@ -155,7 +155,7 @@
                                                             :width  56}]
      :contact-us.contact-method/title       "Live Chat"
      :contact-us.contact-method/copy        "Text: 346-49"
-     :contact-us.contact-method/legal-copy  "Message & data rates may apply."
+     :contact-us.contact-method/legal-copy  "Message & data rates may apply. Message frequency varies."
      :contact-us.contact-method/legal-links [{:copy   "terms"
                                               :target [e/navigate-content-sms]}
                                              {:copy   "privacy policy"
