@@ -40,6 +40,7 @@
             [storefront.components.sign-up :as sign-up]
             [storefront.components.order-details-sign-up :as order-details-sign-up]
             [storefront.components.slideout-nav :as slideout-nav]
+            [storefront.components.landing-page :as landing-page]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             stylist-directory.keypaths
@@ -175,7 +176,9 @@
    events/navigate-shopping-quiz-unified-freeinstall-match-success       #(ui/lazy-load-component
                                                                            :checkout
                                                                            'mayvenn.shopping-quiz.unified-freeinstall/page
-                                                                           events/navigate-shopping-quiz-unified-freeinstall-match-success)})
+                                                                           events/navigate-shopping-quiz-unified-freeinstall-match-success)
+
+   events/navigate-landing-page (constantly landing-page/built-component)})
 
 (defn main-component
   [nav-event]

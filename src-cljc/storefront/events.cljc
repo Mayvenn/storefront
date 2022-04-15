@@ -133,6 +133,7 @@
 (defpath navigate-checkout-free-install)
 
 (defpath navigate-about-mayvenn-install)
+(defpath navigate-landing-page)
 
 (defpath menu-traverse-root)
 (defpath menu-traverse-ascend)

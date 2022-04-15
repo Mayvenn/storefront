@@ -314,6 +314,10 @@
   [_ _ _ _ app-state]
   (effects/fetch-cms-keypath app-state [:ugc-collection :free-install-mayvenn]))
 
+(defmethod effects/perform-effects events/navigate-landing-page
+  [_ _ _ _ app-state]
+  (effects/fetch-cms-keypath app-state [:faq :free-mayvenn-services]))
+
 (defmethod effects/perform-effects events/navigate-content
   [_ [_ _ & static-content-id :as event] _ _ app-state]
   (when-not (= static-content-id

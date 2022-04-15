@@ -159,7 +159,8 @@
               "/checkout/payment"                (edn->bidi events/navigate-checkout-payment)
               "/checkout/confirm"                (edn->bidi events/navigate-checkout-confirmation)
               "/checkout/processing"             (edn->bidi events/navigate-checkout-processing)
-              ["/orders/" :number "/complete"]   (edn->bidi events/navigate-order-complete)})])
+              ["/orders/" :number "/complete"]   (edn->bidi events/navigate-order-complete)
+              ["/lp/" :landing-page-slug]        (edn->bidi events/navigate-landing-page)})])
 
 ;; provide fast urls resolution for urls in the footer
 (def ^:private fast-inverse-path-for

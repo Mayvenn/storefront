@@ -457,7 +457,7 @@
    (when title
      [:div.title-2.proxima.shout.bold title])
    [:div.flex.flex-wrap.py3
-    (for [{:keys [image-url alt] :as image-data} images]
+    (for [{:keys [image-url alt label] :as image-data} images]
       [:a.col-6.col-3-on-tb-dt.p1
        (merge (apply utils/route-to (:cta/navigation-message image-data))
               {:key (str image-url)})
@@ -465,7 +465,8 @@
         ugc-image
         {:image-url image-url
          :alt       alt}
-        nil)])]
+        nil)
+       [:div.black.content-3 label]])]
    (shop-cta-with-icon data)])
 
 (defcomponent title-with-subtitle
