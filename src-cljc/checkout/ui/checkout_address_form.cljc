@@ -93,9 +93,9 @@
      (address-state billing-address-state)])
 
 (c/defcomponent ^:private opt-in
-  [{:keys [id label copy value keypath]} _ _]
+  [{:keys [id label legal value keypath]} _ _]
   (when id
-    [:div.flex.items-center.col-12.flex-column-on-mb.my3-on-mb
+    [:div.flex.items-center.col-12.flex-column-on-mb.my3-on-mb.items-start-on-tb-dt
      [:div.h6.my1.py1.mr1.flex
       [:div.mr3
        (ui/radio-section
@@ -117,8 +117,9 @@
                                                {:keypath keypath
                                                 :value   false}))}
         "No")]]
-     [:span.content-2.col-10.col-12-on-tb-dt.center-align-on-mb.mtn2.mt0-on-tb-dt
-      label]]))
+     [:span.content-2.col-10.col-12-on-tb-dt.center-align-on-mb.mtn2.mt0-on-tb-dt.pt3
+      label
+      [:span.content-3.block legal]]]))
 
 (c/defcomponent opt-in-section
   [{:opt-in-legalese/keys [terms-nav privacy-nav]
@@ -134,22 +135,22 @@
     [:a.underline.p-color (apply utils/route-to privacy-nav) "Privacy Policy"]
     " for more details. "]
    ;; TODO(jeff): seems like a good use for spice.maps/with, but some compile error occurs when importing that namespace
-   (let [{:transactional-opt-in/keys [id label copy value keypath]}
+   (let [{:transactional-opt-in/keys [id label legal value keypath]}
          options]
      (c/build opt-in {:id          id
                       :label       label
-                      :copy        copy
+                      :legal       legal
                       :value       value
                       :keypath     keypath
                       :terms-nav   terms-nav
                       :privacy-nav privacy-nav}))
    ;; TODO(jeff): seems like a good use for spice.maps/with, but some compile error occurs when importing that namespace
-   (let [{:marketing-opt-in/keys [id label copy value keypath]}
+   (let [{:marketing-opt-in/keys [id label legal value keypath]}
          options]
      (when id
        (c/build opt-in {:id          id
                         :label       label
-                        :copy        copy
+                        :legal       legal
                         :value       value
                         :keypath     keypath
                         :terms-nav   terms-nav

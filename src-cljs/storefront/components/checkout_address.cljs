@@ -291,11 +291,21 @@
   (merge
    (when prompt-marketing-opt-in?
      {:marketing-opt-in/id              "phone-marketing-opt-in"
-      :marketing-opt-in/label           "… text me recurring automated marketing promotions, surveys and personalized messages."
+      :marketing-opt-in/label           "… text me marketing messages."
+      :marketing-opt-in/legal           (str "By selecting “Yes”, I’m signing an agreement to"
+                                             " permit Mayvenn to text me recurring automated marketing promotions, surveys and"
+                                             " personalized messages using the number I entered above.  I understand these texts may"
+                                             " be sent using an automatic telephone dialing system or other automated system for the"
+                                             " selection and dialing of numbers and that I am not required to consent to receive these"
+                                             " texts or sign this agreement as a condition of any purchase.")
       :marketing-opt-in/value           phone-marketing-opt-in-value
       :marketing-opt-in/keypath         keypaths/checkout-phone-marketing-opt-in})
    {:transactional-opt-in/id          "phone-transactional-opt-in"
-    :transactional-opt-in/label       "… text me updates about my order (delivery and feedback)."
+    :transactional-opt-in/label       "… text me updates about my order."
+    :transactional-opt-in/legal       (str "By selecting “Yes”,"
+                                           " I agree that Mayvenn can text me automated messages about my order"
+                                           " (e.g. delivery updates and feedback requests)"
+                                           " using the number I entered above.")
     :transactional-opt-in/value       phone-transactional-opt-in-value
     :transactional-opt-in/keypath     keypaths/checkout-phone-transactional-opt-in
     :opt-in-legalese/terms-nav        [events/navigate-content-sms]

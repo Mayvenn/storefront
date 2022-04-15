@@ -11,22 +11,26 @@
 .g10 { gap: var(--space-10) }
 
 @media (--on-mobile) {
-    .flex-row-reverse-on-mb { flex-direction: row-reverse; }
-    .flex-column-on-mb { flex-direction: column; }
+  .flex-row-reverse-on-mb { flex-direction: row-reverse; }
+  .flex-column-on-mb { flex-direction: column; }
 }
 
 @media (--on-tablet) {
-    .flex-on-tb { display: flex }
+  .flex-on-tb { display: flex }
+  .items-start-on-tb, .items-start-on-tb-dt { align-items: start; }
+  .items-center-on-tb, .items-center-on-tb-dt { align-items: center; }
 }
 
 @media (--on-tablet-and-desktop) {
-    .flex-on-tb-dt { display: flex }
-    .justify-start-on-tb-dt { justify-content: flex-start; }
-    .flex-column-on-tb-dt { flex-direction: column; }
+  .flex-on-tb-dt { display: flex }
+  .justify-start-on-tb-dt { justify-content: flex-start; }
+  .flex-column-on-tb-dt { flex-direction: column; }
+  .items-start-on-dt, .items-start-on-tb-dt { align-items: start; }
+  .items-center-on-dt, .items-center-on-tb-dt  { align-items: center; }
 }
 
 @media (--on-desktop) {
-    .flex-on-dt { display: flex }
+  .flex-on-dt { display: flex }
 }
 
 
