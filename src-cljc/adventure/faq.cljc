@@ -12,6 +12,14 @@
                        {:title   (:text question)
                         :content answer})}))
 
+(defn hd-lace-query
+  [data]
+  (when-let [faq (get-in data (conj keypaths/cms-faq :category-hd-lace))]
+    {:expanded-index (get-in data keypaths/faq-expanded-section)
+     :sections       (for [{:keys [question answer]} (:question-answers faq)]
+                       {:title   (:text question)
+                        :content answer})}))
+
 (defn component [{:keys [expanded-index sections background-color]}]
   [:div.px6.mx-auto.col-10-on-dt.py6
    {:class background-color}

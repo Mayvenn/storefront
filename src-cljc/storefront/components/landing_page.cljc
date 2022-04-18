@@ -86,7 +86,7 @@
                         {:title/value "Schedule Your Appointment"
                          :body/value  "We’ll connect you with your stylist to set up your install. Then, we’ll send you a prepaid voucher to cover the cost of service."}]}
       (merge {:layer/type :faq}
-             (faq/free-install-query data))]}))
+             (faq/hd-lace-query data))]}))
 
 (defn built-component [data opts]
   (spice.core/spy opts)
