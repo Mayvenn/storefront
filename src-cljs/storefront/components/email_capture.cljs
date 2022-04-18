@@ -120,6 +120,19 @@
    [:a.p-color (utils/route-to e/navigate-content-privacy) "Privacy Policy"]
    ". Unsubscribe anytime."])
 
+(def fine-print-3
+  [:div.px2.pt4.pb6
+   {:style {:color "#6b6b6b"
+            :font "12px/17px 'Proxima Nova', Arial, sans-serif"}}
+   "*$50 Off offer is for first-time subscribers only. $300 minimum purchase required. "
+   "Mayvenn may choose to modify the promotion at any time. "
+   "*I consent to receive Mayvenn marketing content via email. "
+   "For further information, please read our "
+   [:a.p-color (utils/route-to e/navigate-content-tos) "Terms"]
+   " and "
+   [:a.p-color (utils/route-to e/navigate-content-privacy) "Privacy Policy"]
+   ". Unsubscribe anytime."])
+
 (defn design-first-pageview-email-capture-2022-04
   [{:keys [id] :as   data}]
   (c/html
@@ -135,7 +148,7 @@
        (text-field data)
        (cta-1 data)]]
      hr-divider
-     fine-print-1]]))
+     fine-print-3]]))
 
 (defn design-adv-quiz-email-capture-2021-non-bf [{:keys [id] :as data}]
   [:div.bg-pale-purple.p4
