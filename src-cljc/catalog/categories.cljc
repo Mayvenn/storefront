@@ -956,7 +956,7 @@
                                             "Shop our selection of natural human hair bundles and"
                                             "get connected with a stylist near you.")
     :opengraph/title                  (copy "Shop Mayvenn Hair - Buy 3 items and we'll pay for your hair service.")
-    :selector/electives               [:hair/texture :hair/family :hair/origin :hair/color]
+    :selector/electives               [:hair/texture :hair/family :hair/origin :hair/color :hair/base-material]
     :selector/essentials              [:catalog/department :promo.mayvenn-install/eligible]
     :subsections/subsection-selectors texture-subsection-selectors}])
 
