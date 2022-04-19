@@ -1248,6 +1248,32 @@
                                      ". Featuring a thin, polyurethane"
                                      " weft that flawlessly blends with your own hair."]}])
 
+(def special-wigs-promo
+  [{:catalog/category-id "45"
+    :header/title        "Wigs"
+    :page/icp?           false
+    :page/slug           "select-wigs-promo"
+    :seo/title           "Wigs"
+    :seo/sitemap         false ;; Turn on when we go live with the new product
+
+    :copy/banner-img-id "e4266735-42fc-40b1-bd37-ce5a243fa681"
+    :copy/banner-alt    "Wigs"
+
+    :subcategories/ids    ["29" "10"]
+    :subcategories/layout :list
+
+    :subsections/subsection-selectors [{:subsection/title    "Lace Front Wigs"
+                                        :subsection/selector {:hair/family #{"lace-front-wigs"}}}
+                                       {:subsection/title    "360 Wigs"
+                                        :subsection/selector {:hair/family #{"360-wigs"}}}]
+
+    :catalog/department  #{"hair"}
+    :hair/family         #{"lace-front-wigs" "360-wigs"}
+    :selector/essentials [:hair/family :catalog/department]
+    :selector/electives  [:hair/family :hair/texture :hair/origin]
+    :page/title          "Wigs | Mayvenn"
+    :page/title-template [:computed/selected-facet-string " Virgin " :seo/title " | Mayvenn"]}])
+
 (def nb-hyphen "‑")
 
 (def menu-categories
@@ -1264,4 +1290,5 @@
           seamless-clip-ins-category
           tape-ins-category
           human-hair-bundles
-          base-materials-categories))
+          base-materials-categories
+          special-wigs-promo))
