@@ -70,7 +70,7 @@
      (c/build faq/organism faq-section))])
 
 (defn category-hero-query
-  [{:copy/keys     [title learn-more-target]
+  [{:copy/keys     [title learn-more-target banner-img-dsk-id banner-img-mob-id banner-alt]
     :category/keys [description new?]
     icon-uri       :icon}]
   (cond-> {:category-hero.title/primary title
@@ -81,6 +81,11 @@
     (merge {:category-hero.action/label  "Learn more"
             :category-hero.action/aria   "Learn more about complimentary Mayvenn Services."
             :category-hero.action/target learn-more-target})
+
+    (seq banner-img-dsk-id)
+    (merge {:category-hero.banner/img-dsk-id banner-img-dsk-id
+            :category-hero.banner/img-mob-id banner-img-mob-id
+            :category-hero.banner/img-alt    banner-alt})
 
     ;; TODO(corey) image handling reconciliation: svg as uri
     (seq icon-uri)

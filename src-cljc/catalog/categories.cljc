@@ -1256,8 +1256,9 @@
     :seo/title           "Wigs"
     :seo/sitemap         false ;; Turn on when we go live with the new product
 
-    :copy/banner-img-id "e4266735-42fc-40b1-bd37-ce5a243fa681"
-    :copy/banner-alt    "Wigs"
+    :copy/banner-img-dsk-id "24b8b98d-bde1-4197-b20d-0c6da64c4e44"
+    :copy/banner-img-mob-id "44c98bfd-bd71-4469-a321-c86bb3d713c6"
+    :copy/banner-alt        "Select Wigs"
 
     :subcategories/ids    ["29" "10"]
     :subcategories/layout :list
