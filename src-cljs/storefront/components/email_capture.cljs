@@ -120,7 +120,7 @@
    [:a.p-color (utils/route-to e/navigate-content-privacy) "Privacy Policy"]
    ". Unsubscribe anytime."])
 
-(def fine-print-3
+(def fine-print-4
   [:div.px2.pt4.pb6
    {:style {:color "#6b6b6b"
             :font "12px/17px 'Proxima Nova', Arial, sans-serif"}}
@@ -148,7 +148,7 @@
        (text-field data)
        (cta-1 data)]]
      hr-divider
-     fine-print-3]]))
+     fine-print-4]]))
 
 (defn design-adv-quiz-email-capture-2021-non-bf [{:keys [id] :as data}]
   [:div.bg-pale-purple.p4
