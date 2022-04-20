@@ -120,12 +120,15 @@
            :hair/color.process               #{"natural" "dyed"}
            :hair/source                      #{"virgin"}
            :category/tags                    #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
-           :subcategories/ids                ["38" "39"]
+           :subcategories/ids                ["38" "39"] ; add "46" when hd closures go live
            :subcategories/layout             :list
            :selector/essentials              [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives               [:hair/origin :hair/texture :hair/color :hair/base-material]
            :subsections/subsection-selectors [#:subsection{:title "Standard Lace Closures" :selector #:hair{:base-material #{"lace"}}}
-                                              #:subsection{:title "Silk Closures" :selector #:hair{:base-material #{"silk"}}}]
+                                              #:subsection{:title "Silk Closures" :selector #:hair{:base-material #{"silk"}}}
+                                              ;; bring this in when we go live with hd closures
+                                              ;;#:subsection{:title "HD Lace Closures" :selector #:hair{:family #{"closures"} :base-material #{"hd-lace"}}}
+                                              ]
            :header/title                     "Virgin Hair Closures"
            :content-block/title              "Closures 101:"
            :content-block/header             "How to Choose Your Silk or Lace Closure"
@@ -273,13 +276,16 @@
            :hair/source                   #{"virgin"}
            :category/tags                 #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
            :selector/essentials           [:catalog/department :hair/family :hair/color.process :hair/source]
-           :selector/electives            [:hair/origin :hair/texture :hair/color]
+           :selector/electives            [:hair/origin :hair/texture :hair/color :hair/base-material]
            :product-list/title            "Shop All Frontals"
-           :subcategories/ids             ["29" "10"]
+           :subcategories/ids             ["29" "10"] ; add "45" to this when we go live with hd frontals
            :subcategories/layout          :list
 
-           :subsections/subsection-selectors [ #:subsection{:title "Standard Lace Frontals" :selector #:hair{:family #{"frontals"}}}
-                                              #:subsection{:title "360 frontals" :selector #:hair{:family #{"360-frontals"}}}]
+           :subsections/subsection-selectors [#:subsection{:title "Standard Lace Frontals" :selector #:hair{:family #{"frontals"} :base-material #{"lace"}}}
+                                              #:subsection{:title "360 frontals" :selector #:hair{:family #{"360-frontals"}}}
+                                             ;; bring this in when we go live with the hd-frontals
+                                             ;; #:subsection{:title "HD Lace Frontals" :selector #:hair{:family #{"frontals"} :base-material #{"hd-lace"}}}
+                                              ]
 
            :content-block/type     :about-attributes
            :content-block/title    "Frontals 101:"
@@ -1240,6 +1246,99 @@
                                       :body  [{:text "Short and sassy or drama down to your ankles? The choice is yours! Available in lengths ranging from 10” to 24”."}]}
                                      {:title "Virgin & Dyed"
                                       :body  [{:text "If you want to play with color, it helps to choose a wig that can be dyed—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it dyed the color you want."}]}]
+    :page/title-template            [:computed/selected-facet-string " Virgin " :seo/title " | Mayvenn"]
+    :page.meta/description-template ["Get the hair of your dreams with our "
+                                     :computed/selected-facet-string
+                                     " "
+                                     :seo/title
+                                     ". Featuring a thin, polyurethane"
+                                     " weft that flawlessly blends with your own hair."]}
+   {:catalog/category-id "45"
+    :header/title        "HD Lace Frontals"
+    :category/new?        true
+    :category/description (copy "Part your hair a different way every day with our versatile 13x4 HD lace frontals, "
+                                "which blend seamlessly with your scalp.")
+    :subcategory/image-id "e4266735-42fc-40b1-bd37-ce5a243fa681"
+    :subcategory/title    "HD Lace Frontals"
+    :copy/title           "HD Lace Frontals"
+    :page/slug            "hd-lace-frontals"
+    :seo/title            "HD Lace Frontals"
+    :seo/sitemap          false ;; Turn on when we go live with the new product
+
+    :catalog/department             #{"hair"}
+    :hair/family                    #{"frontals"}
+    :hair/base-material             #{"hd-lace"}
+    :selector/essentials            [:hair/family :catalog/department :hair/base-material]
+    :selector/electives             [:hair/texture :hair/origin]
+    :page/title                     "100% Virgin Hair HD Lace Frontals | Mayvenn"
+    :page.meta/description          (copy "Mayvenn’s HD Lace comes complete with 13x4, inches of parting space."
+                                          "Crafted with high-quality 100% virgin human hair.")
+    :opengraph/title                (copy "Mayvenn HD Lace - Free shipping."
+                                          "Free 30 day returns. Made with 100% virgin human hair.")
+    :opengraph/description          (copy "Our HD Lace is sure to be a favorite."
+                                          "Take advantage of high-quality HD Lace and 4 classic textures.")
+    :product-list/title             "Shop All HD Lace Frontals"
+    :contentful/faq-id              :category-hd-lace
+    :content-block/type             :about-attributes
+    :content-block/title            "Sample Copy"
+    :content-block/header           "How to Choose"
+    :content-block/summary          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vel ultrices eros. Vivamus vestibulum purus non tristique consectetur. Donec auctor et urna sit amet blandit. In hac habitasse platea dictumst. Vestibulum ac condimentum sapien."
+    :content-block/sections         [{:title "Interesting"
+                                      :body  [{:text "So fine"}]}
+                                     {:title "Cool"
+                                      :body  [{:text "Awesome possum"}]}
+                                     {:title "Lace Color"
+                                      :body  [{:text "For a wig that blends in and looks as natural as possible, you’ll want to choose a lace backing shade that most closely matches your skin tone."}]}
+                                     {:title "Length"
+                                      :body  [{:text "Comes in 14 and 18 inches"}]}
+                                     {:title "Virgin"
+                                      :body  [{:text "This hair can be lightened"}]}]
+    :page/title-template            [:computed/selected-facet-string " Virgin " :seo/title " | Mayvenn"]
+    :page.meta/description-template ["Get the hair of your dreams with our "
+                                     :computed/selected-facet-string
+                                     " "
+                                     :seo/title
+                                     ". Featuring a thin, polyurethane"
+                                     " weft that flawlessly blends with your own hair."]}
+   {:catalog/category-id "46"
+    :header/title        "HD Lace Closures"
+    :category/new?        true
+    :category/description (copy "Our 4x4 and 5x5 closures use HD lace for a superior match with your scalp's complexion.")
+    :subcategory/image-id "e4266735-42fc-40b1-bd37-ce5a243fa681"
+    :subcategory/title    "HD Lace Closures"
+    :copy/title           "HD Lace Closures"
+    :page/slug            "hd-lace-closures"
+    :seo/title            "HD Lace Closures"
+    :seo/sitemap          false ;; Turn on when we go live with the new product
+
+    :catalog/department             #{"hair"}
+    :hair/family                    #{"closures"}
+    :hair/base-material             #{"hd-lace"}
+    :selector/essentials            [:hair/family :catalog/department :hair/base-material]
+    :selector/electives             [:hair/texture :hair/origin :hair.closure/area]
+    :page/title                     "100% Virgin Hair HD Lace Closures | Mayvenn"
+    :page.meta/description          (copy "Mayvenn’s HD Lace comes complete with 4x4 or 5x5 inches of parting space."
+                                          "Crafted with high-quality 100% virgin human hair.")
+    :opengraph/title                (copy "Mayvenn HD Lace - Free shipping."
+                                          "Free 30 day returns. Made with 100% virgin human hair.")
+    :opengraph/description          (copy "Our HD Lace is sure to be a favorite."
+                                          "Take advantage of high-quality HD Lace and 4 classic textures.")
+    :product-list/title             "Shop All HD Lace Closures"
+    :contentful/faq-id              :category-hd-lace
+    :content-block/type             :about-attributes
+    :content-block/title            "Sample Copy"
+    :content-block/header           "How to Choose"
+    :content-block/summary          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vel ultrices eros. Vivamus vestibulum purus non tristique consectetur. Donec auctor et urna sit amet blandit. In hac habitasse platea dictumst. Vestibulum ac condimentum sapien."
+    :content-block/sections         [{:title "Interesting"
+                                      :body  [{:text "So fine"}]}
+                                     {:title "Cool"
+                                      :body  [{:text "Awesome possum"}]}
+                                     {:title "Lace Color"
+                                      :body  [{:text "For a wig that blends in and looks as natural as possible, you’ll want to choose a lace backing shade that most closely matches your skin tone."}]}
+                                     {:title "Length"
+                                      :body  [{:text "Comes in 14 and 18 inches"}]}
+                                     {:title "Virgin"
+                                      :body  [{:text "This hair can be lightened"}]}]
     :page/title-template            [:computed/selected-facet-string " Virgin " :seo/title " | Mayvenn"]
     :page.meta/description-template ["Get the hair of your dreams with our "
                                      :computed/selected-facet-string
