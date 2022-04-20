@@ -25,22 +25,14 @@
        :body/value   (:subtitle cms-data)}
       {:layer/type   :shop-ugc
        :header/value "Shop By Look"
-       :images       [{:image-url              "//placekitten.com/200/200"
-                       :alt                    "cat"
-                       :label                  "HD Peruvian Water Wave Hair 20\", 22 \", 22\", 18\" frontal"
-                       :cta/navigation-message [events/navigate-home]}
-                      {:image-url              "//placekitten.com/201/201"
-                       :alt                    "cat"
-                       :label                  "HD Brazilian Deep Wave Hair 14\", 14 \", 14\" closure"
-                       :cta/navigation-message [events/navigate-home]}
-                      {:image-url              "//placekitten.com/202/202"
-                       :alt                    "cat"
-                       :label                  "HD Brazilian Deep Wave Hair 12\", 12 \", 12\", 14\" closure"
-                       :cta/navigation-message [events/navigate-home]}
-                      {:image-url              "//placekitten.com/210/213"
-                       :alt                    "cat"
-                       :label                  "HD Brazilian Water Wave Hair 16\", 18\", 20\", 14\" frontal"
-                       :cta/navigation-message [events/navigate-home]}]
+       :images       (map (fn [look]
+                            {:image-url              (:photo-url look)
+                             :alt                    "Look Photo"
+                             :label                  (:title look)
+                             :cta/navigation-message [events/navigate-shop-by-look-details
+                                                      {:look-id (:content/id look)
+                                                       :album-keyword :look}]})
+                          (:looks cms-data))
        :cta/id       "landing-page-see-more"
        :cta/value    "see more"
        :cta/target   [events/navigate-shop-by-look {:album-keyword :look}]}
