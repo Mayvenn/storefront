@@ -96,8 +96,9 @@
      (fn [form]
        (if (and (map? form)
                 (-> form :sys :type (= "Link")))
-         (if-let [resolved-entry (get-in resolved-includes [:Entry (-> form :sys :id)])]
-           (extract-fields resolved-entry)
+         (if-let [resolved-include (or (get-in resolved-includes [:Entry (-> form :sys :id)])
+                                       (get-in resolved-includes [:Asset (-> form :sys :id)]))]
+           (extract-fields resolved-include)
            form)
          form))
      items)))
@@ -249,29 +250,35 @@
                                                      "fields.questionsAnswers"]}
                                    {:content-type :advertisedPromo
                                     :latest?      true}
-                                   {:content-type     :ugc-collection
-                                    :exists           ["fields.slug"]
-                                    :primary-key-fn   (comp keyword :slug)
-                                    :select           [(if production?
-                                                         "fields.looks"
-                                                         "fields.acceptanceLooks")
-                                                       "fields.slug"
-                                                       "fields.name"
-                                                       "sys.contentType"
-                                                       "sys.updatedAt"
-                                                       "sys.id"
-                                                       "sys.type"]
-                                    :item-tx-fn       (fn [u]
-                                                        (let [u' (if production?
-                                                                   (dissoc u :acceptance-looks)
-                                                                   (set/rename-keys u {:acceptance-looks :looks}))]
-                                                          (utils/?update u' :looks (partial remove :sys))))
+                                   {:content-type   :ugc-collection
+                                    :exists         ["fields.slug"]
+                                    :primary-key-fn (comp keyword :slug)
+                                    :select         [(if production?
+                                                       "fields.looks"
+                                                       "fields.acceptanceLooks")
+                                                     "fields.slug"
+                                                     "fields.name"
+                                                     "sys.contentType"
+                                                     "sys.updatedAt"
+                                                     "sys.id"
+                                                     "sys.type"]
+                                    :item-tx-fn     (fn [u]
+                                                      (let [u' (if production?
+                                                                 (dissoc u :acceptance-looks)
+                                                                 (set/rename-keys u {:acceptance-looks :looks}))]
+                                                        (utils/?update u' :looks (partial remove :sys))))
                                     :collection-tx-fn
                                     (fn [m]
                                       (->> (vals m)
                                            (mapcat :looks)
                                            (maps/index-by (comp keyword :content/id))
                                            (assoc m :all-looks)))
+                                    :latest?        false}
+                                   {:content-type     :landingPage
+                                    :primary-key-fn   (comp keyword :slug)
+                                    :latest?          false}
+                                   {:content-type     :homepageHero
+                                    :primary-key-fn   (comp keyword :content/id)
                                     :latest?          false}]]
       (doseq [content-params content-type-parameters]
         (scheduler/every scheduler (cache-timeout)

@@ -9,18 +9,20 @@
             [storefront.components.ui :as ui]))
 
 (defn query [data]
-  (let [cms-ugc-collection (get-in data storefront.keypaths/cms-ugc-collection)]
+  (let [landing-page-slug (-> data (get-in storefront.keypaths/navigation-args) :landing-page-slug keyword)
+        cms-data          (get-in data (conj storefront.keypaths/cms-landing-page landing-page-slug))]
     {:layers
-     [{:layer/type :hero
-       :opts       {:href      "/adv/match-stylist"
-                    :data-test "home-banner"}
-       :dsk-url    "//placekitten.com/600/300"
-       :mob-url    "//placekitten.com/300/300"
-       :alt        "Temp"
-       :file-name  "Temp"}
+     [(let [cms-hero-data (:hero cms-data)]
+        {:layer/type :hero
+         :opts       {:href      "/adv/match-stylist"
+                      :data-test "home-banner"}
+         :dsk-url    (-> cms-hero-data :desktop :file :url)
+         :mob-url    (-> cms-hero-data :mobile :file :url)
+         :alt        (-> cms-hero-data :alt)
+         :file-name  (-> cms-hero-data :desktop :file :file-name)})
       {:layer/type   :shop-text-block
-       :header/value "New HD Lace Products"
-       :body/value   "HD lace is crafted to blend naturally into the gorgeous skin you're in. Check out our all new HD lace closures and frontals."}
+       :header/value (:title cms-data)
+       :body/value   (:subtitle cms-data)}
       {:layer/type   :shop-ugc
        :header/value "Shop By Look"
        :images       [{:image-url              "//placekitten.com/200/200"
@@ -86,8 +88,7 @@
                         {:title/value "Schedule Your Appointment"
                          :body/value  "We’ll connect you with your stylist to set up your install. Then, we’ll send you a prepaid voucher to cover the cost of service."}]}
       (merge {:layer/type :faq}
-             (faq/hd-lace-query data))]}))
+             (faq/hd-lace-query data (:faq cms-data)))]}))
 
 (defn built-component [data opts]
-  (spice.core/spy opts)
   (component/build layered/component (query data) nil))

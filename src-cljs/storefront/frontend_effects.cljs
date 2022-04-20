@@ -315,8 +315,8 @@
   (effects/fetch-cms-keypath app-state [:ugc-collection :free-install-mayvenn]))
 
 (defmethod effects/perform-effects events/navigate-landing-page
-  [_ _ _ _ app-state]
-  (effects/fetch-cms-keypath app-state [:faq :category-hd-lace]))
+  [_ _ args _ app-state]
+  (effects/fetch-cms-keypath app-state [:landing-page (keyword (:landing-page-slug args))]))
 
 (defmethod effects/perform-effects events/navigate-content
   [_ [_ _ & static-content-id :as event] _ _ app-state]

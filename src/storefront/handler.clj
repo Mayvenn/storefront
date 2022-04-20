@@ -301,6 +301,17 @@
          (= "affiliate" experience)
          (assoc-in-req-state keypaths/return-navigation-message [events/navigate-stylist-account-profile {}])))))
 
+(defn assemble-landing-page [cms-data landing-page-slug]
+  (-> cms-data
+      :landingPage
+      (get (keyword landing-page-slug))
+      (update :hero #(-> cms-data
+                         :homepageHero
+                         (get (keyword (:content/id %)))))
+      (update :faq #(-> cms-data
+                        :faq
+                        (get (keyword (:faq-section %)))))))
+
 (defn ^:private copy-cms-to-data
   ([cms-data data keypath]
    (assoc-in data
@@ -313,9 +324,10 @@
     (let [shop? (or (= "shop" (get-in-req-state req keypaths/store-slug))
                     (= "retail-location" (get-in-req-state req keypaths/store-experience)))
           [nav-event
-           {album-keyword :album-keyword
-            product-id    :catalog/product-id
-            :as           nav-args}] (:nav-message req)
+           {album-keyword     :album-keyword
+            product-id        :catalog/product-id
+            landing-page-slug :landing-page-slug
+            :as               nav-args}] (:nav-message req)
           update-data                (partial copy-cms-to-data @(:cache contentful))]
       (h (update-in-req-state req keypaths/cms
                               merge
@@ -370,6 +382,11 @@
                                        events/navigate-info-certified-stylists} nav-event)
                                     (-> {}
                                         (update-data [:faq :free-mayvenn-services]))
+
+                                    (= events/navigate-landing-page nav-event)
+                                    (-> {}
+                                        (assoc-in [:landing-page (keyword landing-page-slug)]
+                                                  (assemble-landing-page @(:cache contentful) landing-page-slug)))
 
                                     :else nil))))))
 
@@ -1151,13 +1168,16 @@
                (GET "/stylist/referrals" req (redirect-to-home environment req :found))
                (GET "/adv/match-stylist" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/adv/find-your-stylist")) :moved-permanently))
                (GET "/cms/*" {uri :uri}
-                 (let [keypath (->> #"/" (clojure.string/split uri) (drop 2) (map keyword))]
-                   (-> (contentful/read-cache contentful)
-                       (get-in keypath)
-                       ((partial assoc-in {} keypath))
-                       json/generate-string
-                       util.response/response
-                       (util.response/content-type "application/json"))))
+                    (let [keypath (->> #"/" (clojure.string/split uri) (drop 2) (map keyword))]
+                      ;; HACK: special handling for landing page CMS data as it has to be assembled from multiple data
+                      ;; contentful data types.
+                      (-> (if (= :landing-page (first keypath))
+                            (assemble-landing-page (contentful/read-cache contentful) (last keypath))
+                            (get-in (contentful/read-cache contentful) keypath))
+                          ((partial assoc-in {} keypath))
+                          json/generate-string
+                          util.response/response
+                          (util.response/content-type "application/json"))))
                (GET "/marketing-site" req
                  (contentful/marketing-site-redirect req))
                (-> (routes (static-routes ctx)

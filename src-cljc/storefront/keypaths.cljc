@@ -13,6 +13,7 @@
 (def cms-advertised-promo (conj cms :advertisedPromo))
 (def cms-advertised-promo-text (conj cms-advertised-promo :advertised-text))
 (def cms-advertised-promo-uri (conj cms-advertised-promo :uri))
+(def cms-landing-page (conj cms :landing-page))
 
 (def cms-faq (conj cms :faq))
 
