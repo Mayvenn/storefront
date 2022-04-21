@@ -321,14 +321,14 @@
 (defn wrap-set-cms-cache
   [h contentful]
   (fn [req]
-    (let [shop? (or (= "shop" (get-in-req-state req keypaths/store-slug))
-                    (= "retail-location" (get-in-req-state req keypaths/store-experience)))
-          [nav-event
-           {album-keyword     :album-keyword
-            product-id        :catalog/product-id
-            landing-page-slug :landing-page-slug
-            :as               nav-args}] (:nav-message req)
-          update-data                (partial copy-cms-to-data @(:cache contentful))]
+    (let [shop?       (or (= "shop" (get-in-req-state req keypaths/store-slug))
+                          (= "retail-location" (get-in-req-state req keypaths/store-experience)))
+          [nav-event {album-keyword     :album-keyword
+                      product-id        :catalog/product-id
+                      landing-page-slug :landing-page-slug
+                      :as               nav-args}]
+          (:nav-message req)
+          update-data (partial copy-cms-to-data @(:cache contentful))]
       (h (update-in-req-state req keypaths/cms
                               merge
                               (update-data {} [:advertisedPromo])
@@ -385,6 +385,7 @@
 
                                     (= events/navigate-landing-page nav-event)
                                     (-> {}
+                                        (update-data [:ugc-collection :all-looks])
                                         (assoc-in [:landing-page (keyword landing-page-slug)]
                                                   (assemble-landing-page @(:cache contentful) landing-page-slug)))
 
