@@ -21,8 +21,6 @@
     {:layers
      [(let [cms-hero-data (:hero cms-data)]
         {:layer/type :hero
-         :opts       {:href      "/adv/match-stylist"
-                      :data-test "home-banner"}
          :dsk-url    (-> cms-hero-data :desktop :file :url)
          :mob-url    (-> cms-hero-data :mobile :file :url)
          :alt        (-> cms-hero-data :alt)
@@ -30,40 +28,41 @@
       {:layer/type   :shop-text-block
        :header/value (:title cms-data)
        :body/value   (:subtitle cms-data)}
-      {:layer/type   :shop-ugc
+      {:layer/type   :lp-tiles
        :header/value "Shop By Look"
        :images       (map (fn [look]
                             {:image-url              (:photo-url look)
                              :alt                    "Look Photo"
                              :label                  (:title look)
                              :cta/navigation-message [events/navigate-shop-by-look-details
-                                                      {:look-id (:content/id look)
+                                                      {:look-id       (:content/id look)
                                                        :album-keyword :look}]})
                           (:looks cms-data))
-       :cta/id       "landing-page-see-more"
-       :cta/value    "see more"
-       :cta/target   [events/navigate-shop-by-look {:album-keyword :look}]}
+       :cta          {:id      "landing-page-see-more"
+                      :attrs   {:navigation-message [events/navigate-shop-by-look {:album-keyword :look}]}
+                      :content "see more"}}
       (let [explanation (:explanation cms-data)]
         {:layer/type   :shop-text-block
          :header/value (:title explanation)
          :body/value   [(ui/img {:src   (:image-url explanation)
                                  :style {:width "100%"}})
-                        [:div.content-2 (:description explanation)]]
+                        [:div.content-2 (:body explanation)]]
          :cta/button?  true
-         :cta/value    "Learn more"
-         :cta/id       "landing-page-explanation"
-         :cta/target   (url->navigation-message (:link-url explanation))})
-      {:layer/type   :shop-ugc
-       :header/value "Popular HD Products"
-       :images     (map (fn [example]
-                          {:image-url              (:image-url example)
-                           :alt                    (:title example)
-                           :label                  (:title example)
-                           :cta/navigation-message (url->navigation-message (:link-url example))})
-                        (:examples cms-data))
-       :cta/id       "landing-page-view-all-hd-lace-products"
-       :cta/value    "View All HD Lace Products"
-       :cta/target   [events/navigate-category {:page/slug "mayvenn-install" :catalog/category-id "23"}]}
+         :cta/value    (:cta-copy explanation)
+         :cta/id       (str "landing-page-" (:slug explanation) "-cta")
+         :cta/target   (url->navigation-message (:cta-url explanation))})
+      (let [examples-layer (:examples-layer cms-data)]
+        {:layer/type   :lp-tiles
+         :header/value (:title examples-layer)
+         :images       (map (fn [example]
+                              {:image-url              (:image-url example)
+                               :alt                    (:title example)
+                               :label                  (:title example)
+                               :cta/navigation-message (url->navigation-message (:link-url example))})
+                            (:examples cms-data))
+         :cta          {:id      (str "landing-page-" (:slug examples-layer) "-cta")
+                        :attrs   {:navigation-message (url->navigation-message (:cta-url examples-layer))}
+                        :content (:cta-copy examples-layer)}})
       (merge {:layer/type :faq}
              (faq/hd-lace-query data (:faq cms-data)))]}))
 

@@ -469,6 +469,31 @@
        [:div.black.content-3 label]])]
    (shop-cta-with-icon data)])
 
+(defcomponent lp-tiles
+  [{title  :header/value
+    images :images
+    :as    data} _ _]
+  [:div.py8.col-10.mx-auto.center
+   (when title
+     [:div.title-2.proxima.shout.bold title])
+   [:div.flex.flex-wrap.py3
+    (for [{:keys [image-url alt label] :as image-data} images]
+      [:a.col-6.col-3-on-tb-dt.p1
+       (merge (apply utils/route-to (:cta/navigation-message image-data))
+              {:key (str image-url)})
+       (ui/screen-aware
+        ugc-image
+        {:image-url image-url
+         :alt       alt}
+        nil)
+       [:div.black.content-3 label]])]
+   (let [{:keys [cta]} data]
+     (if (:id cta)
+       (ui/button-small-primary (merge {:class "inline"}
+                                       (:attrs cta))
+                                (:content cta))
+       [:span]))])
+
 (defcomponent title-with-subtitle
   [{:keys [primary secondary]} _ _]
   [:div.bg-refresh-gray.pyj3-on-mb.pyj3-on-tb-dt
@@ -479,6 +504,8 @@
   (when type
     (component/build
      (case type
+       :lp-tiles lp-tiles
+
        ;; REBRAND
        :shop-text-block         shop-text-block
        :shop-framed-checklist   shop-framed-checklist
