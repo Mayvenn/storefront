@@ -414,7 +414,8 @@
         shop?           (= :shop site)
         classic?        (= :classic site)
         signed-in       (auth/signed-in data)
-        sale-shop-hair? (experiments/sale-shop-hair? data)]
+        sale-shop-hair? (experiments/sale-shop-hair? data)
+        new-hd-lace?    (:2022-new-products-hd-lace (get-in data keypaths/features))]
     {:signed-in                   signed-in
      :on-taxon?                   (get-in data keypaths/current-traverse-nav)
      :promo-banner                (promo-banner/query data)
@@ -434,7 +435,7 @@
                                     :slide-out-nav-content-item/primary "Our Hair"}
                                    {:slide-out-nav-content-item/target  {:href "https://looks.mayvenn.com/hd-lace-wigs "}
                                     :slide-out-nav-content-item/id      "content-hd-lace"
-                                    :slide-out-nav-content-item/primary "HD Lace"}
+                                    :slide-out-nav-content-item/primary "Learn About HD Lace"}
                                    {:slide-out-nav-content-item/target  {:href wigs-101-url}
                                     :slide-out-nav-content-item/id      "content-wigs-101"
                                     :slide-out-nav-content-item/primary "Wigs 101"}
@@ -458,10 +459,10 @@
 
                                  shop?
                                  (concat
-                                  [{:slide-out-nav-menu-item/target      [events/navigate-shopping-quiz-unified-freeinstall-intro
-                                                                          {:query-params {:location "hamburger"}}]
-                                    :slide-out-nav-menu-item/id          "menu-shop-quiz-unified-fi"
-                                    :slide-out-nav-menu-item/primary     "Start Hair Quiz"}]
+                                  [{:slide-out-nav-menu-item/target  [events/navigate-shopping-quiz-unified-freeinstall-intro
+                                                                      {:query-params {:location "hamburger"}}]
+                                    :slide-out-nav-menu-item/id      "menu-shop-quiz-unified-fi"
+                                    :slide-out-nav-menu-item/primary "Start Hair Quiz"}]
                                   [{:slide-out-nav-menu-item/target  [events/navigate-adventure-find-your-stylist]
                                     :slide-out-nav-menu-item/id      "menu-shop-find-stylist"
                                     :slide-out-nav-menu-item/primary "Browse Stylists"}
@@ -472,7 +473,17 @@
                                    {:slide-out-nav-menu-item/target  [events/menu-list {:menu-type :shop-bundle-sets}]
                                     :slide-out-nav-menu-item/nested? true
                                     :slide-out-nav-menu-item/id      "menu-shop-by-bundle-sets"
-                                    :slide-out-nav-menu-item/primary "Shop Bundle Sets"}])
+                                    :slide-out-nav-menu-item/primary "Shop Bundle Sets"}]
+                                  (when new-hd-lace?
+                                    [{:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug "hd-lace" :catalog/category-id "44"}]
+                                      :slide-out-nav-menu-item/id          "menu-shop-wigs"
+                                      :slide-out-nav-menu-item/new-primary (when sale-shop-hair? "Sale")
+                                      :slide-out-nav-menu-item/nested?     false
+                                      :slide-out-nav-menu-item/primary     "HD Lace"}
+                                     {:slide-out-nav-menu-item/target  [events/navigate-landing-page {:landing-page-slug "22-hd-lace"}]
+                                      :slide-out-nav-menu-item/nested? false
+                                      :slide-out-nav-menu-item/id      "menu-new-arrivals"
+                                      :slide-out-nav-menu-item/primary "New Arrivals"}]))
 
                                  classic?
                                  (concat
