@@ -475,15 +475,15 @@
                                     :slide-out-nav-menu-item/id      "menu-shop-by-bundle-sets"
                                     :slide-out-nav-menu-item/primary "Shop Bundle Sets"}]
                                   (when new-hd-lace?
-                                    [{:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug "hd-lace" :catalog/category-id "44"}]
+                                    [{:slide-out-nav-menu-item/target  [events/navigate-landing-page {:landing-page-slug "22-hd-lace"}]
+                                      :slide-out-nav-menu-item/nested? false
+                                      :slide-out-nav-menu-item/id      "menu-new-arrivals"
+                                      :slide-out-nav-menu-item/primary "New Arrivals"}
+                                     {:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug "hd-lace" :catalog/category-id "44"}]
                                       :slide-out-nav-menu-item/id          "menu-shop-wigs"
                                       :slide-out-nav-menu-item/new-primary (when sale-shop-hair? "Sale")
                                       :slide-out-nav-menu-item/nested?     false
-                                      :slide-out-nav-menu-item/primary     "HD Lace"}
-                                     {:slide-out-nav-menu-item/target  [events/navigate-landing-page {:landing-page-slug "22-hd-lace"}]
-                                      :slide-out-nav-menu-item/nested? false
-                                      :slide-out-nav-menu-item/id      "menu-new-arrivals"
-                                      :slide-out-nav-menu-item/primary "New Arrivals"}]))
+                                      :slide-out-nav-menu-item/primary     "HD Lace"}]))
 
                                  classic?
                                  (concat
@@ -548,10 +548,11 @@
 
                            :always
                            (concat
-                            [(shop-a-la-carte-flyout-query data)
-                             {:header-menu-item/navigation-target [events/navigate-content-guarantee]
-                              :header-menu-item/id                "desktop-our-guarantee"
-                              :header-menu-item/content           "Our Guarantee"}]
+                            [(shop-a-la-carte-flyout-query data)]
+                            (when new-hd-lace?
+                              [{:header-menu-item/navigation-target [events/navigate-landing-page {:landing-page-slug "22-hd-lace"}]
+                                :header-menu-item/id                "desktop-new-arrivals"
+                                :header-menu-item/content           "New Arrivals"}])
                             [{:header-menu-item/href    wigs-101-url
                               :header-menu-item/id      "desktop-wigs-101"
                               :header-menu-item/content "Wigs 101"}
