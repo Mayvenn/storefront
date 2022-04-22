@@ -1363,7 +1363,7 @@
     :seo/title           "Wigs"
     :seo/sitemap         false ;; Turn on when we go live with the new product
 
-    :copy/banner-img-dsk-id "24b8b98d-bde1-4197-b20d-0c6da64c4e44"
+    :copy/banner-img-dsk-id "762a38d1-6480-4a0c-a558-2c5839d9a52c"
     :copy/banner-img-mob-id "44c98bfd-bd71-4469-a321-c86bb3d713c6"
     :copy/banner-alt        "Select Wigs"
 
