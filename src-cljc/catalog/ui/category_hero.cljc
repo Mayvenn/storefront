@@ -18,8 +18,7 @@
   (when (and (seq img-dsk-id) (seq img-mob-id))
     [:div
      [:div.hide-on-mb
-      (ui/img {:max-size 500
-               :class    "col-12"
+      (ui/img {:class    "col-12"
                :style    {:vertical-align "bottom"}
                :src      img-dsk-id
                ;; no alt for decorative image
