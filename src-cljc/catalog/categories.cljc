@@ -278,7 +278,7 @@
            :selector/essentials           [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives            [:hair/origin :hair/texture :hair/color #_:hair/base-material] ;; bring this in when we go live with the hd-frontals
            :product-list/title            "Shop All Frontals"
-           :subcategories/ids             ["29" "10"] ; add "45" to this when we go live with hd frontals
+           :subcategories/ids             ["29" "10"] ; add "47" to this when we go live with hd frontals
            :subcategories/layout          :list
 
            :subsections/subsection-selectors [#:subsection{:title "Standard Lace Frontals" :selector #:hair{:family #{"frontals"} :base-material #{"lace"}}}
@@ -1253,7 +1253,7 @@
                                      :seo/title
                                      ". Featuring a thin, polyurethane"
                                      " weft that flawlessly blends with your own hair."]
-    :subcategories/ids                ["45" "46" "42"]
+    :subcategories/ids                ["47" "46" "42"]
     :subcategories/layout             :list
     :subsections/subsection-selectors [{:subsection/title    "HD Lace Closures"
                                         :subsection/selector {:hair/family #{"closures"}}}
@@ -1261,7 +1261,7 @@
                                         :subsection/selector {:hair/family #{"frontals"}}}
                                        {:subsection/title    "HD Lace Wigs"
                                         :subsection/selector {:hair/family #{"lace-front-wigs" "closure-wigs"}}}]}
-   {:catalog/category-id  "45"
+   {:catalog/category-id  "47"
     :header/title         "HD Lace Frontals"
     :category/new?        true
     :category/description (copy "Part your hair a different way every day with our versatile 13x4 HD lace frontals, "
