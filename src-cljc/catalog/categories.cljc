@@ -1207,7 +1207,7 @@
   [{:catalog/category-id "44"
     :header/title        "HD Lace"
 
-    :page/icp?            false
+    :page/icp?            true
     :category/new?        true
     :category/description (copy "Explore all of your favorite looks with our versatile HD lace options."
                                 "HD lace for seamless blending.")
@@ -1218,43 +1218,53 @@
     :seo/title            "HD Lace"
     :seo/sitemap          false ;; Turn on when we go live with the new product
 
-    :catalog/department             #{"hair"}
-    :hair/family                    #{"lace-front-wigs" "closure-wigs" "360-frontals" "closures" "frontals"}
-    :hair/base-material             #{"hd-lace"}
-    :selector/essentials            [:hair/family :catalog/department :hair/base-material]
-    :selector/electives             [:hair/family :hair/texture :hair/origin]
-    :page/title                     "100% Virgin Hair HD Lace Wig | Mayvenn"
-    :page.meta/description          (copy "Mayvenn’s HD Lace comes complete with 13x4, 4x4, or 5x5 inches of parting space."
+    :catalog/department               #{"hair"}
+    :hair/family                      #{"lace-front-wigs" "closure-wigs" "360-frontals" "closures" "frontals"}
+    :hair/base-material               #{"hd-lace"}
+    :selector/essentials              [:hair/family :catalog/department :hair/base-material]
+    :selector/electives               [:hair/family :hair/texture :hair/origin]
+    :page/title                       "100% Virgin Hair HD Lace Wig | Mayvenn"
+    :page.meta/description            (copy "Mayvenn’s HD Lace comes complete with 13x4, 4x4, or 5x5 inches of parting space."
                                           "Crafted with high-quality 100% virgin human hair.")
-    :opengraph/title                (copy "Mayvenn HD Lace - Free shipping."
+    :opengraph/title                  (copy "Mayvenn HD Lace - Free shipping."
                                           "Free 30 day returns. Made with 100% virgin human hair.")
-    :opengraph/description          (copy "Our HD Lace is sure to be a favorite."
+    :opengraph/description            (copy "Our HD Lace is sure to be a favorite."
                                           "Take advantage of high-quality HD Lace and 4 classic textures.")
-    :product-list/title             "Shop All HD Lace"
-    :contentful/faq-id              :category-hd-lace
-    :content-block/type             :about-attributes
-    :content-block/title            "Wigs 101:"
-    :content-block/header           "How to Choose"
-    :content-block/summary          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vel ultrices eros. Vivamus vestibulum purus non tristique consectetur. Donec auctor et urna sit amet blandit. In hac habitasse platea dictumst. Vestibulum ac condimentum sapien."
-    :content-block/sections         [{:title "Cap Size"
-                                      :body  [{:text "Cap size ranges between 20-21 inches. If for any reason your wig doesn’t fit, reach out to Customer Service for details to return or exchange your product."}]}
-                                     {:title "Density"
-                                      :body  [{:text "The fullest density clocks in at 200% - other measures are 180, 150 and 130. If the style you’re planning needs a lot of thickness, you should choose a higher density like 180 or 200. If you only need a little, consider 130 or 150."}]}
-                                     {:title "Lace Color"
-                                      :body  [{:text "For a wig that blends in and looks as natural as possible, you’ll want to choose a lace backing shade that most closely matches your skin tone."}]}
-                                     {:title "Length"
-                                      :body  [{:text "Short and sassy or drama down to your ankles? The choice is yours! Available in lengths ranging from 10” to 24”."}]}
-                                     {:title "Virgin & Dyed"
-                                      :body  [{:text "If you want to play with color, it helps to choose a wig that can be dyed—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it dyed the color you want."}]}]
-    :page/title-template            [:computed/selected-facet-string " Virgin " :seo/title " | Mayvenn"]
-    :page.meta/description-template ["Get the hair of your dreams with our "
+    :product-list/title               "Shop All HD Lace"
+    :contentful/faq-id                :category-hd-lace
+    :content-block/type               :about-attributes
+    :content-block/title              "Wigs 101:"
+    :content-block/header             "How to Choose"
+    :content-block/summary            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vel ultrices eros. Vivamus vestibulum purus non tristique consectetur. Donec auctor et urna sit amet blandit. In hac habitasse platea dictumst. Vestibulum ac condimentum sapien."
+    :content-block/sections           [{:title "Cap Size"
+                                        :body  [{:text "Cap size ranges between 20-21 inches. If for any reason your wig doesn’t fit, reach out to Customer Service for details to return or exchange your product."}]}
+                                       {:title "Density"
+                                        :body  [{:text "The fullest density clocks in at 200% - other measures are 180, 150 and 130. If the style you’re planning needs a lot of thickness, you should choose a higher density like 180 or 200. If you only need a little, consider 130 or 150."}]}
+                                       {:title "Lace Color"
+                                        :body  [{:text "For a wig that blends in and looks as natural as possible, you’ll want to choose a lace backing shade that most closely matches your skin tone."}]}
+                                       {:title "Length"
+                                        :body  [{:text "Short and sassy or drama down to your ankles? The choice is yours! Available in lengths ranging from 10” to 24”."}]}
+                                       {:title "Virgin & Dyed"
+                                        :body  [{:text "If you want to play with color, it helps to choose a wig that can be dyed—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it dyed the color you want."}]}]
+    :page/title-template              [:computed/selected-facet-string " Virgin " :seo/title " | Mayvenn"]
+    :page.meta/description-template   ["Get the hair of your dreams with our "
                                      :computed/selected-facet-string
                                      " "
                                      :seo/title
                                      ". Featuring a thin, polyurethane"
-                                     " weft that flawlessly blends with your own hair."]}
-   {:catalog/category-id "45"
-    :header/title        "HD Lace Frontals"
+                                     " weft that flawlessly blends with your own hair."]
+    :subcategories/ids                ["45" "46" "42"]
+    :subcategories/layout             :list
+    :subsections/subsection-selectors [{:subsection/title    "HD Lace Closures"
+                                        :subsection/selector {:hair/family #{"closures"}}}
+                                       {:subsection/title    "HD Lace Frontals"
+                                        :subsection/selector {:hair/family #{"frontals"}}}
+                                       {:subsection/title    "HD Lace Wigs"
+                                        :subsection/selector {:hair/family #{"lace-front-wigs" "closure-wigs"}}}]
+
+    }
+   {:catalog/category-id  "45"
+    :header/title         "HD Lace Frontals"
     :category/new?        true
     :category/description (copy "Part your hair a different way every day with our versatile 13x4 HD lace frontals, "
                                 "which blend seamlessly with your scalp.")
@@ -1300,8 +1310,8 @@
                                      :seo/title
                                      ". Featuring a thin, polyurethane"
                                      " weft that flawlessly blends with your own hair."]}
-   {:catalog/category-id "46"
-    :header/title        "HD Lace Closures"
+   {:catalog/category-id  "46"
+    :header/title         "HD Lace Closures"
     :category/new?        true
     :category/description (copy "Our 4x4 and 5x5 closures use HD lace for a superior match with your scalp's complexion.")
     :subcategory/image-id "e4266735-42fc-40b1-bd37-ce5a243fa681"
