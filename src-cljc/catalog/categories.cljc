@@ -276,7 +276,7 @@
            :hair/source                   #{"virgin"}
            :category/tags                 #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
            :selector/essentials           [:catalog/department :hair/family :hair/color.process :hair/source]
-           :selector/electives            [:hair/origin :hair/texture :hair/color :hair/base-material]
+           :selector/electives            [:hair/origin :hair/texture :hair/color #_:hair/base-material] ;; bring this in when we go live with the hd-frontals
            :product-list/title            "Shop All Frontals"
            :subcategories/ids             ["29" "10"] ; add "45" to this when we go live with hd frontals
            :subcategories/layout          :list
@@ -962,7 +962,7 @@
                                             "Shop our selection of natural human hair bundles and"
                                             "get connected with a stylist near you.")
     :opengraph/title                  (copy "Shop Mayvenn Hair - Buy 3 items and we'll pay for your hair service.")
-    :selector/electives               [:hair/texture :hair/family :hair/origin :hair/color :hair/base-material]
+    :selector/electives               [:hair/texture :hair/family :hair/origin :hair/color #_:hair/base-material]  ;; bring this in when we go live with the hd-frontals
     :selector/essentials              [:catalog/department :promo.mayvenn-install/eligible]
     :subsections/subsection-selectors texture-subsection-selectors}])
 
@@ -1260,9 +1260,7 @@
                                        {:subsection/title    "HD Lace Frontals"
                                         :subsection/selector {:hair/family #{"frontals"}}}
                                        {:subsection/title    "HD Lace Wigs"
-                                        :subsection/selector {:hair/family #{"lace-front-wigs" "closure-wigs"}}}]
-
-    }
+                                        :subsection/selector {:hair/family #{"lace-front-wigs" "closure-wigs"}}}]}
    {:catalog/category-id  "45"
     :header/title         "HD Lace Frontals"
     :category/new?        true
