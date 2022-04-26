@@ -20,6 +20,7 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.products :as products]
             [storefront.component :as c]
+            [storefront.components.flash :as flash]
             [storefront.components.header :as header]
             [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
@@ -93,10 +94,11 @@
    (c/build card/look-2 (with :quiz.result-v2 data) opts)])
 
 (c/defcomponent results-template
-  [{:keys [header quiz-results shopping-quiz-v2?]} _ _]
+  [{:keys [header quiz-results shopping-quiz-v2? flash]} _ _]
   [:div.bg-cool-gray
    [:div.col-12.bg-white
     (c/build header/nav-header-component header)]
+   (c/build flash/component flash nil)
    [:div.center.ptj2
     {:style {:padding-bottom "160px"}} ;; Footer height...
     [:div.flex.flex-column.px2
@@ -265,7 +267,10 @@
         looks-suggestions              (looks-suggestions/<- state shopping-quiz-id)
         header-data                    {:forced-mobile-layout? true
                                         :quantity              (or quantity 0)}
-        shopping-quiz-v2?              (experiments/shopping-quiz-v2? state)]
+        shopping-quiz-v2?              (experiments/shopping-quiz-v2? state)
+        flash             (when (seq (get-in state keypaths/errors))
+                            {:errors {:error-code "generic-error"
+                                      :error-message "Sorry, but we don't have this look in stock. Please try a different look."}})]
 
     (cond
       (utils/requesting? state request-keys/new-order-from-sku-ids)
@@ -276,17 +281,24 @@
       (c/build waiting-template)
 
       (seq looks-suggestions)
-      (->> {:quiz-results      (quiz-results< products-db skus-db images-db answers looks-suggestions)
-            :header            header-data
-            :shopping-quiz-v2? shopping-quiz-v2?}
-           (c/build results-template))
+      (c/build results-template
+               {:quiz-results      (quiz-results< products-db
+                                                  skus-db
+                                                  images-db
+                                                  answers
+                                                  looks-suggestions)
+                :header            header-data
+                :shopping-quiz-v2? shopping-quiz-v2?
+                :flash flash})
 
       :else
-      (->> {:header      header-data
-            :progress    (progress< progression)
-            :questions   (questions< questions answers progression)
-            :see-results (see-results< questioning)}
-           (c/build questioning-template)))))
+      (c/build questioning-template
+               {:header      header-data
+                :progress    (progress< progression)
+                :questions   (questions< questions
+                                         answers
+                                         progression)
+                :see-results (see-results< questioning)}))))
 
 ;;;; Behavior
 
