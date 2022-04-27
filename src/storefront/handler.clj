@@ -357,14 +357,14 @@
                       landing-page-slug :landing-page-slug
                       :as               nav-args}]
           (:nav-message req)
-          cms-cache @(:cache contentful)
+          cms-cache   @(:cache contentful)
           update-data (partial copy-cms-to-data cms-cache)]
       (h (update-in-req-state req keypaths/cms
                               merge
                               (update-data {} [:advertisedPromo])
-                              {:emailModalContext (into {} (for [[slug' rawContext] (:emailModalContext cms-cache)
-                                                                 :let [slug (keyword slug')]]
-                                                             [slug (resolve-cms-links cms-cache [:emailModalContext slug])]))}
+                              {:emailModal (into {} (for [[slug' rawContext] (:emailModal cms-cache)
+                                                          :let               [slug (keyword slug')]]
+                                                      [slug (resolve-cms-links cms-cache [:emailModal slug])]))}
                               (cond (= events/navigate-home nav-event)
                                     (-> (if shop?
                                           (-> {}
@@ -1209,9 +1209,9 @@
                       ;; HACK: special handling for landing page CMS data as it has to be assembled from multiple data
                       ;; contentful data types.
                       (-> (cond
-                            (= :landing-page (first keypath))      (assemble-landing-page (contentful/read-cache contentful) (last keypath))
-                            (= :emailModalContext (first keypath)) (resolve-cms-links (contentful/read-cache contentful) keypath)
-                            :else                                  (get-in (contentful/read-cache contentful) keypath))
+                            (= :landing-page (first keypath)) (assemble-landing-page (contentful/read-cache contentful) (last keypath))
+                            (= :emailModal (first keypath))   (resolve-cms-links (contentful/read-cache contentful) keypath)
+                            :else                             (get-in (contentful/read-cache contentful) keypath))
                           ((partial assoc-in {} keypath))
                           json/generate-string
                           util.response/response

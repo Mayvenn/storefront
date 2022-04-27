@@ -281,7 +281,7 @@
                                     :primary-key-fn   (comp keyword :content/id)
                                     :latest?          false}
                                    {:content-type     :emailModalContext
-                                    :primary-key-fn   (comp keyword :slug)
+                                    :primary-key-fn   (comp keyword :content/id)
                                     :latest?          false}
                                    {:content-type     :matchesAll
                                     :primary-key-fn   (comp keyword :content/id)
@@ -291,6 +291,9 @@
                                     :latest?          false}
                                    {:content-type     :startsWithPath
                                     :primary-key-fn   (comp keyword :content/id)
+                                    :latest?          false}
+                                   {:content-type     :emailModal
+                                    :primary-key-fn   (comp keyword :slug)
                                     :latest?          false}]]
       (doseq [content-params content-type-parameters]
         (scheduler/every scheduler (cache-timeout)
