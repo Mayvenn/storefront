@@ -279,6 +279,18 @@
                                     :latest?          false}
                                    {:content-type     :homepageHero
                                     :primary-key-fn   (comp keyword :content/id)
+                                    :latest?          false}
+                                   {:content-type     :emailModalContext
+                                    :primary-key-fn   (comp keyword :slug)
+                                    :latest?          false}
+                                   {:content-type     :matchesAll
+                                    :primary-key-fn   (comp keyword :content/id)
+                                    :latest?          false}
+                                   {:content-type     :matchesAny
+                                    :primary-key-fn   (comp keyword :content/id)
+                                    :latest?          false}
+                                   {:content-type     :startsWithPath
+                                    :primary-key-fn   (comp keyword :content/id)
                                     :latest?          false}]]
       (doseq [content-params content-type-parameters]
         (scheduler/every scheduler (cache-timeout)

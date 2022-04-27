@@ -312,6 +312,35 @@
                         :faq
                         (get (keyword (:faq-section %)))))))
 
+(defn is-link? [node]
+  (-> node :sys :type (= "Link")))
+
+(defn retrieve-link [linkable-nodes link-node]
+  (->> link-node :sys :id keyword (get linkable-nodes)))
+
+(defn resolve-node [linkable-nodes content-ids-in-ancestors node]
+  (let [link-content-id (when (is-link? node) (-> node :sys :id))
+        resolved-node   (if (and link-content-id
+                                 (->> content-ids-in-ancestors (some #(= % link-content-id)) not))
+                          (retrieve-link linkable-nodes node)
+                          node)]
+    (cond (map? resolved-node)  (->> resolved-node
+                                     (map (fn [[key subnode]]
+                                            [key (resolve-node linkable-nodes (cond-> content-ids-in-ancestors
+                                                                                link-content-id (conj link-content-id)) subnode)]))
+                                     (into {}))
+          (coll? resolved-node) (map (partial resolve-node linkable-nodes content-ids-in-ancestors) resolved-node)
+          :else                 resolved-node)))
+
+(defn resolve-cms-links [cms-data base-node-path]
+  (let [linkable-nodes (->> (select-keys cms-data [:homepageHero
+                                                   :matchesAll
+                                                   :matchesAny
+                                                   :startsWithPath])
+                            vals
+                            (apply concat)
+                            (into {}))]
+    (resolve-node linkable-nodes #{} (get-in cms-data base-node-path))))
 (defn ^:private copy-cms-to-data
   ([cms-data data keypath]
    (assoc-in data
@@ -328,10 +357,14 @@
                       landing-page-slug :landing-page-slug
                       :as               nav-args}]
           (:nav-message req)
-          update-data (partial copy-cms-to-data @(:cache contentful))]
+          cms-cache @(:cache contentful)
+          update-data (partial copy-cms-to-data cms-cache)]
       (h (update-in-req-state req keypaths/cms
                               merge
                               (update-data {} [:advertisedPromo])
+                              {:emailModalContext (into {} (for [[slug' rawContext] (:emailModalContext cms-cache)
+                                                                 :let [slug (keyword slug')]]
+                                                             [slug (resolve-cms-links cms-cache [:emailModalContext slug])]))}
                               (cond (= events/navigate-home nav-event)
                                     (-> (if shop?
                                           (-> {}
@@ -386,6 +419,8 @@
                                     (= events/navigate-landing-page nav-event)
                                     (-> {}
                                         (update-data [:ugc-collection :all-looks])
+                                        ;; TODO We really should not be special-casing "landing-page" with kebab-case name
+                                        ;;      The path here should be the same as the Content Type ID in contentful
                                         (assoc-in [:landing-page (keyword landing-page-slug)]
                                                   (assemble-landing-page @(:cache contentful) landing-page-slug)))
 
@@ -1173,9 +1208,10 @@
                     (let [keypath (->> #"/" (clojure.string/split uri) (drop 2) (map keyword))]
                       ;; HACK: special handling for landing page CMS data as it has to be assembled from multiple data
                       ;; contentful data types.
-                      (-> (if (= :landing-page (first keypath))
-                            (assemble-landing-page (contentful/read-cache contentful) (last keypath))
-                            (get-in (contentful/read-cache contentful) keypath))
+                      (-> (cond
+                            (= :landing-page (first keypath))      (assemble-landing-page (contentful/read-cache contentful) (last keypath))
+                            (= :emailModalContext (first keypath)) (resolve-cms-links (contentful/read-cache contentful) keypath)
+                            :else                                  (get-in (contentful/read-cache contentful) keypath))
                           ((partial assoc-in {} keypath))
                           json/generate-string
                           util.response/response
