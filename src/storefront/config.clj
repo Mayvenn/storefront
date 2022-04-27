@@ -92,12 +92,18 @@
     prod-value
     dev-value))
 
+(defn- if-prod-else
+  "Use prod-value if in env, otherwise use dev-value"
+  [env prod-value dev-value]
+  (if (#{"production"} (env :environment))
+    prod-value
+    dev-value))
+
 (def ^:private minute (* 60 1000))
 
 (def default-config {:server-opts       {:port 3006}
                      :client-version    client-version
-                     :contentful-config {:endpoint                   "https://cdn.contentful.com"
-                                         :graphql-endpoint           "https://graphql.contentful.com"
+                     :contentful-config {:graphql-endpoint           "https://graphql.contentful.com"
                                          :env-id                     "master"}
                      :logging           {:system-name "storefront.system"}})
 
@@ -108,7 +114,12 @@
      :welcome-config      {:url (env :welcome-url)}
      :contentful-config   {:cache-timeout              #(* (if-dev-else env 60 4) minute)
                            :static-page-fetch-interval (* (if-dev-else env 60 5) minute)
-                           :api-key                    (env :contentful-content-delivery-api-key)
+                           :endpoint                   (if-prod-else env
+                                                         "https://cdn.contentful.com"
+                                                         "https://preview.contentful.com")
+                           :api-key                    (if-prod-else env
+                                                         (env :contentful-content-delivery-api-key)
+                                                         (env :contentful-content-delivery-preview-api-key))
                            :preview-api-key            (env :contentful-content-delivery-preview-api-key)
                            :space-id                   (env :contentful-space-id)}
      :launchdarkly-config {:sdk-key (env :launchdarkly-sdk-key)}
