@@ -340,7 +340,7 @@
                             vals
                             (apply concat)
                             (into {}))]
-    (resolve-node linkable-nodes #{} (get-in cms-data base-node-path))))
+    (resolve-node linkable-nodes #{} (dissoc (get-in cms-data base-node-path) nil))))
 (defn ^:private copy-cms-to-data
   ([cms-data data keypath]
    (assoc-in data
