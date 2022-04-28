@@ -427,6 +427,9 @@
                 (is (= 2 (count requests)))
                 (is (string/includes? (:body response) "Something nice here"))))))))))
 
+(def contentful-content-types
+  [:homepage :faq :advertisedPromo :ugc-collection :landingPage :homepageHero :emailModalContext :matchesAll :matchesAny :startsWithPath :emailModal])
+
 (deftest fetches-data-from-contentful
   (testing "transforming content"
     (testing "transforming 'homepage' content"
@@ -549,7 +552,7 @@
                           (parse-string true)
                           :faq)))))))))
 
-  (let [number-of-contentful-entities-to-fetch 6]
+  (let [number-of-contentful-entities-to-fetch (count contentful-content-types)]
     (testing "caching content"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" _req
                                                                            {:status 200
@@ -559,7 +562,6 @@
           (with-handler handler
             (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
                   requests  (txfm-requests contentful-requests identity)]
-              (prn (map :uri requests))
               (is (every? #(= 200 (:status %)) responses))
               (is (= number-of-contentful-entities-to-fetch (count requests))))))))
 
