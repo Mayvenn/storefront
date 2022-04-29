@@ -124,13 +124,16 @@
 ;;; TRACKING
 
 (defmethod trk/perform-track e/biz|email-capture|deployed
-  [_ events {:keys [id variant]} app-state]
+  [_ events {:keys [id variant trigger-id modal-id design-id]} app-state]
   #?(:cljs
      (stringer/track-event "email_capture-deploy" {:email-capture-id id
-                                                   :variant          variant})))
+                                                   :variant          variant
+                                                   :trigger-id       trigger-id
+                                                   :modal-id         modal-id
+                                                   :design-id        design-id})))
 
 (defmethod trk/perform-track e/biz|email-capture|captured
-  [_ event {:keys [id variant]} app-state]
+  [_ event {:keys [id variant trigger-id modal-id design-id]} app-state]
   #?(:cljs
      (let [no-errors?     (empty? (get-in app-state k/errors))
            captured-email (get-in app-state textfield-keypath)]
@@ -143,12 +146,18 @@
                                {:email            captured-email
                                 :email-capture-id id
                                 :variant          variant
+                                :trigger-id       trigger-id
+                                :modal-id         modal-id
+                                :design-id        design-id
                                 :test-variations  (get-in app-state k/features)
                                 :store-slug       (get-in app-state k/store-slug)
                                 :store-experience (get-in app-state k/store-experience)})))))
 
 (defmethod trk/perform-track e/biz|email-capture|dismissed
-  [_ events {:keys [id variant]} app-state]
+  [_ events {:keys [id variant trigger-id modal-id design-id]} app-state]
   #?(:cljs
      (stringer/track-event "email_capture-dismiss" {:email-capture-id id
-                                                    :variant          variant})))
+                                                    :variant          variant
+                                                    :trigger-id       trigger-id
+                                                    :modal-id         modal-id
+                                                    :design-id        design-id})))

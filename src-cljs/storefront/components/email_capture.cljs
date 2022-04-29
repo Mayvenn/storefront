@@ -483,7 +483,149 @@
                  ;; ELSE
                  nil))))))
 
+(c/defdynamic-component contentful-driven-template
+  (did-mount
+   [this]
+   (let [data (c/get-props this)]
+     (scroll/disable-body-scrolling)
+     (publish e/control-menu-collapse-all)
+     (publish e/biz|email-capture|deployed {:id         (:capture-modal-id data)
+                                            :variant    (:email-capture/variant data)
+                                            :trigger-id (:email-capture/context-id data)
+                                            :modal-id   (:email-capture/modal-id data)
+                                            :design-id  (:email-capture/design-id data)})))
+  (will-unmount
+   [this]
+   (scroll/enable-body-scrolling))
+  (render
+   [this]
+   (let [{:keys               [capture-modal-id]
+          :email-capture/keys [variant]
+          :as                 data} (c/get-props this)]
+     (ui/modal
+      {:close-attrs (apply utils/fake-href (:email-capture.dismiss/target data))
+       :col-class   "col-12 col-5-on-tb col-4-on-dt flex justify-center"
+       :bg-class    "bg-darken-4"}
+      ((case [capture-modal-id variant]
+         ["first-pageview-email-capture" "2022-05"]                design-first-pageview-email-capture-2022-04
+         ["adv-quiz-email-capture"       "2022-05"]                design-first-pageview-email-capture-2022-04
+         ["first-pageview-email-capture" "2021-pre-bf-lower-text"] design-first-pageview-email-capture-2021-pre-bf-lower-text
+         ["adv-quiz-email-capture"       "2021-pre-bf-lower-text"] design-adv-quiz-email-capture-2021-pre-bf-lower-text
+         ["first-pageview-email-capture" "2021-non-bf"]            design-first-pageview-email-capture-2021-non-bf
+         ["adv-quiz-email-capture"       "2021-non-bf"]            design-adv-quiz-email-capture-2021-non-bf
+         ["first-pageview-email-capture" "2021-bf-20"]             (partial design-first-pageview-email-capture-2021-bf 20)
+         ["first-pageview-email-capture" "2021-bf-25"]             (partial design-first-pageview-email-capture-2021-bf 25)
+         ["first-pageview-email-capture" "2021-bf-30"]             (partial design-first-pageview-email-capture-2021-bf 30)
+         ["first-pageview-email-capture" "2021-hol-20"]            (partial design-first-pageview-email-capture-2021-hol 20)
+         ["adv-quiz-email-capture" "2021-bf-20"]                   (partial design-adv-quiz-email-capture-2021-bf 20)
+         ["adv-quiz-email-capture" "2021-bf-25"]                   (partial design-adv-quiz-email-capture-2021-bf 25)
+         ["adv-quiz-email-capture" "2021-bf-30"]                   (partial design-adv-quiz-email-capture-2021-bf 30)
+         ["adv-quiz-email-capture" "2021-hol-20"]                  (partial design-adv-quiz-email-capture-2021-hol 20))
+       data)))))
+
+(defn matcher-matches? [app-state matcher]
+  (case (:content/type matcher)
+    "matchesAny"  (->> matcher
+                       :must-satisfy-any-match
+                       (map (partial matcher-matches? app-state))
+                       (some true?))
+    "matchesAll"  (->> matcher
+                       :must-satisfy-all-matches
+                       (map (partial matcher-matches? app-state))
+                       (every? true?))
+    "matchesPath" (case (:path-matches matcher)
+                    "starts with"         (-> app-state
+                                              (get-in k/navigation-uri)
+                                              :path
+                                              (clojure.string/starts-with? (:path matcher)))
+                    "does not start with" (-> app-state
+                                              (get-in k/navigation-uri)
+                                              :path
+                                              (clojure.string/starts-with? (:path matcher))
+                                              not)
+                    "exactly matches"     (-> app-state
+                                              (-> (get-in k/navigation-uri) :path)
+                                              (= (:path matcher))))))
+;; TODO: there are other path mathers not accounted for yet.
+
+(defn contentful-driven-query [app-state]
+  (let [cms-modal-data       (get-in app-state k/cms-email-modal)
+        long-timer-started   (get-in app-state concept/long-timer-started-keypath)
+        short-timer-starteds (get-in app-state concept/short-timer-starteds-keypath)
+        chosen-modal         (->> cms-modal-data
+                                  vals
+                                  (filter #(matcher-matches? app-state (-> % :trigger-variation :matcher)))
+                                  first)
+        errors               (get-in app-state (conj k/field-errors ["email"]))
+        focused              (get-in app-state k/ui-focus)
+        textfield-keypath    concept/textfield-keypath
+        email                (get-in app-state textfield-keypath)
+        modal-id             (-> chosen-modal :slug)
+        context-id           (-> chosen-modal :trigger-variation :slug)]
+    ;; TODO: drive from template from contentful data rather than this hack.
+    (let [capture-modal-id context-id
+          [_ variant]      (clojure.string/split modal-id #"\|")]
+      (when (and capture-modal-id
+                 variant
+                 (not long-timer-started)
+                 (->> context-id (get short-timer-starteds) not))
+        (merge {:id                                   "email-capture"
+                :capture-modal-id                     capture-modal-id
+                :email-capture/variant                variant
+                :email-capture/context-id             context-id
+                :email-capture/modal-id               modal-id
+                :email-capture/design-id              nil
+                :email-capture.dismiss/target         [e/biz|email-capture|dismissed {:id         capture-modal-id
+                                                                                      :variant    variant
+                                                                                      :trigger-id context-id
+                                                                                      :modal-id   modal-id
+                                                                                      :design-id  nil}]
+                :email-capture.submit/target          [e/biz|email-capture|captured {:id         capture-modal-id
+                                                                                     :variant    variant
+                                                                                     :email      email
+                                                                                     :trigger-id context-id
+                                                                                     :modal-id   modal-id
+                                                                                     :design-id  nil}]
+                :email-capture.cta/id                 "email-capture-submit"
+                :email-capture.text-field/id          "email-capture-input"
+                :email-capture.text-field/placeholder "Enter Email Address"
+                :email-capture.text-field/focused     focused
+                :email-capture.text-field/keypath     textfield-keypath
+                :email-capture.text-field/errors      errors
+                :email-capture.text-field/email       email}
+               (case capture-modal-id
+
+                 "first-pageview-email-capture"
+                 {:email-capture.photo/uuid-mob "fac95ac5-882c-4df0-9a1d-5edb4fd426fb"
+                  :email-capture.photo/uuid-dsk "fac95ac5-882c-4df0-9a1d-5edb4fd426fb"
+                  :email-capture.title/primary  [:div
+                                                 [:div.title-2.proxima.shout "UNLOCK"]
+                                                 [:div.title-1.canela.p-color "$50 Off"]
+                                                 [:div.title-2.proxima
+                                                  "Plus get exclusive offers, updates on new products, and more."]]
+                  :email-capture.cta/value      "Sign me up"}
+
+                 "adv-quiz-email-capture"
+                 {:email-capture.photo/uuid-mob "05b10a97-3998-424d-b157-2270599b7971"
+                  :email-capture.photo/uuid-dsk "05b10a97-3998-424d-b157-2270599b7971"
+                  :email-capture.title/primary  [:div
+                                                 [:div.title-2.proxima.shout "UNLOCK"]
+                                                 [:div.title-1.canela.p-color "$50 Off"]
+                                                 [:div.title-2.proxima
+                                                  "Plus get exclusive offers, updates on new products, and more."]]
+
+                  :email-capture.cta/value "Sign Up"}
+
+                 ;; ENGINEER: Are you adding or altering an email capture modal design? Be sure to let Roman
+                 ;; know, as he'd like to mirror design changes on OptinMonster (which still show on the Instapages)
+
+                 ;; ELSE
+                 nil))))))
+
 
 (defn ^:export built-component [app-state opts]
-  (when-let [data (query app-state)]
-    (c/build template data opts)))
+  (if (-> app-state (get-in k/features) :contentful-driven-email-capture-modal)
+    (when-let [data (contentful-driven-query app-state)]
+      (c/build contentful-driven-template data opts))
+    (when-let [data (query app-state)]
+      (c/build template data opts))))

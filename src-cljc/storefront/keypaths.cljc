@@ -16,6 +16,7 @@
 (def cms-landing-page (conj cms :landing-page))
 
 (def cms-faq (conj cms :faq))
+(def cms-email-modal (conj cms :emailModal))
 
 (def features [:features])
 (def welcome-url [:welcome-url])
