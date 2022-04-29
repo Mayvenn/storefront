@@ -533,19 +533,18 @@
                        :must-satisfy-all-matches
                        (map (partial matcher-matches? app-state))
                        (every? true?))
-    "matchesPath" (case (:path-matches matcher)
-                    "starts with"         (-> app-state
-                                              (get-in k/navigation-uri)
-                                              :path
-                                              (clojure.string/starts-with? (:path matcher)))
-                    "does not start with" (-> app-state
-                                              (get-in k/navigation-uri)
-                                              :path
-                                              (clojure.string/starts-with? (:path matcher))
-                                              not)
-                    "exactly matches"     (-> app-state
-                                              (-> (get-in k/navigation-uri) :path)
-                                              (= (:path matcher))))))
+    "matchesNot"  (->> matcher
+                       :must-not-satisfy
+                       (matcher-matches? app-state)
+                       not)
+    "matchesPath" (let [cur-path (-> app-state
+                                     (get-in k/navigation-uri)
+                                     :path)]
+                    (case (:path-matches matcher)
+                      "starts with"         (clojure.string/starts-with? cur-path (:path matcher))
+                      "contains"            (clojure.string/includes? cur-path (:path matcher))
+                      "exactly matches"     (= cur-path (:path matcher))
+                      "does not start with" (not (clojure.string/starts-with? cur-path (:path matcher)))))))
 ;; TODO: there are other path mathers not accounted for yet.
 
 (defn contentful-driven-query [app-state]
