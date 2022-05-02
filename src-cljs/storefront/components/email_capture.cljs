@@ -412,6 +412,8 @@
        :col-class   "col-12 col-5-on-tb col-4-on-dt flex justify-center"
        :bg-class    "bg-darken-4"}
       ((case [capture-modal-id variant]
+         ["first-pageview-email-capture" "2022-05b"]               design-first-pageview-email-capture-2022-04
+         ["adv-quiz-email-capture"       "2022-05b"]               design-first-pageview-email-capture-2022-04
          ["first-pageview-email-capture" "2022-05"]                design-first-pageview-email-capture-2022-04
          ["adv-quiz-email-capture"       "2022-05"]                design-first-pageview-email-capture-2022-04
          ["first-pageview-email-capture" "2021-pre-bf-lower-text"] design-first-pageview-email-capture-2021-pre-bf-lower-text
@@ -454,9 +456,9 @@
                 :email-capture.text-field/keypath     textfield-keypath
                 :email-capture.text-field/errors      errors
                 :email-capture.text-field/email       email}
-               (case capture-modal-id
+               (case [capture-modal-id variant]
 
-                 "first-pageview-email-capture"
+                 ["first-pageview-email-capture" "2022-05"]
                  {:email-capture.photo/uuid-mob "fac95ac5-882c-4df0-9a1d-5edb4fd426fb"
                   :email-capture.photo/uuid-dsk "fac95ac5-882c-4df0-9a1d-5edb4fd426fb"
                   :email-capture.title/primary  [:div
@@ -466,7 +468,7 @@
                                                   "Plus get exclusive offers, updates on new products, and more."]]
                   :email-capture.cta/value      "Sign me up"}
 
-                 "adv-quiz-email-capture"
+                 ["first-pageview-email-capture" "adv-quiz-email-capture"]
                  {:email-capture.photo/uuid-mob "05b10a97-3998-424d-b157-2270599b7971"
                   :email-capture.photo/uuid-dsk "05b10a97-3998-424d-b157-2270599b7971"
                   :email-capture.title/primary  [:div
@@ -476,6 +478,28 @@
                                                   "Plus get exclusive offers, updates on new products, and more."]]
 
                   :email-capture.cta/value "Sign Up"}
+
+                 ["first-pageview-email-capture" "2022-05b"]
+                 {:email-capture.photo/uuid-mob "44052f45-4252-44f4-a47a-c0a94e0020a3"
+                  :email-capture.photo/uuid-dsk "44052f45-4252-44f4-a47a-c0a94e0020a3"
+                  :email-capture.title/primary  [:div
+                                                 [:div.title-2.proxima.shout "UNLOCK"]
+                                                 [:div.title-1.canela.p-color "$50 Off"]
+                                                 [:div.title-2.proxima
+                                                  "Plus get exclusive offers, updates on new products, and more."]]
+                  :email-capture.cta/value      "Sign me up"}
+
+                 ["adv-quiz-email-capture" "2022-05b"]
+                 {:email-capture.photo/uuid-mob "e7fdb284-4d9d-49ae-a119-da1858fa6fdd"
+                  :email-capture.photo/uuid-dsk "e7fdb284-4d9d-49ae-a119-da1858fa6fdd"
+                  :email-capture.title/primary  [:div
+                                                 [:div.title-2.proxima.shout "UNLOCK"]
+                                                 [:div.title-1.canela.p-color "$50 Off"]
+                                                 [:div.title-2.proxima
+                                                  "Plus get exclusive offers, updates on new products, and more."]]
+
+                  :email-capture.cta/value "Sign Up"}
+
 
                  ;; ENGINEER: Are you adding or altering an email capture modal design? Be sure to let Roman
                  ;; know, as he'd like to mirror design changes on OptinMonster (which still show on the Instapages)
@@ -592,9 +616,9 @@
                 :email-capture.text-field/keypath     textfield-keypath
                 :email-capture.text-field/errors      errors
                 :email-capture.text-field/email       email}
-               (case capture-modal-id
+               (case [capture-modal-id variant]
 
-                 "first-pageview-email-capture"
+                 ["first-pageview-email-capture" "2022-05"]
                  {:email-capture.photo/uuid-mob "fac95ac5-882c-4df0-9a1d-5edb4fd426fb"
                   :email-capture.photo/uuid-dsk "fac95ac5-882c-4df0-9a1d-5edb4fd426fb"
                   :email-capture.title/primary  [:div
@@ -604,7 +628,7 @@
                                                   "Plus get exclusive offers, updates on new products, and more."]]
                   :email-capture.cta/value      "Sign me up"}
 
-                 "adv-quiz-email-capture"
+                 ["first-pageview-email-capture" "adv-quiz-email-capture"]
                  {:email-capture.photo/uuid-mob "05b10a97-3998-424d-b157-2270599b7971"
                   :email-capture.photo/uuid-dsk "05b10a97-3998-424d-b157-2270599b7971"
                   :email-capture.title/primary  [:div
@@ -614,6 +638,28 @@
                                                   "Plus get exclusive offers, updates on new products, and more."]]
 
                   :email-capture.cta/value "Sign Up"}
+
+                 ["first-pageview-email-capture" "2022-05b"]
+                 {:email-capture.photo/uuid-mob "44052f45-4252-44f4-a47a-c0a94e0020a3"
+                  :email-capture.photo/uuid-dsk "44052f45-4252-44f4-a47a-c0a94e0020a3"
+                  :email-capture.title/primary  [:div
+                                                 [:div.title-2.proxima.shout "UNLOCK"]
+                                                 [:div.title-1.canela.p-color "$50 Off"]
+                                                 [:div.title-2.proxima
+                                                  "Plus get exclusive offers, updates on new products, and more."]]
+                  :email-capture.cta/value      "Sign me up"}
+
+                 ["adv-quiz-email-capture" "2022-05b"]
+                 {:email-capture.photo/uuid-mob "e7fdb284-4d9d-49ae-a119-da1858fa6fdd"
+                  :email-capture.photo/uuid-dsk "e7fdb284-4d9d-49ae-a119-da1858fa6fdd"
+                  :email-capture.title/primary  [:div
+                                                 [:div.title-2.proxima.shout "UNLOCK"]
+                                                 [:div.title-1.canela.p-color "$50 Off"]
+                                                 [:div.title-2.proxima
+                                                  "Plus get exclusive offers, updates on new products, and more."]]
+
+                  :email-capture.cta/value "Sign Up"}
+
 
                  ;; ENGINEER: Are you adding or altering an email capture modal design? Be sure to let Roman
                  ;; know, as he'd like to mirror design changes on OptinMonster (which still show on the Instapages)
