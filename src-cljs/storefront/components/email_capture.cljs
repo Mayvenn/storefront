@@ -468,7 +468,7 @@
                                                   "Plus get exclusive offers, updates on new products, and more."]]
                   :email-capture.cta/value      "Sign me up"}
 
-                 ["first-pageview-email-capture" "adv-quiz-email-capture"]
+                 ["adv-quiz-email-capture" "2022-05"]
                  {:email-capture.photo/uuid-mob "05b10a97-3998-424d-b157-2270599b7971"
                   :email-capture.photo/uuid-dsk "05b10a97-3998-424d-b157-2270599b7971"
                   :email-capture.title/primary  [:div
