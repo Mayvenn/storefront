@@ -646,7 +646,7 @@
                                                  [:div.title-2.proxima.shout "UNLOCK"]
                                                  [:div.title-1.canela.p-color "$50 Off"]
                                                  [:div.title-2.proxima
-                                                  "Plus get exclusive offers, updates on new products, and more."]]
+                                                  "plus access to hair education, trending looks and more."]]
                   :email-capture.cta/value      "Sign me up"}
 
                  ["adv-quiz-email-capture" "2022-05b"]
@@ -656,7 +656,7 @@
                                                  [:div.title-2.proxima.shout "UNLOCK"]
                                                  [:div.title-1.canela.p-color "$50 Off"]
                                                  [:div.title-2.proxima
-                                                  "Plus get exclusive offers, updates on new products, and more."]]
+                                                  "plus top stylist recommendations, trending looks and more."]]
 
                   :email-capture.cta/value "Sign Up"}
 
