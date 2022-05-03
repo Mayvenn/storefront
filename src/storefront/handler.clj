@@ -364,9 +364,9 @@
       (h (update-in-req-state req keypaths/cms
                               merge
                               (update-data {} [:advertisedPromo])
-                              {:emailModal (into {} (for [[variant-id' rawContext] (:emailModal cms-cache)
-                                                          :let               [variant-id (keyword variant-id')]]
-                                                      [variant-id (resolve-cms-links cms-cache [:emailModal variant-id])]))}
+                              {:emailModal (into {} (for [[content-id' _] (:emailModal cms-cache)
+                                                          :let            [content-id (keyword content-id')]]
+                                                      [content-id (resolve-cms-links cms-cache [:emailModal content-id])]))}
                               (cond (= events/navigate-home nav-event)
                                     (-> (if shop?
                                           (-> {}

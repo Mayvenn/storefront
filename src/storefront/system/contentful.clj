@@ -108,7 +108,13 @@
 (defn ^:private condense
   [data]
   (->> data
-       (mapv (fn [asset] [(-> asset :sys :id) (-> asset :fields)]))
+       (mapv (fn [asset-or-entry]
+               (let [id (-> asset-or-entry :sys :id)
+                     type (-> asset-or-entry :sys :contentType :sys :id)]
+                 [id (-> asset-or-entry
+                         :fields
+                         (assoc :content/id id)
+                         (assoc :content/type type))])))
        (into {})))
 
 (defn ^:private replace-data [lookup-table]
@@ -214,6 +220,12 @@
                            (maps/index-by primary-key-fn)
                            (assoc {} content-type))
 
+                  (= :emailModal content-type)
+                  (some->> body
+                           condense-items-with-includes
+                           (maps/index-by (comp keyword :content/id))
+                           (assoc {} content-type))
+
                   :else
                   (some->> body
                            resolve-all-collection
@@ -300,7 +312,7 @@
                                     :primary-key-fn   (comp keyword :content/id)
                                     :latest?          false}
                                    {:content-type     :emailModal
-                                    :primary-key-fn   (comp keyword :variation-id)
+                                    :primary-key-fn   (comp keyword :content/id)
                                     :latest?          false}]]
       (doseq [content-params content-type-parameters]
         (scheduler/every scheduler (cache-timeout)
