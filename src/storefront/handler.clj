@@ -336,11 +336,13 @@
   (let [linkable-nodes (->> (select-keys cms-data [:homepageHero
                                                    :matchesAll
                                                    :matchesAny
+                                                   :matchesNot
                                                    :startsWithPath])
                             vals
                             (apply concat)
                             (into {}))]
     (resolve-node linkable-nodes #{} (dissoc (get-in cms-data base-node-path) nil))))
+
 (defn ^:private copy-cms-to-data
   ([cms-data data keypath]
    (assoc-in data
@@ -362,9 +364,9 @@
       (h (update-in-req-state req keypaths/cms
                               merge
                               (update-data {} [:advertisedPromo])
-                              {:emailModal (into {} (for [[slug' rawContext] (:emailModal cms-cache)
-                                                          :let               [slug (keyword slug')]]
-                                                      [slug (resolve-cms-links cms-cache [:emailModal slug])]))}
+                              {:emailModal (into {} (for [[variant-id' rawContext] (:emailModal cms-cache)
+                                                          :let               [variant-id (keyword variant-id')]]
+                                                      [variant-id (resolve-cms-links cms-cache [:emailModal variant-id])]))}
                               (cond (= events/navigate-home nav-event)
                                     (-> (if shop?
                                           (-> {}
