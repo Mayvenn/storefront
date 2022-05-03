@@ -483,20 +483,16 @@
                  {:email-capture.photo/uuid-mob "44052f45-4252-44f4-a47a-c0a94e0020a3"
                   :email-capture.photo/uuid-dsk "44052f45-4252-44f4-a47a-c0a94e0020a3"
                   :email-capture.title/primary  [:div
-                                                 [:div.title-2.proxima.shout "UNLOCK"]
-                                                 [:div.title-1.canela.p-color "$50 Off"]
                                                  [:div.title-2.proxima
-                                                  "Plus get exclusive offers, updates on new products, and more."]]
+                                                  "Plus access to hair education, trending looks and more."]]
                   :email-capture.cta/value      "Sign me up"}
 
                  ["adv-quiz-email-capture" "2022-05b"]
                  {:email-capture.photo/uuid-mob "e7fdb284-4d9d-49ae-a119-da1858fa6fdd"
                   :email-capture.photo/uuid-dsk "e7fdb284-4d9d-49ae-a119-da1858fa6fdd"
                   :email-capture.title/primary  [:div
-                                                 [:div.title-2.proxima.shout "UNLOCK"]
-                                                 [:div.title-1.canela.p-color "$50 Off"]
                                                  [:div.title-2.proxima
-                                                  "Plus get exclusive offers, updates on new products, and more."]]
+                                                  "Plus top stylist recommendations, trending looks and more."]]
 
                   :email-capture.cta/value "Sign Up"}
 
