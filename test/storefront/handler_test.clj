@@ -450,7 +450,7 @@
                                                          :classic)]
               (is (every? #(= 200 (:status %)) responses))
               (is (=
-                   #{:title :alt :desktop :mobile :path}
+                   #{:content/type :content/id :title :alt :desktop :mobile :path}
                    (set (keys feature-1))
                    (set (keys feature-2))
                    (set (keys feature-3))
