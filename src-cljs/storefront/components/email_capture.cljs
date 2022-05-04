@@ -421,7 +421,7 @@
        {:class (:email-capture.design/background-color data)}
        [:form.col-12.center.px1
         {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
-        [:div
+        [:div.my2
          [:div.title-2.proxima.shout supertitle]
          [:div.title-1.canela.p-color title]
          [:div.title-2.proxima subtitle]]
@@ -542,10 +542,13 @@
 (c/defdynamic-component contentful-driven-template
   (did-mount
    [this]
-   (let [data (c/get-props this)]
+   (let [{:as data
+          :email-capture/keys [trigger-id variation-description template-content-id]} (c/get-props this)]
      (scroll/disable-body-scrolling)
      (publish e/control-menu-collapse-all)
-     (publish e/biz|email-capture|deployed (select-keys data [:trigger-id :variation-description :template-content-id]))))
+     (publish e/biz|email-capture|deployed {:trigger-id            trigger-id
+                                            :variation-description variation-description
+                                            :template-content-id   template-content-id})))
   (will-unmount
    [this]
    (scroll/enable-body-scrolling))
@@ -554,7 +557,7 @@
    (let [{:keys               [id]
           :email-capture/keys [content-type]
           :as                 data} (c/get-props this)
-         template                   (case (spice.core/spy content-type)
+         template                   (case content-type
                                       "emailModalTemplate" email-capture-modal-template-1)]
      (ui/modal
       {:close-attrs (apply utils/fake-href (:email-capture.dismiss/target data))
@@ -607,34 +610,35 @@
                template-content-id
                (not long-timer-started)
                (->> trigger-id (get short-timer-starteds) not))
-      {:id                                   "email-capture"
-       :email-capture/trigger-id             trigger-id
-       :email-capture/content-type           (:content/type content)
-       :email-capture.dismiss/target         [e/biz|email-capture|dismissed {:trigger-id            trigger-id
+      {:id                                    "email-capture"
+       :email-capture/trigger-id              trigger-id
+       :email-capture/variation-description   variation-description
+       :email-capture/template-content-id     template-content-id
+       :email-capture/content-type            (:content/type content)
+       :email-capture.dismiss/target          [e/biz|email-capture|dismissed {:trigger-id            trigger-id
+                                                                              :variation-description variation-description
+                                                                              :template-content-id   template-content-id}]
+       :email-capture.submit/target           [e/biz|email-capture|captured {:trigger-id            trigger-id
                                                                              :variation-description variation-description
-                                                                             :template-content-id   template-content-id}]
-       :email-capture.submit/target          [e/biz|email-capture|captured {:trigger-id            trigger-id
-                                                                            :variation-description variation-description
-                                                                            :template-content-id   template-content-id
-                                                                            :email                 email}]
+                                                                             :template-content-id   template-content-id
+                                                                             :email                 email}]
        :email-capture.design/background-color (:background-color content)
-       :email-capture.design/close-x-color (:close-xcolor content)
-       :email-capture.copy/title (:title content)
-       :email-capture.copy/subtitle (:subtitle content)
-       :email-capture.copy/supertitle (:supertitle content)
+       :email-capture.design/close-x-color    (:close-xcolor content)
+       :email-capture.copy/title              (:title content)
+       :email-capture.copy/subtitle           (:subtitle content)
+       :email-capture.copy/supertitle         (:supertitle content)
        :email-capture.copy/fine-print-lead-in (:fine-print-lead-in content)
-
-       :email-capture.cta/id                 "email-capture-submit"
-       :email-capture.cta/value              (:cta-copy content)
-       :email-capture.text-field/id          "email-capture-input"
-       :email-capture.text-field/placeholder (:email-input-field-placeholder-copy content)
-       :email-capture.text-field/focused     focused
-       :email-capture.text-field/keypath     textfield-keypath
-       :email-capture.text-field/errors      errors
-       :email-capture.text-field/email       email
-       :email-capture.photo/url (-> content :hero-image :file :url)
-       :email-capture.photo/title (-> content :hero-image :title)
-       :email-capture.photo/description (-> content :hero-image :description)})))
+       :email-capture.cta/id                  "email-capture-submit"
+       :email-capture.cta/value               (:cta-copy content)
+       :email-capture.text-field/id           "email-capture-input"
+       :email-capture.text-field/placeholder  (:email-input-field-placeholder-copy content)
+       :email-capture.text-field/focused      focused
+       :email-capture.text-field/keypath      textfield-keypath
+       :email-capture.text-field/errors       errors
+       :email-capture.text-field/email        email
+       :email-capture.photo/url               (-> content :hero-image :file :url)
+       :email-capture.photo/title             (-> content :hero-image :title)
+       :email-capture.photo/description       (-> content :hero-image :description)})))
 
 
 (defn ^:export built-component [app-state opts]

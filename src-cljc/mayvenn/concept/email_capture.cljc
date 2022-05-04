@@ -116,25 +116,30 @@
   (publish e/biz|email-capture|timer-state-observed))
 
 (defmethod fx/perform-effects e/biz|email-capture|dismissed
-  [_ _ {:keys [id]} state _]
+  [_ _ {:keys [id trigger-id]} state _]
+  ;; GROT id once email capture modals are only Contentful-driven
   #?(:cljs
-     (cookie-jar/save-email-capture-short-timer-started (get-in email-capture-configs [id :cookie-id]) (get-in state k/cookie)))
+     (cookie-jar/save-email-capture-short-timer-started (get-in email-capture-configs
+                                                                [(or trigger-id id) :cookie-id])
+                                                        (get-in state k/cookie)))
   (publish e/biz|email-capture|timer-state-observed))
 
 ;;; TRACKING
 
-(defmethod trk/perform-track e/biz|email-capture|deployed
-  [_ events {:keys [id variant trigger-id modal-id design-id]} app-state]
-  #?(:cljs
-     (stringer/track-event "email_capture-deploy" {:email-capture-id id
-                                                   :variant          variant
-                                                   :trigger-id       trigger-id
-                                                   :modal-id         modal-id
-                                                   :design-id        design-id})))
+#?(:cljs
+   (defmethod trk/perform-track e/biz|email-capture|deployed
+     [_ events {:keys [id variant trigger-id variation-description template-content-id]} app-state]
+     (stringer/track-event "email_capture-deploy" (if trigger-id ; Contentful-driven
+                                                    {:email-capture-id      trigger-id
+                                                     :variation-description variation-description
+                                                     :template-content-id   template-content-id}
+                                                    ;; GROT once email capture modals are only Contentful-driven
+                                                    {:email-capture-id id
+                                                     :variant          variant}))))
 
-(defmethod trk/perform-track e/biz|email-capture|captured
-  [_ event {:keys [id variant trigger-id modal-id design-id]} app-state]
-  #?(:cljs
+#?(:cljs
+   (defmethod trk/perform-track e/biz|email-capture|captured
+     [_ event {:keys [id variant trigger-id variation-description template-content-id]} app-state]
      (let [no-errors?     (empty? (get-in app-state k/errors))
            captured-email (get-in app-state textfield-keypath)]
        (when no-errors?
@@ -143,21 +148,26 @@
          ;; (google-tag-manager/track-email-capture-capture {:email captured-email})
          (stringer/identify {:email captured-email})
          (stringer/track-event "email_capture-capture"
-                               {:email            captured-email
-                                :email-capture-id id
-                                :variant          variant
-                                :trigger-id       trigger-id
-                                :modal-id         modal-id
-                                :design-id        design-id
-                                :test-variations  (get-in app-state k/features)
-                                :store-slug       (get-in app-state k/store-slug)
-                                :store-experience (get-in app-state k/store-experience)})))))
+                               (merge
+                                {:email            captured-email
+                                 :test-variations  (get-in app-state k/features)
+                                 :store-slug       (get-in app-state k/store-slug)
+                                 :store-experience (get-in app-state k/store-experience)}
+                                (if trigger-id ; Contentful-driven
+                                  {:email-capture-id      trigger-id
+                                   :variation-description variation-description
+                                   :template-content-id   template-content-id}
+                                  ;; GROT once email capture modals are only Contentful-driven
+                                  {:email-capture-id id
+                                   :variant          variant})))))))
 
-(defmethod trk/perform-track e/biz|email-capture|dismissed
-  [_ events {:keys [id variant trigger-id modal-id design-id]} app-state]
-  #?(:cljs
-     (stringer/track-event "email_capture-dismiss" {:email-capture-id id
-                                                    :variant          variant
-                                                    :trigger-id       trigger-id
-                                                    :modal-id         modal-id
-                                                    :design-id        design-id})))
+#?(:cljs
+   (defmethod trk/perform-track e/biz|email-capture|dismissed
+     [_ events {:keys [id variant trigger-id variation-description template-content-id]} app-state]
+     (stringer/track-event "email_capture-dismiss" (if trigger-id ; Contentful-driven
+                                                     {:email-capture-id      trigger-id
+                                                      :variation-description variation-description
+                                                      :template-content-id   template-content-id}
+                                                     ;; GROT once email capture modals are only Contentful-driven
+                                                     {:email-capture-id id
+                                                      :variant          variant}))))
