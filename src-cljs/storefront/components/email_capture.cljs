@@ -133,6 +133,17 @@
    [:a.p-color (utils/route-to e/navigate-content-privacy) "Privacy Policy"]
    ". Unsubscribe anytime."])
 
+(defn fine-print-5 [prefix]
+  [:div.px2.pt4.pb6
+   {:style {:color "#6b6b6b"
+            :font  "12px/17px 'Proxima Nova', Arial, sans-serif"}}
+   prefix
+   " For further information, please read our "
+   [:a.p-color (utils/route-to e/navigate-content-tos) "Terms"]
+   " and "
+   [:a.p-color (utils/route-to e/navigate-content-privacy) "Privacy Policy"]
+   ". Unsubscribe anytime."])
+
 (defn design-first-pageview-email-capture-2022-04
   [{:keys [id] :as   data}]
   (c/html
@@ -391,6 +402,35 @@
    [:div.bg-white.p4.center
     (svg/mayvenn-logo {:style {:width "50px" :height "30px"}})]])
 
+(defn email-capture-modal-template-1
+  [{:keys [id] :as data}]
+  (c/html
+   [:div.flex.flex-column
+    {:data-test (str id "-modal")}
+    (m-header id (apply utils/fake-href (:email-capture.dismiss/target data)))
+    (let [{:email-capture.photo/keys [url title description]} data]
+      (ui/aspect-ratio 4 3
+                       (ui/img {:max-size "500px"
+                                :class    "col-12"
+                                :style    {:vertical-align "bottom"}
+                                :src      url
+                                :title title
+                                :alt      description})))
+    (let [{:email-capture.copy/keys [title subtitle supertitle fine-print-lead-in]} data]
+      [:div.p4.black
+       {:class (:email-capture.design/background-color data)}
+       [:form.col-12.center.px1
+        {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
+        [:div
+         [:div.title-2.proxima.shout supertitle]
+         [:div.title-1.canela.p-color title]
+         [:div.title-2.proxima subtitle]]
+        [:div.px3
+         (text-field data)
+         (cta-1 data)]]
+       hr-divider
+       (fine-print-5 fine-print-lead-in)])]))
+
 (c/defdynamic-component template
   (did-mount
    [this]
@@ -496,10 +536,6 @@
 
                   :email-capture.cta/value "Sign Up"}
 
-
-                 ;; ENGINEER: Are you adding or altering an email capture modal design? Be sure to let Roman
-                 ;; know, as he'd like to mirror design changes on OptinMonster (which still show on the Instapages)
-
                  ;; ELSE
                  nil))))))
 
@@ -509,39 +545,23 @@
    (let [data (c/get-props this)]
      (scroll/disable-body-scrolling)
      (publish e/control-menu-collapse-all)
-     (publish e/biz|email-capture|deployed {:id         (:capture-modal-id data)
-                                            :variant    (:email-capture/variant data)
-                                            :trigger-id (:email-capture/context-id data)
-                                            :modal-id   (:email-capture/modal-id data)
-                                            :design-id  (:email-capture/design-id data)})))
+     (publish e/biz|email-capture|deployed (select-keys data [:trigger-id :variation-description :template-content-id]))))
   (will-unmount
    [this]
    (scroll/enable-body-scrolling))
   (render
    [this]
-   (let [{:keys               [capture-modal-id]
-          :email-capture/keys [variant]
-          :as                 data} (c/get-props this)]
+   (let [{:keys               [id]
+          :email-capture/keys [content-type]
+          :as                 data} (c/get-props this)
+         template                   (case (spice.core/spy content-type)
+                                      "emailModalTemplate" email-capture-modal-template-1)]
      (ui/modal
       {:close-attrs (apply utils/fake-href (:email-capture.dismiss/target data))
        :col-class   "col-12 col-5-on-tb col-4-on-dt flex justify-center"
        :bg-class    "bg-darken-4"}
-      ((case [capture-modal-id variant]
-         ["first-pageview-email-capture" "2022-05"]                design-first-pageview-email-capture-2022-04
-         ["adv-quiz-email-capture"       "2022-05"]                design-first-pageview-email-capture-2022-04
-         ["first-pageview-email-capture" "2021-pre-bf-lower-text"] design-first-pageview-email-capture-2021-pre-bf-lower-text
-         ["adv-quiz-email-capture"       "2021-pre-bf-lower-text"] design-adv-quiz-email-capture-2021-pre-bf-lower-text
-         ["first-pageview-email-capture" "2021-non-bf"]            design-first-pageview-email-capture-2021-non-bf
-         ["adv-quiz-email-capture"       "2021-non-bf"]            design-adv-quiz-email-capture-2021-non-bf
-         ["first-pageview-email-capture" "2021-bf-20"]             (partial design-first-pageview-email-capture-2021-bf 20)
-         ["first-pageview-email-capture" "2021-bf-25"]             (partial design-first-pageview-email-capture-2021-bf 25)
-         ["first-pageview-email-capture" "2021-bf-30"]             (partial design-first-pageview-email-capture-2021-bf 30)
-         ["first-pageview-email-capture" "2021-hol-20"]            (partial design-first-pageview-email-capture-2021-hol 20)
-         ["adv-quiz-email-capture" "2021-bf-20"]                   (partial design-adv-quiz-email-capture-2021-bf 20)
-         ["adv-quiz-email-capture" "2021-bf-25"]                   (partial design-adv-quiz-email-capture-2021-bf 25)
-         ["adv-quiz-email-capture" "2021-bf-30"]                   (partial design-adv-quiz-email-capture-2021-bf 30)
-         ["adv-quiz-email-capture" "2021-hol-20"]                  (partial design-adv-quiz-email-capture-2021-hol 20))
-       data)))))
+      ;; TODO format the close-x
+      (template data)))))
 
 (defn matcher-matches? [app-state matcher]
   (case (:content/type matcher)
@@ -568,100 +588,53 @@
 ;; TODO: there are other path mathers not accounted for yet.
 
 (defn contentful-driven-query [app-state]
-  (let [cms-modal-data       (get-in app-state k/cms-email-modal)
-        long-timer-started   (get-in app-state concept/long-timer-started-keypath)
-        short-timer-starteds (get-in app-state concept/short-timer-starteds-keypath)
-        chosen-modal         (->> cms-modal-data
-                                  vals
-                                  (filter #(matcher-matches? app-state (-> % :trigger-variation :matcher)))
-                                  first)
-        errors               (get-in app-state (conj k/field-errors ["email"]))
-        focused              (get-in app-state k/ui-focus)
-        textfield-keypath    concept/textfield-keypath
-        email                (get-in app-state textfield-keypath)
-        modal-id             (-> chosen-modal :slug)
-        context-id           (-> chosen-modal :trigger-variation :slug)]
-    ;; TODO: drive from template from contentful data rather than this hack.
-    (let [capture-modal-id context-id
-          [_ variant]      (clojure.string/split modal-id #"\|")]
-      (when (and capture-modal-id
-                 variant
-                 (not long-timer-started)
-                 (->> context-id (get short-timer-starteds) not))
-        (merge {:id                                   "email-capture"
-                :capture-modal-id                     capture-modal-id
-                :email-capture/variant                variant
-                :email-capture/context-id             context-id
-                :email-capture/modal-id               modal-id
-                :email-capture/design-id              nil
-                :email-capture.dismiss/target         [e/biz|email-capture|dismissed {:id         capture-modal-id
-                                                                                      :variant    variant
-                                                                                      :trigger-id context-id
-                                                                                      :modal-id   modal-id
-                                                                                      :design-id  nil}]
-                :email-capture.submit/target          [e/biz|email-capture|captured {:id         capture-modal-id
-                                                                                     :variant    variant
-                                                                                     :email      email
-                                                                                     :trigger-id context-id
-                                                                                     :modal-id   modal-id
-                                                                                     :design-id  nil}]
-                :email-capture.cta/id                 "email-capture-submit"
-                :email-capture.text-field/id          "email-capture-input"
-                :email-capture.text-field/placeholder "Enter Email Address"
-                :email-capture.text-field/focused     focused
-                :email-capture.text-field/keypath     textfield-keypath
-                :email-capture.text-field/errors      errors
-                :email-capture.text-field/email       email}
-               (case [capture-modal-id variant]
+  (let [cms-modal-data        (get-in app-state k/cms-email-modal)
+        long-timer-started    (get-in app-state concept/long-timer-started-keypath)
+        short-timer-starteds  (get-in app-state concept/short-timer-starteds-keypath)
+        chosen-modal          (->> cms-modal-data
+                                   vals
+                                   (filter #(matcher-matches? app-state (-> % :email-modal-trigger :matcher)))
+                                   first)
+        errors                (get-in app-state (conj k/field-errors ["email"]))
+        focused               (get-in app-state k/ui-focus)
+        textfield-keypath     concept/textfield-keypath
+        email                 (get-in app-state textfield-keypath)
+        content               (:email-modal-template chosen-modal)
+        trigger-id            (-> chosen-modal :email-modal-trigger :trigger-id)
+        template-content-id   (:template-content-id content)
+        variation-description (-> chosen-modal :description)]
+    (when (and trigger-id
+               template-content-id
+               (not long-timer-started)
+               (->> trigger-id (get short-timer-starteds) not))
+      {:id                                   "email-capture"
+       :email-capture/trigger-id             trigger-id
+       :email-capture/content-type           (:content/type content)
+       :email-capture.dismiss/target         [e/biz|email-capture|dismissed {:trigger-id            trigger-id
+                                                                             :variation-description variation-description
+                                                                             :template-content-id   template-content-id}]
+       :email-capture.submit/target          [e/biz|email-capture|captured {:trigger-id            trigger-id
+                                                                            :variation-description variation-description
+                                                                            :template-content-id   template-content-id
+                                                                            :email                 email}]
+       :email-capture.design/background-color (:background-color content)
+       :email-capture.design/close-x-color (:close-xcolor content)
+       :email-capture.copy/title (:title content)
+       :email-capture.copy/subtitle (:subtitle content)
+       :email-capture.copy/supertitle (:supertitle content)
+       :email-capture.copy/fine-print-lead-in (:fine-print-lead-in content)
 
-                 ["first-pageview-email-capture" "2022-05"]
-                 {:email-capture.photo/uuid-mob "fac95ac5-882c-4df0-9a1d-5edb4fd426fb"
-                  :email-capture.photo/uuid-dsk "fac95ac5-882c-4df0-9a1d-5edb4fd426fb"
-                  :email-capture.title/primary  [:div
-                                                 [:div.title-2.proxima.shout "UNLOCK"]
-                                                 [:div.title-1.canela.p-color "$50 Off"]
-                                                 [:div.title-2.proxima
-                                                  "Plus get exclusive offers, updates on new products, and more."]]
-                  :email-capture.cta/value      "Sign me up"}
-
-                 ["first-pageview-email-capture" "adv-quiz-email-capture"]
-                 {:email-capture.photo/uuid-mob "05b10a97-3998-424d-b157-2270599b7971"
-                  :email-capture.photo/uuid-dsk "05b10a97-3998-424d-b157-2270599b7971"
-                  :email-capture.title/primary  [:div
-                                                 [:div.title-2.proxima.shout "UNLOCK"]
-                                                 [:div.title-1.canela.p-color "$50 Off"]
-                                                 [:div.title-2.proxima
-                                                  "Plus get exclusive offers, updates on new products, and more."]]
-
-                  :email-capture.cta/value "Sign Up"}
-
-                 ["first-pageview-email-capture" "2022-05b"]
-                 {:email-capture.photo/uuid-mob "44052f45-4252-44f4-a47a-c0a94e0020a3"
-                  :email-capture.photo/uuid-dsk "44052f45-4252-44f4-a47a-c0a94e0020a3"
-                  :email-capture.title/primary  [:div
-                                                 [:div.title-2.proxima.shout "UNLOCK"]
-                                                 [:div.title-1.canela.p-color "$50 Off"]
-                                                 [:div.title-2.proxima
-                                                  "plus access to hair education, trending looks and more."]]
-                  :email-capture.cta/value      "Sign me up"}
-
-                 ["adv-quiz-email-capture" "2022-05b"]
-                 {:email-capture.photo/uuid-mob "e7fdb284-4d9d-49ae-a119-da1858fa6fdd"
-                  :email-capture.photo/uuid-dsk "e7fdb284-4d9d-49ae-a119-da1858fa6fdd"
-                  :email-capture.title/primary  [:div
-                                                 [:div.title-2.proxima.shout "UNLOCK"]
-                                                 [:div.title-1.canela.p-color "$50 Off"]
-                                                 [:div.title-2.proxima
-                                                  "plus top stylist recommendations, trending looks and more."]]
-
-                  :email-capture.cta/value "Sign Up"}
-
-
-                 ;; ENGINEER: Are you adding or altering an email capture modal design? Be sure to let Roman
-                 ;; know, as he'd like to mirror design changes on OptinMonster (which still show on the Instapages)
-
-                 ;; ELSE
-                 nil))))))
+       :email-capture.cta/id                 "email-capture-submit"
+       :email-capture.cta/value              (:cta-copy content)
+       :email-capture.text-field/id          "email-capture-input"
+       :email-capture.text-field/placeholder (:email-input-field-placeholder-copy content)
+       :email-capture.text-field/focused     focused
+       :email-capture.text-field/keypath     textfield-keypath
+       :email-capture.text-field/errors      errors
+       :email-capture.text-field/email       email
+       :email-capture.photo/url (-> content :hero-image :file :url)
+       :email-capture.photo/title (-> content :hero-image :title)
+       :email-capture.photo/description (-> content :hero-image :description)})))
 
 
 (defn ^:export built-component [app-state opts]
