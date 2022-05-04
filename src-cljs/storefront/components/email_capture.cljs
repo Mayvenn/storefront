@@ -409,19 +409,20 @@
     {:data-test (str id "-modal")}
     (m-header id (apply utils/fake-href (:email-capture.dismiss/target data)))
     (let [{:email-capture.photo/keys [url title description]} data]
-      (ui/aspect-ratio 4 3
-                       (ui/img {:max-size "500px"
-                                :class    "col-12"
-                                :style    {:vertical-align "bottom"}
-                                :src      url
-                                :title title
-                                :alt      description})))
+      (when (seq url)
+        (ui/aspect-ratio 4 3
+                         (ui/img {:max-size "500px"
+                                  :class    "col-12"
+                                  :style    {:vertical-align "bottom"}
+                                  :src      url
+                                  :title    title
+                                  :alt      description}))))
     (let [{:email-capture.copy/keys [title subtitle supertitle fine-print-lead-in]} data]
       [:div.p4.black
        {:class (:email-capture.design/background-color data)}
        [:form.col-12.center.px1
         {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
-        [:div.my2
+        [:div.mb2
          [:div.title-2.proxima.shout supertitle]
          [:div.title-1.canela.p-color title]
          [:div.title-2.proxima subtitle]]
@@ -558,13 +559,16 @@
           :email-capture/keys [content-type]
           :as                 data} (c/get-props this)
          template                   (case content-type
-                                      "emailModalTemplate" email-capture-modal-template-1)]
-     (ui/modal
-      {:close-attrs (apply utils/fake-href (:email-capture.dismiss/target data))
-       :col-class   "col-12 col-5-on-tb col-4-on-dt flex justify-center"
-       :bg-class    "bg-darken-4"}
-      ;; TODO format the close-x
-      (template data)))))
+                                      "emailModalTemplate" email-capture-modal-template-1
+                                      nil)]
+     (if template
+       (ui/modal
+        {:close-attrs (apply utils/fake-href (:email-capture.dismiss/target data))
+         :col-class   "col-12 col-5-on-tb col-4-on-dt flex justify-center"
+         :bg-class    "bg-darken-4"}
+        ;; TODO format the close-x
+        (template data))
+       (js/console.error (str "Content-type not found: " content-type))))))
 
 (defn matcher-matches? [app-state matcher]
   (case (:content/type matcher)
@@ -587,7 +591,8 @@
                       "starts with"         (clojure.string/starts-with? cur-path (:path matcher))
                       "contains"            (clojure.string/includes? cur-path (:path matcher))
                       "exactly matches"     (= cur-path (:path matcher))
-                      "does not start with" (not (clojure.string/starts-with? cur-path (:path matcher)))))))
+                      "does not start with" (not (clojure.string/starts-with? cur-path (:path matcher)))))
+    (js/console.error (str "No matching content/type for matcher " (pr-str matcher)))))
 ;; TODO: there are other path mathers not accounted for yet.
 
 (defn contentful-driven-query [app-state]
