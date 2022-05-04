@@ -131,6 +131,8 @@
   (let [assets  (condense (:Asset includes))
         entries (condense (:Entry includes))]
     (->> items
+         (mapv (fn [item]
+                 (assoc-in item [:fields :content/id] (-> item :sys :id))))
          (walk/postwalk (replace-data entries))
          (walk/postwalk (replace-data assets))
          (mapv (comp maps/kebabify :fields)))))
