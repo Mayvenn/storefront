@@ -324,11 +324,12 @@
                                  (->> content-ids-in-ancestors (some #(= % link-content-id)) not))
                           (retrieve-link linkable-nodes node)
                           node)]
-    (cond (map? resolved-node)  (->> resolved-node
+    (cond (map? resolved-node) (into {}
                                      (map (fn [[key subnode]]
                                             [key (resolve-node linkable-nodes (cond-> content-ids-in-ancestors
                                                                                 link-content-id (conj link-content-id)) subnode)]))
-                                     (into {}))
+                                     resolved-node)
+
           (coll? resolved-node) (map (partial resolve-node linkable-nodes content-ids-in-ancestors) resolved-node)
           :else                 resolved-node)))
 
