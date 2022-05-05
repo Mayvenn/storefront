@@ -566,7 +566,6 @@
         {:close-attrs (apply utils/fake-href (:email-capture.dismiss/target data))
          :col-class   "col-12 col-5-on-tb col-4-on-dt flex justify-center"
          :bg-class    "bg-darken-4"}
-        ;; TODO format the close-x
         (template data))
        (js/console.error (str "Content-type not found: " content-type))))))
 
