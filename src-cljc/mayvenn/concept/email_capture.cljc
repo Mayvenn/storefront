@@ -52,15 +52,25 @@
 (def long-timer-started-keypath (conj model-keypath :long-timer-started?))
 (def short-timer-starteds-keypath (conj model-keypath :short-timer-starteds?))
 
-(defn location-approved? [nav-event email-capture-id]
-  (let [{:keys [nav-events-forbid nav-events-allow]} (get email-capture-configs email-capture-id)]
+(defn email-modal-trigger-id->cookie-id
+  [trigger-id]
+  (or (:cookie-id (email-capture-configs trigger-id))
+      trigger-id))
+
+(defn all-trigger-ids [app-state]
+  (map (comp :trigger-id :email-modal-trigger)
+       (vals (get-in app-state k/cms-email-modal))))
+
+;; GROT once entirely contentful-driven
+(defn ^:private location-approved? [nav-event email-capture-id]
+  (let [{:keys [nav-events-forbid nav-events-allow]} (get email-capture-configs email-capture-id email-capture-id)]
     (if nav-events-allow
       (some #(routes/sub-page? [nav-event {}] [% {}])
             nav-events-allow)
       (not-any? #(routes/sub-page? [nav-event {}] [% {}])
                 nav-events-forbid))))
 
-;; TODO refactor to not refer to email-capture-configs twice
+;; GROT once entirely contentful-driven
 (defn location->email-capture-id
   [nav-event]
   (->> email-capture-configs
@@ -80,10 +90,11 @@
                                 (not long-timer-started?)
                                 (not short-timer-started?))}))
 
-(defn refresh-short-timers [cookie]
+(defn refresh-short-timers [cookie trigger-ids]
   #?(:clj nil
      :cljs
-     (doseq [[_ {:keys [cookie-id]}] email-capture-configs]
+     (doseq [trigger-id trigger-ids
+             :let [cookie-id (email-modal-trigger-id->cookie-id trigger-id)]]
        ;; These cookies get refreshed on every navigate so that they expire only
        ;; after 30 minutes of inactivity
        (when (cookie-jar/retrieve-email-capture-short-timer-started? cookie-id cookie)
@@ -104,9 +115,11 @@
      (let [cookie (get-in app-state k/cookie)]
        (-> app-state
            (assoc-in long-timer-started-keypath (cookie-jar/retrieve-email-capture-long-timer-started? cookie))
-           (assoc-in short-timer-starteds-keypath (->> email-capture-configs
-                                                       (map (fn [[email-capture-id {:keys [cookie-id]}]]
-                                                              [email-capture-id (cookie-jar/retrieve-email-capture-short-timer-started? cookie-id cookie)]))
+           (assoc-in short-timer-starteds-keypath (->> (all-trigger-ids app-state)
+                                                       (map (fn [trigger-id]
+                                                              [trigger-id (cookie-jar/retrieve-email-capture-short-timer-started?
+                                                                           (email-modal-trigger-id->cookie-id trigger-id)
+                                                                           cookie)]))
                                                        (into {})))))))
 
 (defmethod fx/perform-effects e/biz|email-capture|captured
@@ -119,8 +132,7 @@
   [_ _ {:keys [id trigger-id]} state _]
   ;; GROT id once email capture modals are only Contentful-driven
   #?(:cljs
-     (cookie-jar/save-email-capture-short-timer-started (get-in email-capture-configs
-                                                                [(or trigger-id id) :cookie-id])
+     (cookie-jar/save-email-capture-short-timer-started (email-modal-trigger-id->cookie-id (or trigger-id id))
                                                         (get-in state k/cookie)))
   (publish e/biz|email-capture|timer-state-observed))
 
