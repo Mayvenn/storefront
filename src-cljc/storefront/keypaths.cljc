@@ -8,6 +8,7 @@
 (def cms [:cms])
 (def cms-ugc-collection (conj cms :ugc-collection))
 (def cms-ugc-collection-all-looks (conj cms-ugc-collection :all-looks))
+(def cms-all-looks-by-shared-cart-id (conj cms :all-looks-by-shared-cart-id))
 (def cms-homepage (conj cms :homepage))
 (def cms-homepage-hero (conj cms-homepage :hero))
 (def cms-advertised-promo (conj cms :advertisedPromo))

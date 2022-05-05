@@ -23,6 +23,7 @@
    [mayvenn.visual.ui.actions :as actions]
    [mayvenn.visual.ui.titles :as titles]
    #?@(:cljs [[storefront.hooks.google-maps :as google-maps]
+              [storefront.api :as api]
               [storefront.history :as history]
               [storefront.hooks.exception-handler :as exception-handler]
               [storefront.hooks.quadpay :as quadpay]
@@ -33,6 +34,7 @@
               [storefront.platform.reviews :as reviews]])
    [spice.core :as spice]
    [spice.maps :as maps]
+   [storefront.accessors.contentful :as contentful]
    [storefront.accessors.experiments :as experiments]
    [storefront.accessors.orders :as orders]
    [storefront.accessors.products :as products]
@@ -470,16 +472,14 @@
                                   :catalog/category-id "23"}]
     :escape-hatch.action/label  "Browse Hair"
     :suggestions                (for [[idx {:as           looks-suggestion
-                                            :product/keys [sku-ids]
-                                            :hair/keys    [origin texture]
-                                            img-id        :img/id}]
-                                      (map-indexed vector looks-suggestions)
-                                      :let [skus                  (mapv looks-suggestions/mini-cellar sku-ids)
+                                            :keys [line-items origin texture photo-url]}]
+                                      (map-indexed vector (vals looks-suggestions))
+                                      :let [skus                  (mapv skus-db (map :catalog/sku-id line-items))
                                             {bundles  "bundles"
                                              closures "closures"} (group-by :hair/family skus)]]
                                   {:id            (str "result-option-" idx)
                                    :index-label   (str "Hair + Service Bundle " (inc idx))
-                                   :ucare-id      img-id
+                                   :ucare-id      (ui/ucare-img-id photo-url)
                                    :primary       (str origin " " texture)
                                    :secondary     (formatted-lengths< bundles closures)
                                    :tertiary      (->> skus (mapv :sku/price) (reduce + 0) mf/as-money)
@@ -494,10 +494,9 @@
 
     :suggestions-v2 (map-indexed
                      (fn [idx looks-suggestion]
-                       (let [{:product/keys [sku-ids]
-                              :hair/keys    [origin texture]
-                              img-id        :img.v2/id} looks-suggestion
-                             skus                  (mapv skus-db sku-ids)
+                       (let [{:as           looks-suggestion
+                              :keys [line-items origin texture photo-url]} looks-suggestion
+                             skus                  (mapv skus-db (map :catalog/sku-id line-items))
                              service-sku           (get skus-db (:service/sku-id looks-suggestion))
                              discounted-price (->> skus
                                                    (remove #(= "service" (first (:catalog/department %))))
@@ -507,7 +506,7 @@
                                              (:sku/price service-sku))]
                          (merge
                           (within :image-grid {:gap-px 3})
-                          (within :image-grid.hero {:image-url img-id
+                          (within :image-grid.hero {:image-url photo-url
                                                     :badge-url nil})
                           (within :image-grid.hair-column {:images (map (fn [sku]
                                                                           (let [image (catalog-images/image images-db "cart" sku)]
@@ -517,7 +516,7 @@
                           (within :title {:primary (str origin " " texture " hair + free install service")})
                           (within :price {:discounted-price (mf/as-money discounted-price)
                                           :retail-price     (mf/as-money retail-price)})
-                          (within :line-item-summary {:primary (str (count sku-ids) " products in this look")})
+                          (within :line-item-summary {:primary (str (count line-items) " products in this look")})
                           (within :action {:id     (str "result-option-" idx)
                                            :label  "Choose this look"
                                            :target [e/biz|looks-suggestions|selected
@@ -532,7 +531,7 @@
                                                {:yotpo-reviews-summary/product-title (some-> review-data :data-name)
                                                 :yotpo-reviews-summary/product-id    (some-> review-data :data-product-id)
                                                 :yotpo-reviews-summary/data-url      (some-> review-data :data-url)}))))))
-                     looks-suggestions)}))
+                     (vals looks-suggestions))}))
 
 ;; Template: 1/Questions
 
@@ -741,7 +740,11 @@
             (c/build find-your-stylist-template
                      (find-your-stylist< quiz-progression matching undo-history))))
       ;; STEP 2: choosing a look
-      2 (let [looks-suggestions (looks-suggestions/<- state shopping-quiz-id)
+      2 (let [looks (get-in state k/cms-all-looks-by-shared-cart-id)
+              carts (get-in state k/v1-looks-shared-carts)
+              looks-suggestions (maps/deep-merge looks carts)
+              ;; TODO: Remove the next line and related code
+              ;; _ (looks-suggestions/<- state shopping-quiz-id)
               selected-look     (looks-suggestions/selected<- state shopping-quiz-id)
               products-db       (get-in state k/v2-products)
               skus-db           (get-in state k/v2-skus)
@@ -784,10 +787,22 @@
   #?(:cljs (do
              (google-maps/insert)
              (cookie-jar/save-unified-fi-quiz-entered (get-in state k/cookie) {:unified-fi-quiz true})))
+  (let [keypath [:ugc-collection :all-looks]]
+    (fx/fetch-cms-keypath state
+                         keypath
+                         (fn [result]
+                           (publish e/api-success-fetch-cms-keypath result)
+                           (when-let [cart-ids (->> (get-in result keypath)
+                                                    vals
+                                                    (mapv contentful/shared-cart-id)
+                                                    (filter identity)
+                                                    not-empty)]
+                             #?(:cljs (api/fetch-shared-carts (get-in state k/api-cache) cart-ids)
+                                :clj nil)))))
   (publish e/biz|progression|reset
            #:progression
-            {:id    shopping-quiz-id
-             :value #{0}}))
+           {:id    shopping-quiz-id
+            :value #{0}}))
 
 (defmethod trackings/perform-track e/navigate-shopping-quiz-unified-freeinstall-intro
   [_ _ args state]
@@ -813,9 +828,14 @@
       (do
         (publish e/biz|progression|progressed
                  #:progression
-                  {:id    shopping-quiz-id
-                   :value 1
-                   :regress #{2 3}})
+                 {:id      shopping-quiz-id
+                  :value   1
+                  :regress #{2 3}})
+        (publish e/biz|progression|progressed
+                 #:progression
+                 {:id      shopping-quiz-id
+                  :value   1
+                  :regress #{2 3}})
         (publish e/biz|questioning|reset
                  {:questioning/id shopping-quiz-id})
         (publish e/biz|looks-suggestions|reset
