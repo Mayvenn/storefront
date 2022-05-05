@@ -338,7 +338,7 @@
                                                    :matchesAll
                                                    :matchesAny
                                                    :matchesNot
-                                                   :startsWithPath])
+                                                   :matchesPath])
                             vals
                             (apply concat)
                             (into {}))]

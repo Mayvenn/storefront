@@ -303,7 +303,7 @@
                                    {:content-type     :matchesNot
                                     :primary-key-fn   (comp keyword :content/id)
                                     :latest?          false}
-                                   {:content-type     :startsWithPath
+                                   {:content-type     :matchesPath
                                     :primary-key-fn   (comp keyword :content/id)
                                     :latest?          false}
 
