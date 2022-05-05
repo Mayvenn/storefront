@@ -235,7 +235,7 @@
                                      email-verification-token)
       (refresh-account app-state))
 
-    (email-capture/refresh-short-timers cookie)
+    (email-capture/refresh-short-timers cookie (email-capture/all-trigger-ids app-state))
     (when (:em_hash query-params)
       (email-capture/start-long-timer-if-unstarted cookie))
     (messages/handle-message events/biz|email-capture|timer-state-observed)
