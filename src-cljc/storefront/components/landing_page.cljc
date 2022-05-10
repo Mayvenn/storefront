@@ -15,11 +15,66 @@
                                           (into {})))]
     (routes/navigation-message-for path query-params)))
 
+(defn determine-and-shape-layer
+  [landing-page-data data body-layer]
+  (let [hero-data (:hero landing-page-data)
+        faq-data  (:faq landing-page-data)
+        looks     (:looks landing-page-data)]
+    (case (:content/type body-layer)
+      "homepageHero"     {:layer/type :hero
+                          :dsk-url    (-> hero-data :desktop :file :url)
+                          :mob-url    (-> hero-data :mobile :file :url)
+                          :alt        (-> hero-data :alt)
+                          :file-name  (-> hero-data :desktop :file :file-name)}
+      "titleSubtitle"    {:layer/type   :shop-text-block
+                          :header/value (:title body-layer)
+                          :body/value   (:subtitle body-layer) }
+      "ugc-collection"   {:layer/type   :lp-tiles
+                                :header/value "Shop By Look"
+                                :images       (map (fn [look]
+                                                     {:image-url              (:photo-url look)
+                                                      :alt                    "Look Photo"
+                                                      :label                  (:title look)
+                                                #_#_      :cta/navigation-message [events/navigate-shop-by-look-details
+                                                                               {:look-id       (:content/id look)
+                                                                                :album-keyword :look}]})
+                                                   (:looks body-layer))
+                                :cta          {:id      "landing-page-see-more"
+                                               :attrs   {:navigation-message [events/navigate-shop-by-look {:album-keyword :look}]}
+                                               :content "see more"}}
+      "faq"              {} #_ (merge {:layer-type :faq}
+                                  (faq/hd-lace-query data faq-data))
+      "layerTextBlock"   {:layer/type   :shop-text-block
+                          :header/value (:title body-layer)
+                          :body/value   [(ui/img {:src   (:image-url body-layer)
+                                                  :style {:width "100%"}})
+                                         [:div.content-2 (:body body-layer)]]
+                          :cta/button?  true
+                          :cta/value    (:cta-copy body-layer)
+                          :cta/id       (str "landing-page-" (:slug body-layer) "-cta")
+                          :cta/target   (url->navigation-message (:cta-url body-layer))}
+      "layerTilesAndCta" {:layer/type   :lp-tiles
+                          :header/value (:title body-layer)
+                          :images       (map (fn [example]
+                                               {:image-url              (:image-url example)
+                                                :alt                    (:title example)
+                                                :label                  (:title example)
+                                                :cta/navigation-message (url->navigation-message (:link-url example))})
+                                             (:examples (:tiles body-layer)))
+                          :cta          {:id      (str "landing-page-" (:slug body-layer) "-cta")
+                                         :attrs   {:navigation-message (url->navigation-message (:cta-url body-layer))}
+                                         :content (:cta-copy body-layer)}}
+      :else              {}
+
+      )))
+
 (defn query [data]
   (let [landing-page-slug (-> data (get-in storefront.keypaths/navigation-args) :landing-page-slug keyword)
-        cms-data          (get-in data (conj storefront.keypaths/cms-landing-page landing-page-slug))]
+        landing-page-data (get-in data (conj storefront.keypaths/cms-landing-page landing-page-slug))
+        landing-page-body (:body landing-page-data)]
     {:layers
-     [(let [cms-hero-data (:hero cms-data)]
+     (spice.core/spy (mapv (partial determine-and-shape-layer landing-page-data data) landing-page-body))
+     #_[(let [cms-hero-data (:hero cms-data)]
         {:layer/type :hero
          :dsk-url    (-> cms-hero-data :desktop :file :url)
          :mob-url    (-> cms-hero-data :mobile :file :url)

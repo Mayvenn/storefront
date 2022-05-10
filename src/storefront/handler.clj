@@ -302,15 +302,26 @@
          (assoc-in-req-state keypaths/return-navigation-message [events/navigate-stylist-account-profile {}])))))
 
 (defn assemble-landing-page [cms-data landing-page-slug]
-  (-> cms-data
-      :landingPage
-      (get (keyword landing-page-slug))
-      (update :hero #(-> cms-data
-                         :homepageHero
-                         (get (keyword (:content/id %)))))
-      (update :faq #(-> cms-data
-                        :faq
-                        (get (keyword (:faq-section %)))))))
+  ;; NOTE: this assumes only one ugc collection, one hero, and on faq per landing page
+  (let [lp-hero        (first (filter #(= "homepageHero" (:content/type %)) (-> cms-data
+                                                                                :landingPageV2
+                                                                                (get (keyword landing-page-slug))
+                                                                                :body)))
+        hero-details   (-> cms-data
+                           :homepageHero
+                           (get (keyword (:content/id lp-hero))))
+        lp-faq-section (first (filter #(= "faq" (:content/type %)) (-> cms-data
+                                                                       :landingPageV2
+                                                                       (get (keyword landing-page-slug))
+                                                                       :body)))
+        faq-details    (-> cms-data
+                           :faq
+                           (get (keyword (:faq-section lp-faq-section))))]
+    (-> cms-data
+        :landingPageV2
+        (get (keyword landing-page-slug))
+        (assoc :hero hero-details)
+        (assoc :faq faq-details))))
 
 (defn is-link? [node]
   (-> node :sys :type (= "Link")))

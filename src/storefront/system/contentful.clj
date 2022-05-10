@@ -170,7 +170,8 @@
      (let [{:keys [status body]} (contentful-request
                                   contentful
                                   (merge
-                                   {"content_type" (name content-type)}
+                                   {"content_type" (name content-type)
+                                    "include"      10}
                                    (when exists
                                      (reduce
                                       (fn [m field]
@@ -223,6 +224,12 @@
                            (assoc {} content-type))
 
                   (= :emailModal content-type)
+                  (some->> body
+                           condense-items-with-includes
+                           (maps/index-by (comp keyword :content/id))
+                           (assoc {} content-type))
+
+                  (= :landingPageV2 content-type)
                   (some->> body
                            condense-items-with-includes
                            (maps/index-by (comp keyword :content/id))
@@ -288,6 +295,9 @@
                                            (maps/index-by (comp keyword :content/id))
                                            (assoc m :all-looks)))
                                     :latest?        false}
+                                   {:content-type     :landingPageV2
+                                    :primary-key-fn   (comp keyword :slug)
+                                    :latest?          false}
                                    {:content-type     :landingPage
                                     :primary-key-fn   (comp keyword :slug)
                                     :latest?          false}
