@@ -13,10 +13,10 @@
 
 (defn contentful-request
   "Wrapper for the Content Delivery endpoint"
-  [{:keys [endpoint api-key space-id]} params]
+  [{:keys [endpoint api-key space-id]} resource-type params]
   (try
     (tugboat/request {:endpoint endpoint}
-                     :get (str "/spaces/" space-id "/entries")
+                     :get (str "/spaces/" space-id "/" resource-type)
                      {:socket-timeout 30000
                       :conn-timeout   30000
                       :as             :json
@@ -152,6 +152,34 @@
                           :url  (-> data :uri)}))))})
        content))
 
+(defn fetch-all
+  [{:keys [logger exception-handler cache env-param] :as contentful}]
+  (let [limit 500]
+    (->> ["entries" "assets"]
+         (map
+          (fn [resource-type]
+            (loop [skip     0
+                   acc      {}
+                   failures 0]
+              (when (> 2 failures)
+                (let [{:keys [status body]} (contentful-request contentful
+                                                                resource-type
+                                                                {:include 0
+                                                                 :limit   limit
+                                                                 :skip    skip})
+                      merged-content        (into acc (some->> body
+                                                               :items
+                                                               (map (fn [item] [(-> item :sys :id keyword) item]))))]
+                  (cond (not (and status (<= 200 status 299)))
+                        (recur skip acc (inc failures))
+
+                        (> (:total body) (+ skip limit))
+                        (recur (+ skip limit) merged-content failures)
+
+                        :else
+                        merged-content))))))
+         (apply merge))))
+
 (defn do-fetch-entries
   ([contentful content-params]
    (do-fetch-entries contentful content-params 1))
@@ -169,6 +197,7 @@
    (when (<= attempt-number 2)
      (let [{:keys [status body]} (contentful-request
                                   contentful
+                                  "entries"
                                   (merge
                                    {"content_type" (name content-type)}
                                    (when exists
@@ -248,6 +277,7 @@
   (start [c]
     (let [production?             (= environment "production")
           cache                   (atom {})
+          normalized-cache        (atom {})
           env-param               (if production?
                                     "production"
                                     "acceptance")
@@ -320,7 +350,12 @@
         (scheduler/every scheduler (cache-timeout)
                          (str "poller for " (:content-type content-params))
                          #(do-fetch-entries (assoc c :cache cache :env-param env-param) content-params)))
-      (assoc c :cache cache)))
+      (scheduler/every scheduler (cache-timeout)
+                       "poller for normalized CMS cache"
+                       #(reset! normalized-cache (fetch-all c)))
+      (assoc c
+             :cache cache
+             :normalized-cache normalized-cache)))
   (stop [c]
     (dissoc c :cache))
   CMSCache

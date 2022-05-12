@@ -316,33 +316,26 @@
   (-> node :sys :type (= "Link")))
 
 (defn retrieve-link [linkable-nodes link-node]
-  (->> link-node :sys :id keyword (get linkable-nodes)))
+  (->> link-node :sys :id keyword (get linkable-nodes) contentful/extract-fields))
 
-(defn resolve-node [linkable-nodes content-ids-in-ancestors node]
-  (let [link-content-id (when (is-link? node) (-> node :sys :id))
-        resolved-node   (if (and link-content-id
-                                 (->> content-ids-in-ancestors (some #(= % link-content-id)) not))
-                          (retrieve-link linkable-nodes node)
-                          node)]
-    (cond (map? resolved-node) (into {}
-                                     (map (fn [[key subnode]]
-                                            [key (resolve-node linkable-nodes (cond-> content-ids-in-ancestors
-                                                                                link-content-id (conj link-content-id)) subnode)]))
-                                     resolved-node)
+(defn resolve-cms-node
+  ([linkable-nodes node]
+   (resolve-cms-node linkable-nodes #{} node))
+  ([linkable-nodes content-ids-in-ancestors node]
+   (let [link-content-id (when (is-link? node) (-> node :sys :id keyword))
+         resolved-node   (if (and link-content-id
+                                  (->> content-ids-in-ancestors (some #(= % link-content-id)) not))
+                           (retrieve-link linkable-nodes node)
+                           node)]
+     (cond (map? resolved-node) (into {}
+                                      (map (fn [[key subnode]]
+                                             [key (resolve-cms-node linkable-nodes (cond-> content-ids-in-ancestors
+                                                                                 link-content-id (conj link-content-id)) subnode)]))
+                                      resolved-node)
 
-          (coll? resolved-node) (map (partial resolve-node linkable-nodes content-ids-in-ancestors) resolved-node)
-          :else                 resolved-node)))
-
-(defn resolve-cms-links [cms-data base-node-path]
-  (let [linkable-nodes (->> (select-keys cms-data [:homepageHero
-                                                   :matchesAll
-                                                   :matchesAny
-                                                   :matchesNot
-                                                   :matchesPath])
-                            vals
-                            (apply concat)
-                            (into {}))]
-    (resolve-node linkable-nodes #{} (dissoc (get-in cms-data base-node-path) nil))))
+           (coll? resolved-node) (map (partial resolve-cms-node linkable-nodes content-ids-in-ancestors) resolved-node)
+           (nil? resolved-node)  node
+           :else                 resolved-node))))
 
 (defn ^:private copy-cms-to-data
   ([cms-data data keypath]
@@ -361,13 +354,15 @@
                       :as               nav-args}]
           (:nav-message req)
           cms-cache   @(:cache contentful)
+          normalized-cms-cache @(:normalized-cache contentful)
           update-data (partial copy-cms-to-data cms-cache)]
       (h (update-in-req-state req keypaths/cms
                               merge
                               (update-data {} [:advertisedPromo])
-                              {:emailModal (into {} (for [[content-id' _] (:emailModal cms-cache)
-                                                          :let            [content-id (keyword content-id')]]
-                                                      [content-id (resolve-cms-links cms-cache [:emailModal content-id])]))}
+                              {:emailModal (into {} (for [modal (filter (comp (partial = "emailModal") :id :sys :contentType :sys) (vals normalized-cms-cache))]
+                                                      [(-> modal :sys :id) (->> modal
+                                                                                contentful/extract-fields
+                                                                                (resolve-cms-node normalized-cms-cache))]))}
                               (cond (= events/navigate-home nav-event)
                                     (-> (if shop?
                                           (-> {}
@@ -1214,7 +1209,6 @@
                       ;; contentful data types.
                       (-> (cond
                             (= :landing-page (first keypath)) (assemble-landing-page (contentful/read-cache contentful) (last keypath))
-                            (= :emailModal (first keypath))   (resolve-cms-links (contentful/read-cache contentful) keypath)
                             :else                             (get-in (contentful/read-cache contentful) keypath))
                           ((partial assoc-in {} keypath))
                           json/generate-string
