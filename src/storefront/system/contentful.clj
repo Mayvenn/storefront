@@ -251,12 +251,6 @@
                            (maps/index-by primary-key-fn)
                            (assoc {} content-type))
 
-                  (= :emailModal content-type)
-                  (some->> body
-                           condense-items-with-includes
-                           (maps/index-by (comp keyword :content/id))
-                           (assoc {} content-type))
-
                   :else
                   (some->> body
                            resolve-all-collection
@@ -322,28 +316,6 @@
                                     :primary-key-fn   (comp keyword :slug)
                                     :latest?          false}
                                    {:content-type     :homepageHero
-                                    :primary-key-fn   (comp keyword :content/id)
-                                    :latest?          false}
-                                   {:content-type     :matchesAll
-                                    :primary-key-fn   (comp keyword :content/id)
-                                    :latest?          false}
-                                   {:content-type     :matchesAny
-                                    :primary-key-fn   (comp keyword :content/id)
-                                    :latest?          false}
-                                   {:content-type     :matchesNot
-                                    :primary-key-fn   (comp keyword :content/id)
-                                    :latest?          false}
-                                   {:content-type     :matchesPath
-                                    :primary-key-fn   (comp keyword :content/id)
-                                    :latest?          false}
-
-                                   {:content-type     :emailModalTrigger
-                                    :primary-key-fn   (comp keyword :content/id)
-                                    :latest?          false}
-                                   {:content-type     :emailModalTemplate
-                                    :primary-key-fn   (comp keyword :content/id)
-                                    :latest?          false}
-                                   {:content-type     :emailModal
                                     :primary-key-fn   (comp keyword :content/id)
                                     :latest?          false}]]
       (doseq [content-params content-type-parameters]
