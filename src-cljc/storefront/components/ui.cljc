@@ -169,7 +169,7 @@
       [:button.col-12.bg-clear
        {:class     (if disabled? disabled-classes enabled-classes)
         :data-test data-test
-        :disabled  (boolean disabled?)} title]))))
+        :disabled  (boolean disabled?)} [:span title]]))))
 
 (defn submit-button-medium [title attrs]
   (submit-button title (assoc attrs :enabled-classes "btn-medium btn-p-color button-font-1 shout")))
