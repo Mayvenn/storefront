@@ -175,7 +175,7 @@
                                                 (assoc sku :item/quantity (get sku-id->quantity sku-id))))
                                         vec)
           tex-ori-col              (some->> product-items
-                                            (mapv #(select-keys % [:hair/color :hair/origin :hair/texture]))
+                                            (mapv #(select-keys % [:hair/color :hair/origin :hair/texture :tags/events]))
                                             not-empty
                                             (apply merge-with clojure.set/union))
 
@@ -206,6 +206,7 @@
                                                     "Hair"
                                                     discountable-service-title-component])
 
+              :tags/events (:tags/events look)
               ;; TODO: only handles the free service discount,
               ;; other promotions can be back ported here after
               ;; #176485395 is completed
@@ -258,8 +259,10 @@
   (let [contentful-looks (->> (get-in state storefront.keypaths/cms-ugc-collection)
                               ;; NOTE(corey) This is hardcoded because obstensibly
                               ;; filtering should replace albums
-                              :aladdin-free-install
-                              :looks
+                         ;     :aladdin-free-install
+                         ;     :looks
+                              :all-looks
+                              vals
                               ;; *WARNING*, HACK: to limit how many items are
                               ;; *being rendered / fetched from the backend on this page
                               (take 99))
@@ -293,7 +296,23 @@
         ;; Flow models
         facet-filtering-state  (-> state
                                    (get-in catalog.keypaths/k-models-facet-filtering)
-                                   (assoc :facet-filtering/item-label "Look"))]
+                                   (assoc :facet-filtering/item-label "Look"))
+        made-up-tag-facets     [{:facet/slug    :tags/events
+                                 :facet/name    "Event",
+                                 :filter/order  20,
+                                 :facet/options [{:option/slug  "wedding",
+                                                  :option/name  "Wedding",
+                                                  :filter/order 0}
+                                                 {:option/slug  "prom",
+                                                  :option/name  "Prom",
+                                                  :filter/order 1}
+                                                 {:option/slug  "graduation",
+                                                  :option/name  "Graduation",
+                                                  :filter/order 2}
+                                                 {:option/slug  "birthday",
+                                                  :option/name  "Birthday",
+                                                  :filter/order 3}]}
+                                ]]
     (if
       ;; Spinning
       (or (utils/requesting? state request-keys/fetch-shared-carts)
@@ -305,10 +324,10 @@
       (->> (merge
             {:hero looks-hero<-}
             (facet-filters/filters<-
-             {:facets-db             (get-in state storefront.keypaths/v2-facets)
+             {:facets-db             (concat (get-in state storefront.keypaths/v2-facets) made-up-tag-facets)
               :faceted-models        looks
               :facet-filtering-state facet-filtering-state
-              :facets-to-filter-on   [:hair/origin :hair/color :hair/texture]
+              :facets-to-filter-on   [:hair/origin :hair/color :hair/texture :tags/events]
               :navigation-event      e/navigate-shop-by-look
               :navigation-args       {:album-keyword :look}
               :child-component-data  (looks-cards<- images-db looks facet-filtering-state)}))

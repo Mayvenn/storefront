@@ -335,8 +335,13 @@
     (util.response/redirect to)))
 
 (defn derive-all-looks [cms-data]
-  (assoc-in cms-data [:ugc-collection :all-looks]
-            (->> (:ugc-collection cms-data)
-                 vals
-                 (mapcat :looks)
-                 (maps/index-by (comp keyword :content/id)))))
+  (let [looks        (->> (:ugc-collection cms-data)
+                         vals
+                         (mapcat :looks))
+        first-look   [(assoc (first looks) :tags/events #{"prom"})]
+        second-look  [(assoc (second looks) :tags/events #{"wedding"})]
+        last-look    [(assoc (last looks) :tags/events #{"wedding" "prom"})]
+        middle-looks (butlast (rest (rest looks)))]
+    (assoc-in cms-data [:ugc-collection :all-looks]
+              (->> (concat first-look second-look middle-looks last-look)
+                   (maps/index-by (comp keyword :content/id))))))

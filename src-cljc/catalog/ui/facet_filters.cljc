@@ -264,7 +264,7 @@
                               facet-name    :facet/name
                               facet-options :facet/options}]
            (let [section-toggled?    (contains? sections facet-slug)
-                 represented-options (get represented-facets facet-slug)]
+                 represented-options (get represented-facets (keyword facet-slug))]
              {:id                             (some->> facet-slug
                                                       name
                                                       (str "filter-"))
