@@ -932,7 +932,7 @@
                                                         :query-params        query-params}))
       "0.80"])))
 
-(defn sitemap-pages [{:keys [storeback-config sitemap-cache]} {:keys [subdomains] :as _req}]
+(defn sitemap-pages [{:keys [storeback-config sitemap-cache contentful]} {:keys [subdomains] :as _req}]
   (if (seq subdomains)
     (if-let [hit (not-empty @(:atom sitemap-cache))]
       hit
@@ -943,7 +943,8 @@
                                       (remove :stylist-exclusives/experience)
                                       (remove :stylist-exclusives/family)
                                       (remove :service/type))]
-        (let [initial-categories (filter :seo/sitemap categories/initial-categories)]
+        (let [initial-categories (filter :seo/sitemap categories/initial-categories)
+              landing-pages (-> contentful contentful/read-cache :landingPage vals)]
           (letfn [(url-xml-elem [[location priority]]
                     {:tag :url :content (cond-> [{:tag :loc :content [(str location)]}]
                                           priority (conj {:tag :priority :content [(str priority)]}))})]
@@ -977,7 +978,10 @@
                                                (concat
                                                 (canonical-category-sitemap initial-categories launched-products)
                                                 (for [{:keys [catalog/product-id page/slug]} launched-products]
-                                                  [(str "https://shop.mayvenn.com/products/" product-id "-" slug) "0.80"])))
+                                                  [(str "https://shop.mayvenn.com/products/" product-id "-" slug) "0.80"])
+                                                (for [{:keys [slug sitemap-priority]} landing-pages
+                                                      :when sitemap-priority]
+                                                  [(str "https://shop.mayvenn.com/lp/" slug) sitemap-priority])))
                                          (mapv url-xml-elem))})
                 with-out-str
                 util.response/response
