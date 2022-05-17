@@ -171,7 +171,7 @@
 
     id
     (into [:div.my6.max-960.mx-auto
-           {:key id
+           {:key       id
             :data-test id}]
           (map (fn [{:vouchers-details/keys [qr-code-url voucher-code services expiration-date redemption-date status]}]
                  (titled-content "Voucher"
@@ -179,6 +179,7 @@
                                   (when qr-code-url
                                     [:div.flex.flex-column.items-center.my6
                                      (ui/img {:src   qr-code-url
+                                              :alt   voucher-code
                                               :style {:max-width "150px"}})
                                      [:div {:data-test "voucher-code"} voucher-code]])
                                   (titled-subcontent "Status" status)
