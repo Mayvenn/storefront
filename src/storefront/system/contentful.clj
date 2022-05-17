@@ -180,6 +180,7 @@
                         merged-content))))))
          (apply merge))))
 
+;; GROT: Deprecated in favor of full CMS DB pull, and query-side assembly
 (defn do-fetch-entries
   ([contentful content-params]
    (do-fetch-entries contentful content-params 1))
@@ -264,7 +265,8 @@
          (do-fetch-entries contentful content-params (inc attempt-number)))))))
 
 (defprotocol CMSCache
-  (read-cache [_] "Returns a map representing the CMS cache"))
+  (read-cache [_] "Returns a map representing the CMS cache") ;; GROT: deprecated in favor of separate retrieval and processing using the normalized cache
+  (read-normalized-cache [_] "Returns a map representing the normalized CMS cache"))
 
 (defrecord ContentfulContext [logger exception-handler environment cache-timeout api-key space-id endpoint scheduler]
   component/Lifecycle
@@ -311,17 +313,13 @@
                                            (mapcat :looks)
                                            (maps/index-by (comp keyword :content/id))
                                            (assoc m :all-looks)))
-                                    :latest?        false}
-                                   {:content-type     :landingPage
-                                    :primary-key-fn   (comp keyword :slug)
-                                    :latest?          false}
-                                   {:content-type     :homepageHero
-                                    :primary-key-fn   (comp keyword :content/id)
-                                    :latest?          false}]]
+                                    :latest?        false}]]
+      ;; GROT: Deprecated in favor of using the normalized cache below.
       (doseq [content-params content-type-parameters]
         (scheduler/every scheduler (cache-timeout)
                          (str "poller for " (:content-type content-params))
                          #(do-fetch-entries (assoc c :cache cache :env-param env-param) content-params)))
+
       (scheduler/every scheduler (cache-timeout)
                        "poller for normalized CMS cache"
                        #(reset! normalized-cache (fetch-all c)))
@@ -331,7 +329,8 @@
   (stop [c]
     (dissoc c :cache))
   CMSCache
-  (read-cache [c] (deref (:cache c))))
+  (read-cache [c] (deref (:cache c))) ;; GROT: deprecated in favor of separate retrieval and processing using the normalized cache
+  (read-normalized-cache [c] (deref (:normalized-cache c))))
 
 (defn marketing-site-redirect [req]
   (let [prefix (partial str "https://")

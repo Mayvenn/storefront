@@ -64,7 +64,7 @@
                         :attrs   {:navigation-message (url->navigation-message (:cta-url examples-layer))}
                         :content (:cta-copy examples-layer)}})
       (merge {:layer/type :faq}
-             (faq/hd-lace-query data (:faq cms-data)))]}))
+             (faq/landing-page-query data (:faq cms-data)))]}))
 
 (defn built-component [data opts]
   (component/build layered/component (query data) nil))

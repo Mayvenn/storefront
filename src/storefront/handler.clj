@@ -301,41 +301,40 @@
          (= "affiliate" experience)
          (assoc-in-req-state keypaths/return-navigation-message [events/navigate-stylist-account-profile {}])))))
 
-(defn assemble-landing-page [cms-data landing-page-slug]
-  (-> cms-data
-      :landingPage
-      (get (keyword landing-page-slug))
-      (update :hero #(-> cms-data
-                         :homepageHero
-                         (get (keyword (:content/id %)))))
-      (update :faq #(-> cms-data
-                        :faq
-                        (get (keyword (:faq-section %)))))))
-
 (defn is-link? [node]
   (-> node :sys :type (= "Link")))
 
-(defn retrieve-link [linkable-nodes link-node]
-  (->> link-node :sys :id keyword (get linkable-nodes) contentful/extract-fields))
+(defn retrieve-link [nodes-db link-node]
+  (->> link-node :sys :id keyword (get nodes-db) contentful/extract-fields))
 
 (defn resolve-cms-node
-  ([linkable-nodes node]
-   (resolve-cms-node linkable-nodes #{} node))
-  ([linkable-nodes content-ids-in-ancestors node]
+  ([nodes-db node]
+   (resolve-cms-node nodes-db #{} node))
+  ([nodes-db content-ids-in-ancestors node]
    (let [link-content-id (when (is-link? node) (-> node :sys :id keyword))
          resolved-node   (if (and link-content-id
                                   (->> content-ids-in-ancestors (some #(= % link-content-id)) not))
-                           (retrieve-link linkable-nodes node)
+                           (retrieve-link nodes-db node)
                            node)]
      (cond (map? resolved-node) (into {}
                                       (map (fn [[key subnode]]
-                                             [key (resolve-cms-node linkable-nodes (cond-> content-ids-in-ancestors
+                                             [key (resolve-cms-node nodes-db (cond-> content-ids-in-ancestors
                                                                                  link-content-id (conj link-content-id)) subnode)]))
                                       resolved-node)
 
-           (coll? resolved-node) (map (partial resolve-cms-node linkable-nodes content-ids-in-ancestors) resolved-node)
+           (coll? resolved-node) (map (partial resolve-cms-node nodes-db content-ids-in-ancestors) resolved-node)
            (nil? resolved-node)  node
            :else                 resolved-node))))
+
+(defn find-cms-node [nodes-db content-type id]
+  (let [content-type-id-path (case content-type
+                               :landingPage [:fields :slug]
+                               nil)]
+    (->> nodes-db
+         vals
+         (filter #(and (= content-type (-> % :sys :contentType :sys :id keyword))
+                       (= id (keyword (get-in % content-type-id-path)))))
+         first)))
 
 (defn ^:private copy-cms-to-data
   ([cms-data data keypath]
@@ -346,16 +345,16 @@
 (defn wrap-set-cms-cache
   [h contentful]
   (fn [req]
-    (let [shop?       (or (= "shop" (get-in-req-state req keypaths/store-slug))
-                          (= "retail-location" (get-in-req-state req keypaths/store-experience)))
+    (let [shop?                (or (= "shop" (get-in-req-state req keypaths/store-slug))
+                                   (= "retail-location" (get-in-req-state req keypaths/store-experience)))
           [nav-event {album-keyword     :album-keyword
                       product-id        :catalog/product-id
                       landing-page-slug :landing-page-slug
                       :as               nav-args}]
           (:nav-message req)
-          cms-cache   @(:cache contentful)
+          cms-cache            @(:cache contentful)
           normalized-cms-cache @(:normalized-cache contentful)
-          update-data (partial copy-cms-to-data cms-cache)]
+          update-data          (partial copy-cms-to-data cms-cache)]
       (h (update-in-req-state req keypaths/cms
                               merge
                               (update-data {} [:advertisedPromo])
@@ -419,8 +418,12 @@
                                         (update-data [:ugc-collection :all-looks])
                                         ;; TODO We really should not be special-casing "landing-page" with kebab-case name
                                         ;;      The path here should be the same as the Content Type ID in contentful
-                                        (assoc-in [:landing-page (keyword landing-page-slug)]
-                                                  (assemble-landing-page @(:cache contentful) landing-page-slug)))
+                                        (assoc-in [:landingPage (keyword landing-page-slug)]
+                                                  (some->> landing-page-slug
+                                                           keyword
+                                                           (find-cms-node normalized-cms-cache :landingPage)
+                                                           contentful/extract-fields
+                                                           (resolve-cms-node normalized-cms-cache))))
 
                                     :else nil))))))
 
@@ -1207,17 +1210,23 @@
                (GET "/account/referrals" req (redirect-to-home environment req :found))
                (GET "/stylist/referrals" req (redirect-to-home environment req :found))
                (GET "/adv/match-stylist" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/adv/find-your-stylist")) :moved-permanently))
-               (GET "/cms/*" {uri :uri}
+               (GET "/cms/*" {uri :uri} ;; GROT: Deprecated in favor of CMS2 below
                     (let [keypath (->> #"/" (clojure.string/split uri) (drop 2) (map keyword))]
-                      ;; HACK: special handling for landing page CMS data as it has to be assembled from multiple data
-                      ;; contentful data types.
-                      (-> (cond
-                            (= :landing-page (first keypath)) (assemble-landing-page (contentful/read-cache contentful) (last keypath))
-                            :else                             (get-in (contentful/read-cache contentful) keypath))
+                      (-> (get-in (contentful/read-cache contentful) keypath)
                           ((partial assoc-in {} keypath))
                           json/generate-string
                           util.response/response
                           (util.response/content-type "application/json"))))
+               (GET "/cms2/*" {uri :uri}
+                    (let [cms-cache         (contentful/read-normalized-cache contentful)
+                          [content-type id] (->> (clojure.string/split uri #"/") (drop 2) (map keyword))]
+                      (some-> (find-cms-node cms-cache content-type id)
+                              contentful/extract-fields
+                              ((partial resolve-cms-node cms-cache))
+                              ((fn [cms-node] {content-type {id cms-node}}))
+                              json/generate-string
+                              util.response/response
+                              (util.response/content-type "application/json"))))
                (GET "/marketing-site" req
                  (contentful/marketing-site-redirect req))
                (-> (routes (static-routes ctx)

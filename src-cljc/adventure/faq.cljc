@@ -12,12 +12,16 @@
                        {:title   (:text question)
                         :content answer})}))
 
-(defn hd-lace-query
+(defn landing-page-query
   [data faq]
   {:expanded-index (get-in data keypaths/faq-expanded-section)
-   :sections       (for [{:keys [question answer]} (:question-answers faq)]
-                     {:title   (:text question)
-                      :content answer})})
+   :sections       (for [{:keys [question answer]} (:questions-answers faq)]
+                     {:title   question
+                      :content (map (fn [answer-content]
+                                      {:paragraph (map (fn [paragraph]
+                                                         {:text (:value paragraph)})
+                                                       (:content answer-content))})
+                                    (:content answer))})})
 
 (defn component [{:keys [expanded-index sections background-color]}]
   [:div.px6.mx-auto.col-10-on-dt.py6
