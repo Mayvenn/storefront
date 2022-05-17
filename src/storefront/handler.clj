@@ -979,9 +979,9 @@
                                                 (canonical-category-sitemap initial-categories launched-products)
                                                 (for [{:keys [catalog/product-id page/slug]} launched-products]
                                                   [(str "https://shop.mayvenn.com/products/" product-id "-" slug) "0.80"])
-                                                (for [{:keys [slug sitemap-priority]} landing-pages
-                                                      :when sitemap-priority]
-                                                  [(str "https://shop.mayvenn.com/lp/" slug) sitemap-priority])))
+                                                (for [{:keys [slug is-in-sitemap sitemap-priority]} landing-pages
+                                                      :when is-in-sitemap]
+                                                  [(str "https://shop.mayvenn.com/lp/" slug) (or sitemap-priority "0.50")])))
                                          (mapv url-xml-elem))})
                 with-out-str
                 util.response/response
