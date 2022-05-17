@@ -23,6 +23,8 @@
       (tracer/configure-xray!))
     (alter-var-root #'the-system (constantly (system/create-system)))
     (alter-var-root #'the-system component/start)
+    (when (= (env :environment) "development")
+      (println "Ready to serve.")) ; So devs can watch the logs instead of constantly hitting F5
     (catch Exception e
       (do (tocsin/notify e {:api-key (env :bugsnag-token)
                             :environment (env :environment)
