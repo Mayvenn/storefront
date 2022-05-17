@@ -428,7 +428,7 @@
                 (is (string/includes? (:body response) "Something nice here"))))))))))
 
 (def contentful-content-types
-  [:homepage :faq :advertisedPromo :ugc-collection :landingPage :homepageHero])
+  [:homepage :faq :advertisedPromo :ugc-collection])
 
 (deftest fetches-data-from-contentful
   (testing "transforming content"
