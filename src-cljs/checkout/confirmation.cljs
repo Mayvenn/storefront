@@ -169,15 +169,15 @@
              {:data-test "confirmation-line-items"}
 
              (for [[index cart-item] (map-indexed vector cart-items)
-                   :let [react-key (:react/key cart-item)]
-                   :when react-key]
+                   :let              [react-key (:react/key cart-item)]
+                   :when             react-key]
                [:div
                 {:key (str index "-cart-item-" react-key)}
                 (when-not (zero? index)
                   [:div.flex.bg-white
                    [:div.ml2 {:style {:width "75px"}}]
                    [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
-                (component/build cart-item-v202004/organism {:cart-item  cart-item}
+                (component/build cart-item-v202004/organism {:cart-item cart-item}
                                  (component/component-id (str index "-cart-item-" react-key)))])]])]]
 
        [:div.col-on-tb-dt.col-6-on-tb-dt
@@ -205,6 +205,7 @@
         (when (seq service-line-items)
           [:div.p3.content-3.flex.items-center
            (ui/ucare-img {:width "56px"
+                          :alt   ""
                           :class "mtp2"} "9664879b-07e0-432e-9c09-b2cf4c899b10")
            [:div.px1
             (if servicing-stylist

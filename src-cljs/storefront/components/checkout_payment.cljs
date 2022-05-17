@@ -127,6 +127,7 @@
        [:div ^:inline (svg/quadpay-logo)]]
       [:div.h6 "4 interest-free payments with Zip. "
        [:a.quadpay.block {:href     "#"
+                          :aria-label "More about Zip"
                           :on-click (fn [e]
                                       (.preventDefault e)
                                       (quadpay/show-modal))}
@@ -154,7 +155,7 @@
 
    (ui/narrow-container
     [:div.m2
-     [:h3.my2 "Payment Information"]
+     [:div.canela.title-2.my2 "Payment Information"]
      [:form
       {:on-submit (utils/send-event-callback events/control-checkout-choose-payment-method-submit)
        :data-test "payment-form"}
