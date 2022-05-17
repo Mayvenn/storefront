@@ -14,7 +14,8 @@
             [storefront.platform.images :as images]
             [spice.core :as spice]
             [storefront.platform.messages :refer [handle-message]]
-            [storefront.platform.numbers :as numbers]))
+            [storefront.platform.numbers :as numbers]
+            [clojure.set :as set]))
 
 (defn narrow-container
   "A container that is 480px wide on desktop and tablet, but squishes on mobile"
@@ -584,6 +585,17 @@
     (last (butlast (string/split url-or-image-id #"/" 5)))
     url-or-image-id))
 
+(def COMMON-DEVICE-WIDTHS
+  [180 ;; half size of smallest device
+   360 ;; Samsung Galaxy S9
+   375 ;; iPhone 6/7/8/X/Xs/11/12 mini, Pixel 2
+   ;;390 ;; iPhone 12/12 Pro ;; not common enough
+   414 ;; iPhone 8+/Xs Max/Xr
+   550 ;; Most other phones
+   800 ;; Tablets
+   1024 ;; Desktops
+   ])
+
 (defn- -ucare-img ;; NOTE(jeff): please do not make this public, use img function
   ;; WARN(jeff): it is strongly recommended to specify max-size to minimize srcSet sizes!!
   ;; TODO(jeff): remove picture-classes (using img tag natively now)
@@ -614,15 +626,7 @@
          srcset      (->> (for [multiplier (if retina?
                                              [1 2]
                                              [1])
-                                w          [180 ;; half size of smallest device
-                                            360 ;; Samsung Galaxy S9
-                                            375 ;; iPhone 6/7/8/X/Xs/11/12 mini, Pixel 2
-                                            ;;390 ;; iPhone 12/12 Pro ;; not common enough
-                                            414 ;; iPhone 8+/Xs Max/Xr
-                                            550 ;; Most other phones
-                                            800 ;; Tablets
-                                            1024 ;; Desktops
-                                            ]
+                                w          COMMON-DEVICE-WIDTHS
                                 :let       [retina? (< 1 multiplier)
                                             effective-width (if retina? (* 2 w) w)]
                                 :when      (and (or (nil? max-size) (>= max-size w))
@@ -665,6 +669,36 @@
            max-size        nil}}
    image-id]
   (img (assoc img-attrs :src image-id)))
+
+(defn options->ctf-query-params
+  [options]
+  (when (seq options)
+    (->> (set/rename-keys options {:format  "fm"
+                                   :width   "w"
+                                   :height  "h"
+                                   :quality "q"})
+         (mapv (partial clojure.string/join "="))
+         (clojure.string/join "&"))))
+
+(defn ctf-img
+  ([options img-attrs] (ctf-img options img-attrs nil))
+  ([{:keys [url max-width-px]}
+    img-attrs
+    ctf-options]
+   (component/html
+    [:div
+     [:img ^:attrs
+      (merge {:src    (str url "?" (options->ctf-query-params ctf-options))
+              :srcset (string/join ", " (for [multiplier   [1 2]
+                                              device-width (cond->> COMMON-DEVICE-WIDTHS
+                                                             max-width-px (remove #(> % max-width-px)))
+                                              :let         [retina?         (= 2 multiplier)
+                                                            effective-width (* multiplier device-width)]]
+                                           (str url "?" (options->ctf-query-params (merge ctf-options
+                                                                                          {:width   effective-width
+                                                                                           :quality (if retina? 75 50)})) " " effective-width "w")))
+              :sizes  "(min-width: 1000px) 1000px, 100vw"}
+             img-attrs)]])))
 
 (defn circle-ucare-img
   [{:keys [width] :as attrs :or {width "4em"}} image-id]

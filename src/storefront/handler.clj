@@ -984,7 +984,7 @@
                                                   [(str "https://shop.mayvenn.com/products/" product-id "-" slug) "0.80"])
                                                 (for [{:keys [slug is-in-sitemap sitemap-priority]} landing-pages
                                                       :when is-in-sitemap]
-                                                  [(str "https://shop.mayvenn.com/lp/" slug) (or sitemap-priority "0.50")])))
+                                                  [(str "https://shop.mayvenn.com/lp/" slug) sitemap-priority])))
                                          (mapv url-xml-elem))})
                 with-out-str
                 util.response/response
