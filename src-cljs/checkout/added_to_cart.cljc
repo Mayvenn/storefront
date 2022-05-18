@@ -123,7 +123,7 @@
 
 (defn added-to-cart-header-molecule
   [{:added-to-cart.header/keys [primary]}]
-  [:div.canela.title-2.center.my4
+  [:h1.canela.title-2.center.my4
    {:data-test "cart-interstitial-title"}
    primary])
 
