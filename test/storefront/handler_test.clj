@@ -428,33 +428,10 @@
                 (is (string/includes? (:body response) "Something nice here"))))))))))
 
 (def contentful-content-types
-  [:homepage :faq :advertisedPromo :ugc-collection])
+  [:faq :advertisedPromo :ugc-collection])
 
 (deftest fetches-data-from-contentful
   (testing "transforming content"
-    (testing "transforming 'homepage' content"
-      (let [[_contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" _req
-                                                                            {:status 200
-                                                                             :body   (generate-string (:body common/contentful-response))}))]
-        (with-services {:contentful-handler (routes default-contentful-graphql-handler
-                                                    contentful-handler)}
-          (with-handler handler
-            (let [responses                                                                    (doall (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/"))))
-                  {:keys [hero feature-1
-                          feature-2 feature-3]
-                   :as   _classic-homepage-response} (-> (mock/request :get "https://bob.mayvenn.com/cms/homepage")
-                                                         handler
-                                                         :body
-                                                         (parse-string true)
-                                                         :homepage
-                                                         :classic)]
-              (is (every? #(= 200 (:status %)) responses))
-              (is (=
-                   #{:content/type :content/id :title :alt :desktop :mobile :path}
-                   (set (keys feature-1))
-                   (set (keys feature-2))
-                   (set (keys feature-3))
-                   (set (keys hero)))))))))
 
     (testing "transforming ugc-collections"
       (let [[_contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" _req
