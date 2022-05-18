@@ -60,7 +60,7 @@
   (ui/narrow-container
    [:div.p3 {:style {:min-height "95vh"}}
     [:div.center
-     [:div.mt5.mb2.canela.title-1 {:data-test "checkout-success-message"} "Thank You"]
+     [:h1.mt5.mb2.canela.title-1 {:data-test "checkout-success-message"} "Thank You"]
      [:div.proxima.content-2 primary]
      (when secondary
        [:div.proxima.content-2.mt4.red secondary])]

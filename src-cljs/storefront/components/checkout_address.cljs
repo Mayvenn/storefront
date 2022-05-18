@@ -37,7 +37,7 @@
 (defcomponent shipping-address-component
   [{:keys [focused shipping-address states email become-guest? google-maps-loaded? field-errors]} owner _]
   [:.flex.flex-column.items-center.col-12
-   [:div.col-12.my1.proxima.title-3.shout.bold "Shipping Address"]
+   [:h2.col-12.my1.proxima.title-3.shout.bold "Shipping Address"]
    [:.col-12
     (ui/text-field-group
      {:type          "text"
@@ -154,7 +154,7 @@
 (defcomponent billing-address-component
   [{:keys [focused billing-address states bill-to-shipping-address? google-maps-loaded? field-errors]} owner _]
   [:.flex.flex-column.items-center.col-12
-   [:div.col-12.my1.proxima.title-3.shout.bold "Billing Address"]
+   [:h2.col-12.my1.proxima.title-3.shout.bold "Billing Address"]
    [:.col-12.my1
     [:label.h6.py1
      [:div.mr1
@@ -273,6 +273,7 @@
 
    [:div.m-auto.col-8-on-tb-dt
     [:div.p3
+     [:h1.canela.title-2.my2 "Address Information"]
      [:form.col-12.flex.flex-column.items-center
       {:on-submit (utils/send-event-callback events/control-checkout-update-addresses-submit
                                              {:become-guest? (:become-guest? shipping-address-data)})

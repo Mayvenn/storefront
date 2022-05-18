@@ -31,7 +31,7 @@
   [{:delivery/keys [id primary note-box options shipping-estimate-messaging?] :as data} owner _]
   (when id
     [:div.pb2.pt4.mx3
-     [:div.proxima.title-2 primary]
+     [:h2.proxima.title-2 primary]
      (delivery-note-box data)
      [:div
       (for [option options]

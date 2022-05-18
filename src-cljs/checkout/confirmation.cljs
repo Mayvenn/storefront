@@ -145,7 +145,8 @@
         [:div.bg-refresh-gray.p3.col-on-tb-dt.col-6-on-tb-dt.bg-white-on-tb-dt
          (when (seq service-line-items)
            [:div
-            [:div.title-2.proxima.mb1 "Services"]
+            [:h1.canela.title-2.my2 "Order"]
+            [:h2.title-2.proxima.mb1 "Services"]
             [:div
              [:div
               (component/build cart-item-v202004/stylist-organism queried-data nil)
@@ -162,7 +163,7 @@
 
          (when (seq cart-items)
            [:div.mt3
-            [:div.title-2.proxima.mb1
+            [:h2.title-2.proxima.mb1
              "Items"]
 
             [:div
