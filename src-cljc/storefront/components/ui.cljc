@@ -696,8 +696,7 @@
                                                             effective-width (* multiplier device-width)]]
                                            (str url "?" (options->ctf-query-params (merge ctf-options
                                                                                           {:width   effective-width
-                                                                                           :quality (if retina? 75 50)})) " " effective-width "w")))
-              :sizes  "(min-width: 1000px) 1000px, 100vw"}
+                                                                                           :quality (if retina? 75 50)})) " " effective-width "w")))}
              img-attrs)]])))
 
 (defn circle-ucare-img
