@@ -259,7 +259,8 @@
 
 (defprotocol CMSCache
   (read-cache [_] "Returns a map representing the CMS cache") ;; GROT: deprecated in favor of separate retrieval and processing using the normalized cache
-  (read-normalized-cache [_] "Returns a map representing the normalized CMS cache"))
+  (read-normalized-cache [_] "Returns a map representing the normalized CMS cache")
+  (upsert-into-normalized-cache [_ _]))
 
 (defrecord ContentfulContext [logger exception-handler environment cache-timeout api-key space-id endpoint scheduler]
   component/Lifecycle
@@ -318,7 +319,9 @@
     (dissoc c :cache))
   CMSCache
   (read-cache [c] (deref (:cache c))) ;; GROT: deprecated in favor of separate retrieval and processing using the normalized cache
-  (read-normalized-cache [c] (deref (:normalized-cache c))))
+  (read-normalized-cache [c] (deref (:normalized-cache c)))
+  (upsert-into-normalized-cache [c node]
+    (swap-vals! (:normalized-cache c) #(assoc % (-> node :sys :id keyword) node))))
 
 (defn marketing-site-redirect [req]
   (let [prefix (partial str "https://")

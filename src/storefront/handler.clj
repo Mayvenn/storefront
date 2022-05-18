@@ -11,6 +11,7 @@
             [clojure.set :as set]
             [clojure.string :as string]
             [clojure.xml :as xml]
+            [clojure.walk :as walk]
             [comb.template :as template]
             [compojure.core :refer [routes GET]]
             [compojure.route :as route]
@@ -25,6 +26,7 @@
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.util.codec :as codec]
             [ring.util.response :as util.response]
+            [ring.util.request :as util.request]
             [spice.maps :as maps]
             [spice.selector :as selector]
             storefront.ugc
@@ -371,8 +373,8 @@
                                                                                 (resolve-cms-node normalized-cms-cache))]))}
                               (cond (= events/navigate-home nav-event)
                                     (-> (if shop?
-                                          (-> {:homepage {:unified-fi (assemble-cms-node normalized-cms-cache :homepage :unified-fi)
-                                                          :shop       (assemble-cms-node normalized-cms-cache :homepage :shop)}})
+                                          {:homepage {:unified-fi (assemble-cms-node normalized-cms-cache :homepage :unified-fi)
+                                                      :shop       (assemble-cms-node normalized-cms-cache :homepage :shop)}}
                                           {:homepage {:unified (assemble-cms-node normalized-cms-cache :homepage :unified)}})
                                         (update-data [:ugc-collection :free-install-mayvenn])
                                         (update-data [:faq :free-mayvenn-services])
@@ -1230,6 +1232,18 @@
                               (util.response/content-type "application/json"))))
                (GET "/marketing-site" req
                  (contentful/marketing-site-redirect req))
+               (wrap-defaults
+                (POST "/contentful/webhook" req
+                      (if (= (:webhook-secret contentful) (-> req :headers (get "secret")))
+                        (do
+                          (->> req
+                               util.request/body-string
+                               json/parse-string
+                               walk/keywordize-keys
+                               (contentful/upsert-into-normalized-cache contentful))
+                          (util.response/response "OK"))
+                        (util.response/status nil 403)))
+                (-> environment storefront-site-defaults (assoc-in [:security :anti-forgery] false)))
                (-> (routes (static-routes ctx)
                            (routes-with-orders ctx)
                            (route/not-found views/not-found))
