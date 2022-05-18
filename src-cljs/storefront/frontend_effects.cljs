@@ -295,8 +295,8 @@
   (let [homepage-version (if (= :shop (sites/determine-site app-state))
                            :unified-fi
                            :unified)]
+    (effects/fetch-cms2 app-state [:homepage homepage-version])
     (doseq [keypath [[:advertisedPromo]
-                     [:homepage homepage-version]
                      [:ugc-collection :free-install-mayvenn]
                      [:faq :free-mayvenn-services]]]
       (effects/fetch-cms-keypath app-state keypath))))

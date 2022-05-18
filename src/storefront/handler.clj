@@ -329,12 +329,19 @@
 (defn find-cms-node [nodes-db content-type id]
   (let [content-type-id-path (case content-type
                                :landingPage [:fields :slug]
+                               :homepage    [:fields :experience]
                                nil)]
     (->> nodes-db
          vals
          (filter #(and (= content-type (-> % :sys :contentType :sys :id keyword))
                        (= id (keyword (get-in % content-type-id-path)))))
          first)))
+
+(defn assemble-cms-node [nodes-db content-type id]
+  (some->> id
+           (find-cms-node nodes-db content-type)
+           contentful/extract-fields
+           (resolve-cms-node nodes-db)))
 
 (defn ^:private copy-cms-to-data
   ([cms-data data keypath]
@@ -364,10 +371,9 @@
                                                                                 (resolve-cms-node normalized-cms-cache))]))}
                               (cond (= events/navigate-home nav-event)
                                     (-> (if shop?
-                                          (-> {}
-                                              (update-data [:homepage :unified-fi])
-                                              (update-data [:homepage :shop]))
-                                          (update-data {} [:homepage :unified]))
+                                          (-> {:homepage {:unified-fi (assemble-cms-node normalized-cms-cache :homepage :unified-fi)
+                                                          :shop       (assemble-cms-node normalized-cms-cache :homepage :shop)}})
+                                          {:homepage {:unified (assemble-cms-node normalized-cms-cache :homepage :unified)}})
                                         (update-data [:ugc-collection :free-install-mayvenn])
                                         (update-data [:faq :free-mayvenn-services])
                                         contentful/derive-all-looks)
@@ -421,9 +427,7 @@
                                         (assoc-in [:landingPage (keyword landing-page-slug)]
                                                   (some->> landing-page-slug
                                                            keyword
-                                                           (find-cms-node normalized-cms-cache :landingPage)
-                                                           contentful/extract-fields
-                                                           (resolve-cms-node normalized-cms-cache))))
+                                                           (assemble-cms-node normalized-cms-cache :landingPage))))
 
                                     :else nil))))))
 
@@ -1220,10 +1224,7 @@
                (GET "/cms2/*" {uri :uri}
                     (let [cms-cache         (contentful/read-normalized-cache contentful)
                           [content-type id] (->> (clojure.string/split uri #"/") (drop 2) (map keyword))]
-                      (some-> (find-cms-node cms-cache content-type id)
-                              contentful/extract-fields
-                              ((partial resolve-cms-node cms-cache))
-                              ((fn [cms-node] {content-type {id cms-node}}))
+                      (some-> {content-type {id (assemble-cms-node cms-cache content-type id)}}
                               json/generate-string
                               util.response/response
                               (util.response/content-type "application/json"))))

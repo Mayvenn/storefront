@@ -219,13 +219,6 @@
                   (contains? #{:mayvennMadePage :advertisedPromo} content-type)
                   (some-> body extract resolve-all walk/keywordize-keys (select-keys [content-type]))
 
-                  (= :homepage content-type)
-                  (some->> body
-                           condense-items-with-includes
-                           walk/keywordize-keys
-                           (maps/index-by primary-key-fn)
-                           (assoc {} content-type))
-
                   (= :ugc-collection content-type)
                   (some->> body
                            resolve-all-collection
@@ -277,12 +270,7 @@
           env-param               (if production?
                                     "production"
                                     "acceptance")
-          content-type-parameters [{:content-type     :homepage
-                                    :latest?          false
-                                    :primary-key-fn   (comp keyword :experience)
-                                    :item-tx-fn       identity
-                                    :collection-tx-fn identity}
-                                   {:content-type   :faq
+          content-type-parameters [{:content-type   :faq
                                     :latest?        false
                                     :primary-key-fn (comp keyword :slug)
                                     :exists         ["fields.faqSection"]
