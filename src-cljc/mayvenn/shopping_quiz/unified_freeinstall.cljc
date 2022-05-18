@@ -613,7 +613,7 @@
   [:div.flex.flex-column.stretch.bg-pale-purple
    [:div.bg-white.self-stretch
     (quiz-header (with :header data))]
-   [:div.flex.flex-column.items-center.flex-auto.mt10
+   [:main.flex.flex-column.items-center.flex-auto.mt10
     [:h2.col-10
      (titles/canela-huge (with :title data))]
     [:div.col-6
@@ -654,130 +654,131 @@
   (let [quiz-progression (progression/<- state shopping-quiz-id)
         step             (apply max quiz-progression)
         undo-history     (get-in state storefront.keypaths/navigation-undo-stack)]
-    (case step
+    [:main
+     (case step
 
-      ;; STEP 3:
-      3 (let [matching                    (stylist-matching<- state)
-              current-stylist             (api.current/stylist state)
-              skus-db                     (get-in state k/v2-skus)
-              {:order/keys [items]
-               order       :waiter/order} (api.orders/current state)
+       ;; STEP 3:
+       3 (let [matching                    (stylist-matching<- state)
+               current-stylist             (api.current/stylist state)
+               skus-db                     (get-in state k/v2-skus)
+               {:order/keys [items]
+                order       :waiter/order} (api.orders/current state)
 
-              ;; Externals
-              google-loaded?   (get-in state k/loaded-google-maps)
-              convert-loaded?  (get-in state k/loaded-convert)
-              quadpay-loaded?  (get-in state k/loaded-quadpay)
-              paypal-redirect? (get-in state k/cart-paypal-redirect)
+               ;; Externals
+               google-loaded?   (get-in state k/loaded-google-maps)
+               convert-loaded?  (get-in state k/loaded-convert)
+               quadpay-loaded?  (get-in state k/loaded-quadpay)
+               paypal-redirect? (get-in state k/cart-paypal-redirect)
 
-              requesting?
-              (or
-               (utils/requesting? state request-keys/fetch-stylists)
-               (utils/requesting? state request-keys/fetch-stylists-matching-filters)
-               (utils/requesting? state request-keys/get-products))
+               requesting?
+               (or
+                (utils/requesting? state request-keys/fetch-stylists)
+                (utils/requesting? state request-keys/fetch-stylists-matching-filters)
+                (utils/requesting? state request-keys/get-products))
 
-              ;; Experiments
-              just-added-control?    (experiments/just-added-control? state)
-              just-added-only?       (experiments/just-added-only? state)
-              just-added-experience? (experiments/just-added-experience? state)
-              stylist-results-test?  (experiments/stylist-results-test? state)
-              easy-booking?          (experiments/easy-booking? state)
-              top-stylist-v2?        (experiments/top-stylist-v2? state)
-              booking-done           (booking/<- state ::booking/done)
+               ;; Experiments
+               just-added-control?    (experiments/just-added-control? state)
+               just-added-only?       (experiments/just-added-only? state)
+               just-added-experience? (experiments/just-added-experience? state)
+               stylist-results-test?  (experiments/stylist-results-test? state)
+               easy-booking?          (experiments/easy-booking? state)
+               top-stylist-v2?        (experiments/top-stylist-v2? state)
+               booking-done           (booking/<- state ::booking/done)
 
-              address-field-errors (get-in state matching.k/address-field-errors)
-              stylist-matched?     (or (:matched/stylist matching)
-                                       (and
-                                        (not matching)
-                                        (api.current/stylist state)))]
-          (cond
-            ;; If the filter menu is open, render it
-            #?(:clj nil :cljs (filter-menu/query state))
-            #?(:clj nil :cljs (c/build filter-menu/component (filter-menu/query state)))
+               address-field-errors (get-in state matching.k/address-field-errors)
+               stylist-matched?     (or (:matched/stylist matching)
+                                        (and
+                                         (not matching)
+                                         (api.current/stylist state)))]
+           (cond
+             ;; If the filter menu is open, render it
+             #?(:clj nil :cljs (filter-menu/query state))
+             #?(:clj nil :cljs (c/build filter-menu/component (filter-menu/query state)))
 
-            (and easy-booking?
-                 stylist-matched?
-                 (not booking-done))
-            (c/build appointment-booking-template
-                     (merge (header< undo-history (apply max quiz-progression))
-                            (progress< quiz-progression)
-                            (booking.core/ufi-query state)))
+             (and easy-booking?
+                  stylist-matched?
+                  (not booking-done))
+             (c/build appointment-booking-template
+                      (merge (header< undo-history (apply max quiz-progression))
+                             (progress< quiz-progression)
+                             (booking.core/ufi-query state)))
 
-            stylist-matched?
-            (c/build matched-success-template
-                     (matched-success< quiz-progression
-                                       items
-                                       order
-                                       current-stylist
-                                       undo-history
-                                       quadpay-loaded?
-                                       paypal-redirect?))
+             stylist-matched?
+             (c/build matched-success-template
+                      (matched-success< quiz-progression
+                                        items
+                                        order
+                                        current-stylist
+                                        undo-history
+                                        quadpay-loaded?
+                                        paypal-redirect?))
 
-            ;; Search in progress -- prepared or resulted
-            (or (:results/stylists matching)
-                (:param/name matching)
-                (:param/address matching))
-            (c/build stylist-results-template
-                     (stylist-results< quiz-progression
-                                       matching
-                                       skus-db
-                                       undo-history
-                                       google-loaded?
-                                       convert-loaded?
-                                       requesting?
-                                       just-added-control?
-                                       just-added-only?
-                                       just-added-experience?
-                                       stylist-results-test?
-                                       address-field-errors
-                                       top-stylist-v2?))
+             ;; Search in progress -- prepared or resulted
+             (or (:results/stylists matching)
+                 (:param/name matching)
+                 (:param/address matching))
+             (c/build stylist-results-template
+                      (stylist-results< quiz-progression
+                                        matching
+                                        skus-db
+                                        undo-history
+                                        google-loaded?
+                                        convert-loaded?
+                                        requesting?
+                                        just-added-control?
+                                        just-added-only?
+                                        just-added-experience?
+                                        stylist-results-test?
+                                        address-field-errors
+                                        top-stylist-v2?))
 
-            ;; Waiting for Google to load
-            (not google-loaded?) ;; TODO(corey) different spinner
-            (c/build waiting-template
-                     waiting<)
+             ;; Waiting for Google to load
+             (not google-loaded?) ;; TODO(corey) different spinner
+             (c/build waiting-template
+                      waiting<)
 
-            ;; Find your stylist
-            :else
-            (c/build find-your-stylist-template
-                     (find-your-stylist< quiz-progression matching undo-history))))
-      ;; STEP 2: choosing a look
-      2 (let [looks-suggestions (looks-suggestions/<- state shopping-quiz-id)
-              selected-look     (looks-suggestions/selected<- state shopping-quiz-id)
-              products-db       (get-in state k/v2-products)
-              skus-db           (get-in state k/v2-skus)
-              images-db         (get-in state k/v2-images)
-              flash             (when (seq (get-in state k/errors))
-                                  {:errors {:error-code "generic-error"
-                                            :error-message "Sorry, but we don't have this look in stock. Please try a different look."}})]
-          (cond
-            (utils/requesting? state request-keys/new-order-from-sku-ids)
-            (c/build loading-template)
+             ;; Find your stylist
+             :else
+             (c/build find-your-stylist-template
+                      (find-your-stylist< quiz-progression matching undo-history))))
+       ;; STEP 2: choosing a look
+       2 (let [looks-suggestions (looks-suggestions/<- state shopping-quiz-id)
+               selected-look     (looks-suggestions/selected<- state shopping-quiz-id)
+               products-db       (get-in state k/v2-products)
+               skus-db           (get-in state k/v2-skus)
+               images-db         (get-in state k/v2-images)
+               flash             (when (seq (get-in state k/errors))
+                                   {:errors {:error-code "generic-error"
+                                             :error-message "Sorry, but we don't have this look in stock. Please try a different look."}})]
+           (cond
+             (utils/requesting? state request-keys/new-order-from-sku-ids)
+             (c/build loading-template)
 
-            (utils/requesting? state request-keys/get-products)
-            (c/build waiting-template waiting<)
+             (utils/requesting? state request-keys/get-products)
+             (c/build waiting-template waiting<)
 
-            (and (experiments/shopping-quiz-v2? state)
-                 selected-look)
-            (c/build summary-template-v2
-                     (summary< products-db skus-db images-db quiz-progression selected-look undo-history))
+             (and (experiments/shopping-quiz-v2? state)
+                  selected-look)
+             (c/build summary-template-v2
+                      (summary< products-db skus-db images-db quiz-progression selected-look undo-history))
 
-            selected-look
-            (c/build summary-template
-                     (summary< products-db skus-db images-db quiz-progression selected-look undo-history))
+             selected-look
+             (c/build summary-template
+                      (summary< products-db skus-db images-db quiz-progression selected-look undo-history))
 
-            :else
-            (c/build suggestions-template-v2
-                     (suggestions< products-db skus-db images-db quiz-progression looks-suggestions undo-history flash))))
-      ;; STEP 1: Taking the quiz
-      1 (let [{:keys [questions answers progression]} (questioning/<- state shopping-quiz-id)
-              wait                                    (wait/<- state shopping-quiz-id)]
-          (if wait
-            (c/build waiting-template
-                     waiting<)
-            (c/build questions-template
-                     (questions< quiz-progression questions answers progression undo-history))))
-      ;; default or 0
-      (c/build intro-template (intro< undo-history step)))))
+             :else
+             (c/build suggestions-template-v2
+                      (suggestions< products-db skus-db images-db quiz-progression looks-suggestions undo-history flash))))
+       ;; STEP 1: Taking the quiz
+       1 (let [{:keys [questions answers progression]} (questioning/<- state shopping-quiz-id)
+               wait                                    (wait/<- state shopping-quiz-id)]
+           (if wait
+             (c/build waiting-template
+                      waiting<)
+             (c/build questions-template
+                      (questions< quiz-progression questions answers progression undo-history))))
+       ;; default or 0
+       (c/build intro-template (intro< undo-history step)))]))
 
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-intro
   [_ _ _ state _]
