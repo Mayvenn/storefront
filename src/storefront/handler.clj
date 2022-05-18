@@ -13,7 +13,7 @@
             [clojure.xml :as xml]
             [clojure.walk :as walk]
             [comb.template :as template]
-            [compojure.core :refer [routes GET]]
+            [compojure.core :refer [routes GET POST]]
             [compojure.route :as route]
             [environ.core :refer [env]]
             [lambdaisland.uri :as uri]
