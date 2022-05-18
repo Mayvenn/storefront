@@ -673,10 +673,11 @@
 (defn options->ctf-query-params
   [options]
   (when (seq options)
-    (->> (set/rename-keys options {:format  "fm"
-                                   :width   "w"
-                                   :height  "h"
-                                   :quality "q"})
+    (->> {:format  "fm"
+          :width   "w"
+          :height  "h"
+          :quality "q"}
+         (set/rename-keys (update options :format #(or % "webp")))
          (mapv (partial clojure.string/join "="))
          (clojure.string/join "&"))))
 
@@ -686,18 +687,17 @@
     img-attrs
     ctf-options]
    (component/html
-    [:div
-     [:img ^:attrs
-      (merge {:src    (str url "?" (options->ctf-query-params ctf-options))
-              :srcset (string/join ", " (for [multiplier   [1 2]
-                                              device-width (cond->> COMMON-DEVICE-WIDTHS
-                                                             max-width-px (remove #(> % max-width-px)))
-                                              :let         [retina?         (= 2 multiplier)
-                                                            effective-width (* multiplier device-width)]]
-                                           (str url "?" (options->ctf-query-params (merge ctf-options
-                                                                                          {:width   effective-width
-                                                                                           :quality (if retina? 75 50)})) " " effective-width "w")))}
-             img-attrs)]])))
+    [:img ^:attrs
+     (merge {:src    (str url "?" (options->ctf-query-params ctf-options))
+             :srcset (string/join ", " (for [multiplier   [1 2]
+                                             device-width (cond->> COMMON-DEVICE-WIDTHS
+                                                            max-width-px (remove #(> % max-width-px)))
+                                             :let         [retina?         (= 2 multiplier)
+                                                           effective-width (* multiplier device-width)]]
+                                         (str url "?" (options->ctf-query-params (merge ctf-options
+                                                                                        {:width   effective-width
+                                                                                         :quality (if retina? 75 50)})) " " effective-width "w")))}
+            img-attrs)])))
 
 (defn circle-ucare-img
   [{:keys [width] :as attrs :or {width "4em"}} image-id]
