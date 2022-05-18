@@ -23,13 +23,13 @@
 
 (defmethod component :basic basic
   [{:keys [promo]} _ {hide-dt? :hide-dt?}]
-  [:div.inherit-color.center.pp5.bg-warm-gray.h5.bold
+  [:div.inherit-color.center.pp5.bg-warm-gray.h5.bold.shout
    {:data-test (when-not hide-dt? "promo-banner")}
    (if-let [uri (:uri promo)]
      [:a.underline.inherit-color
       {:href  uri}
       (:description promo)]
-     (:description promo))])
+     [:div (:description promo)])])
 
 (defn ^:private promotion-to-advertise
   [data]
