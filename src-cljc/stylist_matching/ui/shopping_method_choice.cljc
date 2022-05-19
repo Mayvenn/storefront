@@ -13,7 +13,8 @@
               :key       id
               :data-test id}
              (apply utils/route-to target))
-      (ui/ucare-img {:width 60
+      (ui/ucare-img {:width           60
+                     :alt             ""
                      :picture-classes "flex items-center"} ucare-id)
       [:div.flex-auto.left-align.p3 label]
       [:div.flex (ui/forward-caret {})]])))
