@@ -96,6 +96,7 @@
     (-> secure-site-defaults
         (assoc :proxy true)
         (assoc-in [:security :hsts] false)
+        (assoc-in [:security :anti-forgery] false)
         (assoc-in [:params :multipart] false)
         (assoc-in [:static :resources] false))))
 
@@ -1232,17 +1233,16 @@
                               (util.response/content-type "application/json"))))
                (GET "/marketing-site" req
                  (contentful/marketing-site-redirect req))
-               (-> (POST "/contentful/webhook" req
-                         (if (= (:webhook-secret contentful) (-> req :headers (get "secret")))
-                           (do
-                             (->> req
-                                  util.request/body-string
-                                  json/parse-string
-                                  walk/keywordize-keys
-                                  (contentful/upsert-into-normalized-cache contentful))
-                             (util.response/response "OK"))
-                           (util.response/status nil 403)))
-                   #_(wrap-defaults (-> environment storefront-site-defaults (assoc-in [:security :anti-forgery] false))))
+               (POST "/contentful/webhook" req
+                     (if (= (:webhook-secret contentful) (-> req :headers (get "secret")))
+                       (do
+                         (->> req
+                              util.request/body-string
+                              json/parse-string
+                              walk/keywordize-keys
+                              (contentful/upsert-into-normalized-cache contentful))
+                         (util.response/response "OK"))
+                       (util.response/status nil 403)))
                (-> (routes (static-routes ctx)
                            (routes-with-orders ctx)
                            (route/not-found views/not-found))
