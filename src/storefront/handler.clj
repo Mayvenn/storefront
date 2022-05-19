@@ -29,6 +29,7 @@
             [ring.util.request :as util.request]
             [spice.maps :as maps]
             [spice.selector :as selector]
+            spice.core
             storefront.ugc
             stylist-directory.keypaths
             [storefront.safe-hiccup :refer [html5]]
@@ -1234,7 +1235,9 @@
                (GET "/marketing-site" req
                  (contentful/marketing-site-redirect req))
                (POST "/contentful/webhook" req
-                     (if (= (:webhook-secret contentful) (-> req :headers (get "secret")))
+                     (if (and (#{"development" "test" "acceptance"}  environment)
+                              (spice.core/constant-time= (:webhook-secret contentful)
+                                                         (-> req :headers (get "secret"))))
                        (do
                          (->> req
                               util.request/body-string

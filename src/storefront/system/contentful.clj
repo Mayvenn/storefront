@@ -13,16 +13,18 @@
 
 (defn contentful-request
   "Wrapper for the Content Delivery endpoint"
-  [{:keys [endpoint api-key space-id]} resource-type params]
-  (try
-    (tugboat/request {:endpoint endpoint}
-                     :get (str "/spaces/" space-id "/" resource-type)
-                     {:socket-timeout 30000
-                      :conn-timeout   30000
-                      :as             :json
-                      :query-params   (merge {:access_token api-key} params)})
-    (catch java.io.IOException ioe
-      nil)))
+  ([contentful resource-type params]
+   (contentful-request contentful resource-type nil params))
+  ([{:keys [endpoint api-key space-id]} resource-type content-id params]
+   (try
+     (tugboat/request {:endpoint endpoint}
+                      :get (str "/spaces/" space-id "/" resource-type (when content-id (str "/" content-id)))
+                      {:socket-timeout 30000
+                       :conn-timeout   30000
+                       :as             :json
+                       :query-params   (merge {:access_token api-key} params)})
+     (catch java.io.IOException ioe
+       nil))))
 
 (defn extract-fields
   "Contentful resources are boxed.
@@ -321,7 +323,11 @@
   (read-cache [c] (deref (:cache c))) ;; GROT: deprecated in favor of separate retrieval and processing using the normalized cache
   (read-normalized-cache [c] (deref (:normalized-cache c)))
   (upsert-into-normalized-cache [c node]
-    (swap-vals! (:normalized-cache c) #(assoc % (-> node :sys :id keyword) node))))
+    (let [content-id      (-> node :sys :id)
+          resource-type   (-> node :sys :type {"Entry" "entries"
+                                               "Asset" "assets"})
+          retrieved-entry (:body (contentful-request c resource-type content-id {}))]
+      (swap! (:normalized-cache c) #(assoc % (keyword content-id) retrieved-entry)))))
 
 (defn marketing-site-redirect [req]
   (let [prefix (partial str "https://")
