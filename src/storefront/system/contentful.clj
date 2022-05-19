@@ -202,7 +202,8 @@
                                   contentful
                                   "entries"
                                   (merge
-                                   {"content_type" (name content-type)}
+                                   {"content_type" (name content-type)
+                                    "include"      10}
                                    (when exists
                                      (reduce
                                       (fn [m field]

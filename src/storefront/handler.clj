@@ -305,6 +305,29 @@
          (= "affiliate" experience)
          (assoc-in-req-state keypaths/return-navigation-message [events/navigate-stylist-account-profile {}])))))
 
+;; do we need this now?
+(defn assemble-landing-page [cms-data landing-page-slug]
+  ;; NOTE: this assumes only one ugc collection, one hero, and on faq per landing page
+  (let [lp-hero        (first (filter #(= "homepageHero" (:content/type %)) (-> cms-data
+                                                                                :landingPage
+                                                                                (get (keyword landing-page-slug))
+                                                                                :body)))
+        hero-details   (-> cms-data
+                           :homepageHero
+                           (get (keyword (:content/id lp-hero))))
+        lp-faq-section (first (filter #(= "faq" (:content/type %)) (-> cms-data
+                                                                       :landingPage
+                                                                       (get (keyword landing-page-slug))
+                                                                       :body)))
+        faq-details    (-> cms-data
+                           :faq
+                           (get (keyword (:faq-section lp-faq-section))))]
+    (-> cms-data
+        :landingPage
+        (get (keyword landing-page-slug))
+        (assoc :hero hero-details)
+        (assoc :faq faq-details))))
+
 (defn is-link? [node]
   (-> node :sys :type (= "Link")))
 
@@ -955,7 +978,7 @@
                                       (remove :stylist-exclusives/family)
                                       (remove :service/type))]
         (let [initial-categories (filter :seo/sitemap categories/initial-categories)
-              landing-pages (-> contentful contentful/read-cache :landingPage vals)]
+              landing-pages      (-> contentful contentful/read-cache :landingPage vals)]
           (letfn [(url-xml-elem [[location priority]]
                     {:tag :url :content (cond-> [{:tag :loc :content [(str location)]}]
                                           priority (conj {:tag :priority :content [(str priority)]}))})]
@@ -991,7 +1014,7 @@
                                                 (for [{:keys [catalog/product-id page/slug]} launched-products]
                                                   [(str "https://shop.mayvenn.com/products/" product-id "-" slug) "0.80"])
                                                 (for [{:keys [slug is-in-sitemap sitemap-priority]} landing-pages
-                                                      :when is-in-sitemap]
+                                                      :when                                         is-in-sitemap]
                                                   [(str "https://shop.mayvenn.com/lp/" slug) sitemap-priority])))
                                          (mapv url-xml-elem))})
                 with-out-str
