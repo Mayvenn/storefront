@@ -126,8 +126,8 @@
     :as                   options}
    _ _]
   [:div.flex.flex-column.col-12.mb2
-   [:div.col-12.my1.proxima.title-3.shout.bold "Would you like to receive text notifications from us?"]
-   [:span.content-3 
+   [:h2.col-12.my1.proxima.title-3.shout.bold "Would you like to receive text notifications from us?"]
+   [:span.content-3
     "Message & data rates may apply. Message frequency varies. Reply HELP for help or STOP to cancel."
     " See "
     [:a.underline.p-color (apply utils/route-to terms-nav) "Terms"]

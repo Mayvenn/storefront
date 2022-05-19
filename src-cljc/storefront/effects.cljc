@@ -42,3 +42,12 @@
       (if (need-cms-keypath? app-state keypath)
         (api/fetch-cms-keypath keypath handler)
         (handler (get-in app-state keypaths/cms))))))
+
+(defn fetch-cms2
+  ([app-state keypath]
+   (fetch-cms2 app-state keypath identity))
+  ([app-state keypath handler]
+   #?(:cljs
+      (if (need-cms-keypath? app-state keypath)
+        (api/fetch-cms2 keypath handler)
+        (handler (get-in app-state keypaths/cms))))))

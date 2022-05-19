@@ -30,10 +30,10 @@
     (svg/mirror {:width  40
                  :height 45
                  :class  "fill-p-color"})]
-   [:div.center.canela.title-2
+   [:h1.center.canela.title-2
     title]
    [:div.m2.mt6
-    [:div.proxima.title-2.shout.mb1
+    [:h2.proxima.title-2.shout.mb1
      free-service-name]
     [:div.proxima.content-3.mb6
      whats-included]

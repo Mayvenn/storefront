@@ -428,33 +428,10 @@
                 (is (string/includes? (:body response) "Something nice here"))))))))))
 
 (def contentful-content-types
-  [:homepage :faq :advertisedPromo :ugc-collection :landingPage :homepageHero :emailModalTrigger :emailModalTemplate :matchesAll :matchesAny :matchesNot :matchesPath :emailModal])
+  [:faq :advertisedPromo :ugc-collection])
 
 (deftest fetches-data-from-contentful
   (testing "transforming content"
-    (testing "transforming 'homepage' content"
-      (let [[_contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" _req
-                                                                            {:status 200
-                                                                             :body   (generate-string (:body common/contentful-response))}))]
-        (with-services {:contentful-handler (routes default-contentful-graphql-handler
-                                                    contentful-handler)}
-          (with-handler handler
-            (let [responses                                                                    (doall (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/"))))
-                  {:keys [hero feature-1
-                          feature-2 feature-3]
-                   :as   _classic-homepage-response} (-> (mock/request :get "https://bob.mayvenn.com/cms/homepage")
-                                                         handler
-                                                         :body
-                                                         (parse-string true)
-                                                         :homepage
-                                                         :classic)]
-              (is (every? #(= 200 (:status %)) responses))
-              (is (=
-                   #{:content/type :content/id :title :alt :desktop :mobile :path}
-                   (set (keys feature-1))
-                   (set (keys feature-2))
-                   (set (keys feature-3))
-                   (set (keys hero)))))))))
 
     (testing "transforming ugc-collections"
       (let [[_contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" _req
@@ -554,37 +531,49 @@
 
   (let [number-of-contentful-entities-to-fetch (count contentful-content-types)]
     (testing "caching content"
-      (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" _req
-                                                                           {:status 200
-                                                                            :body   (generate-string (:body common/contentful-response))}))]
+      (let [[contentful-requests contentful-handler] (with-requests-chan (routes
+                                                                          (GET "/spaces/fake-space-id/entries" _req
+                                                                               {:status 200
+                                                                                :body   (generate-string (:body common/contentful-response))})
+                                                                          (GET "/spaces/fake-space-id/assets" _req
+                                                                               {:status 200
+                                                                                :body   (generate-string (:body common/contentful-response))})))]
         (with-services {:contentful-handler (routes default-contentful-graphql-handler
                                                     contentful-handler)}
           (with-handler handler
             (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
                   requests  (txfm-requests contentful-requests identity)]
               (is (every? #(= 200 (:status %)) responses))
-              (is (= number-of-contentful-entities-to-fetch (count requests))))))))
+              (is (= (+ number-of-contentful-entities-to-fetch 2) (count requests))))))))
 
     (testing "fetches data on system start"
-      (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" _req
-                                                                           {:status 200
-                                                                            :body   (generate-string (:body common/contentful-response))}))]
+      (let [[contentful-requests contentful-handler] (with-requests-chan (routes
+                                                                          (GET "/spaces/fake-space-id/entries" _req
+                                                                               {:status 200
+                                                                                :body   (generate-string (:body common/contentful-response))})
+                                                                          (GET "/spaces/fake-space-id/assets" _req
+                                                                               {:status 200
+                                                                                :body   (generate-string (:body common/contentful-response))})))]
         (with-services {:contentful-handler (routes default-contentful-graphql-handler
                                                     contentful-handler)}
           (with-handler _handler ;; just here to start the system, evidently...
-            (is (= number-of-contentful-entities-to-fetch (count (txfm-requests contentful-requests identity))))))))
+            (is (= (+ number-of-contentful-entities-to-fetch 2) (count (txfm-requests contentful-requests identity))))))))
 
     (testing "attempts-to-retry-fetch-from-contentful"
-      (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" _req
-                                                                           {:status 500
-                                                                            :body   "{}"}))]
+      (let [[contentful-requests contentful-handler] (with-requests-chan (routes
+                                                                          (GET "/spaces/fake-space-id/entries" _req
+                                                                               {:status 500
+                                                                                :body   "{}"})
+                                                                          (GET "/spaces/fake-space-id/assets" _req
+                                                                               {:status 500
+                                                                                :body   "{}"})))]
         (with-services {:contentful-handler (routes default-contentful-graphql-handler
                                                     contentful-handler)}
           (with-handler handler
             (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
                   requests  (txfm-requests contentful-requests identity)]
               (is (every? #(= 200 (:status %)) responses))
-              (is (= (* 2 number-of-contentful-entities-to-fetch) (count requests))))))))))
+              (is (= (* 2 (+ number-of-contentful-entities-to-fetch 2)) (count requests))))))))))
 
 (deftest we-do-not-ask-waiter-more-than-once-for-the-order
   (testing "Fetching normal pages fetches order once"

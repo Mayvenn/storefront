@@ -121,7 +121,8 @@
                                                          (env :contentful-content-delivery-api-key)
                                                          (env :contentful-content-delivery-preview-api-key))
                            :preview-api-key            (env :contentful-content-delivery-preview-api-key)
-                           :space-id                   (env :contentful-space-id)}
+                           :space-id                   (env :contentful-space-id)
+                           :webhook-secret             (env :contentful-webhook-secret)}
      :launchdarkly-config {:sdk-key (env :launchdarkly-sdk-key)}
      :storeback-config    {:endpoint          (env :storeback-endpoint)
                            :internal-endpoint (or

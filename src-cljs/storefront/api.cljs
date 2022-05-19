@@ -161,6 +161,15 @@
                              (messages/handle-message events/api-success-fetch-cms-keypath result)
                              (handler result))})))
 
+(defn fetch-cms2
+  [keypath handler]
+  (let [uri-path (str "/cms2/" (string/join "/" (map name keypath)))]
+    (api-request GET uri-path
+                 request-keys/fetch-cms2
+                 {:handler (fn [result]
+                             (messages/handle-message events/api-success-fetch-cms-keypath result)
+                             (handler result))})))
+
 (defn cache-req
   [cache method path req-key {:keys [handler params cache/bypass?] :as request-opts}]
   (let [key (c/cache-key [path params])

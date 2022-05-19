@@ -11,8 +11,9 @@
             [clojure.set :as set]
             [clojure.string :as string]
             [clojure.xml :as xml]
+            [clojure.walk :as walk]
             [comb.template :as template]
-            [compojure.core :refer [routes GET]]
+            [compojure.core :refer [routes GET POST]]
             [compojure.route :as route]
             [environ.core :refer [env]]
             [lambdaisland.uri :as uri]
@@ -25,6 +26,7 @@
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.util.codec :as codec]
             [ring.util.response :as util.response]
+            [ring.util.request :as util.request]
             [spice.maps :as maps]
             [spice.selector :as selector]
             storefront.ugc
@@ -94,6 +96,7 @@
     (-> secure-site-defaults
         (assoc :proxy true)
         (assoc-in [:security :hsts] false)
+        (assoc-in [:security :anti-forgery] false)
         (assoc-in [:params :multipart] false)
         (assoc-in [:static :resources] false))))
 
@@ -301,24 +304,25 @@
          (= "affiliate" experience)
          (assoc-in-req-state keypaths/return-navigation-message [events/navigate-stylist-account-profile {}])))))
 
+;; do we need this now?
 (defn assemble-landing-page [cms-data landing-page-slug]
   ;; NOTE: this assumes only one ugc collection, one hero, and on faq per landing page
   (let [lp-hero        (first (filter #(= "homepageHero" (:content/type %)) (-> cms-data
-                                                                                :landingPageV2
+                                                                                :landingPage
                                                                                 (get (keyword landing-page-slug))
                                                                                 :body)))
         hero-details   (-> cms-data
                            :homepageHero
                            (get (keyword (:content/id lp-hero))))
         lp-faq-section (first (filter #(= "faq" (:content/type %)) (-> cms-data
-                                                                       :landingPageV2
+                                                                       :landingPage
                                                                        (get (keyword landing-page-slug))
                                                                        :body)))
         faq-details    (-> cms-data
                            :faq
                            (get (keyword (:faq-section lp-faq-section))))]
     (-> cms-data
-        :landingPageV2
+        :landingPage
         (get (keyword landing-page-slug))
         (assoc :hero hero-details)
         (assoc :faq faq-details))))
@@ -326,34 +330,44 @@
 (defn is-link? [node]
   (-> node :sys :type (= "Link")))
 
-(defn retrieve-link [linkable-nodes link-node]
-  (->> link-node :sys :id keyword (get linkable-nodes)))
+(defn retrieve-link [nodes-db link-node]
+  (->> link-node :sys :id keyword (get nodes-db) contentful/extract-fields))
 
-(defn resolve-node [linkable-nodes content-ids-in-ancestors node]
-  (let [link-content-id (when (is-link? node) (-> node :sys :id))
-        resolved-node   (if (and link-content-id
-                                 (->> content-ids-in-ancestors (some #(= % link-content-id)) not))
-                          (retrieve-link linkable-nodes node)
-                          node)]
-    (cond (map? resolved-node) (into {}
-                                     (map (fn [[key subnode]]
-                                            [key (resolve-node linkable-nodes (cond-> content-ids-in-ancestors
-                                                                                link-content-id (conj link-content-id)) subnode)]))
-                                     resolved-node)
+(defn resolve-cms-node
+  ([nodes-db node]
+   (resolve-cms-node nodes-db #{} node))
+  ([nodes-db content-ids-in-ancestors node]
+   (let [link-content-id (when (is-link? node) (-> node :sys :id keyword))
+         resolved-node   (if (and link-content-id
+                                  (->> content-ids-in-ancestors (some #(= % link-content-id)) not))
+                           (retrieve-link nodes-db node)
+                           node)]
+     (cond (map? resolved-node) (into {}
+                                      (map (fn [[key subnode]]
+                                             [key (resolve-cms-node nodes-db (cond-> content-ids-in-ancestors
+                                                                                 link-content-id (conj link-content-id)) subnode)]))
+                                      resolved-node)
 
-          (coll? resolved-node) (map (partial resolve-node linkable-nodes content-ids-in-ancestors) resolved-node)
-          :else                 resolved-node)))
+           (coll? resolved-node) (map (partial resolve-cms-node nodes-db content-ids-in-ancestors) resolved-node)
+           (nil? resolved-node)  node
+           :else                 resolved-node))))
 
-(defn resolve-cms-links [cms-data base-node-path]
-  (let [linkable-nodes (->> (select-keys cms-data [:homepageHero
-                                                   :matchesAll
-                                                   :matchesAny
-                                                   :matchesNot
-                                                   :matchesPath])
-                            vals
-                            (apply concat)
-                            (into {}))]
-    (resolve-node linkable-nodes #{} (dissoc (get-in cms-data base-node-path) nil))))
+(defn find-cms-node [nodes-db content-type id]
+  (let [content-type-id-path (case content-type
+                               :landingPage [:fields :slug]
+                               :homepage    [:fields :experience]
+                               nil)]
+    (->> nodes-db
+         vals
+         (filter #(and (= content-type (-> % :sys :contentType :sys :id keyword))
+                       (= id (keyword (get-in % content-type-id-path)))))
+         first)))
+
+(defn assemble-cms-node [nodes-db content-type id]
+  (some->> id
+           (find-cms-node nodes-db content-type)
+           contentful/extract-fields
+           (resolve-cms-node nodes-db)))
 
 (defn ^:private copy-cms-to-data
   ([cms-data data keypath]
@@ -364,27 +378,28 @@
 (defn wrap-set-cms-cache
   [h contentful]
   (fn [req]
-    (let [shop?       (or (= "shop" (get-in-req-state req keypaths/store-slug))
-                          (= "retail-location" (get-in-req-state req keypaths/store-experience)))
+    (let [shop?                (or (= "shop" (get-in-req-state req keypaths/store-slug))
+                                   (= "retail-location" (get-in-req-state req keypaths/store-experience)))
           [nav-event {album-keyword     :album-keyword
                       product-id        :catalog/product-id
                       landing-page-slug :landing-page-slug
                       :as               nav-args}]
           (:nav-message req)
-          cms-cache   @(:cache contentful)
-          update-data (partial copy-cms-to-data cms-cache)]
+          cms-cache            @(:cache contentful)
+          normalized-cms-cache @(:normalized-cache contentful)
+          update-data          (partial copy-cms-to-data cms-cache)]
       (h (update-in-req-state req keypaths/cms
                               merge
                               (update-data {} [:advertisedPromo])
-                              {:emailModal (into {} (for [[content-id' _] (:emailModal cms-cache)
-                                                          :let            [content-id (keyword content-id')]]
-                                                      [content-id (resolve-cms-links cms-cache [:emailModal content-id])]))}
+                              {:emailModal (into {} (for [modal (filter (comp (partial = "emailModal") :id :sys :contentType :sys) (vals normalized-cms-cache))]
+                                                      [(-> modal :sys :id) (->> modal
+                                                                                contentful/extract-fields
+                                                                                (resolve-cms-node normalized-cms-cache))]))}
                               (cond (= events/navigate-home nav-event)
                                     (-> (if shop?
-                                          (-> {}
-                                              (update-data [:homepage :unified-fi])
-                                              (update-data [:homepage :shop]))
-                                          (update-data {} [:homepage :unified]))
+                                          {:homepage {:unified-fi (assemble-cms-node normalized-cms-cache :homepage :unified-fi)
+                                                      :shop       (assemble-cms-node normalized-cms-cache :homepage :shop)}}
+                                          {:homepage {:unified (assemble-cms-node normalized-cms-cache :homepage :unified)}})
                                         (update-data [:ugc-collection :free-install-mayvenn])
                                         (update-data [:faq :free-mayvenn-services])
                                         contentful/derive-all-looks)
@@ -435,8 +450,10 @@
                                         (update-data [:ugc-collection :all-looks])
                                         ;; TODO We really should not be special-casing "landing-page" with kebab-case name
                                         ;;      The path here should be the same as the Content Type ID in contentful
-                                        (assoc-in [:landing-page (keyword landing-page-slug)]
-                                                  (assemble-landing-page @(:cache contentful) landing-page-slug)))
+                                        (assoc-in [:landingPage (keyword landing-page-slug)]
+                                                  (some->> landing-page-slug
+                                                           keyword
+                                                           (assemble-cms-node normalized-cms-cache :landingPage))))
 
                                     :else nil))))))
 
@@ -948,7 +965,7 @@
                                                         :query-params        query-params}))
       "0.80"])))
 
-(defn sitemap-pages [{:keys [storeback-config sitemap-cache]} {:keys [subdomains] :as _req}]
+(defn sitemap-pages [{:keys [storeback-config sitemap-cache contentful]} {:keys [subdomains] :as _req}]
   (if (seq subdomains)
     (if-let [hit (not-empty @(:atom sitemap-cache))]
       hit
@@ -959,7 +976,8 @@
                                       (remove :stylist-exclusives/experience)
                                       (remove :stylist-exclusives/family)
                                       (remove :service/type))]
-        (let [initial-categories (filter :seo/sitemap categories/initial-categories)]
+        (let [initial-categories (filter :seo/sitemap categories/initial-categories)
+              landing-pages      (-> contentful contentful/read-cache :landingPage vals)]
           (letfn [(url-xml-elem [[location priority]]
                     {:tag :url :content (cond-> [{:tag :loc :content [(str location)]}]
                                           priority (conj {:tag :priority :content [(str priority)]}))})]
@@ -993,7 +1011,10 @@
                                                (concat
                                                 (canonical-category-sitemap initial-categories launched-products)
                                                 (for [{:keys [catalog/product-id page/slug]} launched-products]
-                                                  [(str "https://shop.mayvenn.com/products/" product-id "-" slug) "0.80"])))
+                                                  [(str "https://shop.mayvenn.com/products/" product-id "-" slug) "0.80"])
+                                                (for [{:keys [slug is-in-sitemap sitemap-priority]} landing-pages
+                                                      :when                                         is-in-sitemap]
+                                                  [(str "https://shop.mayvenn.com/lp/" slug) sitemap-priority])))
                                          (mapv url-xml-elem))})
                 with-out-str
                 util.response/response
@@ -1219,20 +1240,32 @@
                (GET "/account/referrals" req (redirect-to-home environment req :found))
                (GET "/stylist/referrals" req (redirect-to-home environment req :found))
                (GET "/adv/match-stylist" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/adv/find-your-stylist")) :moved-permanently))
-               (GET "/cms/*" {uri :uri}
+               (GET "/cms/*" {uri :uri} ;; GROT: Deprecated in favor of CMS2 below
                     (let [keypath (->> #"/" (clojure.string/split uri) (drop 2) (map keyword))]
-                      ;; HACK: special handling for landing page CMS data as it has to be assembled from multiple data
-                      ;; contentful data types.
-                      (-> (cond
-                            (= :landing-page (first keypath)) (assemble-landing-page (contentful/read-cache contentful) (last keypath))
-                            (= :emailModal (first keypath))   (resolve-cms-links (contentful/read-cache contentful) keypath)
-                            :else                             (get-in (contentful/read-cache contentful) keypath))
+                      (-> (get-in (contentful/read-cache contentful) keypath)
                           ((partial assoc-in {} keypath))
                           json/generate-string
                           util.response/response
                           (util.response/content-type "application/json"))))
+               (GET "/cms2/*" {uri :uri}
+                    (let [cms-cache         (contentful/read-normalized-cache contentful)
+                          [content-type id] (->> (clojure.string/split uri #"/") (drop 2) (map keyword))]
+                      (some-> {content-type {id (assemble-cms-node cms-cache content-type id)}}
+                              json/generate-string
+                              util.response/response
+                              (util.response/content-type "application/json"))))
                (GET "/marketing-site" req
                  (contentful/marketing-site-redirect req))
+               (POST "/contentful/webhook" req
+                     (if (= (:webhook-secret contentful) (-> req :headers (get "secret")))
+                       (do
+                         (->> req
+                              util.request/body-string
+                              json/parse-string
+                              walk/keywordize-keys
+                              (contentful/upsert-into-normalized-cache contentful))
+                         (util.response/response "OK"))
+                       (util.response/status nil 403)))
                (-> (routes (static-routes ctx)
                            (routes-with-orders ctx)
                            (route/not-found views/not-found))

@@ -145,7 +145,8 @@
         [:div.bg-refresh-gray.p3.col-on-tb-dt.col-6-on-tb-dt.bg-white-on-tb-dt
          (when (seq service-line-items)
            [:div
-            [:div.title-2.proxima.mb1 "Services"]
+            [:h1.canela.title-2.my2 "Order"]
+            [:h2.title-2.proxima.mb1 "Services"]
             [:div
              [:div
               (component/build cart-item-v202004/stylist-organism queried-data nil)
@@ -162,22 +163,22 @@
 
          (when (seq cart-items)
            [:div.mt3
-            [:div.title-2.proxima.mb1
+            [:h2.title-2.proxima.mb1
              "Items"]
 
             [:div
              {:data-test "confirmation-line-items"}
 
              (for [[index cart-item] (map-indexed vector cart-items)
-                   :let [react-key (:react/key cart-item)]
-                   :when react-key]
+                   :let              [react-key (:react/key cart-item)]
+                   :when             react-key]
                [:div
                 {:key (str index "-cart-item-" react-key)}
                 (when-not (zero? index)
                   [:div.flex.bg-white
                    [:div.ml2 {:style {:width "75px"}}]
                    [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
-                (component/build cart-item-v202004/organism {:cart-item  cart-item}
+                (component/build cart-item-v202004/organism {:cart-item cart-item}
                                  (component/component-id (str index "-cart-item-" react-key)))])]])]]
 
        [:div.col-on-tb-dt.col-6-on-tb-dt
@@ -205,6 +206,7 @@
         (when (seq service-line-items)
           [:div.p3.content-3.flex.items-center
            (ui/ucare-img {:width "56px"
+                          :alt   ""
                           :class "mtp2"} "9664879b-07e0-432e-9c09-b2cf4c899b10")
            [:div.px1
             (if servicing-stylist

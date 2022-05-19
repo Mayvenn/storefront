@@ -50,7 +50,7 @@
            [:div "Back to Shopping"]]))
 
        (component/html
-        [:div.content-1.proxima.center
+        [:h1.content-1.proxima.center
          {:data-test "mobile-cart"}
          "Shopping Bag ( " [:span.bold item-count] " )"])
 

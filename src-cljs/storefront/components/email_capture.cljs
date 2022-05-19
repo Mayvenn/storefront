@@ -410,12 +410,13 @@
     (m-header id (apply utils/fake-href (:email-capture.dismiss/target data)))
     (let [{:email-capture.photo/keys [url title description]} data]
       (when (seq url)
-        (ui/img {:max-size "500px"
-                 :class    "col-12"
-                 :style    {:vertical-align "bottom"}
-                 :src      url
-                 :title    title
-                 :alt      description})))
+        (ui/ctf-img
+         {:max-width-px 500
+          :url      url}
+         {:title    title
+          :class    "col-12"
+          :style    {:vertical-align "bottom"}
+          :alt      description})))
     (let [{:email-capture.copy/keys [title subtitle supertitle fine-print-lead-in]} data]
       [:div.p4.black
        {:class (:email-capture.design/background-color data)}

@@ -66,6 +66,7 @@
 (def stripe-create-token [:stripe-create-token])
 
 (def fetch-cms-keypath [:fetch-cms-keypath])
+(def fetch-cms2 [:fetch-cms2])
 (def voucher-redemption [:voucher-redemption])
 (def fetch-user-stylist-service-menu [:fetch-user-stylist-service-menu])
 (def fetch-user-stylist-offered-services [:fetch-user-stylist-offered-services])

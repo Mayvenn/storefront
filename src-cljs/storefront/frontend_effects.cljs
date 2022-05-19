@@ -295,8 +295,8 @@
   (let [homepage-version (if (= :shop (sites/determine-site app-state))
                            :unified-fi
                            :unified)]
+    (effects/fetch-cms2 app-state [:homepage homepage-version])
     (doseq [keypath [[:advertisedPromo]
-                     [:homepage homepage-version]
                      [:ugc-collection :free-install-mayvenn]
                      [:faq :free-mayvenn-services]]]
       (effects/fetch-cms-keypath app-state keypath))))
@@ -317,8 +317,7 @@
 (defmethod effects/perform-effects events/navigate-landing-page
   [_ _ args _ app-state]
   (-> app-state
-      (effects/fetch-cms-keypath [:landing-page (keyword (:landing-page-slug args))])
-      (effects/fetch-cms-keypath [:ugc-collection :all-looks])))
+      (effects/fetch-cms2 [:landingPage (keyword (:landing-page-slug args))])))
 
 (defmethod effects/perform-effects events/navigate-content
   [_ [_ _ & static-content-id :as event] _ _ app-state]

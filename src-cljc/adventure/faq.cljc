@@ -12,12 +12,28 @@
                        {:title   (:text question)
                         :content answer})}))
 
+(defn format-answer [{:as answer :keys [content]}]
+  (mapv (fn [paragraph]
+          {:paragraph
+           (->> paragraph
+                :content
+                (map
+                 (fn [{:keys [node-type content data value] :as node}]
+                   (cond (= node-type "text")
+                         {:text value}
+
+                         (= node-type "hyperlink")
+                         {:text (-> content first :value)
+                          :url  (-> data :uri)}))))})
+        content))
+
 (defn hd-lace-query
   [data faq]
   {:expanded-index (get-in data keypaths/faq-expanded-section)
-   :sections       (for [{:keys [question answer]} (:question-answers faq)]
-                     {:title   (:text question)
-                      :content answer})})
+   :sections       (for [{:keys [question answer]} (:questions-answers faq)]
+                     (do
+                       {:title   question
+                        :content (format-answer answer)}))})
 
 (defn component [{:keys [expanded-index sections background-color]}]
   [:div.px6.mx-auto.col-10-on-dt.py6
