@@ -305,29 +305,6 @@
          (= "affiliate" experience)
          (assoc-in-req-state keypaths/return-navigation-message [events/navigate-stylist-account-profile {}])))))
 
-;; do we need this now?
-(defn assemble-landing-page [cms-data landing-page-slug]
-  ;; NOTE: this assumes only one ugc collection, one hero, and on faq per landing page
-  (let [lp-hero        (first (filter #(= "homepageHero" (:content/type %)) (-> cms-data
-                                                                                :landingPage
-                                                                                (get (keyword landing-page-slug))
-                                                                                :body)))
-        hero-details   (-> cms-data
-                           :homepageHero
-                           (get (keyword (:content/id lp-hero))))
-        lp-faq-section (first (filter #(= "faq" (:content/type %)) (-> cms-data
-                                                                       :landingPage
-                                                                       (get (keyword landing-page-slug))
-                                                                       :body)))
-        faq-details    (-> cms-data
-                           :faq
-                           (get (keyword (:faq-section lp-faq-section))))]
-    (-> cms-data
-        :landingPage
-        (get (keyword landing-page-slug))
-        (assoc :hero hero-details)
-        (assoc :faq faq-details))))
-
 (defn is-link? [node]
   (-> node :sys :type (= "Link")))
 
@@ -355,8 +332,8 @@
 
 (defn find-cms-node [nodes-db content-type id]
   (let [content-type-id-path (case content-type
-                               :landingPage [:fields :slug]
-                               :homepage    [:fields :experience]
+                               :landingPageV2 [:fields :slug]
+                               :homepage      [:fields :experience]
                                nil)]
     (->> nodes-db
          vals
@@ -454,7 +431,7 @@
                                         (assoc-in [:landingPage (keyword landing-page-slug)]
                                                   (some->> landing-page-slug
                                                            keyword
-                                                           (assemble-cms-node normalized-cms-cache :landingPage))))
+                                                           (assemble-cms-node normalized-cms-cache :landingPageV2))))
 
                                     :else nil))))))
 
