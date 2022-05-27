@@ -120,15 +120,13 @@
            :hair/color.process               #{"natural" "dyed"}
            :hair/source                      #{"virgin"}
            :category/tags                    #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
-           :subcategories/ids                ["38" "39"] ; add "46" when hd closures go live
+           :subcategories/ids                ["38" "39" "46"]
            :subcategories/layout             :list
            :selector/essentials              [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives               [:hair/origin :hair/texture :hair/color :hair/base-material]
            :subsections/subsection-selectors [#:subsection{:title "Standard Lace Closures" :selector #:hair{:base-material #{"lace"}}}
                                               #:subsection{:title "Silk Closures" :selector #:hair{:base-material #{"silk"}}}
-                                              ;; bring this in when we go live with hd closures
-                                              ;;#:subsection{:title "HD Lace Closures" :selector #:hair{:family #{"closures"} :base-material #{"hd-lace"}}}
-                                              ]
+                                              #:subsection{:title "HD Lace Closures" :selector #:hair{:family #{"closures"} :base-material #{"hd-lace"}}}]
            :header/title                     "Virgin Hair Closures"
            :content-block/title              "Closures 101:"
            :content-block/header             "How to Choose Your Silk or Lace Closure"
@@ -276,16 +274,14 @@
            :hair/source                   #{"virgin"}
            :category/tags                 #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
            :selector/essentials           [:catalog/department :hair/family :hair/color.process :hair/source]
-           :selector/electives            [:hair/origin :hair/texture :hair/color #_:hair/base-material] ;; bring this in when we go live with the hd-frontals
+           :selector/electives            [:hair/origin :hair/texture :hair/color :hair/base-material]
            :product-list/title            "Shop All Frontals"
-           :subcategories/ids             ["29" "10"] ; add "47" to this when we go live with hd frontals
+           :subcategories/ids             ["29" "10" "47"]
            :subcategories/layout          :list
 
            :subsections/subsection-selectors [#:subsection{:title "Standard Lace Frontals" :selector #:hair{:family #{"frontals"} :base-material #{"lace"}}}
                                               #:subsection{:title "360 frontals" :selector #:hair{:family #{"360-frontals"}}}
-                                             ;; bring this in when we go live with the hd-frontals
-                                             ;; #:subsection{:title "HD Lace Frontals" :selector #:hair{:family #{"frontals"} :base-material #{"hd-lace"}}}
-                                              ]
+                                              #:subsection{:title "HD Lace Frontals" :selector #:hair{:family #{"frontals"} :base-material #{"hd-lace"}}}]
 
            :content-block/type     :about-attributes
            :content-block/title    "Frontals 101:"
@@ -962,7 +958,7 @@
                                             "Shop our selection of natural human hair bundles and"
                                             "get connected with a stylist near you.")
     :opengraph/title                  (copy "Shop Mayvenn Hair - Buy 3 items and we'll pay for your hair service.")
-    :selector/electives               [:hair/texture :hair/family :hair/origin :hair/color #_:hair/base-material]  ;; bring this in when we go live with the hd-frontals
+    :selector/electives               [:hair/texture :hair/family :hair/origin :hair/color :hair/base-material]
     :selector/essentials              [:catalog/department :promo.mayvenn-install/eligible]
     :subsections/subsection-selectors texture-subsection-selectors}])
 
@@ -1216,7 +1212,7 @@
     :copy/title           "HD Lace"
     :page/slug            "hd-lace"
     :seo/title            "HD Lace"
-    :seo/sitemap          false ;; Turn on when we go live with the new product
+    :seo/sitemap          true
 
     :catalog/department               #{"hair"}
     :hair/family                      #{"lace-front-wigs" "closure-wigs" "360-frontals" "closures" "frontals"}
@@ -1271,7 +1267,7 @@
     :copy/title           "HD Lace Frontals"
     :page/slug            "hd-lace-frontals"
     :seo/title            "HD Lace Frontals"
-    :seo/sitemap          false ;; Turn on when we go live with the new product
+    :seo/sitemap          true
 
     :catalog/department             #{"hair"}
     :hair/family                    #{"frontals"}
@@ -1317,7 +1313,7 @@
     :copy/title           "HD Lace Closures"
     :page/slug            "hd-lace-closures"
     :seo/title            "HD Lace Closures"
-    :seo/sitemap          false ;; Turn on when we go live with the new product
+    :seo/sitemap          true
 
     :catalog/department             #{"hair"}
     :hair/family                    #{"closures"}
@@ -1361,7 +1357,7 @@
     :page/icp?           false
     :page/slug           "select-wigs-promo"
     :seo/title           "Wigs"
-    :seo/sitemap         false ;; Turn on when we go live with the new product
+    :seo/sitemap         true
 
     :copy/banner-img-dsk-id "762a38d1-6480-4a0c-a558-2c5839d9a52c"
     :copy/banner-img-mob-id "44c98bfd-bd71-4469-a321-c86bb3d713c6"
