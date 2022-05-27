@@ -153,18 +153,19 @@
 
 (defcomponent faq
   [{:keys [expanded-index sections]} owner opts]
-  [:div.px6.mx-auto.col-6-on-dt.bg-pale-purple.py6
-   [:h2.canela.title-1.center.my7 "Frequently Asked Questions"]
-   ^:inline
-   (component/build
-    accordion/component
-    {:expanded-indices #{expanded-index}
-     :sections         (mapv
-                        (fn [{:keys [title content]}]
-                          {:title      [:content-1 title]
-                           :content content})
-                        sections)}
-    {:opts {:section-click-event events/faq-section-selected}})])
+  [:div.bg-pale-purple.py6
+   [:div.mx-auto.col-6-on-dt
+    [:h2.canela.title-1.center.my7 "Frequently Asked Questions"]
+    ^:inline
+    (component/build
+     accordion/component
+     {:expanded-indices #{expanded-index}
+      :sections         (mapv
+                         (fn [{:keys [title content]}]
+                           {:title      [:content-1 title]
+                            :content content})
+                         sections)}
+     {:opts {:section-click-event events/faq-section-selected}})]])
 
 (defn ^:private contact-us-block [idx {:as data :keys [url title copy legal]}]
   [:a.block.py3.col-12.col-4-on-tb-dt.black
