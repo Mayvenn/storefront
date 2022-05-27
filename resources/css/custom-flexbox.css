@@ -27,6 +27,7 @@
   .flex-column-on-tb-dt { flex-direction: column; }
   .items-start-on-dt, .items-start-on-tb-dt { align-items: start; }
   .items-center-on-dt, .items-center-on-tb-dt  { align-items: center; }
+  .justify-center-on-tb-dt { justify-content: center;}
 }
 
 @media (--on-desktop) {

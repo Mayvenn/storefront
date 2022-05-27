@@ -476,7 +476,7 @@
   [:div.py8.col-10.mx-auto.center
    (when title
      [:div.title-2.proxima.shout.bold title])
-   [:div.flex.flex-wrap.py3
+   [:div.flex.flex-wrap.py3.justify-center-on-tb-dt
     (for [{:keys [image-url alt label] :as image-data} images]
       [:a.col-6.col-3-on-tb-dt.p1
        (merge (apply utils/route-to (:cta/navigation-message image-data))
