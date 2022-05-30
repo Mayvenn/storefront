@@ -482,11 +482,11 @@
       [:a.col-6.col-3-on-tb-dt.p1
        (merge (apply utils/route-to (:cta/navigation-message image-data))
               {:key (str image-url)})
-       (ui/screen-aware
-        ugc-image
-        {:image-url image-url
-         :alt       alt}
-        nil)
+       (ui/img
+        {:src image-url
+         :title title
+         :class "col-12"
+         :alt   alt})
        [:div.black.content-3 label]])]
    (let [{:keys [cta]} data]
      (if (:id cta)
