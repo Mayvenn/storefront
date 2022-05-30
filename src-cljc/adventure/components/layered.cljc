@@ -153,7 +153,7 @@
 
 (defcomponent faq
   [{:keys [expanded-index sections]} owner opts]
-  [:div.bg-pale-purple.py6
+  [:div.bg-pale-purple.py6.px4-on-mb-tb
    [:div.mx-auto.col-6-on-dt
     [:h2.canela.title-1.center.my7 "Frequently Asked Questions"]
     ^:inline
