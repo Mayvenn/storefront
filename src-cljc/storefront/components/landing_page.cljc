@@ -5,7 +5,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.components.ui :as ui]
-            [storefront.routes :as routes]))
+            [storefront.routes :as routes]
+            [storefront.components.homepage-hero :as homepage-hero]))
 
 (defn url->navigation-message [url]
   (let [[path query-params-string] (clojure.string/split url #"\?")
@@ -18,11 +19,8 @@
 (defn determine-and-shape-layer
   [data body-layer]
   (case (:content/type body-layer)
-    "homepageHero"     {:layer/type :hero
-                        :dsk-url    (-> body-layer :desktop :file :url)
-                        :mob-url    (-> body-layer :mobile :file :url)
-                        :alt        (-> body-layer :alt)
-                        :file-name  (-> body-layer :desktop :file :file-name)}
+    "homepageHero"     (assoc (homepage-hero/query body-layer)
+                              :layer/type :hero)
     "titleSubtitle"    {:layer/type   :shop-text-block
                         :header/value (:title body-layer)
                         :body/value   (:subtitle body-layer) }
