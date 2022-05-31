@@ -33,7 +33,9 @@
                                               :cta/navigation-message [events/navigate-shop-by-look-details
                                                                        {:look-id       (:content/id look)
                                                                         :album-keyword :look}]})
-                                           (:looks body-layer))
+                                           ((if (= "production" (get-in data keypaths/environment))
+                                              :looks
+                                              :acceptance-looks) body-layer))
                         :cta          {:id      "landing-page-see-more"
                                        :attrs   {:navigation-message [events/navigate-shop-by-look {:album-keyword :look}]}
                                        :content "see more"}}
