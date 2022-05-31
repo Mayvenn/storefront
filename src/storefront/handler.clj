@@ -426,9 +426,7 @@
                                     (= events/navigate-landing-page nav-event)
                                     (-> {}
                                         (update-data [:ugc-collection :all-looks])
-                                        ;; TODO We really should not be special-casing "landing-page" with kebab-case name
-                                        ;;      The path here should be the same as the Content Type ID in contentful
-                                        (assoc-in [:landingPage (keyword landing-page-slug)]
+                                        (assoc-in [:landingPageV2 (keyword landing-page-slug)]
                                                   (some->> landing-page-slug
                                                            keyword
                                                            (assemble-cms-node normalized-cms-cache :landingPageV2))))

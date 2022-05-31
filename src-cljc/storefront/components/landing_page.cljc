@@ -65,7 +65,7 @@
 
 (defn query [data]
   (let [landing-page-slug (-> data (get-in storefront.keypaths/navigation-args) :landing-page-slug keyword)
-        landing-page-data (get-in data (conj storefront.keypaths/cms-landing-page landing-page-slug))
+        landing-page-data (get-in data (conj storefront.keypaths/cms-landing-page-v2 landing-page-slug))
         landing-page-body (:body landing-page-data)]
     {:layers
      (mapv (partial determine-and-shape-layer data) landing-page-body)}))
