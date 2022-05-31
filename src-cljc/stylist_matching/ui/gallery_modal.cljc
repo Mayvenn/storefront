@@ -19,12 +19,12 @@
       [:div.relative.mx-auto
        {:style {:max-width "750px"}}
        (component/build carousel/component
-                        {:data ucare-image-urls}
+                        {:data   ucare-image-urls
+                         :slides (map-indexed gallery-slide (concat ucare-image-urls))}
                         {:opts {:settings {:startIndex  (or initial-index 0)
                                            :nav         false
                                            :items       1
-                                           :edgePadding 0}
-                                :slides (map-indexed gallery-slide (concat ucare-image-urls))}})
+                                           :edgePadding 0}}})
        [:div.absolute
         {:style {:top "1.5rem" :right "1.5rem"}}
         (ui/modal-close {:class       "stroke-black fill-gray"

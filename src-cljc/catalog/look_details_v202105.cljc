@@ -306,12 +306,12 @@
   (when-let [dependencies (not-empty (:carousel/data data))]
     (when (not-any? nil? (:carousel/images data))
       (component/build carousel/component
-                       {:dependencies dependencies}
+                       {:dependencies dependencies
+                        :slides       (map ui/img (:carousel/images data))}
                        {:opts {:settings {:nav         true
                                           :edgePadding 0
                                           :controls    true
-                                          :items       1}
-                               :slides   (map ui/img (:carousel/images data))}}))))
+                                          :items       1}}}))))
 
 (defn ^:private yotpo-reviews-summary-component [{:keys [yotpo-data-attributes]}]
   (when yotpo-data-attributes

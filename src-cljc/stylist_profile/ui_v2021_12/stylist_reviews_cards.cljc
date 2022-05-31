@@ -96,15 +96,14 @@
         (avg-rating-and-rating-count rating rating-count)
         (c/build
          carousel/component
-         {}
+         {:slides   (c/elements review-card data :reviews/reviews)}
          {:opts {:settings {:edgePadding          10
                             :preventScrollOnTouch "auto" ; https://github.com/ganlanyuan/tiny-slider/issues/370
                             :nav                  false
                             :controls             true
                             :items                1.1
                             :loop                 false
-                            :controls-classes     "hide-on-mb-tb"}
-                 :slides   (c/elements review-card data :reviews/reviews)}})
+                            :controls-classes     "hide-on-mb-tb"}}})
         (when cta-id
           [:div.mx3.my4
            (ui/button-small-secondary

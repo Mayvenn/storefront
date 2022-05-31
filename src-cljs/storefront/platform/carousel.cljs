@@ -56,7 +56,7 @@
 
 ;; Important note: carousels should be provided a react key, otherwise we'll get strange behavior
 ;; from dirty state when going between pages containing different carousels.
-(defcomponent component [data _ {:as opts-data :keys [slides events]}]
+(defcomponent component [{:as data :keys [slides]} _ {:as opts-data :keys [events]}]
   (component/build inner-component
                    {} ;; we're using key to invalidate the component
                    {:opts (-> opts-data
