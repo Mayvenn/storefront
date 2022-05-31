@@ -688,15 +688,15 @@
     ctf-options]
    (component/html
     [:img ^:attrs
-     (merge {:src    (str url "?" (options->ctf-query-params ctf-options))
-             :srcset (string/join ", " (for [multiplier   [1 2]
-                                             device-width (cond->> COMMON-DEVICE-WIDTHS
-                                                            max-width-px (remove #(> % max-width-px)))
-                                             :let         [retina?         (= 2 multiplier)
-                                                           effective-width (* multiplier device-width)]]
-                                         (str url "?" (options->ctf-query-params (merge ctf-options
-                                                                                        {:width   effective-width
-                                                                                         :quality (if retina? 75 50)})) " " effective-width "w")))}
+     (merge {:src     (str url "?" (options->ctf-query-params ctf-options))
+             :src-set (string/join ", " (for [multiplier   [1 2]
+                                              device-width (cond->> COMMON-DEVICE-WIDTHS
+                                                             max-width-px (remove #(> % max-width-px)))
+                                              :let         [retina?         (= 2 multiplier)
+                                                            effective-width (* multiplier device-width)]]
+                                          (str url "?" (options->ctf-query-params (merge ctf-options
+                                                                                         {:width   effective-width
+                                                                                          :quality (if retina? 75 50)})) " " effective-width "w")))}
             img-attrs)])))
 
 (defn circle-ucare-img
