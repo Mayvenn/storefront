@@ -569,8 +569,13 @@
        :sticky-footer              sticky-footer)
      view-data opts)))
 
+(defn add-possible-h1 [index layer]
+  (if (= index 1) ; ASSUMPTION: index 0 would be the hero image
+    (merge layer {:header/first-on-page? true})
+    layer))
+
 (defcomponent component [{:keys [layers]} owner opts]
   [:div
    (for [[i layer-data] (map-indexed vector layers)]
      [:section {:key (str "section-" i)}
-      ^:inline (layer-view layer-data opts)])])
+      ^:inline (layer-view (add-possible-h1 i layer-data) opts)])])
