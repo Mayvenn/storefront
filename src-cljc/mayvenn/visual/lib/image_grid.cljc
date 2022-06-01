@@ -76,10 +76,10 @@
   [{:keys [image-url length grid-area id main-image-id]}]
   [:div.relative
    {:id    (str main-image-id "-" image-url "-" id)
+    :key   id
     :style {:grid-area grid-area}}
    (ui/img
-    {:key   id
-     :alt   "" ; decorative images get empty alt text
+    {:alt   "" ; decorative images get empty alt text
      :class "container-size"
      :src   image-url})
    [:div.absolute.top-0.right-0.content-4.m1 length]])
