@@ -5,7 +5,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.events :as e]
-            [storefront.components.ui :as ui]))
+            [storefront.components.ui :as ui]
+            [ui.legal :as legal]))
 
 (defn ^:private address-names
   [address-first-name address-last-name]
@@ -92,71 +93,6 @@
      (address-city billing-address-city)
      (address-state billing-address-state)])
 
-(c/defcomponent ^:private opt-in
-  [{:keys [id label legal value keypath]} _ _]
-  (when id
-    [:div.flex.items-center.col-12.flex-column-on-mb.my3-on-mb.items-start-on-tb-dt
-     [:div.h6.my1.py1.mr1.flex
-      [:div.mr3
-       (ui/radio-section
-        {:id           (str id "-yes-radio")
-         :name         id
-         :data-test    (str id "-yes")
-         :checked      (boolean value)
-         :on-change    (fn [e] (handle-message e/control-change-state
-                                               {:keypath keypath
-                                                :value   true}))}
-        "Yes")]
-      [:div.mr3
-       (ui/radio-section
-        {:id           (str id "-no-radio")
-         :name         id
-         :data-test    (str id "-no")
-         :checked      (not (boolean value))
-         :on-change    (fn [e] (handle-message e/control-change-state
-                                               {:keypath keypath
-                                                :value   false}))}
-        "No")]]
-     [:span.content-2.col-10.col-12-on-tb-dt.center-align-on-mb.mtn2.mt0-on-tb-dt.pt3
-      label
-      [:span.content-3.block legal]]]))
-
-(c/defcomponent opt-in-section
-  [{:opt-in-legalese/keys [terms-nav privacy-nav]
-    :as                   options}
-   _ _]
-  [:div.flex.flex-column.col-12.mb2
-   [:h2.col-12.my1.proxima.title-3.shout.bold "Would you like to receive text notifications from us?"]
-   [:span.content-3
-    "Message & data rates may apply. Message frequency varies. Reply HELP for help or STOP to cancel."
-    " See "
-    [:a.underline.p-color (apply utils/route-to terms-nav) "Terms"]
-    " & "
-    [:a.underline.p-color (apply utils/route-to privacy-nav) "Privacy Policy"]
-    " for more details. "]
-   ;; TODO(jeff): seems like a good use for spice.maps/with, but some compile error occurs when importing that namespace
-   (let [{:transactional-opt-in/keys [id label legal value keypath]}
-         options]
-     (c/build opt-in {:id          id
-                      :label       label
-                      :legal       legal
-                      :value       value
-                      :keypath     keypath
-                      :terms-nav   terms-nav
-                      :privacy-nav privacy-nav}))
-   ;; TODO(jeff): seems like a good use for spice.maps/with, but some compile error occurs when importing that namespace
-   (let [{:marketing-opt-in/keys [id label legal value keypath]}
-         options]
-     (when id
-       (c/build opt-in {:id          id
-                        :label       label
-                        :legal       legal
-                        :value       value
-                        :keypath     keypath
-                        :terms-nav   terms-nav
-                        :privacy-nav privacy-nav})))])
-
-
 (defn ^:private continue-to-payment
   [{:continue-to-pay-cta/keys [spinning? label data-test id]}]
   (when id
@@ -174,5 +110,5 @@
       :data-test "address-form"}
      (shipping-address data)
      (billing-address data)
-     (c/build opt-in-section data)
+     (c/build legal/opt-in-section data)
      (continue-to-payment data)]]])

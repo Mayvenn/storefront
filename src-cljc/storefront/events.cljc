@@ -93,6 +93,7 @@
 (defpath navigate-shop-by-look-details)
 
 (defpath navigate-stylist)
+(defpath navigate-stylist-register)
 (defpath navigate-stylist-dashboard)
 (defpath navigate-stylist-dashboard-earnings)
 (defpath navigate-stylist-dashboard-order-details)
@@ -316,6 +317,8 @@
 (defpath api-success-auth-sign-in)
 (defpath api-success-auth-sign-up)
 (defpath api-success-auth-reset-password)
+
+(defpath api-success-token-requirements)
 
 (defpath api-success-forgot-password)
 

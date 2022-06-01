@@ -176,6 +176,12 @@
 (def reset-password (conj ui :reset-password))
 (def reset-password-password (conj reset-password :password))
 (def reset-password-token (conj reset-password :token))
+(def reset-password-token-requirements (conj reset-password :token-requirements))
+(def reset-password-needs-optin-prompts? (conj reset-password-token-requirements :needs-optin-prompts))
+(def reset-password-present-tos? (conj reset-password-token-requirements :present-tos))
+(def reset-password-copy-type (conj reset-password-token-requirements :copy-type))
+(def reset-password-sms-marketing-optin (conj reset-password :sms-marketing-optin))
+(def reset-password-sms-transactional-optin (conj reset-password :sms-transactional-optin))
 
 (def force-set-password (conj ui :force-set-password))
 (def force-set-password-password (conj force-set-password :password))

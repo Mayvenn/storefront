@@ -285,7 +285,7 @@
         (cookie-jar/save-utm-params cookie utm-params)))
 
     (when (and (get-in app-state keypaths/user-must-set-password)
-               (not= event events/navigate-force-set-password))
+               (not (contains? routes/routes-free-from-force-set-password event)))
       (effects/redirect events/navigate-force-set-password))
 
     (exception-handler/refresh)))
@@ -574,17 +574,6 @@
         session-id (get-in app-state keypaths/session-id)]
     (api/update-stylist-account-portrait session-id user-id user-token stylist-id {:portrait-url cdnUrl})
     (history/enqueue-navigate events/navigate-stylist-account-profile)))
-
-(defmethod effects/perform-effects events/control-reset-password-submit [_ event args _ app-state]
-  (if (empty? (get-in app-state keypaths/reset-password-password))
-    (messages/handle-message events/flash-show-failure {:message "Your password cannot be blank."})
-    (api/reset-password (get-in app-state keypaths/session-id)
-                        (get-in app-state keypaths/stringer-browser-id)
-                        (get-in app-state keypaths/reset-password-password)
-                        (get-in app-state keypaths/reset-password-token)
-                        (get-in app-state keypaths/order-number)
-                        (get-in app-state keypaths/order-token)
-                        (get-in app-state keypaths/store-stylist-id))))
 
 (defmethod effects/perform-effects events/uploadcare-api-success-upload-gallery [_ event {:keys [cdnUrl]} _ app-state]
   (let [user-id    (get-in app-state keypaths/user-id)

@@ -213,9 +213,6 @@
       (assoc-in keypaths/cart-paypal-redirect false)
       (assoc-in keypaths/promo-code-entry-open? false)))
 
-(defmethod transition-state events/navigate-reset-password [_ event {:keys [reset-token]} app-state]
-  (assoc-in app-state keypaths/reset-password-token reset-token))
-
 (defmethod transition-state events/navigate-account-manage [_ event args app-state]
   (assoc-in app-state
             keypaths/manage-account-email

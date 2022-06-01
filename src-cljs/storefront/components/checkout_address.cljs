@@ -1,6 +1,6 @@
 (ns storefront.components.checkout-address
   (:require [checkout.ui.molecules :as molecules]
-            [checkout.ui.checkout-address-form :refer [opt-in-section]]
+            [ui.legal :refer [opt-in-section]]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]

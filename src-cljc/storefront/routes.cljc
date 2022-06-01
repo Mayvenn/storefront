@@ -27,6 +27,18 @@
    "/program-terms"     (edn->bidi events/navigate-content-program-terms)
    "/our-hair"          (edn->bidi events/navigate-content-our-hair)})
 
+(def routes-free-from-force-set-password
+  #{events/navigate-force-set-password
+    events/navigate-content-help
+    events/navigate-content-privacy
+    events/navigate-content-privacyv2
+    events/navigate-content-privacyv1
+    events/navigate-content-tos
+    events/navigate-content-sms
+    events/navigate-content-ugc-usage-terms
+    events/navigate-content-voucher-terms
+    events/navigate-content-program-terms})
+
 (def static-api-routes
   ["/static" static-page-routes])
 

@@ -322,19 +322,34 @@
                                   select-auth-keys
                                   (assoc :flow "email-password")))}))
 
-(defn reset-password [session-id browser-id password reset-token order-number order-token stylist-id]
+(defn token-requirements [session-id browser-id reset-token]
+  (storeback-api-req
+   GET
+   "/v2/token_requirements"
+   request-keys/reset-password
+   {:params
+    {:session-id session-id
+     :browser-id browser-id
+     :token      reset-token}
+    :handler
+    #(messages/handle-message events/api-success-token-requirements %)}))
+
+(defn reset-password [session-id browser-id password reset-token order-number order-token stylist-id wants-smsable-mkt wants-smsable-txn wants-phoneable]
   (storeback-api-req
    POST
    "/v2/reset_password"
    request-keys/reset-password
    {:params
-    {:session-id session-id
-     :browser-id browser-id
-     :password password
+    {:session-id           session-id
+     :browser-id           browser-id
+     :password             password
      :reset_password_token reset-token
-     :order-number order-number
-     :order-token order-token
-     :stylist-id stylist-id}
+     :order-number         order-number
+     :order-token          order-token
+     :stylist-id           stylist-id
+     :wants_smsable_mkt    wants-smsable-mkt
+     :wants_smsable_txn    wants-smsable-txn
+     :wants_phoneable      wants-phoneable}
     :handler
     #(messages/handle-message events/api-success-auth-reset-password
                               (-> %
