@@ -4,18 +4,20 @@
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]))
 
+;; Why does clicking this button cause a "Each child in a list
+;; should have a unique key prop." warning?
 (defn cta-molecule
   [{:cta/keys [id label target spinning? disabled?]}]
   (when (and id label target)
-    [:div
-     (ui/button-large-primary
-      (merge
-       {:data-test id
-        :spinning? (boolean spinning?)
-        :disabled? (boolean disabled?)}
-       #?(:clj {:disabled? true})
-       (apply utils/fake-href target))
-      (component/html [:div.flex.items-center.justify-center.inherit-color label]))]))
+    (ui/button-large-primary
+     (merge
+      {:data-test id
+       :key       id
+       :spinning? (boolean spinning?)
+       :disabled? (boolean disabled?)}
+      #?(:clj {:disabled? true})
+      (apply utils/fake-href target))
+     label)))
 
 (defn add-to-cart-incentive-block-molecule
   [{:add-to-cart.incentive-block/keys
