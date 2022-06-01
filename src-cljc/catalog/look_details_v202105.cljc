@@ -541,7 +541,7 @@
              skus-db)
 
             hair-material
-            (case (spice.core/spy (first (:hair/base-material (first hair-family-and-color-skus))))
+            (case (first (:hair/base-material (first hair-family-and-color-skus)))
               "hd-lace" "HD Lace"
               "lace"    "Standard Lace"
               "silk"    "Silk"
