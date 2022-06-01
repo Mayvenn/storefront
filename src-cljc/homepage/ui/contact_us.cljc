@@ -7,10 +7,10 @@
   [{:contact-us.contact-method/keys [uri title copy svg-symbol legal-copy legal-links]} id]
   (let [legal? (boolean (or legal-copy legal-links))]
     [:div.col-12.col-4-on-tb-dt
-     {:class (if legal? "mb3" "")}
+     {:class (if legal? "mb3" "")
+      :key   id}
      [:a.pt3.block.black
       {:href  uri
-       :key   id
        :class (if legal? "" "pb3")}
       [:div.mt6-on-dt.mb4-on-dt (svg/symbolic->html svg-symbol)]
       [:div.proxima.title-2.mt1
@@ -25,7 +25,7 @@
            [:br]
            "See "
            (interpose " & " (for [{:keys [copy target]} legal-links]
-                              [:a (apply utils/route-to target) (str copy)]))
+                              [:a (merge {:key copy} (apply utils/route-to target)) (str copy)]))
            "."])]) ]))
 
 (defn ^:private contact-us-title-molecule
