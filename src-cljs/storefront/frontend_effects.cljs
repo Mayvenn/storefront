@@ -328,17 +328,6 @@
 (defmethod effects/perform-effects events/navigate-content-about-us [_ _ _ _ app-state]
   (wistia/load))
 
-(defn ^:private fetch-looks-and-shared-carts-for-sbl-update [cache]
-  (let [keypath       [:ugc-collection :aladdin-free-install]]
-    (api/fetch-cms-keypath
-     keypath
-     (fn [result]
-       (messages/handle-message events/api-success-fetch-cms-keypath result)
-       (when-let [cart-ids (->> (get-in result (conj keypath :looks))
-                                (mapv contentful/shared-cart-id)
-                                not-empty)]
-         (api/fetch-shared-carts cache cart-ids))))))
-
 (defmethod effects/perform-effects events/navigate-shop-by-look
   [dispatch event {:keys [album-keyword]} previous-app-state app-state]
   (let [actual-album-kw (ugc/determine-look-album app-state album-keyword)]
