@@ -480,7 +480,7 @@
                                       :slide-out-nav-menu-item/id      "menu-new-arrivals"
                                       :slide-out-nav-menu-item/primary "New Arrivals"}
                                      {:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug "hd-lace" :catalog/category-id "44"}]
-                                      :slide-out-nav-menu-item/id          "menu-shop-wigs"
+                                      :slide-out-nav-menu-item/id          "menu-shop-hd-lace"
                                       :slide-out-nav-menu-item/new-primary (when sale-shop-hair? "Sale")
                                       :slide-out-nav-menu-item/nested?     false
                                       :slide-out-nav-menu-item/primary     "HD Lace"}]))
