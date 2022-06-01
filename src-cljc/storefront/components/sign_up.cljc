@@ -16,7 +16,7 @@
    {:on-submit (utils/send-event-callback events/control-sign-up-submit)}
    ((if hide-email? ui/hidden-field ui/text-field)
     {:data-test    "user-email"
-     :autocomplete "username"
+     :autoComplete "username"
      :errors       (get field-errors ["email"])
      :keypath      keypaths/sign-up-email
      :focused      focused
@@ -27,7 +27,7 @@
      :value        email})
 
    (ui/text-field {:data-test    "user-password"
-                   :autocomplete "current-password"
+                   :autoComplete "current-password"
                    :errors       (get field-errors ["password"])
                    :keypath      keypaths/sign-up-password
                    :focused      focused
