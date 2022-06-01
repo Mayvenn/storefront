@@ -189,7 +189,7 @@
        (pos? available-store-credit)
        (merge {:credit-note/id "store-credit-note"})
 
-       (not can-use-store-credit?)
+       (and (not can-use-store-credit?) credit-to-use)
        (merge {:credit-note/color   "warning-yellow"
                :credit-note/content (str
                                      "Your "
@@ -197,7 +197,7 @@
                                      " in store credit cannot be used with Mayvenn Service orders."
                                      " To use store credit, please remove any Mayvenn Services from your bag.")})
 
-       can-use-store-credit?
+       (and can-use-store-credit? credit-to-use)
        (merge
         {:credit-note/color   "s-color"
          :credit-note/content (str
