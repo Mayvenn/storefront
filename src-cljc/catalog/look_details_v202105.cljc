@@ -540,6 +540,13 @@
               {:hair/family item-hair-family})
              skus-db)
 
+            hair-material
+            (case (spice.core/spy (first (:hair/base-material (first hair-family-and-color-skus))))
+              "hd-lace" "HD Lace"
+              "lace"    "Standard Lace"
+              "silk"    "Silk"
+              nil)
+
             hair-length-facet-option
             (get-in facets-db [:hair/length
                                :facet/options
@@ -554,7 +561,7 @@
                          :value-id         (str "picker-selected-length-" index "-" (:option/slug hair-length-facet-option))
                          :image-src        (->> hair-family-and-color-skus first :selector/images (select ?cart-product-image) first :url)
                          :options          length-options
-                         :primary          (str (:option/name hair-length-facet-option) " " (:sku/name hair-family-facet-option))
+                         :primary          (str (:option/name hair-length-facet-option) (when hair-material (str " " hair-material)) " " (:sku/name hair-family-facet-option))
                          :selected-value   (:option/slug hair-length-facet-option)
                          :selection-target [events/control-look-detail-picker-option-select {:selection [:per-item index :hair/length]}]
                          :open-target      [events/control-look-detail-picker-open {:picker-id [:per-item index :hair/length]}]}]
