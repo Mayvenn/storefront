@@ -28,7 +28,7 @@
                         :header/value "Shop By Look"
                         :images       (map (fn [look]
                                              {:image-url              (:photo-url look)
-                                              :alt                    "Look Photo"
+                                              :alt                    ""
                                               :label                  (:title look)
                                               :cta/navigation-message [events/navigate-shop-by-look-details
                                                                        {:look-id       (:content/id look)
@@ -41,11 +41,11 @@
                                        :content "see more"}}
     "faq"              (merge {:layer/type :faq}
                               (faq/hd-lace-query data body-layer))
-    "layerTextBlock"   {:layer/type   :shop-text-block
+    "layerTextBlock"   {:layer/type   :lp-image-text-block
                         :header/value (:title body-layer)
-                        :body/value   [(ui/img {:src   (:image-url body-layer)
-                                                :style {:width "100%"}})
-                                       [:div.content-2 (:body body-layer)]]
+                        :image/url    (:image-url body-layer)
+                        :image/alt    (:alt body-layer)
+                        :text/copy    (:body body-layer)
                         :cta/button?  true
                         :cta/value    (:cta-copy body-layer)
                         :cta/id       (str "landing-page-" (:slug body-layer) "-cta")

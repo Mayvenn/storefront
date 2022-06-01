@@ -466,8 +466,7 @@
         ugc-image
         {:image-url image-url
          :alt       alt}
-        nil)
-       [:div.black.content-3 label]])]
+        nil)])]
    (shop-cta-with-icon data)])
 
 (defcomponent lp-tiles
@@ -476,24 +475,66 @@
     :as    data} _ _]
   [:div.py8.col-10.mx-auto.center
    (when title
-     [:div.title-2.proxima.shout.bold title])
-   [:div.flex.flex-wrap.py3.justify-center-on-tb-dt
+     [:div.title-1.proxima.shout.bold title])
+   [:div.flex.flex-wrap.py4.justify-center-on-tb-dt
     (for [{:keys [image-url alt label] :as image-data} images]
       [:a.col-6.col-3-on-tb-dt.p1
        (merge (apply utils/route-to (:cta/navigation-message image-data))
               {:key (str image-url)})
        (ui/img
-        {:src image-url
+        {:src   image-url
          :title title
          :class "col-12"
          :alt   alt})
-       [:div.black.content-3 label]])]
+       [:div.black.content-2 label]])]
    (let [{:keys [cta]} data]
      (if (:id cta)
        (ui/button-small-primary (merge {:class "inline"}
                                        (:attrs cta))
                                 (:content cta))
        [:span]))])
+
+(defcomponent lp-image-text-block
+  [{anchor-name :anchor/name
+    title       :header/value
+    h1          :header/first-on-page? ; to set up h cascade correctly for a11y
+    big-title   :big-header/content
+    body        :body/value
+    image       :image/url
+    alt         :image/alt
+    copy        :text/copy
+    divider-img :divider-img
+    button?     :cta/button?
+    :as         data}
+   _
+   _]
+  [:div
+   [:div.pt10.pb2.px6.center.col-6-on-dt.mx-auto
+    (when anchor-name
+      [:a {:name anchor-name}])
+    (when big-title
+      (let [[secondary primary] big-title]
+        [:h2.py1.shout
+         [:div.title-1.proxima.my1 (:attrs secondary) (:text secondary)]
+         [:div.title-1.canela.mt2.mb4 (:attrs primary) (:text primary)]]))
+    (when title
+      (if h1
+        [:h1.title-1.canela title]
+        [:h2.title-1.canela title]))
+
+    (when image
+      [(ui/img {:src   image
+                :alt   alt
+                :class "py4"
+                :style {:width "100%"}})
+       [:div.content-2.pb4 copy]])
+
+    [:div.pt3
+     (if button?
+       ^:inline (shop-cta data)
+       ^:inline (shop-cta-with-icon data))]]
+   (when divider-img
+     ^:inline (divider divider-img))])
 
 (defcomponent title-with-subtitle
   [{:keys [primary secondary]} _ _]
@@ -505,7 +546,8 @@
   (when type
     (component/build
      (case type
-       :lp-tiles lp-tiles
+       :lp-tiles            lp-tiles
+       :lp-image-text-block lp-image-text-block
 
        ;; REBRAND
        :shop-text-block         shop-text-block
