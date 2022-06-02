@@ -123,11 +123,12 @@
        [:div.col-10.my2.h5 value]))
    (cta-with-chevron data)])
 
-(defcomponent ^:private ugc-image [{:screen/keys [seen?] :keys [image-url alt]} owner opts]
+(defcomponent ^:private ugc-image [{:screen/keys [seen?] :keys [image-url alt style]} owner opts]
   (ui/aspect-ratio
    1 1
    (cond
      seen? [:img {:class "col-12"
+                  :style style
                   :src   image-url
                   :alt   alt}]
      :else [:div.col-12 " "])))
@@ -481,11 +482,11 @@
       [:a.col-6.col-3-on-tb-dt.p1
        (merge (apply utils/route-to (:cta/navigation-message image-data))
               {:key (str image-url)})
-       (ui/img
-        {:src   image-url
-         :title title
-         :class "col-12"
-         :alt   alt})
+       (ui/screen-aware
+        ugc-image
+        {:image-url image-url
+         :alt       alt}
+        nil)
        [:div.black.content-2 label]])]
    (let [{:keys [cta]} data]
      (if (:id cta)
@@ -523,10 +524,12 @@
         [:h2.title-1.canela title]))
 
     (when image
-      [(ui/img {:src   image
-                :alt   alt
-                :class "py4"
-                :style {:width "100%"}})
+      [:div.py4
+       (ui/screen-aware
+        ugc-image
+        {:image-url   image
+         :alt   alt
+         :style {:width "100%"}})
        [:div.content-2.pb4 copy]])
 
     [:div.pt3
