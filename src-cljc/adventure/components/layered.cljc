@@ -539,12 +539,6 @@
    (when divider-img
      ^:inline (divider divider-img))])
 
-(defcomponent title-with-subtitle
-  [{:keys [primary secondary]} _ _]
-  [:div.bg-refresh-gray.pyj3-on-mb.pyj3-on-tb-dt
-   [:div.canela.title-1.center.mb3 primary]
-   [:div.content-2-on-mb.content-1-on-tb-dt.center.max-580.mx-auto.pxj3-on-mb secondary]])
-
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (when type
     (component/build
