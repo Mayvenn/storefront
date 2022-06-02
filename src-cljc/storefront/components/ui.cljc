@@ -497,6 +497,8 @@
                 (assoc :data-test-id (str "label-" data-test-id))
                 data-test
                 (assoc :data-test (str "label-" data-test)))
+      [:input.hide.mx2.h2
+       ^:attrs (merge {:type "radio"} radio-attrs)]
       [:div.left.mr2.pp2
        [:div.circle.bg-white.border.flex.items-center.justify-center
         ^:attrs (merge {:style {:height "22px" :width "22px"}}
@@ -504,8 +506,6 @@
         (when checked
           [:div.circle.bg-p-color
            {:style {:height "10px" :width "10px"}}])]]
-      [:input.hide.mx2.h2
-       ^:attrs (merge {:type "radio"} radio-attrs)]
       (into [:div.clearfix.col-12] content)])))
 
 (defn drop-down
