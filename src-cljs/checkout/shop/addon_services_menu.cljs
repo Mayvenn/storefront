@@ -153,7 +153,9 @@
             {:key   id
              :class disabled-classes}
             (when ready?
-              {:on-click (apply utils/send-event-callback target)}))
+              {:on-click (apply utils/send-event-callback target)
+               :on-key-down  #(when (= 32 (.-keyCode %))
+                                (apply utils/send-event-callback target))}))
            (if checkbox-spinning?
              [:div.mt1
               [:div.pr2 {:style {:width "41px"}} ui/spinner]]
