@@ -467,6 +467,10 @@
      ^:attrs (merge {:class label-classes}
                     (when data-test
                       {:data-test (str "label-" data-test)}))
+     [:input.hide
+      ^:attrs (merge (when-not disabled (utils/toggle-checkbox keypath value))
+                     (dissoc attributes :label :keypath :value :label-classes)
+                     {:type "checkbox"})]
      [:div.border.left.mr3.pp2
       (when disabled {:class "border-gray bg-cool-gray"})
       (if value
@@ -474,13 +478,10 @@
                       :width  "15px"
                       :height "15px"})
         [:div {:style {:width "15px" :height "15px"}}])]
-     [:input.hide
-      ^:attrs (merge (when-not disabled (utils/toggle-checkbox keypath value))
-                     (dissoc attributes :label :keypath :value :label-classes)
-                     {:type "checkbox"})]
-     [:span
-      (when disabled {:class "gray"})
-      label]]
+     (when (seq label)
+       [:span
+        (when disabled {:class "gray"})
+        label])]
     (when-let [error (first errors)]
       (field-error-message error data-test))]))
 

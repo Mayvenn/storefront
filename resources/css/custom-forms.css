@@ -93,8 +93,14 @@ input:focus {
     outline: none;
 }
 
+input.hide[type="checkbox"]:focus + * {
+    outline: solid var(--p-color) 2px;
+    outline-offset: 2px;
+}
+
 :root {
   --red: #FF0000;
+  --p-color:      #4427c1;
 
   --floating-label--input-text-height: 19px; /* height, not including padding */
   --floating-label--input-padding-x: 10px;
