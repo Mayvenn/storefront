@@ -81,7 +81,7 @@
     :else empty-ledger))
 
 (defn sale-row [{:keys [order order-number id order-updated-at] :as sale}]
-  [:tr.border-bottom.border-gray.py2.pointer.cool-gray-hover
+  [:a.table-row.border-bottom.border-gray.py2.cool-gray-hover.black
    (merge (utils/route-to events/navigate-stylist-dashboard-order-details {:order-number order-number})
           {:key       (str "sales-table-" id)
            :data-test (str "sales-" order-number)})
@@ -92,7 +92,7 @@
    (sale-status-cell sale)])
 
 (defn sale-row-with-voucher [{:keys [order order-number id order-updated-at] :as sale}]
-  [:tr.border-bottom.border-gray.py2.pointer.cool-gray-hover
+  [:a.table-row.border-bottom.border-gray.py2.cool-gray-hover.black
    (merge (utils/route-to events/navigate-stylist-dashboard-order-details {:order-number order-number})
           {:key       (str "sales-table-" id)
            :data-test (str "sales-" order-number)})

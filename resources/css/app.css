@@ -2,6 +2,7 @@
 
 @import 'normalize.css';
 @import 'custom-basic.css';
+@import 'custom-table.css';
 
 /* Optional Modules (not included in Basscss by default) that must be able to be overridden by basscss core */
 

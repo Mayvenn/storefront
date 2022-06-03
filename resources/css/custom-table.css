@@ -1,0 +1,4 @@
+/* This is useful for making a whole table row focusable, i.e. :a.table-row */
+.table-row {
+    display: table-row;
+}
