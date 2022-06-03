@@ -61,7 +61,7 @@
                         :cta          {:id      (str "landing-page-" (:slug body-layer) "-cta")
                                        :attrs   {:navigation-message (url->navigation-message (:cta-url body-layer))}
                                        :content (:cta-copy body-layer)}}
-    :else              {}))
+    {}))
 
 (defn query [data]
   (let [landing-page-slug (-> data (get-in storefront.keypaths/navigation-args) :landing-page-slug keyword)
