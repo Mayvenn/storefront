@@ -84,6 +84,7 @@
   [:a.table-row.border-bottom.border-gray.py2.cool-gray-hover.black
    (merge (utils/route-to events/navigate-stylist-dashboard-order-details {:order-number order-number})
           {:key       (str "sales-table-" id)
+           :role      "row"
            :data-test (str "sales-" order-number)})
    [:td.p2.left-align.h8 (some-> order-updated-at #?(:cljs f/abbr-date))]
    [:td.p2.left-align.medium.h5.nowrap
@@ -95,6 +96,7 @@
   [:a.table-row.border-bottom.border-gray.py2.cool-gray-hover.black
    (merge (utils/route-to events/navigate-stylist-dashboard-order-details {:order-number order-number})
           {:key       (str "sales-table-" id)
+           :role      "row"
            :data-test (str "sales-" order-number)})
    [:td.p2.left-align.h8 (some-> order-updated-at #?(:cljs f/abbr-date))]
    [:td.p2.left-align.medium.h5.nowrap
