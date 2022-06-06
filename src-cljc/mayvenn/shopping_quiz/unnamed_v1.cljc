@@ -73,28 +73,12 @@
      (->> (with :action see-results)
           actions/large-primary)]]])
 
-(c/defcomponent quiz-results-organism
-  [{:quiz.result/keys [id index-label ucare-id primary secondary tertiary tertiary-note cta-label cta-target]} _ _]
-  [:div.left-align.px3.mt5.mb3
-   [:div.shout.proxima.title-3.mb1 index-label]
-   [:div.bg-white
-    [:div.flex.p3
-     [:div.mr4
-      (ui/img {:src ucare-id :width "80px" :alt ""})]
-     [:div.flex.flex-column
-      [:div primary]
-      [:div secondary]
-      [:div.content-1 tertiary [:span.ml2.p-color.content-2 tertiary-note]]
-      (ui/button-small-primary (merge {:data-test id
-                                       :class     "mt2 col-8"}
-                                      (apply utils/fake-href cta-target)) cta-label)]]]])
-
 (c/defcomponent look-2-wrapper [data _ opts]
   [:div.m3
    (c/build card/look-2 (with :quiz.result-v2 data) opts)])
 
 (c/defcomponent results-template
-  [{:keys [header quiz-results shopping-quiz-v2? flash]} _ _]
+  [{:keys [header quiz-results flash]} _ _]
   [:div.bg-cool-gray
    [:div.col-12.bg-white
     (c/build header/nav-header-component header)]
@@ -104,9 +88,7 @@
     [:div.flex.flex-column.px2
      [:div.shout.proxima.title-2 (:quiz.results/primary quiz-results)]
      [:div.m3.canela.title-1 (:quiz.results/secondary quiz-results)]]
-    (if shopping-quiz-v2?
-      (c/elements look-2-wrapper quiz-results :quiz.results/options)
-      (c/elements quiz-results-organism quiz-results :quiz.results/options))]
+    (c/elements look-2-wrapper quiz-results :quiz.results/options)]
    [:div.absolute.bottom-0.left-0.right-0
     dividers/green
     (let [{:quiz.alternative/keys [primary cta-label cta-target id]} quiz-results]
@@ -267,7 +249,6 @@
         looks-suggestions              (looks-suggestions/<- state shopping-quiz-id)
         header-data                    {:forced-mobile-layout? true
                                         :quantity              (or quantity 0)}
-        shopping-quiz-v2?              (experiments/shopping-quiz-v2? state)
         flash             (when (seq (get-in state keypaths/errors))
                             {:errors {:error-code "generic-error"
                                       :error-message "Sorry, but we don't have this look in stock. Please try a different look."}})]
@@ -288,7 +269,6 @@
                                                   answers
                                                   looks-suggestions)
                 :header            header-data
-                :shopping-quiz-v2? shopping-quiz-v2?
                 :flash flash})
 
       :else

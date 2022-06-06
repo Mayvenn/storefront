@@ -358,20 +358,6 @@
      (c/build card/look-2
               (:summary-v2 data))]]])
 
-(c/defcomponent summary-template
-  [data _ _]
-  [:div.col-12.bg-pale-purple.stretch
-   [:div.bg-white
-    (quiz-header (with :header data))]
-   (c/build progress-bar/variation-1 (with :progress data))
-   [:div.flex.flex-column.justify-center.items-center.myj3.max-580.mx-auto
-    [:div.col-8.my2
-     (titles/canela (with :title data))]
-    [:div.mb6.col-10.col-8-on-tb
-     (c/build card/look-1
-              (with :suggestion data))]
-    (actions/large-primary (with :action data))]])
-
 (defn summary<
   [products-db
    skus-db
@@ -757,13 +743,8 @@
              (utils/requesting? state request-keys/get-products)
              (c/build waiting-template waiting<)
 
-             (and (experiments/shopping-quiz-v2? state)
-                  selected-look)
-             (c/build summary-template-v2
-                      (summary< products-db skus-db images-db quiz-progression selected-look undo-history))
-
              selected-look
-             (c/build summary-template
+             (c/build summary-template-v2
                       (summary< products-db skus-db images-db quiz-progression selected-look undo-history))
 
              :else
