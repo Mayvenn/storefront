@@ -133,6 +133,16 @@
                   :alt   alt}]
      :else [:div.col-12 " "])))
 
+(defcomponent ^:private blog-image [{:screen/keys [seen?] :keys [image-url alt style]} owner opts]
+   (ui/aspect-ratio
+    3 2
+    (cond
+      seen? [:img {:class "col-12"
+                   :style style
+                   :src   image-url
+                   :alt   alt}]
+      :else [:div.col-12 " "])))
+
 (defcomponent ugc
   [data owner opts]
   [:div.py8.col-10.mx-auto
@@ -539,12 +549,81 @@
    (when divider-img
      ^:inline (divider divider-img))])
 
+(defn blog-component ; TODO: move to UI/component ns
+  [{:keys [image link title author date]}]
+  [:a.flex.py2.inherit-color
+   {:key  (:title (:file image))
+    :href link}
+   [:div.col-4.flex-column ; link?
+    (ui/screen-aware
+     ugc-image
+     {:image-url (:url (:file image))
+      :alt       ""})]
+   [:div.ml3.col-8.left-align.shout.title-2.proxima.flex-column title]
+   (when author
+     [:div.shout.left-align author])
+   (when date
+     [:div.shout.left-align.dark-gray date])])
+
+(defcomponent blog
+  [{title       :header/value
+    hero-image  :hero/image-url
+    hero-link   :hero/link
+    hero-alt    :hero/alt
+    hero-title  :hero/title
+    hero-author :hero/author
+    hero-date   :hero/date
+    cta-link    :cta/link
+    cta-text    :cta/text
+    blog-posts  :blog/posts
+    :as         data}
+   _
+   _]
+  [:div.bg-warm-gray.mx-auto.center.p6
+   [:h2.proxima.title-1.shout.pb4 title]
+   [:div.hide-on-tb-dt ; mobile
+    [:div
+     [:a {:href hero-link}
+      (ui/screen-aware
+          ugc-image
+          {:image-url hero-image
+           :alt       hero-alt})]
+     (when hero-title
+       [:div.shout.left-align.title-2.proxima.pt2 hero-title])
+     (when hero-author
+       [:div.shout.left-align hero-author])
+     (when hero-date
+       [:div.shout.dark-gray.left-align hero-date])]
+    [:div.py4
+     [:div
+      (for [blog-post blog-posts]
+        (blog-component blog-post))]
+     (when cta-link
+       [:div (ui/button-small-underline-primary {:href cta-link} cta-text)])]] ; note: aria label?
+
+   [:div.hide-on-mb.flex ; desktop
+    [:div.flex-column.col-6.p5
+     [:a {:href hero-link}
+      (ui/screen-aware
+       blog-image
+       {:image-url hero-image
+        :alt       hero-alt})]
+     (when hero-title
+       [:div.shout.left-align.title-2.proxima.pt2 hero-title])]
+    [:div.flex-column.col-6.p5
+     [:div
+      (for [blog-post blog-posts]
+        (blog-component blog-post))]
+     (when cta-link
+       [:div (ui/button-small-underline-primary {:href cta-link} cta-text)])]]])
+
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (when type
     (component/build
      (case type
        :lp-tiles            lp-tiles
        :lp-image-text-block lp-image-text-block
+       :blog                blog
 
        ;; REBRAND
        :shop-text-block         shop-text-block

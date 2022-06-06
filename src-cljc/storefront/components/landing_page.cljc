@@ -61,6 +61,17 @@
                         :cta          {:id      (str "landing-page-" (:slug body-layer) "-cta")
                                        :attrs   {:navigation-message (url->navigation-message (:cta-url body-layer))}
                                        :content (:cta-copy body-layer)}}
+    "blog"             {:layer/type     :blog
+                        :header/value   (:title body-layer)
+                        :hero/image-url (:url (:file (:hero body-layer)))
+                        :hero/link      (:hero-link body-layer)
+                        :hero/alt       (:hero-alt body-layer)
+                        :hero/title     (:hero-title body-layer)
+                        :hero/author    (:hero-author body-layer)
+                        :hero/date      (:hero-date body-layer)
+                        :blog/posts     (:blog-posts body-layer)
+                        :cta/link       (:small-cta-link body-layer)
+                        :cta/text       (:small-cta-text body-layer)}
     {}))
 
 (defn query [data]
