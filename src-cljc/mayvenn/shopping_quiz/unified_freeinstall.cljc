@@ -356,7 +356,7 @@
   [{:keys [primary email focused field-errors keypath label target-opts
            submit-target skip-target target-primary target-secondary]} _ _]
   [:div.center.max-580.mx-auto.p3
-   [:div.pb2 primary]
+   [:div.pb2.proxima.title-2 primary]
    [:form.pb2
     {:on-submit (apply utils/send-event-callback submit-target)}
     [:div.pb2
