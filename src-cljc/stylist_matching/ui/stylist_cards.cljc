@@ -139,7 +139,7 @@
 (defn stylist-card-header-molecule
   [{:stylist-card.header/keys [target id] :keys [desktop?] :as data}]
   (when id
-    [:div.col-12.flex.items-start.pb2.pt4
+    [:a.block.col-12.flex.items-start.pb2.pt4
      (assoc (apply utils/route-to target) :data-test (when-not desktop? id))
      [:div.flex.justify-center.items-center.col-3.ml4
       (stylist-card-thumbnail-molecule data)]
