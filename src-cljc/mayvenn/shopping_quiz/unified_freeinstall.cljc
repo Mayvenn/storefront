@@ -394,7 +394,7 @@
     [:div.col-12.p3
      (c/build card/look-2
               (:summary-v2 data))]]
-   (when (:quiz-email/email-send-look? (:summary-v2 data))
+   (when (:quiz-email/email-capture? (:summary-v2 data))
      (c/build summary-quiz-email
               (with :quiz-email (:summary-v2 data))))])
 
@@ -408,7 +408,9 @@
     img-id        :img/id
     :as           selected-look}
    undo-history
+   email-capture?
    email-send-look?
+   email-send-discount?
    email
    field-errors
    focus email-keypath]
@@ -445,16 +447,19 @@
                   review-sku                 (first skus)
                   review-product             (products/find-product-by-sku-id products-db (:catalog/sku-id review-sku))]
               (merge
-               (within :quiz-email {:primary          "Share your email to get a copy of the result."
-                                    :email-send-look? email-send-look?
+               (within :quiz-email {:primary          (cond email-send-look?     "Share your email to get a copy of the result."
+                                                            email-send-discount? "Share your email for $50 off.")
+                                    :email-capture?   email-capture?
                                     :focused          focus
                                     :field-errors     field-errors
                                     :keypath          email-keypath
                                     :label            "Enter your email"
-                                    :submit-target    [e/control-quiz-email-submit]
+                                    :submit-target    [e/control-quiz-email-submit {:email-capture-type (cond email-send-look?     "quiz-results-email-send-look"
+                                                                                                              email-send-discount? "quiz-results-email-offer-discount")}]
                                     :skip-target      [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]
                                     :email            email
-                                    :target-primary   "Send me my results*"
+                                    :target-primary   (cond email-send-look?     "Send me my results*"
+                                                            email-send-discount? "Send me my discount*")
                                     :target-secondary "Skip this step"
                                     :target-opts      {:data-test "quiz-email-submit"}})
                (within :image-grid {:gap-px 3})
@@ -789,20 +794,23 @@
                       (merge {:flash {:success flash-message}}
                              (find-your-stylist< quiz-progression matching undo-history)))))
        ;; STEP 2: choosing a look
-       2 (let [looks-suggestions (looks-suggestions/<- state shopping-quiz-id)
-               selected-look     (looks-suggestions/selected<- state shopping-quiz-id)
-               products-db       (get-in state k/v2-products)
-               skus-db           (get-in state k/v2-skus)
-               images-db         (get-in state k/v2-images)
-               email-send-look?  (and (experiments/quiz-results-email-send-look? state)
-                                      (not (::auth/at-all (auth/signed-in state))))
-               email             (get-in state email-capture/textfield-keypath)
-               field-errors      (get-in state (conj k/field-errors ["email"]))
-               email-keypath     email-capture/textfield-keypath
-               focus             (get-in state k/ui-focus)
-               flash             (when (seq (get-in state k/errors))
-                                   {:errors {:error-code    "generic-error"
-                                             :error-message "Sorry, but we don't have this look in stock. Please try a different look."}})]
+       2 (let [looks-suggestions    (looks-suggestions/<- state shopping-quiz-id)
+               selected-look        (looks-suggestions/selected<- state shopping-quiz-id)
+               products-db          (get-in state k/v2-products)
+               skus-db              (get-in state k/v2-skus)
+               images-db            (get-in state k/v2-images)
+               email-send-look?     (experiments/quiz-results-email-send-look? state)
+               email-send-discount? (experiments/quiz-results-email-offer-discount? state)
+               email-capture?       (and (or email-send-look?
+                                              email-send-discount?)
+                                          (not (::auth/at-all (auth/signed-in state))))
+               email                (get-in state email-capture/textfield-keypath)
+               field-errors         (get-in state (conj k/field-errors ["email"]))
+               email-keypath        email-capture/textfield-keypath
+               focus                (get-in state k/ui-focus)
+               flash                (when (seq (get-in state k/errors))
+                                      {:errors {:error-code    "generic-error"
+                                                :error-message "Sorry, but we don't have this look in stock. Please try a different look."}})]
            (cond
              (utils/requesting? state request-keys/new-order-from-sku-ids)
              (c/build loading-template)
@@ -812,7 +820,7 @@
 
              selected-look
              (c/build summary-template-v2
-                      (summary< products-db skus-db images-db quiz-progression selected-look undo-history email-send-look? email field-errors focus email-keypath))
+                      (summary< products-db skus-db images-db quiz-progression selected-look undo-history email-capture? email-send-look? email-send-discount? email field-errors focus email-keypath))
 
              :else
              (c/build suggestions-template-v2
@@ -1021,10 +1029,14 @@
     (publish e/go-to-navigate {:target [e/navigate-home]})))
 
 (defmethod fx/perform-effects e/control-quiz-email-submit
-  [_ _ _ state _]
-  (let [email (get-in state email-capture/textfield-keypath)]
-    (publish e/biz|email-capture|captured {:id    "quiz-results-email-send-look"
+  [_ _ args state _]
+  (let [email              (get-in state email-capture/textfield-keypath)
+        email-capture-type (:email-capture-type args)]
+    (publish e/biz|email-capture|captured {:id    email-capture-type
                                            :look  "TBD"
                                            :email email})
     (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]})
-    (publish e/flash-later-show-success {:message "A copy of your quiz result was sent to your email"})))
+    (publish e/flash-later-show-success {:message (case email-capture-type
+                                                    "quiz-results-email-offer-discount" "Your discount will be emailed to you shortly"
+                                                    "quiz-results-email-send-look" "A copy of your quiz result was sent to your email"
+                                                    nil)})))

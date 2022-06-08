@@ -166,3 +166,7 @@
 (defn quiz-results-email-send-look?
   [data]
   (display-feature? data "quiz-results-email-send-look"))
+
+(defn quiz-results-email-offer-discount?
+  [data]
+  (display-feature? data "quiz-results-email-offer-discount"))

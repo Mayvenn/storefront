@@ -609,7 +609,9 @@
         content                 (:email-modal-template chosen-modal)
         trigger-id              (-> chosen-modal :email-modal-trigger :trigger-id)
         template-content-id     (:template-content-id content)
-        in-no-modal-experiment? (experiments/quiz-results-email-send-look? app-state)
+        in-no-modal-experiment? (or (experiments/quiz-results-email-offer-discount? app-state)
+                                    (experiments/quiz-results-email-send-look? app-state))
+
         variation-description   (-> chosen-modal :description)]
     (when (and trigger-id
                template-content-id

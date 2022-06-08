@@ -53,7 +53,7 @@
                 [:p.content-3.mr1 (:price/discounted-price data)]
                 [:p.content-3.strike (:price/retail-price data)]]
                (titles/proxima-tiny-left (with :line-item-summary data))
-               (when-not (:quiz-email/email-send-look? data)
+               (when-not (:quiz-email/email-capture? data)
                  [:div.flex.justify-center
                   (actions/wide-medium-primary (with :action data))])]]))))
 
