@@ -472,14 +472,14 @@
        data)))))
 
 (defn query [app-state]
-  (let [nav-event              (get-in app-state k/navigation-event)
-        capture-modal-id       (concept/location->email-capture-id nav-event)
-        {:keys [displayable?]} (concept/<-trigger capture-modal-id app-state)
-        errors                 (get-in app-state (conj k/field-errors ["email"]))
-        focused                (get-in app-state k/ui-focus)
-        textfield-keypath      concept/textfield-keypath
-        email                  (get-in app-state textfield-keypath)
-        variant                (get-in app-state (conj k/features (keyword capture-modal-id)))]
+  (let [nav-event               (get-in app-state k/navigation-event)
+        capture-modal-id        (concept/location->email-capture-id nav-event)
+        {:keys [displayable?]}  (concept/<-trigger capture-modal-id app-state)
+        errors                  (get-in app-state (conj k/field-errors ["email"]))
+        focused                 (get-in app-state k/ui-focus)
+        textfield-keypath       concept/textfield-keypath
+        email                   (get-in app-state textfield-keypath)
+        variant                 (get-in app-state (conj k/features (keyword capture-modal-id)))]
     (when (and displayable? capture-modal-id variant)
       (when-not (= "off" variant)
         (merge {:id                                   "email-capture"
@@ -595,54 +595,57 @@
 ;; TODO: there are other path mathers not accounted for yet.
 
 (defn contentful-driven-query [app-state]
-  (let [cms-modal-data        (get-in app-state k/cms-email-modal)
-        long-timer-started    (get-in app-state concept/long-timer-started-keypath)
-        short-timer-starteds  (get-in app-state concept/short-timer-starteds-keypath)
-        chosen-modal          (->> cms-modal-data
+  (let [cms-modal-data          (get-in app-state k/cms-email-modal)
+        long-timer-started      (get-in app-state concept/long-timer-started-keypath)
+        short-timer-starteds    (get-in app-state concept/short-timer-starteds-keypath)
+        chosen-modal            (->> cms-modal-data
                                    vals
                                    (filter #(matcher-matches? app-state (-> % :email-modal-trigger :matcher)))
                                    first)
-        errors                (get-in app-state (conj k/field-errors ["email"]))
-        focused               (get-in app-state k/ui-focus)
-        textfield-keypath     concept/textfield-keypath
-        email                 (get-in app-state textfield-keypath)
-        content               (:email-modal-template chosen-modal)
-        trigger-id            (-> chosen-modal :email-modal-trigger :trigger-id)
-        template-content-id   (:template-content-id content)
-        variation-description (-> chosen-modal :description)]
+        errors                  (get-in app-state (conj k/field-errors ["email"]))
+        focused                 (get-in app-state k/ui-focus)
+        textfield-keypath       concept/textfield-keypath
+        email                   (get-in app-state textfield-keypath)
+        content                 (:email-modal-template chosen-modal)
+        trigger-id              (-> chosen-modal :email-modal-trigger :trigger-id)
+        template-content-id     (:template-content-id content)
+        in-no-modal-experiment? (experiments/quiz-results-email-send-look? app-state)
+        variation-description   (-> chosen-modal :description)]
     (when (and trigger-id
                template-content-id
                (not long-timer-started)
                (->> trigger-id (get short-timer-starteds) not))
-      {:id                                    "email-capture"
-       :email-capture/trigger-id              trigger-id
-       :email-capture/variation-description   variation-description
-       :email-capture/template-content-id     template-content-id
-       :email-capture/content-type            (:content/type content)
-       :email-capture.dismiss/target          [e/biz|email-capture|dismissed {:trigger-id            trigger-id
-                                                                              :variation-description variation-description
-                                                                              :template-content-id   template-content-id}]
-       :email-capture.submit/target           [e/biz|email-capture|captured {:trigger-id            trigger-id
-                                                                             :variation-description variation-description
-                                                                             :template-content-id   template-content-id
-                                                                             :email                 email}]
-       :email-capture.design/background-color (:background-color content)
-       :email-capture.design/close-x-color    (:close-xcolor content)
-       :email-capture.copy/title              (:title content)
-       :email-capture.copy/subtitle           (:subtitle content)
-       :email-capture.copy/supertitle         (:supertitle content)
-       :email-capture.copy/fine-print-lead-in (:fine-print-lead-in content)
-       :email-capture.cta/id                  "email-capture-submit"
-       :email-capture.cta/value               (:cta-copy content)
-       :email-capture.text-field/id           "email-capture-input"
-       :email-capture.text-field/placeholder  (:email-input-field-placeholder-copy content)
-       :email-capture.text-field/focused      focused
-       :email-capture.text-field/keypath      textfield-keypath
-       :email-capture.text-field/errors       errors
-       :email-capture.text-field/email        email
-       :email-capture.photo/url               (-> content :hero-image :file :url)
-       :email-capture.photo/title             (-> content :hero-image :title)
-       :email-capture.photo/description       (-> content :hero-image :description)})))
+      (when-not (and in-no-modal-experiment?
+                     (= trigger-id "adv-quiz-email-capture"))
+        {:id                                    "email-capture"
+         :email-capture/trigger-id              trigger-id
+         :email-capture/variation-description   variation-description
+         :email-capture/template-content-id     template-content-id
+         :email-capture/content-type            (:content/type content)
+         :email-capture.dismiss/target          [e/biz|email-capture|dismissed {:trigger-id            trigger-id
+                                                                                :variation-description variation-description
+                                                                                :template-content-id   template-content-id}]
+         :email-capture.submit/target           [e/biz|email-capture|captured {:trigger-id            trigger-id
+                                                                               :variation-description variation-description
+                                                                               :template-content-id   template-content-id
+                                                                               :email                 email}]
+         :email-capture.design/background-color (:background-color content)
+         :email-capture.design/close-x-color    (:close-xcolor content)
+         :email-capture.copy/title              (:title content)
+         :email-capture.copy/subtitle           (:subtitle content)
+         :email-capture.copy/supertitle         (:supertitle content)
+         :email-capture.copy/fine-print-lead-in (:fine-print-lead-in content)
+         :email-capture.cta/id                  "email-capture-submit"
+         :email-capture.cta/value               (:cta-copy content)
+         :email-capture.text-field/id           "email-capture-input"
+         :email-capture.text-field/placeholder  (:email-input-field-placeholder-copy content)
+         :email-capture.text-field/focused      focused
+         :email-capture.text-field/keypath      textfield-keypath
+         :email-capture.text-field/errors       errors
+         :email-capture.text-field/email        email
+         :email-capture.photo/url               (-> content :hero-image :file :url)
+         :email-capture.photo/title             (-> content :hero-image :title)
+         :email-capture.photo/description       (-> content :hero-image :description)}))))
 
 
 (defn ^:export built-component [app-state opts]

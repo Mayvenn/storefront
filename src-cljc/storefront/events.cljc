@@ -754,6 +754,8 @@
 (defpath navigate-shopping-quiz-unified-freeinstall-match-success)
 (defpath navigate-shopping-quiz-unified-freeinstall-appointment-booking)
 
+(defpath control-quiz-email-submit)
+
 ;; Hard Session
 (defpath biz|hard-session|timeout|begin)
 (defpath biz|hard-session|timeout|set)

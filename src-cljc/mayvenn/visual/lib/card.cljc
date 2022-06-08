@@ -53,8 +53,9 @@
                 [:p.content-3.mr1 (:price/discounted-price data)]
                 [:p.content-3.strike (:price/retail-price data)]]
                (titles/proxima-tiny-left (with :line-item-summary data))
-               [:div.flex.justify-center
-                (actions/wide-medium-primary (with :action data))]]]))))
+               (when-not (:quiz-email/email-send-look? data)
+                 [:div.flex.justify-center
+                  (actions/wide-medium-primary (with :action data))])]]))))
 
 ;; TODO(corey) this contract is different, prob should be a new ns
 (c/defcomponent cart-item-1

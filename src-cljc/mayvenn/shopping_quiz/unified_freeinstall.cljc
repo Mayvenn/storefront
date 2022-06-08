@@ -9,6 +9,7 @@
    [appointment-booking.core :as booking.core]
    [clojure.string :refer [split starts-with?]]
    [catalog.images :as catalog-images]
+   [mayvenn.concept.email-capture :as email-capture]
    [mayvenn.concept.looks-suggestions :as looks-suggestions]
    [mayvenn.concept.progression :as progression]
    [mayvenn.concept.questioning :as questioning]
@@ -48,16 +49,18 @@
    [storefront.keypaths :as k]
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages
-    :refer [handle-message]
+    :refer [handle-message handle-later]
     :rename {handle-message publish}]
    [storefront.platform.component-utils :as utils]
    [storefront.request-keys :as request-keys]
    [storefront.trackings :as trackings]
+   [storefront.transitions :as transitions]
    [stylist-matching.core :refer [stylist-matching<- query-params<- service-delimiter]]
    [stylist-matching.keypaths :as matching.k]
    [stylist-matching.stylist-results :as stylist-results]
    [stylist-matching.ui.stylist-search :as stylist-search]
-   [storefront.routes :as routes]))
+   [storefront.routes :as routes]
+   [storefront.accessors.auth :as auth]))
 
 (def ^:private shopping-quiz-id :unified-freeinstall)
 
@@ -258,7 +261,7 @@
 
 (c/defcomponent stylist-results-template
   [{:keys [stylist-search-inputs results scrim? spinning?] :as data} _ _]
-  [:div.center.flex.flex-column.flex-auto
+  [:div.center.flex.flex-column.flex-autf
    [:div.bg-white
     (quiz-header (with :header data))]
    (c/build progress-bar/variation-1 (with :progress data))
@@ -318,7 +321,11 @@
   [:div.center.flex.flex-column
    [:div.bg-white
     (quiz-header (with :header data))]
+
    (c/build progress-bar/variation-1 (with :progress data))
+
+   (c/build flash/component (:flash data) nil)
+
    [:div.px2.mt8.pt4.max-580.mx-auto
     (c/build stylist-search/organism data)]])
 
@@ -345,6 +352,36 @@
 
 ;; Template: 2/Summary
 
+(c/defcomponent summary-quiz-email
+  [{:keys [primary email focused field-errors keypath label target-opts
+           submit-target skip-target target-primary target-secondary]} _ _]
+  [:div.center.max-580.mx-auto.p3
+   [:div.pb2 primary]
+   [:form.pb2
+    {:on-submit (apply utils/send-event-callback submit-target)}
+    [:div.pb2
+     (ui/text-field {:errors    (get field-errors ["email"])
+                     :keypath   keypath
+                     :focused   focused
+                     :label     label
+                     :name      "email"
+                     :required  true
+                     :type      "email"
+                     :value     email
+                     :class     "col-12 bg-white"
+                     :data-test "email-look"})]
+    (ui/submit-button target-primary target-opts)]
+   (ui/button-small-underline-primary (apply utils/route-to skip-target) target-secondary)
+   ;; TODO: Move to contentful
+   [:div.px2.pt4
+    {:style {:font "10px/16px 'Proxima Nova', Arial, sans-serif"}}
+    "*I consent to receive Mayvenn marketing content via email. "
+    "For further information, please read our "
+    [:a.p-color (utils/route-to e/navigate-content-tos) "Terms"]
+    " and "
+    [:a.p-color (utils/route-to e/navigate-content-privacy) "Privacy Policy"]
+    ". Unsubscribe anytime."]])
+
 (c/defcomponent summary-template-v2
   [data _ _]
   [:div.col-12.bg-pale-purple.stretch
@@ -356,7 +393,10 @@
      (titles/canela (with :title data))]
     [:div.col-12.p3
      (c/build card/look-2
-              (:summary-v2 data))]]])
+              (:summary-v2 data))]]
+   (when (:quiz-email/email-send-look? (:summary-v2 data))
+     (c/build summary-quiz-email
+              (with :quiz-email (:summary-v2 data))))])
 
 (defn summary<
   [products-db
@@ -367,7 +407,11 @@
     :hair/keys    [origin texture]
     img-id        :img/id
     :as           selected-look}
-   undo-history]
+   undo-history
+   email-send-look?
+   email
+   field-errors
+   focus email-keypath]
   (let [skus                  (mapv looks-suggestions/mini-cellar sku-ids)
         {bundles  "bundles"
          closures "closures"} (group-by :hair/family skus)]
@@ -385,6 +429,7 @@
             :action/label             "Continue"
             :action/target            [e/go-to-navigate
                                        {:target [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]
+
             :summary-v2
             (let [{:product/keys [sku-ids]
                    :hair/keys    [origin texture]
@@ -400,18 +445,30 @@
                   review-sku                 (first skus)
                   review-product             (products/find-product-by-sku-id products-db (:catalog/sku-id review-sku))]
               (merge
+               (within :quiz-email {:primary          "Share your email to get a copy of the result."
+                                    :email-send-look? email-send-look?
+                                    :focused          focus
+                                    :field-errors     field-errors
+                                    :keypath          email-keypath
+                                    :label            "Enter your email"
+                                    :submit-target    [e/control-quiz-email-submit]
+                                    :skip-target      [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]
+                                    :email            email
+                                    :target-primary   "Send me my results*"
+                                    :target-secondary "Skip this step"
+                                    :target-opts      {:data-test "quiz-email-submit"}})
                (within :image-grid {:gap-px 3})
-               (within :image-grid.hero {:image-url     img-id
-                                         :badge-url     nil})
+               (within :image-grid.hero {:image-url img-id
+                                         :badge-url nil})
                (within :image-grid.hair-column {:images (map (fn [sku]
                                                                (let [image (catalog-images/image images-db "cart" sku)]
                                                                  {:image-url (:ucare/id image)
                                                                   :length    (str (first (:hair/length sku)) "\"")}))
                                                              skus)})
-               (within :action {:id                "summary-continue"
-                                :label             "Continue"
-                                :target            [e/go-to-navigate
-                                                           {:target [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]})
+               (within :action {:id     "summary-continue"
+                                :label  "Continue"
+                                :target [e/go-to-navigate
+                                         {:target [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]})
                (within :title {:primary (str origin " " texture " hair + free install service")})
                (within :price {:discounted-price (mf/as-money discounted-price)
                                :retail-price     (mf/as-money retail-price)})
@@ -527,6 +584,7 @@
   [:div
    (quiz-header (with :header data))
    (c/build progress-bar/variation-1 (with :progress data))
+
    [:div.flex.flex-column.mbj3.pbj3.max-580.mx-auto
     (c/elements question/variation-1
                 data
@@ -535,7 +593,7 @@
      (actions/large-primary (with :action data))]]])
 
 (defn questions<
-  [quiz-progression questions answers progression undo-history]
+  [quiz-progression questions answers progression undo-history flash]
   (merge
    (let [unanswered (- (count questions)
                        (count progression))]
@@ -559,6 +617,7 @@
        :title/secondary info
        :title/scroll-to (when (> question-idx 0)
                           (str "q-" question-idx))
+       :flash           flash
        :choices
        (for [[choice-idx {choice-id    :choice/id
                           :choice/keys [answer img-url]}]
@@ -566,16 +625,16 @@
              :let [answered? (= choice-id
                                 (get answers question-id))]]
          #:action
-          {:icon-url  img-url
-           :primary   answer
-           :id        (str (name question-id) "-" (name choice-id))
-           :target    [e/biz|questioning|answered
-                       {:questioning/id shopping-quiz-id
-                        :question/idx   question-idx
-                        :question/id    question-id
-                        :choice/idx     choice-idx
-                        :choice/id      choice-id}]
-           :selected? answered?})})}))
+         {:icon-url  img-url
+          :primary   answer
+          :id        (str (name question-id) "-" (name choice-id))
+          :target    [e/biz|questioning|answered
+                      {:questioning/id shopping-quiz-id
+                       :question/idx   question-idx
+                       :question/id    question-id
+                       :choice/idx     choice-idx
+                       :choice/id      choice-id}]
+          :selected? answered?})})}))
 
 ;; Template: 1/Waiting
 
@@ -639,7 +698,8 @@
   [state]
   (let [quiz-progression (progression/<- state shopping-quiz-id)
         step             (apply max quiz-progression)
-        undo-history     (get-in state storefront.keypaths/navigation-undo-stack)]
+        undo-history     (get-in state storefront.keypaths/navigation-undo-stack)
+        flash-message    (get-in state storefront.keypaths/flash-now-success-message)]
     [:main
      (case step
 
@@ -726,15 +786,22 @@
              ;; Find your stylist
              :else
              (c/build find-your-stylist-template
-                      (find-your-stylist< quiz-progression matching undo-history))))
+                      (merge {:flash {:success flash-message}}
+                             (find-your-stylist< quiz-progression matching undo-history)))))
        ;; STEP 2: choosing a look
        2 (let [looks-suggestions (looks-suggestions/<- state shopping-quiz-id)
                selected-look     (looks-suggestions/selected<- state shopping-quiz-id)
                products-db       (get-in state k/v2-products)
                skus-db           (get-in state k/v2-skus)
                images-db         (get-in state k/v2-images)
+               email-send-look?  (and (experiments/quiz-results-email-send-look? state)
+                                      (not (::auth/at-all (auth/signed-in state))))
+               email             (get-in state email-capture/textfield-keypath)
+               field-errors      (get-in state (conj k/field-errors ["email"]))
+               email-keypath     email-capture/textfield-keypath
+               focus             (get-in state k/ui-focus)
                flash             (when (seq (get-in state k/errors))
-                                   {:errors {:error-code "generic-error"
+                                   {:errors {:error-code    "generic-error"
                                              :error-message "Sorry, but we don't have this look in stock. Please try a different look."}})]
            (cond
              (utils/requesting? state request-keys/new-order-from-sku-ids)
@@ -745,19 +812,20 @@
 
              selected-look
              (c/build summary-template-v2
-                      (summary< products-db skus-db images-db quiz-progression selected-look undo-history))
+                      (summary< products-db skus-db images-db quiz-progression selected-look undo-history email-send-look? email field-errors focus email-keypath))
 
              :else
              (c/build suggestions-template-v2
                       (suggestions< products-db skus-db images-db quiz-progression looks-suggestions undo-history flash))))
        ;; STEP 1: Taking the quiz
        1 (let [{:keys [questions answers progression]} (questioning/<- state shopping-quiz-id)
-               wait                                    (wait/<- state shopping-quiz-id)]
+               wait                                    (wait/<- state shopping-quiz-id)
+               flash                                   (get-in state k/flash-now-success-message)]
            (if wait
              (c/build waiting-template
                       waiting<)
              (c/build questions-template
-                      (questions< quiz-progression questions answers progression undo-history))))
+                      (questions< quiz-progression questions answers progression undo-history flash))))
        ;; default or 0
        (c/build intro-template (intro< undo-history step)))]))
 
@@ -951,3 +1019,12 @@
   [_ _ _ state _]
   (when-not (= :shop (accessors.sites/determine-site state))
     (publish e/go-to-navigate {:target [e/navigate-home]})))
+
+(defmethod fx/perform-effects e/control-quiz-email-submit
+  [_ _ _ state _]
+  (let [email (get-in state email-capture/textfield-keypath)]
+    (publish e/biz|email-capture|captured {:id    "quiz-results-email-send-look"
+                                           :look  "TBD"
+                                           :email email})
+    (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]})
+    (publish e/flash-later-show-success {:message "A copy of your quiz result was sent to your email"})))
