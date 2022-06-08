@@ -61,7 +61,7 @@
      (component/html [:div.h4.medium.center title])
      (component/html
       (when close-id
-        [:div.ml-auto.flex.items-center.justify-around
+        [:a.block.ml-auto.flex.items-center.justify-around
          (merge {:data-test close-id
                  :style     {:width  "70px"
                              :height "70px"}}
