@@ -173,7 +173,7 @@
      (within :quiz.result-v2.price {:discounted-price (mf/as-money discounted-price)
                                     :retail-price     (mf/as-money retail-price)})
      (within :quiz.result-v2.line-item-summary {:primary (str (count sku-ids) " products in this look")})
-     (within :quiz.result-v2.action {:id     (str "adv-quiz-choose-look-" shopping-quiz-id)
+     (within :quiz.result-v2.action {:id     (str "adv-quiz-choose-look-" (name shopping-quiz-id) "-" idx)
                                      :label  "Choose this look"
                                      :target [e/biz|looks-suggestions|selected
                                               {:id            shopping-quiz-id
