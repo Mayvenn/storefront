@@ -435,17 +435,19 @@
             :summary-v2
             (let [{:product/keys [sku-ids]
                    :hair/keys    [origin texture]
-                   img-id        :img.v2/id} selected-look
-                  skus                       (mapv skus-db sku-ids)
-                  service-sku                (get skus-db (:service/sku-id selected-look))
-                  discounted-price           (->> skus
-                                                  (remove #(= "service" (first (:catalog/department %))))
-                                                  (map :sku/price)
-                                                  (apply +))
-                  retail-price               (+ discounted-price
-                                                (:sku/price service-sku))
-                  review-sku                 (first skus)
-                  review-product             (products/find-product-by-sku-id products-db (:catalog/sku-id review-sku))]
+                   service-id    :service/sku-id
+                   img-id        :img.v2/id
+                   look-id       :contentful/look-id} selected-look
+                  skus                                (mapv skus-db sku-ids)
+                  service-sku                         (get skus-db (:service/sku-id selected-look))
+                  discounted-price                    (->> skus
+                                                           (remove #(= "service" (first (:catalog/department %))))
+                                                           (map :sku/price)
+                                                           (apply +))
+                  retail-price                        (+ discounted-price
+                                                         (:sku/price service-sku))
+                  review-sku                          (first skus)
+                  review-product                      (products/find-product-by-sku-id products-db (:catalog/sku-id review-sku))]
               (merge
                (within :quiz-email {:primary          (cond email-send-look?     "Share your email to get a copy of the result."
                                                             email-send-discount? "Share your email for $50 off.")
@@ -454,9 +456,14 @@
                                     :field-errors     field-errors
                                     :keypath          email-keypath
                                     :label            "Enter your email"
-                                    :submit-target    [e/control-quiz-email-submit {:email-capture-type (cond email-send-look?     "quiz-results-email-send-look"
+                                    :submit-target    [e/control-quiz-email-submit {:look-id            look-id
+                                                                                    :look-img           img-id
+                                                                                    :sku-ids            (conj sku-ids service-id)
+                                                                                    :email-capture-type (cond email-send-look?     "quiz-results-email-send-look"
                                                                                                               email-send-discount? "quiz-results-email-offer-discount")}]
-                                    :skip-target      [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]
+                                    :skip-target      [e/control-quiz-email-skip {:look-id            look-id
+                                                                                  :look-img           img-id
+                                                                                  :sku-ids            (conj sku-ids service-id)}]
                                     :email            email
                                     :target-primary   (cond email-send-look?     "Send me my results*"
                                                             email-send-discount? "Send me my discount*")
@@ -1040,3 +1047,23 @@
                                                     "quiz-results-email-offer-discount" "Your discount will be emailed to you shortly"
                                                     "quiz-results-email-send-look" "A copy of your quiz result was sent to your email"
                                                     nil)})))
+
+(defmethod trackings/perform-track e/control-quiz-email-submit
+  [_ _ {:keys [sku-ids look-id look-img]} state]
+  (let [email (get-in state email-capture/textfield-keypath)]
+    #?(:cljs
+       (stringer/track-event "quiz-results-look-selected" {:look-id  look-id
+                                                           :sku-ids  sku-ids
+                                                           :email    email
+                                                           :look-img look-img}))))
+
+(defmethod fx/perform-effects e/control-quiz-email-skip
+  [_ _ _ _ _]
+  (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}))
+
+(defmethod trackings/perform-track e/control-quiz-email-skip
+  [_ _ {:keys [sku-ids look-id look-img]} state]
+  #?(:cljs
+     (stringer/track-event "quiz-results-look-selected" {:look-id  look-id
+                                                         :sku-ids  sku-ids
+                                                         :look-img look-img})))
