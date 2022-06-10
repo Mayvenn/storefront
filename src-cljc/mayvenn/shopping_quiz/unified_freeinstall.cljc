@@ -1064,6 +1064,6 @@
 (defmethod trackings/perform-track e/control-quiz-email-skip
   [_ _ {:keys [sku-ids look-id look-img]} state]
   #?(:cljs
-     (stringer/track-event "quiz-results-look-selected" {:look-id  look-id
+     (stringer/track-event "quiz_results_look_selected" {:look-id  look-id
                                                          :sku-ids  sku-ids
                                                          :look-img look-img})))
