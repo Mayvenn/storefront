@@ -27,8 +27,9 @@
     (ui/aspect-ratio
      1 1
      {:class "flex items-center"}
-     (ui/basic-defer-img {:class "col-12"
-                          :alt (str title "'s " social-service " image of a person wearing " description)}
+     (ui/defer-ucare-img {:class    "col-12"
+                          :max-size 550
+                          :alt      (str title "'s " social-service " image of a person wearing " description)}
                          image-url))]))
 
 (defn ->title-case [s]
