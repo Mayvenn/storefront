@@ -123,14 +123,15 @@
        [:div.col-10.my2.h5 value]))
    (cta-with-chevron data)])
 
-(defcomponent ^:private ugc-image [{:screen/keys [seen?] :keys [image-url alt style]} owner opts]
+(defcomponent ^:private ugc-image [{:screen/keys [seen?] :keys [image-url alt style max-size]} owner opts]
   (ui/aspect-ratio
    1 1
    (cond
-     seen? [:img {:class "col-12"
-                  :style style
-                  :src   image-url
-                  :alt   alt}]
+     seen? (ui/img {:class    "col-12"
+                    :style    style
+                    :src      image-url
+                    :max-size max-size
+                    :alt      alt})
      :else [:div.col-12 " "])))
 
 (defcomponent ugc
@@ -149,6 +150,7 @@
        (ui/screen-aware
         ugc-image
         {:image-url image-url
+         :max-size  400
          :alt       (or (:alt opts) alt)}
         nil)])]])
 
@@ -466,6 +468,7 @@
        (ui/screen-aware
         ugc-image
         {:image-url image-url
+         :max-size  400
          :alt       alt}
         nil)])]
    (shop-cta-with-icon data)])
@@ -485,6 +488,7 @@
        (ui/screen-aware
         ugc-image
         {:image-url image-url
+         :max-size  400
          :alt       alt}
         nil)
        [:div.black.content-2 label]])]
@@ -527,9 +531,9 @@
       [:div.py4
        (ui/screen-aware
         ugc-image
-        {:image-url   image
-         :alt   alt
-         :style {:width "100%"}})
+        {:image-url image
+         :alt       alt
+         :style     {:width "100%"}})
        [:div.content-2.pb4 copy]])
 
     [:div.pt3
