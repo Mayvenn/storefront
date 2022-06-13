@@ -810,6 +810,7 @@
                email-send-discount? (experiments/quiz-results-email-offer-discount? state)
                email-capture?       (and (or email-send-look?
                                               email-send-discount?)
+                                          (not (get-in state email-capture/long-timer-started-keypath))
                                           (not (::auth/at-all (auth/signed-in state))))
                email                (get-in state email-capture/textfield-keypath)
                field-errors         (get-in state (conj k/field-errors ["email"]))
