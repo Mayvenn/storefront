@@ -102,7 +102,7 @@
 ;; Biz domains -> Viz domains
 
 (defn ^:private looks-card<-
-  [images-db {:look/keys [id total-price discounted-price title hero-imgs items target]}]
+  [images-db {:look/keys [id total-price discounted? discounted-price title hero-imgs items target]}]
   (let [height-px                    240
         gap-px                       3
         fanned-out-by-quantity-items (->> items
@@ -130,7 +130,7 @@
                                   {:length    (str (first (:hair/length sku)) "\"")
                                    :alt       (:sku/title sku)
                                    :image-url (:ucare/id (catalog-images/image images-db "cart" sku))})))})
-     (if discounted-price
+     (if discounted?
        {:looks-card.title/secondary discounted-price
         :looks-card.title/struck    total-price}
        {:looks-card.title/secondary total-price}))))
@@ -213,7 +213,7 @@
                 ;; #176485395 is completed
                 :look/cart-number      shared-cart-id
                 :look/total-price      (some-> total-price mf/as-money)
-                :look/discounted?      discounted-price
+                :look/discounted?      (not= discounted-price total-price)
                 :look/discounted-price (or (some-> discounted-price mf/as-money)
                                            (some-> total-price mf/as-money))
                 :look/id               look-id
