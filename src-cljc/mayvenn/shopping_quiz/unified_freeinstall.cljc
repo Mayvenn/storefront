@@ -450,7 +450,7 @@
                   review-product                      (products/find-product-by-sku-id products-db (:catalog/sku-id review-sku))]
               (merge
                (within :quiz-email {:primary          (cond email-send-look?     "Share your email to get a copy of the result."
-                                                            email-send-discount? "Share your email for $50 off.")
+                                                            email-send-discount? "Share your email for $25 off.")
                                     :email-capture?   email-capture?
                                     :focused          focus
                                     :field-errors     field-errors
