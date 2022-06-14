@@ -339,8 +339,9 @@
     (util.response/redirect to)))
 
 (defn derive-all-looks [cms-data]
-  (assoc-in cms-data [:ugc-collection :all-looks]
-            (->> (:ugc-collection cms-data)
-                 vals
-                 (mapcat :looks)
-                 (maps/index-by (comp keyword :content/id)))))
+  (-> cms-data
+      (assoc-in [:ugc-collection :all-looks]
+                (->> (:ugc-collection cms-data)
+                     vals
+                     (mapcat :looks)
+                     (maps/index-by (comp keyword :content/id))))))

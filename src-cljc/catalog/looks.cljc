@@ -257,15 +257,18 @@
   - Displaying the detailed view
   "
   [state skus-db facets-db looks-shared-carts-db album-keyword]
-  (let [contentful-looks (->> (get-in state storefront.keypaths/cms-ugc-collection)
-                              ;; NOTE(corey) This is hardcoded because obstensibly
-                              ;; filtering should replace albums
-                              :aladdin-free-install
-                              :looks
-                              ;; *WARNING*, HACK: to limit how many items are
-                              ;; *being rendered / fetched from the backend on this page
-                              (take 99))
-        promotions       (get-in state storefront.keypaths/promotions)]
+  (let [actual-album-keyword (if (= :look album-keyword)
+                               :aladdin-free-install
+                               album-keyword)
+        contentful-looks     (->> (get-in state storefront.keypaths/cms-ugc-collection)
+                                  ;; NOTE(corey) This is hardcoded because obstensibly
+                                  ;; filtering should replace albums
+                                  actual-album-keyword
+                                  :looks
+                                  ;; *WARNING*, HACK: to limit how many items are
+                                  ;; *being rendered / fetched from the backend on this page
+                                  (take 99))
+        promotions           (get-in state storefront.keypaths/promotions)]
     (->> contentful-looks
          (keep-indexed (fn [index look]
                          (look<- skus-db looks-shared-carts-db facets-db look promotions album-keyword index)))
@@ -383,8 +386,9 @@
 
 (defn ^:export built-component [data opts]
   (let [album-kw (ugc/determine-look-album data (get-in data storefront.keypaths/selected-album-keyword))]
-    (if (and (= :shop (sites/determine-site data)) ;; dtc, shop
-             (= :aladdin-free-install album-kw))   ;; main look page
+    (if (and (= :shop (sites/determine-site data))  ; dtc, shop
+             (or (= :aladdin-free-install album-kw) ; main look page
+                 (= :quiz-results album-kw)))       ; quiz results looks page
       (page data opts)
       (->> (component/build original-component
                             (query data)

@@ -125,7 +125,10 @@
     ;; Shop bundle sets
     :all-bundle-sets
     :straight-bundle-sets
-    :wavy-curly-bundle-sets})
+    :wavy-curly-bundle-sets
+
+    ;; Quiz Results
+    :quiz-results})
 
 (defn determine-look-album
   [data target-album-keyword]
