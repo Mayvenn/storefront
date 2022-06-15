@@ -151,7 +151,7 @@
 
 #?(:cljs
    (defmethod trk/perform-track e/biz|email-capture|captured
-     [_ event {:keys [id variant trigger-id variation-description template-content-id]} app-state]
+     [_ event {:keys [id variant trigger-id variation-description template-content-id details] :as args} app-state]
      (let [no-errors?     (empty? (get-in app-state k/errors))
            captured-email (get-in app-state textfield-keypath)]
        (when no-errors?
@@ -162,6 +162,7 @@
          (stringer/track-event "email_capture-capture"
                                (merge
                                 {:email            captured-email
+                                 :details          details
                                  :test-variations  (get-in app-state k/features)
                                  :store-slug       (get-in app-state k/store-slug)
                                  :store-experience (get-in app-state k/store-experience)}

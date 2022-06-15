@@ -459,11 +459,13 @@
                                     :submit-target    [e/control-quiz-email-submit {:look-id            look-id
                                                                                     :look-img           img-id
                                                                                     :sku-ids            (conj sku-ids service-id)
+                                                                                    :offer              (cond email-send-look?     "quiz-result-look"
+                                                                                                              email-send-discount? "$25-off")
                                                                                     :email-capture-type (cond email-send-look?     "quiz-results-email-send-look"
                                                                                                               email-send-discount? "quiz-results-email-offer-discount")}]
-                                    :skip-target      [e/control-quiz-email-skip {:look-id            look-id
-                                                                                  :look-img           img-id
-                                                                                  :sku-ids            (conj sku-ids service-id)}]
+                                    :skip-target      [e/control-quiz-email-skip {:look-id  look-id
+                                                                                  :look-img img-id
+                                                                                  :sku-ids  (conj sku-ids service-id)}]
                                     :email            email
                                     :target-primary   (cond email-send-look?     "Send me my results*"
                                                             email-send-discount? "Send me my discount*")
@@ -1037,16 +1039,18 @@
     (publish e/go-to-navigate {:target [e/navigate-home]})))
 
 (defmethod fx/perform-effects e/control-quiz-email-submit
-  [_ _ args state _]
-  (let [email              (get-in state email-capture/textfield-keypath)
-        email-capture-type (:email-capture-type args)]
-    (publish e/biz|email-capture|captured {:id    email-capture-type
-                                           :look  "TBD"
-                                           :email email})
+  [_ _ {:keys [sku-ids look-id look-img email-capture-type offer]} state _]
+  (let [email (get-in state email-capture/textfield-keypath)]
+    (publish e/biz|email-capture|captured {:id      email-capture-type
+                                           :details (merge {:look-id  look-id
+                                                            :sku-ids  sku-ids
+                                                            :look-img look-img
+                                                            :offer    offer})
+                                           :email   email})
     (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]})
     (publish e/flash-later-show-success {:message (case email-capture-type
                                                     "quiz-results-email-offer-discount" "Your discount will be emailed to you shortly"
-                                                    "quiz-results-email-send-look" "A copy of your quiz result was sent to your email"
+                                                    "quiz-results-email-send-look"      "A copy of your quiz result was sent to your email"
                                                     nil)})))
 
 (defmethod trackings/perform-track e/control-quiz-email-submit
