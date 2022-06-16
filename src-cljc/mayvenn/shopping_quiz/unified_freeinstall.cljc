@@ -1042,10 +1042,10 @@
   [_ _ {:keys [sku-ids look-id look-img email-capture-type offer]} state _]
   (let [email (get-in state email-capture/textfield-keypath)]
     (publish e/biz|email-capture|captured {:id      email-capture-type
-                                           :details (merge {:look-id  look-id
-                                                            :sku-ids  sku-ids
-                                                            :look-img look-img
-                                                            :offer    offer})
+                                           :details {:look-id  look-id
+                                                     :sku-ids  sku-ids
+                                                     :look-img look-img
+                                                     :offer    offer}
                                            :email   email})
     (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]})
     (publish e/flash-later-show-success {:message (case email-capture-type
