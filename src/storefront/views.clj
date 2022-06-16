@@ -307,7 +307,8 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
                                 component/normalize-elements
                                 first))
     (catch Exception e
-      (throw (str (.getMessage e) " data: " data)))))
+      (throw (ex-info "Server side error" {:data data
+                                           :message (.getMessage e)})))))
 
 (def not-found
   (html5 {:lang "en"}
