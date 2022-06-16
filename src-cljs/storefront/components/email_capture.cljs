@@ -599,7 +599,7 @@
                                    :landfalls
                                    (map :utm-params)
                                    (some #(= (:value matcher) (get % (:tracker-type matcher)))))
-    (js/console.error (str "No matching content/type for matcher " (pr-str matcher)))))
+    (when matcher (js/console.error (str "No matching content/type for matcher " (pr-str matcher))))))
 ;; TODO: there are other path mathers not accounted for yet.
 
 (defn contentful-driven-query [app-state]
