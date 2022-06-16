@@ -309,6 +309,7 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     (catch Exception e
       (throw (ex-info "Server side error" {:data    data
                                            :error   e
+                                           :stack   (.-stack e)
                                            :message (.getMessage e)})))))
 
 (def not-found
