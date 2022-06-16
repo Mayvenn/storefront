@@ -216,7 +216,7 @@
         only-services?                             (every? line-items/service? (orders/product-and-service-items order))
         drop-shipping?                             (boolean (select {:warehouse/slug #{"factory-cn"}} items))
         inventory-count-shipping-halt?             (experiments/inventory-count-shipping-halt? data)
-        show-guaranteed-shipping?                  (not (experiments/hide-guaranteed-shipping? data))
+        show-guaranteed-shipping?                  (:show-guaranteed-shipping (get-in data keypaths/features))
         {checkout-shipping-note :note
          now                    :now
          east-coast-weekday     :east-coast-weekday}   (get-in data keypaths/checkout-shipping)]

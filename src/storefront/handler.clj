@@ -558,6 +558,7 @@
       (assoc _ :adv-quiz-email-capture (feature-flags/retrieve-flag ld "adv-quiz-email-capture" :string "off"))
       (assoc _ :2022-new-products-hd-lace (feature-flags/retrieve-flag ld "2022-new-products-hd-lace" :bool false))
       (assoc _ :contentful-driven-email-capture-modal (feature-flags/retrieve-flag ld "contentful-driven-email-capture-modal" :bool false))
+      (assoc _ :show-guaranteed-shipping (feature-flags/retrieve-flag ld "show-guaranteed-shipping" :bool true))
       (assoc-in-req-state req keypaths/features _)
       (h _))))
 

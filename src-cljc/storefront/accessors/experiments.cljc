@@ -151,10 +151,6 @@
   [data]
   (display-feature? data "quiz-always-adds-holiday-promo"))
 
-(defn hide-guaranteed-shipping?
-  [data]
-  (display-feature? data "hide-guaranteed-shipping"))
-
 (defn quiz-results-email-send-look?
   [data]
   (display-feature? data "quiz-results-email-send-look"))
