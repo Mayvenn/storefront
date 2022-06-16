@@ -159,10 +159,6 @@
   [data]
   (display-feature? data "hide-guaranteed-shipping"))
 
-(defn shipping-estimate-messaging?
-  [data]
-  (display-feature? data "shipping-estimate-messaging"))
-
 (defn quiz-results-email-send-look?
   [data]
   (display-feature? data "quiz-results-email-send-look"))

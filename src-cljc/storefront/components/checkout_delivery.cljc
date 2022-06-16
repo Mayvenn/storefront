@@ -28,7 +28,7 @@
      [:div])))
 
 (defcomponent component
-  [{:delivery/keys [id primary note-box options shipping-estimate-messaging?] :as data} owner _]
+  [{:delivery/keys [id primary note-box options] :as data} owner _]
   (when id
     [:div.pb2.pt4.mx3
      [:h2.proxima.title-2 primary]
@@ -54,12 +54,7 @@
            (when-let [classes (:disabled/classes option)]
              {:class classes})
            [:div {:data-test (:primary/data-test option)} (:primary/copy option)]
-           [:div.content-3
-            (:secondary/copy option)
-            (if shipping-estimate-messaging?
-              " "
-              [:br])
-            (:tertiary/copy option)]
+           [:div.content-3 (:secondary/copy option) " " (:tertiary/copy option)]
            [:div.content-3.p-color (:quaternary/copy option)]])])]]))
 
 (defn shipping-method-rules
@@ -161,7 +156,6 @@
    east-coast-weekday
    in-window?
    drop-shipping?
-   shipping-estimate-messaging?
    {:keys [sku price] :as shipping-method}]
   (let [{:keys [min-delivery
                 max-delivery
@@ -199,29 +193,19 @@
                               "black"
 
                               :else "p-color")
-      :detail/value (mf/as-money-or-free price)}
-     (if shipping-estimate-messaging?
-       {:primary/copy    #?(:clj nil
-                            :cljs
-                            (formatters/format-date {:weekday "short"
-                                                     :month   "long"
-                                                     :day     "numeric"}
-                                                    (date/add-delta current-local-time {:days revised-max})))
-        :secondary/copy  (str (shipping/names-with-time-range sku
-                                                              drop-shipping?
-                                                              shipping-estimate-messaging?)
-                              " "
-                              (shipping/shipping-note sku))
-        :quaternary/copy (when (and (not disabled?) drop-shipping?)
-                           "This order contains items that are only eligible for Free Standard Shipping.")}
-       {:primary/copy    (shipping/names-with-time-range sku drop-shipping? shipping-estimate-messaging?)
-        :secondary/copy  (str "Delivery Date: "
-                              (format-delivery-date (date/add-delta current-local-time {:days revised-min}))
-                              (when-not (= revised-min revised-max)
-                                (str "–" (format-delivery-date (date/add-delta current-local-time {:days revised-max})))))
-        :tertiary/copy   (shipping/shipping-note sku)
-        :quaternary/copy (when (and (not disabled?) drop-shipping?)
-                           "This order contains items that are only eligible for Free Standard Shipping.")}))))
+      :detail/value (mf/as-money-or-free price)
+      :primary/copy    #?(:clj nil
+                          :cljs
+                          (formatters/format-date {:weekday "short"
+                                                   :month   "long"
+                                                   :day     "numeric"}
+                                                  (date/add-delta current-local-time {:days revised-max})))
+      :secondary/copy  (str (shipping/names-with-time-range sku
+                                                            drop-shipping?)
+                            " "
+                            (shipping/shipping-note sku))
+      :quaternary/copy (when (and (not disabled?) drop-shipping?)
+                         "This order contains items that are only eligible for Free Standard Shipping.")})))
 
 (defn query [data]
   (let [shipping-methods                           (get-in data keypaths/shipping-methods)
@@ -233,25 +217,20 @@
         drop-shipping?                             (boolean (select {:warehouse/slug #{"factory-cn"}} items))
         inventory-count-shipping-halt?             (experiments/inventory-count-shipping-halt? data)
         show-guaranteed-shipping?                  (not (experiments/hide-guaranteed-shipping? data))
-        shipping-estimate-messaging?               (experiments/shipping-estimate-messaging? data)
         {checkout-shipping-note :note
          now                    :now
          east-coast-weekday     :east-coast-weekday}   (get-in data keypaths/checkout-shipping)]
     (merge
      {:delivery/id                           (when-not (and free-shipping? only-services?)
                                                "shipping-method")
-      :delivery/primary                      (if shipping-estimate-messaging?
-                                               "Choose Delivery Date"
-                                               "Shipping Method")
+      :delivery/primary                      "Choose Delivery Date"
       :delivery/options                      (->> shipping-methods
                                                   (map (partial shipping-method->shipping-method-option
                                                                 selected-sku
                                                                 now
                                                                 east-coast-weekday
                                                                 (= checkout-shipping-note :in-shipping-window)
-                                                                drop-shipping?
-                                                                shipping-estimate-messaging?)))
-      :delivery/shipping-estimate-messaging? shipping-estimate-messaging?}
+                                                                drop-shipping?)))}
      (when show-guaranteed-shipping?
        (if inventory-count-shipping-halt?
          {:delivery.note/id       "inventory-warning"

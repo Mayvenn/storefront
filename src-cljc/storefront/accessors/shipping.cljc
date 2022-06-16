@@ -13,16 +13,14 @@
     "WAITER-SHIPPING-4" "1 business day (No Weekend & No P.O. Box)"
     nil))
 
-(defn names-with-time-range [rate-sku-id drop-shipping? shipping-estimate-messaging?]
+(defn names-with-time-range [rate-sku-id drop-shipping?]
   (case rate-sku-id
     "WAITER-SHIPPING-1" (if drop-shipping?
                           "Free 7-10 Days Standard Shipping"
                           "Free 4-6 Days Standard Shipping")
     "WAITER-SHIPPING-7" "Priority 2-4 Days Shipping"
     "WAITER-SHIPPING-2" "Express 1-2 Days Shipping"
-    "WAITER-SHIPPING-4" (if shipping-estimate-messaging?
-                          "Rush Shipping"
-                          "Overnight Shipping")
+    "WAITER-SHIPPING-4" "Rush Shipping"
     nil))
 
 (defn shipping-note [rate-sku-id]
