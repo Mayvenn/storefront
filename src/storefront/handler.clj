@@ -530,6 +530,16 @@
              (assoc-in-req-state catalog.keypaths/detailed-product-related-addons related-addon-skus)
              (assoc-in-req-state keypaths/categories categories/initial-categories))))))
 
+;; GROT: when integration with Bakester's notion of the account profile happens, swap this out.
+;; NOTE: this data structure is speculative. I encourage you to throw it out if it doesn't work for you.
+(defn ^:private acct-profile-scaffold
+  [req]
+  {:landfalls
+   [{:utm-params (->> req
+                      :query-params
+                      (filter (fn [[k _v]] (re-matches #"utm_.*|_utmt\d*" k)))
+                      (into {}))}]})
+
 (defn wrap-set-user [h]
   (fn [req]
     (h (-> req
@@ -539,7 +549,8 @@
            (assoc-in-req-state keypaths/user-store-id (str->int (cookies/get req "store-id")))
            (assoc-in-req-state keypaths/user-stylist-experience (cookies/get req "stylist-experience"))
            (assoc-in-req-state keypaths/user-email (cookies/get-and-attempt-parsing-poorly-encoded req "email"))
-           (assoc-in-req-state keypaths/user-verified-at (cookies/get req "verified-at"))))))
+           (assoc-in-req-state keypaths/user-verified-at (cookies/get req "verified-at"))
+           (assoc-in-req-state keypaths/account-profile (acct-profile-scaffold req))))))
 
 (defn wrap-fetch-promotions
   [h storeback-config]

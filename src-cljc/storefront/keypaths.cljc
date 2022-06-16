@@ -377,3 +377,5 @@
 
 (def slideout-nav (conj ui :slideout-nav))
 (def slideout-nav-selected-tab (conj slideout-nav :selected-tab))
+
+(def account-profile [:account-profile])

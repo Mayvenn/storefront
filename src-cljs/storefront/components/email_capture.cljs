@@ -571,26 +571,34 @@
 
 (defn matcher-matches? [app-state matcher]
   (case (:content/type matcher)
-    "matchesAny"  (->> matcher
-                       :must-satisfy-any-match
-                       (map (partial matcher-matches? app-state))
-                       (some true?))
-    "matchesAll"  (->> matcher
-                       :must-satisfy-all-matches
-                       (map (partial matcher-matches? app-state))
-                       (every? true?))
-    "matchesNot"  (->> matcher
-                       :must-not-satisfy
-                       (matcher-matches? app-state)
-                       not)
-    "matchesPath" (let [cur-path (-> app-state
-                                     (get-in k/navigation-uri)
-                                     :path)]
-                    (case (:path-matches matcher)
-                      "starts with"         (clojure.string/starts-with? cur-path (:path matcher))
-                      "contains"            (clojure.string/includes? cur-path (:path matcher))
-                      "exactly matches"     (= cur-path (:path matcher))
-                      "does not start with" (not (clojure.string/starts-with? cur-path (:path matcher)))))
+    "matchesAny"              (->> matcher
+                                   :must-satisfy-any-match
+                                   (map (partial matcher-matches? app-state))
+                                   (some true?))
+    "matchesAll"              (->> matcher
+                                   :must-satisfy-all-matches
+                                   (map (partial matcher-matches? app-state))
+                                   (every? true?))
+    "matchesNot"              (->> matcher
+                                   :must-not-satisfy
+                                   (matcher-matches? app-state)
+                                   not)
+    "matchesPath"             (let [cur-path (-> app-state
+                                                 (get-in k/navigation-uri)
+                                                 :path)]
+                                (case (:path-matches matcher)
+                                  "starts with"         (clojure.string/starts-with? cur-path (:path matcher))
+                                  "contains"            (clojure.string/includes? cur-path (:path matcher))
+                                  "exactly matches"     (= cur-path (:path matcher))
+                                  "does not start with" (not (clojure.string/starts-with? cur-path (:path matcher)))))
+    ;; TODO: Does not provide segmentation for customers who arrive organically. Only deals with UTM params
+    ;; which rely on marketing segmentation.
+    ;; TODO: With many landfalls, it's easily possible for multiple triggers to apply. There is still no prioritization
+    ;; to resolve these conflicts, and the issue becomes more pronounced with the marketing trackers.
+    "matchesMarketingTracker" (->> (get-in app-state k/account-profile)
+                                   :landfalls
+                                   (map :utm-params)
+                                   (some #(= (:value matcher) (get % (:tracker-type matcher)))))
     (js/console.error (str "No matching content/type for matcher " (pr-str matcher)))))
 ;; TODO: there are other path mathers not accounted for yet.
 
