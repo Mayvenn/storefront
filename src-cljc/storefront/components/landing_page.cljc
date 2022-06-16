@@ -27,14 +27,14 @@
     "ugc-collection"   {:layer/type   :lp-tiles
                         :header/value "Shop By Look"
                         :images       (map (fn [look]
-                                             {:image-url              (:photo-url look)
-                                              :alt                    ""
-                                              :label                  (:title look)
-                                              :cta/navigation-message (if (:content/id look)
-                                                                        [events/navigate-shop-by-look-details
+                                             (if (:content/id look)
+                                               {:image-url              (:photo-url look)
+                                                :alt                    ""
+                                                :label                  (:title look)
+                                                :cta/navigation-message [events/navigate-shop-by-look-details
                                                                          {:look-id       (:content/id look)
-                                                                          :album-keyword :look}]
-                                                                        (prn "MISSING CONTENT ID " look " BODY LAYER: " body-layer))})
+                                                                          :album-keyword :look}]}
+                                               (prn "MISSING CONTENT ID " look " BODY LAYER: " body-layer)))
                                            ((if (= "production" (get-in data keypaths/environment))
                                               :looks
                                               :acceptance-looks) body-layer))
