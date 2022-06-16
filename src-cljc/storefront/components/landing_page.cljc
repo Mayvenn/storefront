@@ -34,7 +34,7 @@
                                                                         [events/navigate-shop-by-look-details
                                                                          {:look-id       (:content/id look)
                                                                           :album-keyword :look}]
-                                                                        (prn "MISSING CONTENT ID " look))})
+                                                                        (prn "MISSING CONTENT ID " look " BODY LAYER: " body-layer))})
                                            ((if (= "production" (get-in data keypaths/environment))
                                               :looks
                                               :acceptance-looks) body-layer))
