@@ -355,7 +355,6 @@
 ;; NOTE: This a-la-carte does not mean services, it refers to not using shared-carts/looks
 (defn shop-a-la-carte-flyout-query [data]
   {:header-menu-item/flyout-menu-path  keypaths/shop-a-la-carte-menu-expanded
-   :header-menu-item/new-label         (when (experiments/sale-shop-hair? data) "SALE")
    :header-menu-item/navigation-target "#" ; needed for tab navigation through menu
    :header-menu-item/content           "Shop hair"
    :header-menu-item/id                "desktop-shop-hair"
@@ -414,7 +413,6 @@
         shop?           (= :shop site)
         classic?        (= :classic site)
         signed-in       (auth/signed-in data)
-        sale-shop-hair? (experiments/sale-shop-hair? data)
         new-hd-lace?    (:2022-new-products-hd-lace (get-in data keypaths/features))]
     {:signed-in                   signed-in
      :on-taxon?                   (get-in data keypaths/current-traverse-nav)
@@ -481,7 +479,6 @@
                                       :slide-out-nav-menu-item/primary "New Arrivals"}
                                      {:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug "hd-lace" :catalog/category-id "44"}]
                                       :slide-out-nav-menu-item/id          "menu-shop-hd-lace"
-                                      :slide-out-nav-menu-item/new-primary (when sale-shop-hair? "Sale")
                                       :slide-out-nav-menu-item/nested?     false
                                       :slide-out-nav-menu-item/primary     "HD Lace"}]))
 
@@ -496,11 +493,9 @@
                                  (concat
                                   [{:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug "wigs" :catalog/category-id "13"}]
                                     :slide-out-nav-menu-item/id          "menu-shop-wigs"
-                                    :slide-out-nav-menu-item/new-primary (when sale-shop-hair? "Sale")
                                     :slide-out-nav-menu-item/nested?     false
                                     :slide-out-nav-menu-item/primary     "Wigs"}
                                    {:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug "human-hair-bundles" :catalog/category-id "27"}]
-                                    :slide-out-nav-menu-item/new-primary (when sale-shop-hair? "SALE")
                                     :slide-out-nav-menu-item/nested?     false
                                     :slide-out-nav-menu-item/id          "menu-shop-human-hair-bundles"
                                     :slide-out-nav-menu-item/primary     "Hair Bundles"}
