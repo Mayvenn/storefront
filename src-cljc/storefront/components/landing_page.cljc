@@ -9,12 +9,13 @@
             [storefront.components.homepage-hero :as homepage-hero]))
 
 (defn url->navigation-message [url]
-  (let [[path query-params-string] (clojure.string/split url #"\?")
-        query-params               (when (not (clojure.string/blank? query-params-string))
-                                     (->> (clojure.string/split query-params-string #"\&")
-                                          (map #(clojure.string/split % #"\="))
-                                          (into {})))]
-    (routes/navigation-message-for path query-params)))
+  (when-not (nil? url)
+    (let [[path query-params-string] (clojure.string/split url #"\?")
+          query-params               (when (not (clojure.string/blank? query-params-string))
+                                       (->> (clojure.string/split query-params-string #"\&")
+                                            (map #(clojure.string/split % #"\="))
+                                            (into {})))]
+          (routes/navigation-message-for path query-params))))
 
 (defn determine-and-shape-layer
   [data body-layer]
@@ -27,14 +28,13 @@
     "ugc-collection"   {:layer/type   :lp-tiles
                         :header/value "Shop By Look"
                         :images       (map (fn [look]
-                                             (if (:content/id look)
+                                             (when (:content/id look)
                                                {:image-url              (:photo-url look)
                                                 :alt                    ""
                                                 :label                  (:title look)
                                                 :cta/navigation-message [events/navigate-shop-by-look-details
                                                                          {:look-id       (:content/id look)
-                                                                          :album-keyword :look}]}
-                                               (prn "MISSING CONTENT ID " look " BODY LAYER: " body-layer)))
+                                                                          :album-keyword :look}]}))
                                            ((if (= "production" (get-in data keypaths/environment))
                                               :looks
                                               :acceptance-looks) body-layer))

@@ -302,15 +302,9 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   (layout render-ctx data spinner-content))
 
 (defn prerendered-page [render-ctx data]
-  (try
-    (layout render-ctx data (-> (top-level-component data nil {})
-                                component/normalize-elements
-                                first))
-    (catch Exception e
-      (throw (ex-info "Server side error" {:data    data
-                                           :error   e
-                                           :stack   (.-stack e)
-                                           :message (.getMessage e)})))))
+  (layout render-ctx data (-> (top-level-component data nil {})
+                              component/normalize-elements
+                              first)))
 
 (def not-found
   (html5 {:lang "en"}
