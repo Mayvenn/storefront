@@ -51,9 +51,11 @@
              {:class classes})
            (:detail/value option)]
           [:div.overflow-hidden
-           (when-let [classes (:disabled/classes option)]
-             {:class classes})
-           [:div {:data-test (:primary/data-test option)} (:primary/copy option)]
+           (merge
+            {:data-test (:primary/data-test option)}
+            (when-let [classes (:disabled/classes option)]
+              {:class classes}))
+           [:div (:primary/copy option)]
            [:div.content-3 (:secondary/copy option) " " (:tertiary/copy option)]
            [:div.content-3.p-color (:quaternary/copy option)]])])]]))
 
