@@ -138,6 +138,10 @@
   [_ event {:keys [info-path]} _ app-state]
   (set! (.-location js/window) (str "https://shop.mayvenn.com" info-path)))
 
+(defmethod effects/perform-effects events/external-redirect-blog-page
+  [_ event {:keys [blog-path]} _ app-state]
+  (set! (.-location js/window) (str "https://shop.mayvenn.com" blog-path)))
+
 (defmethod effects/perform-effects events/external-redirect-welcome [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))
 

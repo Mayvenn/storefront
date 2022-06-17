@@ -8,13 +8,22 @@
 (defn info-path? [path]
   (when path (re-find #"/info/..*" path)))
 
+(defn blog-path? [path]
+  (when path (re-find #"/blog/*" path)))
+
 (defn query
   [cms-hero-data]
   (let [path'                   (or (cms-hero-data :path) "/shop/look")
         path                    (uri/path->path-base path')
         query-params            (uri/path->query-params path')
-        [event :as routed-path] (if (info-path? path)
+        [event :as routed-path] (cond
+                                  (info-path? path)
                                   [events/external-redirect-info-page {:info-path path}]
+
+                                  (blog-path? path)
+                                  [events/external-redirect-blog-page {:blog-path path}]
+
+                                  :else
                                   (routes/navigation-message-for path query-params))
         link-options            (assoc (if-not (= events/navigate-not-found event)
                                          {:navigation-message routed-path}

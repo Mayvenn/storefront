@@ -15,6 +15,7 @@
 (defpath external-redirect-url)
 (defpath external-redirect-welcome)
 (defpath external-redirect-info-page)
+(defpath external-redirect-blog-page)
 (defpath external-redirect-sms)
 (defpath external-redirect-paypal-setup)
 (defpath external-redirect-quadpay-checkout)
