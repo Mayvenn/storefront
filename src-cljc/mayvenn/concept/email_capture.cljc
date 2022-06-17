@@ -165,7 +165,8 @@
                                  :details          details
                                  :test-variations  (get-in app-state k/features)
                                  :store-slug       (get-in app-state k/store-slug)
-                                 :store-experience (get-in app-state k/store-experience)}
+                                 :store-experience (get-in app-state k/store-experience)
+                                 :account-profile  (get-in app-state k/account-profile)}
                                 (if trigger-id ; Contentful-driven
                                   {:email-capture-id      trigger-id
                                    :variation-description variation-description
