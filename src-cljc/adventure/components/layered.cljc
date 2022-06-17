@@ -484,16 +484,26 @@
    [:div.flex.flex-wrap.py4.justify-center-on-tb-dt
     (for [{:keys [image-url alt label] :as image-data} images]
       (when image-url
-        [:a.col-6.col-3-on-tb-dt.p1
-         (merge (apply utils/route-to (:cta/navigation-message image-data))
-                {:key (str image-url)})
-         (ui/screen-aware
-          ugc-image
-          {:image-url image-url
-           :max-size  400
-           :alt       alt}
-          nil)
-         [:div.black.content-2 label]]))]
+        (if-let [navigation-message (:cta/navigation-message image-data)]
+          [:a.col-6.col-3-on-tb-dt.p1
+           (merge (apply utils/route-to navigation-message)
+                  {:key (str image-url)})
+           (ui/screen-aware
+            ugc-image
+            {:image-url image-url
+             :max-size  400
+             :alt       alt}
+            nil)
+           [:div.black.content-2 label]]
+          [:div.col-6.col-3-on-tb-dt.p1
+           {:key (str image-url)}
+           (ui/screen-aware
+            ugc-image
+            {:image-url image-url
+             :max-size  400
+             :alt       alt}
+            nil)
+           [:div.black.content-2 label]])))]
    (let [{:keys [cta]} data]
      (if (:id cta)
        (ui/button-small-primary (merge {:class "inline"}
