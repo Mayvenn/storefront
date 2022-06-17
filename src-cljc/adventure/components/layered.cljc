@@ -127,11 +127,12 @@
   (ui/aspect-ratio
    1 1
    (cond
-     seen? (ui/img {:class    "col-12"
-                    :style    style
-                    :src      image-url
-                    :max-size max-size
-                    :alt      alt})
+     seen? (ui/img {:class       "col-12"
+                    :style       style
+                    :src         image-url
+                    :square-size 1000
+                    :max-size    max-size
+                    :alt         alt})
      :else [:div.col-12 " "])))
 
 (defcomponent ugc
