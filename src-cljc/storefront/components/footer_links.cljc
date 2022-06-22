@@ -93,6 +93,8 @@
         ;; use traditional page load so anchors work
         ^:inline (footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#our-ads")} "Our Ads")]
        [:div.col-6
+        ^:inline (footer-link {:href (str (routes/path-for events/navigate-content-guarantee) "#guarantee")}
+                              "Our Guarantee")
         ;; use traditional page load so anchors work
         ^:inline (footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#ca-privacy-rights")}
                               "CA Privacy Rights")
