@@ -73,6 +73,11 @@
                         :cta {:id      (str "landing-page-" (:slug body-layer) "-cta")
                               :attrs   {:navigation-message (url->navigation-message (:cta-url body-layer))}
                               :content (:cta-copy body-layer)}}
+    "imageCarousel" {:layer/type :lp-image-carousel
+                     :images     (mapv (fn [image]
+                                         {:url (:url image)
+                                          :alt (:alt image)})
+                                       (:images body-layer))}
     {}))
 
 (defn query [data]

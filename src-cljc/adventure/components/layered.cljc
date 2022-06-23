@@ -6,6 +6,7 @@
             [storefront.components.video :as video]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
+            [storefront.platform.carousel :as carousel]
             #?@(:cljs [[goog.events.EventType :as EventType]
                        goog.dom
                        goog.style
@@ -555,12 +556,46 @@
    (when divider-img
      ^:inline (divider divider-img))])
 
+(defn image-body [i {:keys [url alt]}]
+  (ui/aspect-ratio
+   640 580
+   (if (zero? i)
+     (ui/img {:src url :class "col-12" :width "100%" :alt alt})
+     (ui/defer-ucare-img
+       {:class       "col-12"
+        :alt         alt
+        :width       640
+        :placeholder (ui/large-spinner {:style {:height     "60px"
+                                                :margin-top "130px"}})}
+       url))))
+
+(defn carousel [images _]
+  (component/build carousel/component
+                   {:images images
+                    :slides (map-indexed image-body images)}
+                   {:opts {:settings {:edgePadding 0
+                                      :items       1}}}))
+
+(defcomponent lp-image-carousel
+  [{:keys [images]} _ _]
+  [:div.mx-auto.max-580.py10
+   (component/build carousel/component
+                    {:dependencies true
+                     :images       images
+                     :slides       (map-indexed image-body images)}
+                    {:opts {:settings {:nav         true
+                                       :edgePadding 0
+                                       :controls    true
+                                       :items       1}}})]
+  )
+
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (when type
     (component/build
      (case type
        :lp-tiles            lp-tiles
        :lp-image-text-block lp-image-text-block
+       :lp-image-carousel   lp-image-carousel
 
        ;; REBRAND
        :shop-text-block         shop-text-block
