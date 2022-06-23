@@ -8,7 +8,7 @@
             [storefront.routes :as routes]
             [storefront.components.homepage-hero :as homepage-hero]))
 
-(defn url->navigation-message [url]
+(defn ^:private url->navigation-message [url]
   (when-not (nil? url)
     (let [[path query-params-string] (clojure.string/split url #"\?")
           query-params               (when (not (clojure.string/blank? query-params-string))
@@ -55,14 +55,24 @@
     "layerTilesAndCta" {:layer/type   :lp-tiles
                         :header/value (:title body-layer)
                         :images       (map (fn [tile]
-                                             {:image-url              (:image-url tile)
-                                              :alt                    (:title tile)
-                                              :label                  (:title tile)
-                                              :cta/navigation-message (url->navigation-message (:link-url tile))})
+                                             (case (:content/type tile)
+                                               "imageTextLink"
+                                               {:image-url              (:image-url tile)
+                                                :alt                    (:description tile)
+                                                :label                  (:title tile)
+                                                :cta/navigation-message (url->navigation-message (:link-url tile))}
+
+                                               "imageTextExternalLink"
+                                               {:image-url              (:image-url tile)
+                                                :alt                    (:description tile)
+                                                :label                  (:title tile)
+                                                :cta/navigation-message [events/external-redirect-url {:url (:link-url tile)}]}
+
+                                               {}))
                                            (:tiles body-layer))
-                        :cta          {:id      (str "landing-page-" (:slug body-layer) "-cta")
-                                       :attrs   {:navigation-message (url->navigation-message (:cta-url body-layer))}
-                                       :content (:cta-copy body-layer)}}
+                        :cta {:id      (str "landing-page-" (:slug body-layer) "-cta")
+                              :attrs   {:navigation-message (url->navigation-message (:cta-url body-layer))}
+                              :content (:cta-copy body-layer)}}
     {}))
 
 (defn query [data]
