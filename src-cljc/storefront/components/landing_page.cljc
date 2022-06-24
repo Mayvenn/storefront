@@ -4,7 +4,7 @@
             [adventure.faq :as faq]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            [storefront.components.ui :as ui]
+            [storefront.platform.component-utils :as utils]
             [storefront.routes :as routes]
             [storefront.components.homepage-hero :as homepage-hero]))
 
@@ -16,6 +16,11 @@
                                             (map #(clojure.string/split % #"\="))
                                             (into {})))]
           (routes/navigation-message-for path query-params))))
+
+(defn landing-page-slug [data]
+  (->> (get-in data storefront.keypaths/navigation-args)
+       :landing-page-slug
+       keyword))
 
 (defn determine-and-shape-layer
   [data body-layer]
@@ -78,14 +83,29 @@
                                          {:url (:url image)
                                           :alt (:alt image)})
                                        (:images body-layer))}
+    "video"         (let [youtube-id        (:youtube-id body-layer)
+                          landing-page-slug (landing-page-slug data)]
+                      {:layer/type  :lp-video
+                       :open-modal? (:youtube-id (get-in data adventure.keypaths/adventure-home-video))
+                       :title       (:title body-layer)
+                       :video       {:youtube-id    youtube-id
+                                     :thumbnail-url (:image (spice.core/spy body-layer))
+                                     :target        [(get-in data keypaths/navigation-event) {:query-params      {:video youtube-id}
+                                                                                              :landing-page-slug landing-page-slug}]}
+                       :opts        {:opts {:close-attrs (utils/route-to events/navigate-landing-page {:query-params      {:video "close"}
+                                                                                                       :landing-page-slug landing-page-slug})}}})
     {}))
 
+(defn landing-page-body [data]
+  (->> (landing-page-slug data)
+       (conj storefront.keypaths/cms-landing-page-v2)
+       (get-in data)
+       :body))
+
 (defn query [data]
-  (let [landing-page-slug (-> data (get-in storefront.keypaths/navigation-args) :landing-page-slug keyword)
-        landing-page-data (get-in data (conj storefront.keypaths/cms-landing-page-v2 landing-page-slug))
-        landing-page-body (:body landing-page-data)]
-    {:layers
-     (mapv (partial determine-and-shape-layer data) landing-page-body)}))
+  {:layers
+   (mapv (partial determine-and-shape-layer data)
+         (landing-page-body data))})
 
 (defn built-component [data opts]
   (component/build layered/component (query data) nil))

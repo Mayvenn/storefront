@@ -1,5 +1,6 @@
 (ns adventure.components.layered
-  (:require [storefront.component :as component :refer [defcomponent]]
+  (:require [mayvenn.visual.tools :refer [within]]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.accordion :as accordion]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -586,8 +587,20 @@
                     {:opts {:settings {:nav         true
                                        :edgePadding 0
                                        :controls    true
-                                       :items       1}}})]
-  )
+                                       :items       1}}})])
+
+(defcomponent lp-video
+  [{:keys [video open-modal? opts title]} _ _]
+  [:div.mx-auto.max-580.py10.center
+   (shop-cta-with-icon (within :cta {:target     (:target video)
+                                     :icon       [:svg/play-video {:width  "30px"
+                                                                   :height "30px"}]
+                                     :value      title
+                                     :id         "watch-video"
+                                     :aria-label nil}))
+   (when open-modal?
+     (component/build video/component video opts))])
+
 
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (when type
@@ -596,6 +609,7 @@
        :lp-tiles            lp-tiles
        :lp-image-text-block lp-image-text-block
        :lp-image-carousel   lp-image-carousel
+       :lp-video            lp-video
 
        ;; REBRAND
        :shop-text-block         shop-text-block

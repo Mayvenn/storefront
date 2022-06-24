@@ -149,6 +149,14 @@
   (assoc-in app-state adventure.keypaths/adventure-home-video
             (adventure-slug->video (:video query-params))))
 
+(defmethod transition-state events/navigate-landing-page
+  [_ event {:keys [query-params]} app-state]
+  (let [video-id (:video query-params)]
+    (assoc-in app-state adventure.keypaths/adventure-home-video
+              {:youtube-id (if (= "close" video-id)
+                             nil
+                             video-id)})))
+
 (defn clean-up-open-category-panels
   [app-state
    [current-nav-event current-nav-event-args]
