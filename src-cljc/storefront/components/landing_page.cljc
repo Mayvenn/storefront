@@ -2,6 +2,7 @@
   (:require [storefront.component :as component]
             [adventure.components.layered :as layered]
             [adventure.faq :as faq]
+            [adventure.keypaths :as adventure.keypaths]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
