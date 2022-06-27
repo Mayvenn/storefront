@@ -601,6 +601,34 @@
    (when open-modal?
      (component/build video/component video opts))])
 
+(defcomponent lp-reviews
+  [{:keys [title reviews]} _ _]
+  [:div.mx-auto.center.max-960
+   [:div.canela.title-1 title]
+   [:div.flex.p3.hide-on-tb-dt ; mobile
+    [:div.flex (svg/quotation-mark {:class "fill-gray" :width "35px" :height "30px"})]
+    [:div.mx-auto
+     (map-indexed
+      (fn [idx {:keys [name number-of-stars review-copy]}]
+        [:div.my6
+         [:div.my2.flex.justify-center (ui.M/stars-rating-molecule {:value number-of-stars :id (str "review-" idx)})]
+         [:div.my2 review-copy]
+         [:div.my2.proxima.shout.title-2 "- " name]])
+      reviews)]
+    [:div.rotate-180 (svg/quotation-mark {:class "fill-gray" :width "35px" :height "30px"})]]
+
+   [:div.flex.justify-between.p3.hide-on-mb ; desktop
+    [:div.flex (svg/quotation-mark {:class "fill-gray" :width "35px" :height "30px"})]
+    [:div.flex.justify-between
+     (map-indexed
+      (fn [idx {:keys [name number-of-stars review-copy]}]
+        [:div.col-4
+         [:div.my2.flex.justify-center (ui.M/stars-rating-molecule {:value number-of-stars :id (str "review-" idx)})]
+         [:div.my2 review-copy]
+         [:div.my2.proxima.shout.title-2 "- " name]])
+      reviews)]
+    [:div.rotate-180 (svg/quotation-mark {:class "fill-gray" :width "35px" :height "30px"})]]])
+
 
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (when type
@@ -610,6 +638,7 @@
        :lp-image-text-block lp-image-text-block
        :lp-image-carousel   lp-image-carousel
        :lp-video            lp-video
+       :lp-reviews          lp-reviews
 
        ;; REBRAND
        :shop-text-block         shop-text-block

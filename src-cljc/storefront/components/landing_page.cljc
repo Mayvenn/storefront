@@ -88,11 +88,14 @@
                       {:layer/type  :lp-video
                        :open-modal? (:youtube-id (get-in data adventure.keypaths/adventure-home-video))
                        :title       (:title body-layer)
-                       :video       {:youtube-id    youtube-id
-                                     :target        [(get-in data keypaths/navigation-event) {:query-params      {:video youtube-id}
-                                                                                              :landing-page-slug landing-page-slug}]}
+                       :video       {:youtube-id youtube-id
+                                     :target     [(get-in data keypaths/navigation-event) {:query-params      {:video youtube-id}
+                                                                                           :landing-page-slug landing-page-slug}]}
                        :opts        {:opts {:close-attrs (utils/route-to events/navigate-landing-page {:query-params      {:video "close"}
                                                                                                        :landing-page-slug landing-page-slug})}}})
+    "reviews"       {:layer/type :lp-reviews
+                     :title      (:title body-layer)
+                     :reviews    (:reviews body-layer)}
     {}))
 
 (defn landing-page-body [data]
