@@ -26,8 +26,8 @@
 ;; TODO Remove "rating" ns shim (ie, raw-data)
 (defn stars-rating-molecule
   [{:keys [value id opts]
-    :as raw-data}]
-  (let [id (or id (:rating/id raw-data))
+    :as   raw-data}]
+  (let [id    (or id (:rating/id raw-data))
         value (or value (:rating/value raw-data))]
     (component/html
      (when (and id value)

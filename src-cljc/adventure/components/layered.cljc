@@ -611,7 +611,9 @@
      (map-indexed
       (fn [idx {:keys [name number-of-stars review-copy]}]
         [:div.my6
-         [:div.my2.flex.justify-center (ui.M/stars-rating-molecule {:value number-of-stars :id (str "review-" idx)})]
+         [:div.my2.flex.justify-center (ui.M/stars-rating-molecule {:value number-of-stars
+                                                                    :id    (str "review-" idx)
+                                                                    :opts  {:size "26px"}})]
          [:div.my2 review-copy]
          [:div.my2.proxima.shout.title-2 "- " name]])
       reviews)]
@@ -623,7 +625,10 @@
      (map-indexed
       (fn [idx {:keys [name number-of-stars review-copy]}]
         [:div.col-4
-         [:div.my2.flex.justify-center (ui.M/stars-rating-molecule {:value number-of-stars :id (str "review-" idx)})]
+         [:div.my2.flex.justify-center (ui.M/stars-rating-molecule {:value number-of-stars
+                                                                    :id    (str "review-" idx)
+                                                                    :opts  {:height "25px"
+                                                                            :width  "25px"}})]
          [:div.my2 review-copy]
          [:div.my2.proxima.shout.title-2 "- " name]])
       reviews)]
