@@ -514,17 +514,18 @@
        [:span]))])
 
 (defcomponent lp-image-text-block
-  [{anchor-name :anchor/name
-    title       :header/value
-    h1          :header/first-on-page? ; to set up h cascade correctly for a11y
-    big-title   :big-header/content
-    body        :body/value
-    image       :image/url
-    alt         :image/alt
-    copy        :text/copy
-    divider-img :divider-img
-    button?     :cta/button?
-    :as         data}
+  [{anchor-name      :anchor/name
+    title            :header/value
+    h1               :header/first-on-page? ; to set up h cascade correctly for a11y
+    big-title        :big-header/content
+    body             :body/value
+    image            :image/url
+    contentful-image :image/image
+    alt              :image/alt
+    copy             :text/copy
+    divider-img      :divider-img
+    button?          :cta/button?
+    :as              data}
    _
    _]
   [:div
@@ -541,14 +542,26 @@
         [:h1.title-1.canela title]
         [:h2.title-1.canela title]))
 
-    (when image
+    (cond
+      contentful-image
+      (ui/screen-aware
+       ugc-image
+       {:image-url (:url (:file contentful-image))
+        :max-size  750
+        :alt       (:title contentful-image)}
+       nil)
+
+      image
       [:div.py4
        (ui/screen-aware
         ugc-image
         {:image-url image
          :alt       alt
          :style     {:width "100%"}})
-       [:div.content-2.pb4 copy]])
+       [:div.content-2.pb4 copy]]
+
+      :else
+      nil)
 
     [:div.pt3
      (if button?

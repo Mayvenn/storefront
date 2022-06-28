@@ -51,8 +51,9 @@
                               (faq/hd-lace-query data body-layer))
     "layerTextBlock"   {:layer/type   :lp-image-text-block
                         :header/value (:title body-layer)
-                        :image/url    (:image-url body-layer)
+                        :image/url    (:image-url body-layer) ;; For Upload care images
                         :image/alt    (:alt body-layer)
+                        :image/image  (:image body-layer) ;; For images hosted by Contentful
                         :text/copy    (:body body-layer)
                         :cta/button?  true
                         :cta/value    (:cta-copy body-layer)
