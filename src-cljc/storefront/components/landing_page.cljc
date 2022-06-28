@@ -64,13 +64,15 @@
                         :images       (map (fn [tile]
                                              (case (:content/type tile)
                                                "imageTextLink"
-                                               {:image-url              (:image-url tile)
+                                               {:image-url              (:image-url tile) ; Ucare image
+                                                :image                  (:image tile)     ; contentful-hosted image
                                                 :alt                    (:description tile)
                                                 :label                  (:title tile)
                                                 :cta/navigation-message (url->navigation-message (:link-url tile))}
 
                                                "imageTextExternalLink"
-                                               {:image-url              (:image-url tile)
+                                               {:image-url              (:image-url tile)   ; Ucare image
+                                                :image                  (:image tile)       ; contentful-hosted image
                                                 :alt                    (:description tile)
                                                 :label                  (:title tile)
                                                 :cta/navigation-message [events/external-redirect-url {:url (:link-url tile)}]}

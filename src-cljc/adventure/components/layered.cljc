@@ -484,24 +484,25 @@
    (when title
      [:div.title-1.proxima.shout.bold title])
    [:div.flex.flex-wrap.py4.justify-center-on-tb-dt
-    (for [{:keys [image-url alt label] :as image-data} images]
-      (when image-url
+    (for [{:keys [image-url image alt label] :as image-data} images]
+      (when (or image image-url)
         (if-let [navigation-message (:cta/navigation-message image-data)]
           [:a.col-6.col-3-on-tb-dt.p1
            (merge (apply utils/route-to navigation-message)
                   {:key (str image-url)})
            (ui/screen-aware
             ugc-image
-            {:image-url image-url
+            {:image-url (or (:url (:file image)) image-url)
              :max-size  400
              :alt       alt}
             nil)
            [:div.black.content-2 label]]
+
           [:div.col-6.col-3-on-tb-dt.p1
            {:key (str image-url)}
            (ui/screen-aware
             ugc-image
-            {:image-url image-url
+            {:image-url (or (:url (:file image)) image-url)
              :max-size  400
              :alt       alt}
             nil)
