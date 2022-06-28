@@ -53,7 +53,7 @@
                         :header/value (:title body-layer)
                         :image/url    (:image-url body-layer) ;; For Upload care images
                         :image/alt    (:alt body-layer)
-                        :image/image  (:image body-layer) ;; For images hosted by Contentful
+                        :image/image  (:image body-layer)     ;; For images hosted by Contentful
                         :text/copy    (:body body-layer)
                         :cta/button?  true
                         :cta/value    (:cta-copy body-layer)
@@ -82,8 +82,11 @@
                               :content (:cta-copy body-layer)}}
     "imageCarousel" {:layer/type :lp-image-carousel
                      :images     (mapv (fn [image]
-                                         {:url (:url image)
-                                          :alt (:alt image)})
+                                         (if (:image image) ; Prioritize contentful-hosted image over ucare
+                                           {:url (-> image :image :file :url)
+                                            :alt (:alt image)}
+                                           {:url (:url image)
+                                            :alt (:alt image)}))
                                        (:images body-layer))}
     "video"         (let [youtube-id        (:youtube-id body-layer)
                           landing-page-slug (landing-page-slug data)]
