@@ -835,3 +835,8 @@
 (defpath stylist-payment|requested)
 (defpath stylist-payment|sent)
 (defpath stylist-payment|failed)
+
+;; Funnel (Marketing-centric)
+(defpath funnel|acquisition|prompted)
+(defpath funnel|acquisition|succeeded)
+(defpath funnel|acquisition|failed)

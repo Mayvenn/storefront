@@ -1,6 +1,7 @@
 (ns storefront.components.email-capture
   (:require [storefront.accessors.experiments :as experiments]
             [mayvenn.concept.email-capture :as concept]
+            [mayvenn.concept.funnel :as funnel]
             [storefront.browser.scroll :as scroll]
             [storefront.component :as c]
             [storefront.components.ui :as ui]
@@ -10,7 +11,8 @@
             [storefront.platform.messages :as messages
              :refer [handle-message]
              :rename {handle-message publish}]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.effects :as fx]))
 
 (defn m-header [id close-dialog-href]
   [:div.flex.justify-between.items-center.p2.bg-white
@@ -86,16 +88,22 @@
        hr-divider
        (fine-print fine-print-lead-in)])]))
 
-(c/defdynamic-component contentful-driven-template
+(c/defdynamic-component template
   (did-mount
    [this]
-   (let [{:as data
+   (let [{:as                 data
           :email-capture/keys [trigger-id variation-description template-content-id]} (c/get-props this)]
      (scroll/disable-body-scrolling)
      (publish e/control-menu-collapse-all)
-     (publish e/biz|email-capture|deployed {:trigger-id            trigger-id
-                                            :variation-description variation-description
-                                            :template-content-id   template-content-id})))
+     (publish e/funnel|acquisition|prompted
+              {:method                       :email-modal/trigger
+               :email-modal/template-id      template-content-id
+               :email-modal/test-description variation-description
+               :email-modal/trigger-id       trigger-id})
+     (publish e/biz|email-capture|deployed
+              {:trigger-id            trigger-id
+               :variation-description variation-description
+               :template-content-id   template-content-id})))
   (will-unmount
    [this]
    (scroll/enable-body-scrolling))
@@ -115,6 +123,82 @@
         (template data))
        (js/console.error (str "Content-type not found: " content-type))))))
 
+(defmethod fx/perform-effects [:email-modal :submitted]
+  [_ _ {:keys [email-modal values]} _ _]
+  (let [{{:keys [template-content-id]} :email-modal-template
+         variation-description         :description
+         {:keys [trigger-id]}          :email-modal-trigger}
+        email-modal
+
+        email-address (get values "email-capture-input")]
+    ;; TODO Identify with backend and publish after success
+    (publish e/funnel|acquisition|succeeded
+             {:prompt {:method                       :email-modal/trigger
+                       :email-modal/trigger-id       trigger-id
+                       :email-modal/template-id      template-content-id
+                       :email-modal/test-description variation-description}
+              :action {:auth.email/id email-address}})
+    (publish e/biz|email-capture|captured
+             {:trigger-id            trigger-id
+              :variation-description variation-description
+              :template-content-id   template-content-id
+              :email                 email-address})))
+
+(defmethod fx/perform-effects [:email-modal :dismissed]
+  [_ _ {:keys [email-modal]} _ _]
+  (let [{{:keys [template-content-id]} :email-modal-template
+         variation-description         :description
+         {:keys [trigger-id]}          :email-modal-trigger}
+        email-modal]
+    (publish e/funnel|acquisition|failed
+             {:prompt {:method                       :email-modal/trigger
+                       :email-modal/trigger-id       trigger-id
+                       :email-modal/template-id      template-content-id
+                       :email-modal/test-description variation-description}})
+    (publish e/biz|email-capture|dismissed
+             {:trigger-id            trigger-id
+              :variation-description variation-description
+              :template-content-id   template-content-id})))
+
+(defn query [state email-modal]
+  (when-let [{{:keys [template-content-id] :as content} :email-modal-template
+              variation-description                     :description
+              {:keys [trigger-id]}                      :email-modal-trigger}
+             email-modal]
+    ;; Handle modal inputs/actions
+    (let [errors            (get-in state (conj k/field-errors ["email"]))
+          focused           (get-in state k/ui-focus)
+          textfield-keypath concept/textfield-keypath
+          email             (get-in state textfield-keypath)]
+      {:id                                    "email-capture"
+       :email-capture/trigger-id              trigger-id
+       :email-capture/variation-description   variation-description
+       :email-capture/template-content-id     template-content-id
+       :email-capture/content-type            (:content/type content)
+       :email-capture.dismiss/target          [[:email-modal :dismissed] {:email-modal email-modal}]
+       :email-capture.submit/target           [[:email-modal :submitted] {:email-modal email-modal
+                                                                          :values      {"email-capture-input" email}}]
+       :email-capture.design/background-color (:background-color content)
+       :email-capture.design/close-x-color    (:close-xcolor content)
+       :email-capture.copy/title              (:title content)
+       :email-capture.copy/subtitle           (:subtitle content)
+       :email-capture.copy/supertitle         (:supertitle content)
+       :email-capture.copy/fine-print-lead-in (:fine-print-lead-in content)
+       :email-capture.cta/id                  "email-capture-submit"
+       :email-capture.cta/value               (:cta-copy content)
+       :email-capture.text-field/id           "email-capture-input"
+       :email-capture.text-field/placeholder  (:email-input-field-placeholder-copy content)
+       :email-capture.text-field/focused      focused
+       :email-capture.text-field/keypath      textfield-keypath
+       :email-capture.text-field/errors       errors
+       :email-capture.text-field/email        email
+       :email-capture.photo/url               (-> content :hero-image :file :url)
+       :email-capture.photo/title             (-> content :hero-image :title)
+       :email-capture.photo/description       (-> content :hero-image :description)})))
+
+;;; Matchers and Triggers
+
+;; TODO(corey) defmulti?
 (defn matcher-matches? [app-state matcher]
   (case (:content/type matcher)
     "matchesAny"              (->> matcher
@@ -145,64 +229,35 @@
                                    :landfalls
                                    (map :utm-params)
                                    (some #(= (:value matcher) (get % (:tracker-type matcher)))))
+    ;; TODO: there are other path matchers not accounted for yet.
     (when matcher (js/console.error (str "No matching content/type for matcher " (pr-str matcher))))))
-;; TODO: there are other path mathers not accounted for yet.
 
-(defn contentful-driven-query [app-state]
-  (let [cms-modal-data          (get-in app-state k/cms-email-modal)
-        long-timer-started      (get-in app-state concept/long-timer-started-keypath)
-        short-timer-starteds    (get-in app-state concept/short-timer-starteds-keypath)
-        chosen-modal            (->> cms-modal-data
-                                   vals
-                                   (filter #(matcher-matches? app-state (-> % :email-modal-trigger :matcher)))
-                                   first)
-        errors                  (get-in app-state (conj k/field-errors ["email"]))
-        focused                 (get-in app-state k/ui-focus)
-        textfield-keypath       concept/textfield-keypath
-        email                   (get-in app-state textfield-keypath)
-        content                 (:email-modal-template chosen-modal)
-        trigger-id              (-> chosen-modal :email-modal-trigger :trigger-id)
-        template-content-id     (:template-content-id content)
-        in-no-modal-experiment? (or (experiments/quiz-results-email-offer-discount? app-state)
-                                    (experiments/quiz-results-email-send-look? app-state))
+(defn triggered-email-modals<-
+  [state long-timer short-timers]
+  (when-not long-timer
+    (let [modals (vals (get-in state k/cms-email-modal))]
+      (->> modals
+           ;; Verify modal has trigger, for acceptance env
+           (filter #(-> % :email-modal-trigger :trigger-id))
+           ;; Verify modal has content, for acceptance env
+           (filter #(-> % :email-modal-template :template-content-id))
+           ;; Matches trigger
+           (filter #(matcher-matches? state (-> % :email-modal-trigger :matcher)))
+           ;; Removes triggers under timers
+           (remove #(get short-timers (-> % :email-modal-trigger :trigger-id)))
+           not-empty))))
 
-        variation-description   (-> chosen-modal :description)]
-    (when (and trigger-id
-               template-content-id
-               (not long-timer-started)
-               (->> trigger-id (get short-timer-starteds) not))
-      (when-not (and in-no-modal-experiment?
-                     (= trigger-id "adv-quiz-email-capture"))
-        {:id                                    "email-capture"
-         :email-capture/trigger-id              trigger-id
-         :email-capture/variation-description   variation-description
-         :email-capture/template-content-id     template-content-id
-         :email-capture/content-type            (:content/type content)
-         :email-capture.dismiss/target          [e/biz|email-capture|dismissed {:trigger-id            trigger-id
-                                                                                :variation-description variation-description
-                                                                                :template-content-id   template-content-id}]
-         :email-capture.submit/target           [e/biz|email-capture|captured {:trigger-id            trigger-id
-                                                                               :variation-description variation-description
-                                                                               :template-content-id   template-content-id
-                                                                               :email                 email}]
-         :email-capture.design/background-color (:background-color content)
-         :email-capture.design/close-x-color    (:close-xcolor content)
-         :email-capture.copy/title              (:title content)
-         :email-capture.copy/subtitle           (:subtitle content)
-         :email-capture.copy/supertitle         (:supertitle content)
-         :email-capture.copy/fine-print-lead-in (:fine-print-lead-in content)
-         :email-capture.cta/id                  "email-capture-submit"
-         :email-capture.cta/value               (:cta-copy content)
-         :email-capture.text-field/id           "email-capture-input"
-         :email-capture.text-field/placeholder  (:email-input-field-placeholder-copy content)
-         :email-capture.text-field/focused      focused
-         :email-capture.text-field/keypath      textfield-keypath
-         :email-capture.text-field/errors       errors
-         :email-capture.text-field/email        email
-         :email-capture.photo/url               (-> content :hero-image :file :url)
-         :email-capture.photo/title             (-> content :hero-image :title)
-         :email-capture.photo/description       (-> content :hero-image :description)}))))
+(defn- hidden-email-modal-for-in-situ-email-capture?
+  [state {{:keys [trigger-id]} :email-modal-trigger}]
+  (and (= trigger-id "adv-quiz-email-capture")
+       (or (experiments/quiz-results-email-offer-discount? state)
+           (experiments/quiz-results-email-send-look? state))))
 
-(defn ^:export built-component [app-state opts]
-  (when-let [data (contentful-driven-query app-state)]
-    (c/build contentful-driven-template data opts)))
+(defn ^:export built-component [state opts]
+  (let [long-timer   (get-in state concept/long-timer-started-keypath)
+        short-timers (get-in state concept/short-timer-starteds-keypath)
+        email-modals (triggered-email-modals<- state long-timer short-timers)]
+    ;; FIXME indeterminate behavior when multiple triggers are valid and active
+    (when-let [email-modal (first email-modals)]
+      (when-not (hidden-email-modal-for-in-situ-email-capture? state email-modal)
+        (c/build template (query state email-modal) opts)))))
