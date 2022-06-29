@@ -175,8 +175,8 @@
        :email-capture/variation-description   variation-description
        :email-capture/template-content-id     template-content-id
        :email-capture/content-type            (:content/type content)
-       :email-capture.dismiss/target          [[:email-modal :dismissed] {:email-modal email-modal}]
-       :email-capture.submit/target           [[:email-modal :submitted] {:email-modal email-modal
+       :email-capture.dismiss/target          [e/email-modal-dismissed {:email-modal email-modal}]
+       :email-capture.submit/target           [e/email-modal-submitted {:email-modal email-modal
                                                                           :values      {"email-capture-input" email}}]
        :email-capture.design/background-color (:background-color content)
        :email-capture.design/close-x-color    (:close-xcolor content)
