@@ -62,7 +62,7 @@
 (defn ^:private shop-cta
   [{:cta/keys [target value id]}]
   (component/html
-   (if id
+   (if (and target value)
      (ui/button-large-primary
       (assoc (apply utils/route-to target) :data-test id) value)
      [:span])))
@@ -70,7 +70,7 @@
 (defn ^:private shop-cta-with-icon
   [{:cta/keys [target icon value id aria-label]}]
   (component/html
-   (if id
+   (if (and target value)
      [:a.my2
       (assoc (apply utils/route-to target)
              :data-test id
@@ -78,6 +78,19 @@
              :aria-label aria-label)
       (when icon
         (svg/symbolic->html icon))
+      [:div.underline.block.content-3.bold.p-color.shout.pb6
+       value]]
+     [:span])))
+
+(defn ^:private shop-cta-underline
+  [{:cta/keys [target value id aria-label]}]
+  (component/html
+   (if (and target value)
+     [:a.my2
+      (assoc (apply utils/route-to target)
+             :data-test id
+             :data-ref id
+             :aria-label aria-label)
       [:div.underline.block.content-3.bold.p-color.shout.pb6
        value]]
      [:span])))
@@ -327,6 +340,7 @@
     big-title   :big-header/content
     body        :body/value
     divider-img :divider-img
+    icon        :cta/icon
     button?     :cta/button?
     :as         data}
    _
@@ -348,9 +362,10 @@
     (when body
       [:div.title-2.canela body])
     [:div.pt3
-     (if button?
-       ^:inline (shop-cta data)
-       ^:inline (shop-cta-with-icon data))]]
+     (cond
+       icon    ^:inline (shop-cta-with-icon data)
+       button? ^:inline (shop-cta data)
+       :else   ^:inline (shop-cta-underline data))]]
    (when divider-img
      ^:inline (divider divider-img))])
 
@@ -526,6 +541,7 @@
     copy             :text/copy
     divider-img      :divider-img
     button?          :cta/button?
+    icon             :cta/icon
     :as              data}
    _
    _]
@@ -543,31 +559,33 @@
         [:h1.title-1.canela title]
         [:h2.title-1.canela title]))
 
-    (cond
-      contentful-image
-      (ui/screen-aware
-       ugc-image
-       {:image-url (:url (:file contentful-image))
-        :max-size  750
-        :alt       (:title contentful-image)}
-       nil)
+    [:div.py4
+     (cond
+       contentful-image
+       (ui/screen-aware
+        ugc-image
+        {:image-url (:url (:file contentful-image))
+         :max-size  750
+         :alt       (:title contentful-image)}
+        nil)
 
-      image
-      [:div.py4
+       image
        (ui/screen-aware
         ugc-image
         {:image-url image
          :alt       alt
          :style     {:width "100%"}})
-       [:div.content-2.pb4 copy]]
 
-      :else
-      nil)
+       :else
+       nil)
+
+     (when copy [:div.content-2.pb4 copy])]
 
     [:div.pt3
-     (if button?
-       ^:inline (shop-cta data)
-       ^:inline (shop-cta-with-icon data))]]
+     (cond
+       button? ^:inline (shop-cta data)
+       icon    ^:inline (shop-cta-with-icon data)
+       :else   ^:inline (shop-cta-underline data))]]
    (when divider-img
      ^:inline (divider divider-img))])
 
