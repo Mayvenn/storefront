@@ -1,5 +1,5 @@
 (ns adventure.components.layered
-  (:require [mayvenn.visual.tools :refer [within]]
+  (:require [mayvenn.visual.tools :refer [within with]]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.accordion :as accordion]
             [storefront.components.svg :as svg]
@@ -9,6 +9,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.carousel :as carousel]
             #?@(:cljs [[goog.events.EventType :as EventType]
+                       [storefront.components.email-capture :as email-capture]
                        goog.dom
                        goog.style
                        goog.events])
@@ -529,6 +530,19 @@
                                 (:content cta))
        [:span]))])
 
+(defcomponent lp-email-capture
+  [{:keys [email-capture-id incentive fine-print-prefix] :as data} _ _]
+  [:form.col-12.center.px1.max-580.my6.mx-auto
+   {:on-submit (apply utils/send-event-callback [events/biz|email-capture|captured {:trigger-id email-capture-id}])}
+   [:div.mb2
+    [:div.title-2.proxima.shout incentive]]
+   #?(:cljs
+      [:div.px3
+       (email-capture/text-field data)
+       (email-capture/cta data)
+       email-capture/hr-divider
+       (email-capture/fine-print fine-print-prefix)])])
+
 (defcomponent lp-image-text-block
   [{anchor-name      :anchor/name
     title            :header/value
@@ -677,6 +691,7 @@
        :lp-image-carousel   lp-image-carousel
        :lp-video            lp-video
        :lp-reviews          lp-reviews
+       :lp-email-capture    lp-email-capture
 
        ;; REBRAND
        :shop-text-block         shop-text-block

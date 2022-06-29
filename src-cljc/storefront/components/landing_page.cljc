@@ -3,6 +3,8 @@
             [adventure.components.layered :as layered]
             [adventure.faq :as faq]
             [adventure.keypaths :as adventure.keypaths]
+            [mayvenn.concept.email-capture :as concept]
+            [mayvenn.visual.tools :refer [within with]]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
@@ -71,8 +73,8 @@
                                                 :cta/navigation-message (url->navigation-message (:link-url tile))}
 
                                                "imageTextExternalLink"
-                                               {:image-url              (:image-url tile)   ; Ucare image
-                                                :image                  (:image tile)       ; contentful-hosted image
+                                               {:image-url              (:image-url tile) ; Ucare image
+                                                :image                  (:image tile)     ; contentful-hosted image
                                                 :alt                    (:description tile)
                                                 :label                  (:title tile)
                                                 :cta/navigation-message [events/external-redirect-url {:url (:link-url tile)}]}
@@ -103,6 +105,21 @@
     "reviews"       {:layer/type :lp-reviews
                      :title      (:title body-layer)
                      :reviews    (:reviews body-layer)}
+    "emailCapture"  (merge {:layer/type        :lp-email-capture
+                            :email-capture-id  (:email-capture-id body-layer)
+                            :incentive         (:incentive body-layer)
+                            :fine-print-prefix (:fine-print-prefix body-layer)}
+                           (within :email-capture.cta
+                                   {:value (:cta-text body-layer)
+                                    :id    "email-capture-submit"})
+                           (let [textfield-keypath concept/textfield-keypath]
+                             (within :email-capture.text-field
+                                     {:id          "email-capture-input"
+                                      :placeholder "Sign up" ;TODO: bring in from contentful?
+                                      :focused     (get-in data keypaths/ui-focus)
+                                      :keypath     textfield-keypath
+                                      :errors      (get-in data keypaths/field-errors ["email"])
+                                      :email       (get-in data textfield-keypath)})))
     {}))
 
 (defn landing-page-body [data]
