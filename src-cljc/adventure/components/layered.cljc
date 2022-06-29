@@ -531,9 +531,10 @@
        [:span]))])
 
 (defcomponent lp-email-capture
-  [{:keys [email-capture-id incentive fine-print-prefix] :as data} _ _]
+  [{:keys [email-capture-id template-content-id incentive fine-print-prefix] :as data} _ _]
   [:form.col-12.center.px1.max-580.my6.mx-auto
-   {:on-submit (apply utils/send-event-callback [events/biz|email-capture|captured {:trigger-id email-capture-id}])}
+   {:on-submit (apply utils/send-event-callback [events/biz|email-capture|captured {:trigger-id          email-capture-id
+                                                                                    :template-content-id template-content-id}])}
    [:div.mb2
     [:div.title-2.proxima.shout incentive]]
    #?(:cljs

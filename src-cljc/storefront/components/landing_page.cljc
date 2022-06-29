@@ -105,10 +105,11 @@
     "reviews"       {:layer/type :lp-reviews
                      :title      (:title body-layer)
                      :reviews    (:reviews body-layer)}
-    "emailCapture"  (merge {:layer/type        :lp-email-capture
-                            :email-capture-id  (:email-capture-id body-layer)
-                            :incentive         (:incentive body-layer)
-                            :fine-print-prefix (:fine-print-prefix body-layer)}
+    "emailCapture"  (merge {:layer/type          :lp-email-capture
+                            :email-capture-id    (:email-capture-id body-layer)
+                            :template-content-id (:template-content-id body-layer)
+                            :incentive           (:incentive body-layer)
+                            :fine-print-prefix   (:fine-print-prefix body-layer)}
                            (within :email-capture.cta
                                    {:value (:cta-text body-layer)
                                     :id    "email-capture-submit"})
