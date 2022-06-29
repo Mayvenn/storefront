@@ -123,7 +123,7 @@
         (template data))
        (js/console.error (str "Content-type not found: " content-type))))))
 
-(defmethod fx/perform-effects [:email-modal :submitted]
+(defmethod fx/perform-effects e/email-modal-submitted
   [_ _ {:keys [email-modal values]} _ _]
   (let [{{:keys [template-content-id]} :email-modal-template
          variation-description         :description
@@ -144,7 +144,7 @@
               :template-content-id   template-content-id
               :email                 email-address})))
 
-(defmethod fx/perform-effects [:email-modal :dismissed]
+(defmethod fx/perform-effects e/email-modal-dimissed
   [_ _ {:keys [email-modal]} _ _]
   (let [{{:keys [template-content-id]} :email-modal-template
          variation-description         :description

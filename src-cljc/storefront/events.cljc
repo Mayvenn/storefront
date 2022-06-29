@@ -709,6 +709,10 @@
 (defpath biz|shared-cart|hydrated)
 (defpath cart-cleared)
 
+;; email-modal
+(defpath email-modal-submitted)
+(defpath email-modal-dismissed)
+
 ;; Adventure Quiz
 (defpath navigate-adventure-quiz)
 
