@@ -144,7 +144,7 @@
               :template-content-id   template-content-id
               :email                 email-address})))
 
-(defmethod fx/perform-effects e/email-modal-dimissed
+(defmethod fx/perform-effects e/email-modal-dismissed
   [_ _ {:keys [email-modal]} _ _]
   (let [{{:keys [template-content-id]} :email-modal-template
          variation-description         :description
