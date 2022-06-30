@@ -528,7 +528,8 @@
   (messages/handle-message events/sign-out))
 
 (defmethod effects/perform-effects events/navigate-not-found [_ event args _ app-state]
-  (messages/handle-message events/flash-show-failure
+  (effects/redirect events/navigate-home)
+  (messages/handle-message events/flash-later-show-failure
                            {:message "The page you were looking for could not be found."}))
 
 (defmethod effects/perform-effects events/control-sign-in-submit [_ event args _ app-state]

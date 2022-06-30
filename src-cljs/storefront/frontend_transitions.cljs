@@ -151,11 +151,11 @@
 
 (defmethod transition-state events/navigate-landing-page
   [_ event {:keys [query-params]} app-state]
-  (let [video-id (:video query-params)]
+  (when-let [video-id (:video query-params)]
     (assoc-in app-state adventure.keypaths/adventure-home-video
-              {:youtube-id (if (= "close" video-id)
-                             nil
-                             video-id)})))
+              (if (= "close" video-id)
+                nil
+                {:youtube-id video-id}))))
 
 (defn clean-up-open-category-panels
   [app-state
