@@ -66,13 +66,14 @@
     (m-header id (apply utils/fake-href (:email-capture.dismiss/target data)))
     (let [{:email-capture.photo/keys [url title description]} data]
       (when (seq url)
-        (ui/ctf-img
-         {:max-width-px 500
-          :url          url}
-         {:title title
-          :class "col-12"
-          :style {:vertical-align "bottom"}
-          :alt   description})))
+        (ui/aspect-ratio 4 3
+                         (ui/ctf-img
+                          {:max-width-px 500
+                           :url          url}
+                          {:title    title
+                           :class    "col-12"
+                           :style    {:vertical-align "bottom"}
+                           :alt      description}))))
     (let [{:email-capture.copy/keys [title subtitle supertitle fine-print-lead-in]} data]
       [:div.p4.black
        {:class (:email-capture.design/background-color data)}
