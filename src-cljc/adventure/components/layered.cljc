@@ -8,13 +8,19 @@
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.carousel :as carousel]
+            [storefront.platform.messages
+             :refer [handle-message]
+             :rename {handle-message publish}]
+            [storefront.transitions :as transitions :refer [transition-state]]
             #?@(:cljs [[goog.events.EventType :as EventType]
                        [storefront.components.email-capture :as email-capture]
                        goog.dom
                        goog.style
                        goog.events])
             [ui.molecules :as ui.M]
-            [storefront.config :as config]))
+            [storefront.config :as config]
+            [storefront.effects :as fx]
+            [storefront.keypaths :as keypaths]))
 
 (defn ^:private vertical-squiggle
   [top]
@@ -532,9 +538,9 @@
 
 (defcomponent lp-email-capture
   [{:keys [email-capture-id template-content-id incentive fine-print-prefix] :as data} _ _]
-  [:form.col-12.center.px1.max-580.my6.mx-auto
-   {:on-submit (apply utils/send-event-callback [events/biz|email-capture|captured {:trigger-id          email-capture-id
-                                                                                    :template-content-id template-content-id}])}
+  [:form.col-12.center.px1.max-580.my6.mx-auto.py6
+   {:on-submit (apply utils/send-event-callback [events/control-landing-page-email-submit {:trigger-id          email-capture-id
+                                                                                           :template-content-id template-content-id}])}
    [:div.mb2
     [:div.title-2.proxima.shout incentive]]
    #?(:cljs
@@ -724,3 +730,15 @@
    (for [[i layer-data] (map-indexed vector layers)]
      [:section {:key (str "section-" i)}
       ^:inline (layer-view (add-possible-h1 i layer-data) opts)])])
+
+(defmethod fx/perform-effects events/control-landing-page-email-submit
+  [_ _ {:keys [email-capture-id template-content-id] :as this} _ _]
+  (publish events/biz|email-capture|captured {:trigger-id          email-capture-id
+                                               :template-content-id template-content-id})
+  (publish events/flash-show-success {:message "Successfully signed up"}))
+
+#?(:cljs
+ (defmethod transition-state events/control-landing-page-email-submit
+   [_ _ _ app-state]
+   (-> app-state
+       (assoc-in [:models :email-capture :textfield] nil))))

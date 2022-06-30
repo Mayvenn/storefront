@@ -139,7 +139,8 @@
     events/navigate-adventure-stylist-gallery})
 
 (def ^:private homepage-events
-  #{events/navigate-home})
+  #{events/navigate-home
+    events/navigate-landing-page})
 
 (def ^:private voucher-redeem
   #{events/navigate-voucher-redeem events/navigate-voucher-redeemed})
