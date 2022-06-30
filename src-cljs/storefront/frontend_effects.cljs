@@ -529,6 +529,7 @@
 
 (defmethod effects/perform-effects events/navigate-not-found [_ event args _ app-state]
   (effects/redirect events/navigate-home)
+  (exception-handler/report {:error "navigate-not-found"})
   (messages/handle-message events/flash-later-show-failure
                            {:message "The page you were looking for could not be found."}))
 
