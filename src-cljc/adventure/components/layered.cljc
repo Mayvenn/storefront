@@ -367,7 +367,7 @@
         [:div.title-1.canela title]))
 
     (when body
-      [:div.title-2.canela body])
+      [:div.title-2.canela.my4 body])
     [:div.pt3
      (cond
        icon    ^:inline (shop-cta-with-icon data)
@@ -502,14 +502,14 @@
   [{title  :header/value
     images :images
     :as    data} _ _]
-  [:div.py8.col-10.mx-auto.center
+  [:div.py8.mx-auto.center
    (when title
      [:div.title-1.proxima.shout.bold title])
-   [:div.flex.flex-wrap.py4.justify-center-on-tb-dt
+   [:div.flex.flex-wrap.pt1.pb4.justify-center
     (for [{:keys [image-url image alt label] :as image-data} images]
       (when (or image image-url)
         (if-let [navigation-message (:cta/navigation-message image-data)]
-          [:a.col-6.col-3-on-tb-dt.p1
+          [:a.col-5.col-2-on-tb-dt.p1.border.border-cool-gray.m1
            (merge (apply utils/route-to navigation-message)
                   {:key (str image-url)})
            (ui/screen-aware
@@ -518,7 +518,7 @@
              :max-size  400
              :alt       alt}
             nil)
-           [:div.black.content-2 label]]
+           [:div.black.content-2.mt2 label]]
 
           [:div.col-6.col-3-on-tb-dt.p1
            {:key (str image-url)}
@@ -580,7 +580,7 @@
         [:h1.title-1.canela title]
         [:h2.title-1.canela title]))
 
-    [:div.py4
+    [:div.pt4
      (cond
        contentful-image
        (ui/screen-aware
@@ -600,9 +600,9 @@
        :else
        nil)
 
-     (when copy [:div.content-2.pb4 copy])]
+     (when copy [:div.content-2.p4 copy])]
 
-    [:div.pt3
+    [:div
      (cond
        button? ^:inline (shop-cta data)
        icon    ^:inline (shop-cta-with-icon data)
