@@ -164,7 +164,9 @@
                 saturday-delivery?]} (shipping-method-rules sku drop-shipping?)
 
         ;; HACK: added one day to min and max here to deal with the USPS holiday, GROT afterward.
-        additional-holiday-delay-days 1
+        additional-holiday-delay-days (when (#{"WAITER-SHIPPING-1"
+                                             "WAITER-SHIPPING-7"} sku)
+                                        1)
 
         revised-min (+ (number-of-days-to-ship
                         east-coast-weekday
