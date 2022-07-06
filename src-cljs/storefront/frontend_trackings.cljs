@@ -1,11 +1,15 @@
 (ns storefront.frontend-trackings
-  (:require [api.orders :as api.orders]
+  (:require [api.catalog :refer [select]]
+            [api.orders :as api.orders]
             [catalog.keypaths]
+            [catalog.looks :as looks]
             [catalog.products :as products]
+            [catalog.skuers :as skuers]
             [clojure.string :as string]
             [clojure.set :as set]
             [spice.maps :as maps]
             [storefront.accessors.line-items :as line-items]
+            [storefront.accessors.categories :as accessors.categories]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.videos :as videos]
@@ -80,6 +84,24 @@
       (when (not (nav-was-selecting-bundle-option? app-state))
         (riskified/track-page path)
         (stringer/track-page (get-in app-state keypaths/store-experience))))))
+
+(defmethod perform-track events/navigate-shop-by-look [_ event _ app-state]
+  (let [facet-filtering-state (get-in app-state catalog.keypaths/k-models-facet-filtering)
+        skus-db               (get-in app-state storefront.keypaths/v2-skus)
+        facets-db             (->> (get-in app-state storefront.keypaths/v2-facets)
+                                   (maps/index-by (comp keyword :facet/slug))
+                                   (maps/map-values (fn [facet]
+                                                      (update facet :facet/options
+                                                              (partial maps/index-by :option/slug)))))
+
+        looks-shared-carts-db  (get-in app-state storefront.keypaths/v1-looks-shared-carts)
+        selected-album-keyword (get-in app-state storefront.keypaths/selected-album-keyword)
+        faceted-models         (looks/looks<- app-state skus-db facets-db
+                                      looks-shared-carts-db
+                                      selected-album-keyword)]
+    (stringer/track-event "looks-displayed" {:looks (->> faceted-models
+                                                         (select (:facet-filtering/filters facet-filtering-state))
+                                                         (map #(select-keys % [:look/id :look/cart-number])))})))
 
 (defmethod perform-track events/control-category-panel-open
   [_ event {:keys [selected]} app-state]
