@@ -25,7 +25,8 @@
             storefront.keypaths
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
-            [storefront.ugc :as ugc]))
+            [storefront.ugc :as ugc]
+            [storefront.accessors.experiments :as experiments]))
 
 #?(:cljs
    (defmethod trackings/perform-track e/shop-by-look|look-selected
@@ -203,10 +204,13 @@
           any-sold-out-skus?                   (some false? (map :inventory/in-stock? all-skus))]
       (when-not any-sold-out-skus?
         (merge tex-ori-col ;; TODO(corey) apply merge-with into
-               {:look/title (clojure.string/join " " [origin-name
-                                                      texture-name
-                                                      "Hair"
-                                                      discountable-service-title-component])
+               {:look/title      (clojure.string/join " " [origin-name
+                                                           texture-name
+                                                           "Hair"
+                                                           discountable-service-title-component])
+                :tags/event      (set (:tags-event look))
+                :tags/face-shape (set (:tags-face-shape look))
+                :tags/style      (set (:tags-style look))
 
                 ;; TODO: only handles the free service discount,
                 ;; other promotions can be back ported here after
@@ -295,10 +299,72 @@
         looks                  (looks<- state skus-db facets-db
                                         looks-shared-carts-db
                                         selected-album-keyword)
+        looks-tags?            (experiments/looks-tags? state)
         ;; Flow models
         facet-filtering-state  (-> state
                                    (get-in catalog.keypaths/k-models-facet-filtering)
-                                   (assoc :facet-filtering/item-label "Look"))]
+                                   (assoc :facet-filtering/item-label "Look"))
+        tag-facets             (when looks-tags?
+                                 [{:facet/slug    :tags/face-shape
+                                   :facet/name    "Face Shape",
+                                   :filter/order  20,
+                                   :facet/options #{{:option/slug  "round",
+                                                     :option/name  "Round",
+                                                     :filter/order 0}
+                                                    {:option/slug  "square",
+                                                     :option/name  "Square",
+                                                     :filter/order 1}
+                                                    {:option/slug  "oval",
+                                                     :option/name  "Oval",
+                                                     :filter/order 2}
+                                                    {:option/slug  "triangular",
+                                                     :option/name  "Triangular",
+                                                     :filter/order 3}
+                                                    {:option/slug  "heart",
+                                                     :option/name  "Heart",
+                                                     :filter/order 4}}}
+                                  {:facet/slug    :tags/style
+                                   :facet/name    "Style",
+                                   :filter/order  21,
+                                   :facet/options #{{:option/slug  "expressive",
+                                                     :option/name  "Expressive",
+                                                     :filter/order 0}
+                                                    {:option/slug  "romantic",
+                                                     :option/name  "Romantic",
+                                                     :filter/order 1}
+                                                    {:option/slug  "classic",
+                                                     :option/name  "Classic",
+                                                     :filter/order 2}
+                                                    {:option/slug  "sporty",
+                                                     :option/name  "Sporty",
+                                                     :filter/order 3}
+                                                    {:option/slug  "glam",
+                                                     :option/name  "Gram",
+                                                     :filter/order 4}
+                                                    {:option/slug  "trendy",
+                                                     :option/name  "Trendy",
+                                                     :filter/order 5}}}
+                                  {:facet/slug    :tags/event
+                                   :facet/name    "Event",
+                                   :filter/order  22,
+                                   :facet/options #{{:option/slug  "wedding",
+                                                     :option/name  "Wedding",
+                                                     :filter/order 0}
+                                                    {:option/slug  "birthday",
+                                                     :option/name  "Birthday",
+                                                     :filter/order 1}
+                                                    {:option/slug  "work/business",
+                                                     :option/name  "Work/Business",
+                                                     :filter/order 2}
+                                                    {:option/slug  "anniversary",
+                                                     :option/name  "Anniversary",
+                                                     :filter/order 3}
+                                                    {:option/slug  "engagement",
+                                                     :option/name  "Engagement",
+                                                     :filter/order 4}
+                                                    {:option/slug  "party/event",
+                                                     :option/name  "Party/Event",
+                                                     :filter/order 5}}}]) ]
     (if
       ;; Spinning
       (or (utils/requesting? state request-keys/fetch-shared-carts)
@@ -310,10 +376,10 @@
       (->> (merge
             {:hero looks-hero<-}
             (facet-filters/filters<-
-             {:facets-db             (get-in state storefront.keypaths/v2-facets)
+             {:facets-db             (concat (get-in state storefront.keypaths/v2-facets) tag-facets)
               :faceted-models        looks
               :facet-filtering-state facet-filtering-state
-              :facets-to-filter-on   [:hair/origin :hair/color :hair/texture]
+              :facets-to-filter-on   [:hair/origin :hair/color :hair/texture :tags/event :tags/face-shape :tags/style]
               :navigation-event      e/navigate-shop-by-look
               :navigation-args       {:album-keyword :look}
               :child-component-data  (looks-cards<- images-db looks facet-filtering-state)}))

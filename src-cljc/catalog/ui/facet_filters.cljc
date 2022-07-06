@@ -110,14 +110,15 @@
 
 (c/defcomponent section-organism
   [data _ {:keys [id]}]
-  [:div.flex.flex-column.bg-white.px5.myp1
-   {:key id}
-   [:div.pyj1
-    (section-title-molecule data)]
-   (when (:facet-filtering.section/toggled? data)
-     (c/elements section-filter-molecule
-                 data
-                 :facet-filtering.section/filters))])
+  (when (seq (:facet-filtering.section/filters data))
+    [:div.flex.flex-column.bg-white.px5.myp1
+     {:key id}
+     [:div.pyj1
+      (section-title-molecule data)]
+     (when (:facet-filtering.section/toggled? data)
+       (c/elements section-filter-molecule
+                   data
+                   :facet-filtering.section/filters))]))
 
 (c/defcomponent desktop-section-filter-molecule
   [{:facet-filtering.section.filter/keys [primary target value icon-url]} _ {:keys [id]}]
@@ -138,18 +139,17 @@
 
 (c/defcomponent desktop-section-title-molecule
   [{:facet-filtering.section.title/keys [primary target id]} _ _]
-  [:a.block.flex.justify-between.inherit-color.items-center
-   (cond-> {:data-test (str id "-desktop")}
-     target
-     (merge (apply utils/fake-href target)))
+  [:div.block.flex.justify-between.inherit-color.items-center
+   {:data-test (str id "-desktop")}
    [:div.shout.title-2.proxima primary]])
 
 (c/defcomponent desktop-section-organism
   [data _ {:keys [id]}]
-  [:div.flex.flex-column.bg-white.px5.myp1
-   {:key id}
-   [:div.pyj1 (c/build desktop-section-title-molecule data)]
-   (c/elements desktop-section-filter-molecule data :facet-filtering.section/filters)])
+  (when (seq (:facet-filtering.section/filters data))
+    [:div.flex.flex-column.bg-white.px5.myp1
+     {:key id}
+     [:div.pyj1 (c/build desktop-section-title-molecule data)]
+     (c/elements desktop-section-filter-molecule data :facet-filtering.section/filters)]))
 
 (c/defcomponent desktop-sections-organism
   [{:keys [sections]} _ _]
@@ -264,14 +264,14 @@
                               facet-name    :facet/name
                               facet-options :facet/options}]
            (let [section-toggled?    (contains? sections facet-slug)
-                 represented-options (get represented-facets facet-slug)]
-             {:id                             (some->> facet-slug
-                                                      name
-                                                      (str "filter-"))
-              :facet-filtering.section/toggled? section-toggled?
-              :facet-filtering.section.title/primary (cond->> facet-name
-                                                       (contains? #{:hair/origin :hair/color :hair/texture} facet-slug)
-                                                       (str "Hair "))
+                 represented-options (get represented-facets (keyword facet-slug))]
+             {:id                                     (some->> facet-slug
+                                                               name
+                                                               (str "filter-"))
+              :facet-filtering.section/toggled?       section-toggled?
+              :facet-filtering.section.title/primary  (cond->> facet-name
+                                                        (contains? #{:hair/origin :hair/color :hair/texture} facet-slug)
+                                                        (str "Hair "))
               :facet-filtering.section.title/target   [e/flow|facet-filtering|section-toggled {:facet-key facet-slug :toggled? (not section-toggled?)}]
               :facet-filtering.section.title/id       (some->> facet-slug name (str "filter-"))
               :facet-filtering.section.title/rotated? section-toggled?
