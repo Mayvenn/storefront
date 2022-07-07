@@ -86,22 +86,26 @@
         (stringer/track-page (get-in app-state keypaths/store-experience))))))
 
 (defmethod perform-track events/navigate-shop-by-look [_ event _ app-state]
-  (let [facet-filtering-state (get-in app-state catalog.keypaths/k-models-facet-filtering)
-        skus-db               (get-in app-state storefront.keypaths/v2-skus)
-        facets-db             (->> (get-in app-state storefront.keypaths/v2-facets)
-                                   (maps/index-by (comp keyword :facet/slug))
-                                   (maps/map-values (fn [facet]
-                                                      (update facet :facet/options
-                                                              (partial maps/index-by :option/slug)))))
+  (if (= "mayvenn-classic" (get-in app-state keypaths/store-experience))
+    (stringer/track-event "looks-displayed" {:looks (->> app-state :cms :ugc-collection :all-looks
+                                                         vals
+                                                         (map :content/id))})
+    (let [facet-filtering-state (get-in app-state catalog.keypaths/k-models-facet-filtering)
+          skus-db               (get-in app-state storefront.keypaths/v2-skus)
+          facets-db             (->> (get-in app-state storefront.keypaths/v2-facets)
+                                     (maps/index-by (comp keyword :facet/slug))
+                                     (maps/map-values (fn [facet]
+                                                        (update facet :facet/options
+                                                                (partial maps/index-by :option/slug)))))
 
-        looks-shared-carts-db  (get-in app-state storefront.keypaths/v1-looks-shared-carts)
-        selected-album-keyword (get-in app-state storefront.keypaths/selected-album-keyword)
-        faceted-models         (looks/looks<- app-state skus-db facets-db
-                                      looks-shared-carts-db
-                                      selected-album-keyword)]
-    (stringer/track-event "looks-displayed" {:looks (->> faceted-models
-                                                         (select (:facet-filtering/filters facet-filtering-state))
-                                                         (map #(select-keys % [:look/id :look/cart-number])))})))
+          looks-shared-carts-db  (get-in app-state storefront.keypaths/v1-looks-shared-carts)
+          selected-album-keyword (get-in app-state storefront.keypaths/selected-album-keyword)
+          faceted-models         (looks/looks<- app-state skus-db facets-db
+                                                looks-shared-carts-db
+                                                selected-album-keyword)]
+      (stringer/track-event "looks-displayed" {:looks (->> faceted-models
+                                                           (select (:facet-filtering/filters facet-filtering-state))
+                                                           (map :look/id))}))))
 
 (defmethod perform-track events/control-category-panel-open
   [_ event {:keys [selected]} app-state]
