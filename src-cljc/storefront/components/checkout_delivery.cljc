@@ -163,25 +163,17 @@
                 max-delivery
                 saturday-delivery?]} (shipping-method-rules sku drop-shipping?)
 
-        ;; HACK: added one day to min and max here to deal with the USPS holiday, GROT afterward.
-        additional-holiday-delay-days (when (#{"WAITER-SHIPPING-1"
-                                             "WAITER-SHIPPING-7"} sku)
-                                        1)
+        revised-min (number-of-days-to-ship
+                     east-coast-weekday
+                     in-window?
+                     saturday-delivery?
+                     min-delivery)
 
-        revised-min (+ (number-of-days-to-ship
-                        east-coast-weekday
-                        in-window?
-                        saturday-delivery?
-                        min-delivery)
-                       additional-holiday-delay-days)
-
-        revised-max (+ (number-of-days-to-ship
-                        east-coast-weekday
-                        in-window?
-                        saturday-delivery?
-                        max-delivery)
-                       additional-holiday-delay-days)
-
+        revised-max (number-of-days-to-ship
+                     east-coast-weekday
+                     in-window?
+                     saturday-delivery?
+                     max-delivery)
         selected?   (= selected-shipping-method-sku-id sku)
         disabled?   (and (not= sku "WAITER-SHIPPING-1") drop-shipping?)]
     (merge
