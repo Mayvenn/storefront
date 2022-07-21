@@ -64,17 +64,18 @@
         shipping-total    (* (:quantity shipping-item) (:unit-price shipping-item))]
     [:div.pt2.pb6.border-top.border-gray
      (when (:shipments order)
-       (summary-row "Subtotal" subtotal)
+       [:div
+        (summary-row "Subtotal" subtotal)
 
-       (for [{:keys [name price coupon-code]} adjustments]
-         (when (adjustments/non-zero-adjustment? coupon-code)
-           (summary-row {:key name} [:div (adjustments/display-adjustment-name name)] price)))
+        (for [{:keys [name price coupon-code]} adjustments]
+          (when (adjustments/non-zero-adjustment? coupon-code)
+            (summary-row {:key name} [:div (adjustments/display-adjustment-name name)] price)))
 
-       (when (pos? store-credit-used)
-         (summary-row "Store Credit" (- store-credit-used)))
+        (when (pos? store-credit-used)
+          (summary-row "Store Credit" (- store-credit-used)))
 
-       (when shipping-item
-         (summary-row "Shipping" shipping-total)))
+        (when shipping-item
+          (summary-row "Shipping" shipping-total))])
 
      (summary-row "Total" commissionable-amount)]))
 
