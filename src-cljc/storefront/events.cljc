@@ -425,21 +425,17 @@
 (defpath save-order)
 (defpath clear-order)
 
-(defpath convert)
 (defpath enable-feature)
 (defpath clear-features)
 (defpath bucketed-for)
 
 (defpath inserted)
 (defpath inserted-stringer)
-(defpath inserted-convert)
 (defpath inserted-google-maps)
 (defpath inserted-quadpay)
 (defpath inserted-stripe)
 (defpath inserted-uploadcare)
 (defpath inserted-kustomer)
-
-(defpath did-insert-convert)
 
 (defpath autocomplete-update-address)
 

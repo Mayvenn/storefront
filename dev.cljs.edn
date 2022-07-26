@@ -54,7 +54,6 @@
                     "externs/muuri_react.js"
                     "externs/bugsnag.js"
                     "externs/browser.js"
-                    "externs/convert.js"
                     "externs/facebook.js"
                     "externs/google_maps.js"
                     "externs/kustomer.js"

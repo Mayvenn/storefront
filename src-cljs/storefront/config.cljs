@@ -38,30 +38,10 @@
                       "production" "//staticw2.yotpo.com/ZmvkoIuVo61VsbHVPaqDPZpkfGm6Ce2kjVmSqFw9/widget.js"
                       "//staticw2.yotpo.com/2UyuTzecYoIe4JECHCuqP6ClAOzjnodSFMc7GEuT/widget.js"))
 
-(def convert-project-id (case js/environment
-                          "production" "10003995-10005092"
-                          "10003995-10005089"))
-
 (def spreedly-key
   (case js/environment
     "production" "4wcpGjpNjX7C3tEYUN9LJHZSdU2"
     "cGBXs4oevFmesd7gWv0DY95KRE"))
-
-(def convert-goals
-  (case js/environment
-    "production"
-    {"view-categories"     "100016254"
-     "view-category"       "100016255"
-     "place-order"         "100016055"
-     "revenue"             "100016054"
-     "checkout"            "100017136"
-     "paypal-checkout"     "100017137"}
-    {"view-categories"     "100016257"
-     "view-category"       "100016256"
-     "place-order"         "100016047"
-     "revenue"             "100016046"
-     "checkout"            "100017132"
-     "paypal-checkout"     "100017133"}))
 
 (def facebook-pixel-id (case js/environment
                          "production" "721931104522825"

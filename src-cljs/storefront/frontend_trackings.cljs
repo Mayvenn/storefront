@@ -15,7 +15,6 @@
             [storefront.accessors.videos :as videos]
             [storefront.accessors.stylist-urls :as stylist-urls]
             [storefront.events :as events]
-            [storefront.hooks.convert :as convert]
             [storefront.hooks.facebook-analytics :as facebook-analytics]
             [storefront.hooks.google-tag-manager :as google-tag-manager]
             [storefront.hooks.riskified :as riskified]
@@ -24,11 +23,6 @@
             [storefront.routes :as routes]
             [storefront.trackings :refer [perform-track]]
             [storefront.accessors.images :as images]))
-
-(defn ^:private convert-revenue [{:keys [number total] :as order}]
-  {:order-number   number
-   :revenue        total
-   :products-count (orders/product-quantity order)})
 
 (defn waiter-line-item->line-item-skuer
   [skus-db waiter-line-item]
@@ -413,8 +407,6 @@
                                                        :content_type "product"
                                                        :num_items    order-quantity}))
 
-    (convert/track-conversion "place-order")
-    (convert/track-revenue (convert-revenue order))
     (google-tag-manager/track-placed-order (merge (set/rename-keys shared-fields {:buyer_type            :buyer-type
                                                                                   :is_stylist_store      :is-stylist-store
                                                                                   :shipping_method_name  :shipping-method-name
@@ -452,12 +444,10 @@
   (stringer/track-event "display_add_on_services_button"))
 
 (defmethod perform-track events/control-checkout-cart-submit [_ event args app-state]
-  (checkout-initiate app-state "mayvenn")
-  (convert/track-conversion "checkout"))
+  (checkout-initiate app-state "mayvenn"))
 
 (defmethod perform-track events/control-checkout-cart-paypal-setup [_ event args app-state]
-  (checkout-initiate app-state "paypal")
-  (convert/track-conversion "paypal-checkout"))
+  (checkout-initiate app-state "paypal"))
 
 (defmethod perform-track events/api-success-update-order-update-guest-address [_ event {:keys [order]} app-state]
   (stringer/track-event "checkout-identify_guest")

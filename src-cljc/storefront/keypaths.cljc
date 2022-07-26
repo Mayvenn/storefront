@@ -298,7 +298,6 @@
 (def error-code (conj errors :error-code))
 
 (def loaded (conj ui :loaded))
-(def loaded-convert (conj loaded :convert))
 (def loaded-google-maps (conj loaded :google-maps))
 (def loaded-stripe (conj loaded :stripe))
 (def loaded-quadpay (conj loaded :quadpay))

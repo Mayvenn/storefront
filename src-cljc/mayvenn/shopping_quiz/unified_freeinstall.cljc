@@ -280,7 +280,6 @@
    skus-db
    undo-history
    google-loaded?
-   convert-loaded?
    requesting?
    just-added-control?
    just-added-only?
@@ -300,8 +299,7 @@
 
     :spinning? (or (empty? (:status matching))
                    requesting?
-                   (and (not convert-loaded?)
-                        stylist-results-test?
+                   (and stylist-results-test?
                         (or (not just-added-control?)
                             (not just-added-only?)
                             (not just-added-experience?))))
@@ -726,7 +724,6 @@
 
                ;; Externals
                google-loaded?   (get-in state k/loaded-google-maps)
-               convert-loaded?  (get-in state k/loaded-convert)
                quadpay-loaded?  (get-in state k/loaded-quadpay)
                paypal-redirect? (get-in state k/cart-paypal-redirect)
 
@@ -783,7 +780,6 @@
                                         skus-db
                                         undo-history
                                         google-loaded?
-                                        convert-loaded?
                                         requesting?
                                         just-added-control?
                                         just-added-only?

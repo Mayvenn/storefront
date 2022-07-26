@@ -921,8 +921,7 @@
                                              (utils/requesting? app-state request-keys/fetch-stylists)
                                              (utils/requesting? app-state request-keys/fetch-stylists-matching-filters)
                                              (utils/requesting? app-state request-keys/get-products)
-                                             (and (not (get-in app-state storefront.keypaths/loaded-convert))
-                                                  stylist-results-test?
+                                             (and stylist-results-test?
                                                   (or (not just-added-control?)
                                                       (not just-added-only?)
                                                       (not just-added-experience?))))

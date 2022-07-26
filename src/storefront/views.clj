@@ -207,7 +207,6 @@
             [:link {:rel "preconnect" :href "https://c.riskified.com"}]
             [:link {:rel "preconnect" :href "https://www.googleadservices.com"}]
             [:link {:rel "preconnect" :href "https://img.riskified.com"}]
-            [:link {:rel "preconnect" :href "https://cdn-3.convertexperiments.com"}]
             [:link {:rel "preconnect" :href "https://widgets.quadpay.com"}]
             [:link {:rel "preconnect" :href "https://www.google.com"}]
             [:link {:rel "preconnect" :href "https://settings.luckyorange.net"}]

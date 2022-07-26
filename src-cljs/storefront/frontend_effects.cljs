@@ -22,7 +22,6 @@
             [storefront.events :as events]
             [storefront.history :as history]
             [storefront.ugc :as ugc]
-            [storefront.hooks.convert :as convert]
             [storefront.hooks.exception-handler :as exception-handler]
             [storefront.hooks.kustomer :as kustomer]
             [storefront.hooks.lucky-orange :as lucky-orange]
@@ -85,7 +84,6 @@
 (defmethod effects/perform-effects events/app-start [dispatch event args _ app-state]
   (quadpay/insert)
   (svg/insert-sprite)
-  (convert/insert-tracking)
   (riskified/insert-tracking (get-in app-state keypaths/session-id))
   (stringer/fetch-browser-id)
   (messages/handle-message events/biz|email-capture|reset)
@@ -107,7 +105,6 @@
     (messages/handle-message events/user-identified {:user (get-in app-state keypaths/user)})))
 
 (defmethod effects/perform-effects events/app-stop [_ event args _ app-state]
-  (convert/remove-tracking)
   (riskified/remove-tracking)
   (lucky-orange/remove-tracking)
   (browser-events/unattach-capture-late-readystatechange-callbacks)
