@@ -238,7 +238,7 @@
                                                                :variant-ids   (map :legacy/variant-id all-skus)}]
                 :look/items     product-items})))))
 
-(defn looks<-
+(defn ^:private looks<-
   "
   What is a look?
 
