@@ -43,15 +43,18 @@
            hashtag-mayvenn-hair
            hero
            shopping-categories
-           install-specific-query]} _ _]
+           install-specific-query
+           remove-free-install?]} _ _]
   [:div
    (c/build hero/organism hero)
 
    (c/build shopping-categories/organism shopping-categories)
-   (c/build install-specific-organism install-specific-query )
-   A/horizontal-rule-atom
 
-   (A/divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")
+   (when (not remove-free-install?)
+     [:div
+      (c/build install-specific-organism install-specific-query )
+      A/horizontal-rule-atom
+      (A/divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")])
 
    (c/build hashtag-mayvenn-hair/organism hashtag-mayvenn-hair)
    (c/build faq/organism faq)

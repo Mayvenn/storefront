@@ -9,11 +9,13 @@
   [app-state]
   (let [cms                       (get-in app-state k/cms)
         ugc                       (get-in app-state k/cms-ugc-collection)
-        expanded-index            (get-in app-state k/faq-expanded-section)]
+        expanded-index            (get-in app-state k/faq-expanded-section)
+        remove-free-install?      (:remove-free-install (get-in app-state storefront.keypaths/features))]
     (c/build ui/template {:contact-us             ui/contact-us-query
                           :diishan                ui/diishan-query
                           :guarantees             ui/guarantees-query
                           :hero                   (ui/hero-query cms :unified-fi)
                           :faq                    (ui/faq-query (-> cms :faq :free-mayvenn-services) expanded-index)
                           :hashtag-mayvenn-hair   (ui/hashtag-mayvenn-hair-query ugc)
-                          :install-specific-query (ui/install-specific-query app-state)})))
+                          :install-specific-query (ui/install-specific-query app-state)
+                          :remove-free-install?   remove-free-install?})))

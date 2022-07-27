@@ -604,6 +604,8 @@
         promotion-codes             (get-in data storefront.keypaths/promotions)
         shared-cart-promotion-codes (:promotion-codes shared-cart)
 
+        remove-free-install? (:remove-free-install (get-in data storefront.keypaths/features))
+
         ;; Looks query
         facets-db (facets/by-slug data)
 
@@ -625,7 +627,7 @@
                                                           (count skus-matching-selections))
 
         raw-order (api.orders/look-customization->order data
-                                                        {:line-items      (->> (concat skus-matching-selections services)
+                                                        {:line-items      (->> (concat skus-matching-selections (when (not remove-free-install?) services))
                                                                                (group-by :catalog/sku-id)
                                                                                (maps/map-values (fn [skus]
                                                                                                   {:sku           (first skus)
@@ -634,7 +636,8 @@
                                                          :promotion-codes shared-cart-promotion-codes})
 
         items                 (:order/items raw-order)
-        discountable-services (select ?discountable items)
+        discountable-services (when (not remove-free-install?)
+                                (select ?discountable items))
 
         {:keys [adjustments line-items-total total]} (:waiter/order raw-order)]
     (merge #?(:cljs (reviews/query-look-detail shared-cart data))
@@ -690,7 +693,8 @@
               :look-total/secondary secondary
               :look-total/tertiary  tertiary})
 
-           (when shop?
+           (when (and (not remove-free-install?)
+                      shop?)
              {:faq          (let [{:keys [question-answers]} faq]
                               {:background-color "bg-pale-purple"
                                :expanded-index   (get-in data keypaths/faq-expanded-section)
@@ -830,24 +834,27 @@
 
 (defmethod effects/perform-effects events/control-create-order-from-customized-look
   [_ event {:keys [items promotion-codes look-id] :as args} _ app-state]
-  #?(:cljs
-     (api/new-order-from-sku-ids (get-in app-state keypaths/session-id)
-                                 {:store-stylist-id     (get-in app-state keypaths/store-stylist-id)
-                                  :user-id              (get-in app-state keypaths/user-id)
-                                  :user-token           (get-in app-state keypaths/user-token)
-                                  :servicing-stylist-id (get-in app-state keypaths/order-servicing-stylist-id)
-                                  :sku-id->quantity     items
-                                  :promotion-codes      promotion-codes
-                                  :ignore-promo-absence true}
-                                 (fn [{:keys [order]}]
-                                   (messages/handle-message
-                                    events/api-success-update-order
-                                    {:order    order
-                                     :navigate events/navigate-added-to-cart})
-                                   (trackings/track-cart-initialization
-                                    "look-customization"
-                                    look-id
-                                    {:skus-db          (get-in app-state keypaths/v2-skus)
-                                     :image-catalog    (get-in app-state keypaths/v2-images)
-                                     :store-experience (get-in app-state keypaths/store-experience)
-                                     :order            order})))))
+  (let [remove-free-install? (:remove-free-install (get-in app-state storefront.keypaths/features))]
+    #?(:cljs
+       (api/new-order-from-sku-ids (get-in app-state keypaths/session-id)
+                                   {:store-stylist-id     (get-in app-state keypaths/store-stylist-id)
+                                    :user-id              (get-in app-state keypaths/user-id)
+                                    :user-token           (get-in app-state keypaths/user-token)
+                                    :servicing-stylist-id (get-in app-state keypaths/order-servicing-stylist-id)
+                                    :sku-id->quantity     items
+                                    :promotion-codes      promotion-codes
+                                    :ignore-promo-absence true}
+                                   (fn [{:keys [order]}]
+                                     (messages/handle-message
+                                      events/api-success-update-order
+                                      {:order    order
+                                       :navigate (if remove-free-install?
+                                                   events/navigate-cart
+                                                   events/navigate-added-to-cart)})
+                                     (trackings/track-cart-initialization
+                                      "look-customization"
+                                      look-id
+                                      {:skus-db          (get-in app-state keypaths/v2-skus)
+                                       :image-catalog    (get-in app-state keypaths/v2-images)
+                                       :store-experience (get-in app-state keypaths/store-experience)
+                                       :order            order}))))))

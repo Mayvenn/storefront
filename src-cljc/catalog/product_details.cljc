@@ -723,7 +723,8 @@
      (let [nav-event              (get-in app-state keypaths/navigation-event)
            shop?                  (= :shop (sites/determine-site app-state))
            ;; NOTE: This doesn't take into account skus that aren't bundles right now.
-           free-install-eligible? (> (apply + (vals sku-id->quantity)) 2)]
+           free-install-eligible? (> (apply + (vals sku-id->quantity)) 2)
+           remove-free-install?   (:remove-free-install (get-in app-state storefront.keypaths/features))]
        (api/add-skus-to-bag (get-in app-state keypaths/session-id)
                             {:stylist-id       (get-in app-state keypaths/store-stylist-id)
                              :number           (get-in app-state keypaths/order-number)
@@ -738,7 +739,8 @@
                                (messages/handle-message events/api-success-add-multiple-skus-to-bag
                                                         (select-keys % [:order :sku-id->quantity]))
                                (when (not (= events/navigate-cart nav-event))
-                                 (history/enqueue-navigate (if shop?
+                                 (history/enqueue-navigate (if (and (not remove-free-install?)
+                                                                    shop?)
                                                              events/navigate-added-to-cart
                                                              events/navigate-cart))))))))
 
