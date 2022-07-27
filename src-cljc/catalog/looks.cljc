@@ -147,10 +147,14 @@
    :looks.hero.title/secondary ["Get 3 or more hair items and receive a service for FREE"
                                 "#MayvennMade"]})
 
+(def ^:private looks-hero-no-free-install<-
+  {:looks.hero.title/primary   "Shop by Look"
+   :looks.hero.title/secondary ["#MayvennMade"]})
+
 ;; Biz Domain: Looks
 
 (defn look<-
-  [skus-db looks-shared-carts-db facets-db look promotions album-keyword index]
+  [skus-db looks-shared-carts-db facets-db look promotions album-keyword index remove-free-install?]
   (when-let [shared-cart-id (contentful/shared-cart-id look)]
     (let [shared-cart              (get looks-shared-carts-db shared-cart-id)
           album-copy               (get ugc/album-copy album-keyword)
@@ -167,9 +171,10 @@
                                         vals
                                         vec)
           ;; NOTE: assumes only one discountable service item for the look
-          discountable-service-sku (->> all-skus
-                                        (select ?discountable)
-                                        first)
+          discountable-service-sku (when (not remove-free-install?)
+                                     (->> all-skus
+                                          (select ?discountable)
+                                          first))
           product-items            (->> all-skus
                                         (select ?physical)
                                         (mapv (fn [{:as sku :keys [catalog/sku-id]}]
@@ -197,9 +202,7 @@
                                                         (reduce + 0))
           discounted-price                     (let [discountable-service-price (:product/essential-price discountable-service-sku)]
                                                  (cond-> total-price
-                                                   discountable-service-price                                     (- discountable-service-price)
-                                                   ;; TODO: REMOVE AFTER BLACK FRIDAY SALE 11/30/21
-                                                   (first (filter (comp (partial = "holiday") :code) promotions)) (* 0.8)))
+                                                   discountable-service-price (- discountable-service-price)))
           look-id                              (:content/id look)
           any-sold-out-skus?                   (some false? (map :inventory/in-stock? all-skus))]
       (when-not any-sold-out-skus?
@@ -272,10 +275,11 @@
                                   ;; *WARNING*, HACK: to limit how many items are
                                   ;; *being rendered / fetched from the backend on this page
                                   (take 99))
-        promotions           (get-in state storefront.keypaths/promotions)]
+        promotions           (get-in state storefront.keypaths/promotions)
+        remove-free-install? (:remove-free-install (get-in state storefront.keypaths/features))]
     (->> contentful-looks
          (keep-indexed (fn [index look]
-                         (look<- skus-db looks-shared-carts-db facets-db look promotions album-keyword index)))
+                         (look<- skus-db looks-shared-carts-db facets-db look promotions album-keyword index remove-free-install?)))
          vec)))
 
 ;; Visual Domain: Page
@@ -300,6 +304,7 @@
                                         looks-shared-carts-db
                                         selected-album-keyword)
         looks-tags?            (experiments/looks-tags? state)
+        remove-free-install?   (:remove-free-install (get-in state storefront.keypaths/features))
         ;; Flow models
         facet-filtering-state  (-> state
                                    (get-in catalog.keypaths/k-models-facet-filtering)
@@ -374,7 +379,9 @@
                                    e/navigate-shop-by-look))
       ;; Grid of Looks
       (->> (merge
-            {:hero looks-hero<-}
+            {:hero   (if remove-free-install?
+                       looks-hero-no-free-install<-
+                       looks-hero<-)}
             (facet-filters/filters<-
              {:facets-db             (concat (get-in state storefront.keypaths/v2-facets) tag-facets)
               :faceted-models        looks

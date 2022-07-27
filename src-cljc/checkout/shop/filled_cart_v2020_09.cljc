@@ -624,8 +624,9 @@
                                   "Add promo code")}))})))
 
 (defn freeinstall-informational<-
-  [order items adding-freeinstall?]
-  (when (and (not (orders/discountable-services-on-order? order))
+  [order items adding-freeinstall? remove-free-install?]
+  (when (and (not remove-free-install?)
+             (not (orders/discountable-services-on-order? order))
              (some (comp #{"bundles" "closures" "frontals" "360-frontals"} first :hair/family)
                    (filter (comp (partial = "spree") :item/source) items) ))
     {:freeinstall-informational/button-id             "add-free-mayvenn-service"
@@ -757,49 +758,53 @@
                                        (variants-requests app-state request-keys/delete-line-item))
 
         ;; TODO(corey) part item model / part order model
-        suggestions (suggestions/consolidated-query app-state)
-        no-items?   (empty? items)]
+        suggestions          (suggestions/consolidated-query app-state)
+        no-items?            (empty? items)
+        remove-free-install? (:remove-free-install (get-in app-state storefront.keypaths/features))]
     (component/build template
-                     {:cart            {:return-link                 (return-link<- items)
-                                        :clear-cart-link             (clear-cart-link<- app-state)
-                                        :promo-banner                (when (zero? (orders/product-quantity waiter-order))
-                                                                       (promo-banner/query app-state))
-                                        :cta                         (cta<- no-items? hair-missing-quantity pending-requests?)
-                                        :physical-items              (physical-items<- items
-                                                                                       update-line-item-requests
-                                                                                       delete-line-item-requests)
-                                        :service-items               (service-items<-
-                                                                      (api.current/stylist app-state)
-                                                                      items
-                                                                      remove-in-progress?
-                                                                      delete-line-item-requests
-                                                                      (:appointment-time-slot waiter-order))
+                     {:cart {:return-link     (return-link<- items)
+                             :clear-cart-link (clear-cart-link<- app-state)
+                             :promo-banner    (when (zero? (orders/product-quantity waiter-order))
+                                                            (promo-banner/query app-state))
+                             :cta             (cta<- no-items? hair-missing-quantity pending-requests?)
+                             :physical-items  (physical-items<- items
+                                                                            update-line-item-requests
+                                                                            delete-line-item-requests)
+                             :service-items   (service-items<-
+                                                           (api.current/stylist app-state)
+                                                           items
+                                                           remove-in-progress?
+                                                           delete-line-item-requests
+                                                           (:appointment-time-slot waiter-order))
 
-                                        :checkout-caption            (checkout-caption<- items easy-booking? booking)
-                                        :cart-summary                (merge (cart-summary<- waiter-order items)
-                                                                            (freeinstall-informational<- waiter-order items adding-freeinstall?)
-                                                                            (promo-input<- app-state
-                                                                                           waiter-order
-                                                                                           pending-requests?))
-                                        :shared-cart                 (shared-cart<- app-state)
-                                        :quadpay                     (when-not (experiments/hide-zip app-state)
-                                                                         (quadpay<- app-state waiter-order))
-                                        :paypal                      (paypal<- app-state
-                                                                               items
-                                                                               pending-requests?)
-                                        :checkout-wo-mayvenn-install (checkout-wo-mayvenn-install<-
-                                                                      hair-missing-quantity
-                                                                      pending-requests?
-                                                                      delete-line-item-requests
-                                                                      service-item)
-                                        :browser-pay?                (and (get-in app-state keypaths/loaded-stripe)
-                                                                          (experiments/browser-pay? app-state)
-                                                                          (seq (get-in app-state keypaths/shipping-methods))
-                                                                          (seq (get-in app-state keypaths/states)))
-                                        :suggestions                 suggestions}
-                      :header          app-state
-                      :footer          app-state
-                      :popup           app-state
-                      :flash           app-state
-                      :live-help-bug   app-state
-                      :nav-event       nav-event})))
+                             :checkout-caption            (checkout-caption<- items easy-booking? booking)
+                             :cart-summary                (merge (cart-summary<- waiter-order items)
+                                                                 (freeinstall-informational<- waiter-order
+                                                                                              items
+                                                                                              adding-freeinstall?
+                                                                                              remove-free-install?)
+                                                                 (promo-input<- app-state
+                                                                                waiter-order
+                                                                                pending-requests?))
+                             :shared-cart                 (shared-cart<- app-state)
+                             :quadpay                     (when-not (experiments/hide-zip app-state)
+                                                            (quadpay<- app-state waiter-order))
+                             :paypal                      (paypal<- app-state
+                                                                    items
+                                                                    pending-requests?)
+                             :checkout-wo-mayvenn-install (checkout-wo-mayvenn-install<-
+                                                           hair-missing-quantity
+                                                           pending-requests?
+                                                           delete-line-item-requests
+                                                           service-item)
+                             :browser-pay?                (and (get-in app-state keypaths/loaded-stripe)
+                                                               (experiments/browser-pay? app-state)
+                                                               (seq (get-in app-state keypaths/shipping-methods))
+                                                               (seq (get-in app-state keypaths/states)))
+                             :suggestions                 suggestions}
+                      :header        app-state
+                      :footer        app-state
+                      :popup         app-state
+                      :flash         app-state
+                      :live-help-bug app-state
+                      :nav-event     nav-event})))

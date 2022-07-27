@@ -408,12 +408,13 @@
                                         "shop-bundle-sets-menu-expanded")})
 
 (defn basic-query [data]
-  (let [store           (marquee/query data)
-        site            (sites/determine-site data)
-        shop?           (= :shop site)
-        classic?        (= :classic site)
-        signed-in       (auth/signed-in data)
-        new-hd-lace?    (:2022-new-products-hd-lace (get-in data keypaths/features))]
+  (let [store                (marquee/query data)
+        site                 (sites/determine-site data)
+        shop?                (= :shop site)
+        classic?             (= :classic site)
+        signed-in            (auth/signed-in data)
+        new-hd-lace?         (:2022-new-products-hd-lace (get-in data keypaths/features))
+        remove-free-install? (:remove-free-install (get-in data keypaths/features))]
     {:signed-in                   signed-in
      :on-taxon?                   (get-in data keypaths/current-traverse-nav)
      :promo-banner                (promo-banner/query data)
@@ -457,10 +458,11 @@
 
                                  shop?
                                  (concat
-                                  [{:slide-out-nav-menu-item/target  [events/navigate-shopping-quiz-unified-freeinstall-intro
-                                                                      {:query-params {:location "hamburger"}}]
-                                    :slide-out-nav-menu-item/id      "menu-shop-quiz-unified-fi"
-                                    :slide-out-nav-menu-item/primary "Start Hair Quiz"}]
+                                  (when (not remove-free-install?)
+                                    [{:slide-out-nav-menu-item/target  [events/navigate-shopping-quiz-unified-freeinstall-intro
+                                                                        {:query-params {:location "hamburger"}}]
+                                      :slide-out-nav-menu-item/id      "menu-shop-quiz-unified-fi"
+                                      :slide-out-nav-menu-item/primary "Start Hair Quiz"}])
                                   [{:slide-out-nav-menu-item/target  [events/navigate-adventure-find-your-stylist]
                                     :slide-out-nav-menu-item/id      "menu-shop-find-stylist"
                                     :slide-out-nav-menu-item/primary "Browse Stylists"}
@@ -477,10 +479,10 @@
                                       :slide-out-nav-menu-item/nested? false
                                       :slide-out-nav-menu-item/id      "menu-new-arrivals"
                                       :slide-out-nav-menu-item/primary "New Arrivals"}
-                                     {:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug "hd-lace" :catalog/category-id "44"}]
-                                      :slide-out-nav-menu-item/id          "menu-shop-hd-lace"
-                                      :slide-out-nav-menu-item/nested?     false
-                                      :slide-out-nav-menu-item/primary     "HD Lace"}]))
+                                     {:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug "hd-lace" :catalog/category-id "44"}]
+                                      :slide-out-nav-menu-item/id      "menu-shop-hd-lace"
+                                      :slide-out-nav-menu-item/nested? false
+                                      :slide-out-nav-menu-item/primary "HD Lace"}]))
 
                                  classic?
                                  (concat
@@ -491,14 +493,14 @@
 
                                  :always
                                  (concat
-                                  [{:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug "wigs" :catalog/category-id "13"}]
-                                    :slide-out-nav-menu-item/id          "menu-shop-wigs"
-                                    :slide-out-nav-menu-item/nested?     false
-                                    :slide-out-nav-menu-item/primary     "Wigs"}
-                                   {:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug "human-hair-bundles" :catalog/category-id "27"}]
-                                    :slide-out-nav-menu-item/nested?     false
-                                    :slide-out-nav-menu-item/id          "menu-shop-human-hair-bundles"
-                                    :slide-out-nav-menu-item/primary     "Hair Bundles"}
+                                  [{:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug "wigs" :catalog/category-id "13"}]
+                                    :slide-out-nav-menu-item/id      "menu-shop-wigs"
+                                    :slide-out-nav-menu-item/nested? false
+                                    :slide-out-nav-menu-item/primary "Wigs"}
+                                   {:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug "human-hair-bundles" :catalog/category-id "27"}]
+                                    :slide-out-nav-menu-item/nested? false
+                                    :slide-out-nav-menu-item/id      "menu-shop-human-hair-bundles"
+                                    :slide-out-nav-menu-item/primary "Hair Bundles"}
                                    {:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug "virgin-closures" :catalog/category-id "0"}]
                                     :slide-out-nav-menu-item/id      "menu-shop-virgin-closures"
                                     :slide-out-nav-menu-item/nested? false
@@ -525,10 +527,11 @@
 
                            shop?
                            (concat
-                            [{:header-menu-item/navigation-target [events/navigate-shopping-quiz-unified-freeinstall-intro
-                                                                   {:query-params {:location "desktop_header"}}]
-                              :header-menu-item/id                "desktop-shop-quiz-unified-fi"
-                              :header-menu-item/content           "Start Hair Quiz"}]
+                            (when (not remove-free-install?)
+                              [{:header-menu-item/navigation-target [events/navigate-shopping-quiz-unified-freeinstall-intro
+                                                                     {:query-params {:location "desktop_header"}}]
+                                :header-menu-item/id                "desktop-shop-quiz-unified-fi"
+                                :header-menu-item/content           "Start Hair Quiz"}])
                             [{:header-menu-item/navigation-target [events/navigate-adventure-find-your-stylist]
                               :header-menu-item/id                "desktop-shop-find-stylist"
                               :header-menu-item/content           "Browse Stylists"}

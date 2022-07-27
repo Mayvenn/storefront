@@ -570,6 +570,7 @@
       (assoc _ :2022-new-products-hd-lace (feature-flags/retrieve-flag ld "2022-new-products-hd-lace" :bool false))
       (assoc _ :contentful-driven-email-capture-modal (feature-flags/retrieve-flag ld "contentful-driven-email-capture-modal" :bool false))
       (assoc _ :show-guaranteed-shipping (feature-flags/retrieve-flag ld "show-guaranteed-shipping" :bool true))
+      (assoc _ :remove-free-install (feature-flags/retrieve-flag ld "remove-free-install" :bool true))
       (assoc-in-req-state req keypaths/features _)
       (h _))))
 
