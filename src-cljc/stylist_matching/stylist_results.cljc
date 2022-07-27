@@ -920,11 +920,7 @@
                           :spinning?     (or (empty? (:status matching))
                                              (utils/requesting? app-state request-keys/fetch-stylists)
                                              (utils/requesting? app-state request-keys/fetch-stylists-matching-filters)
-                                             (utils/requesting? app-state request-keys/get-products)
-                                             (and stylist-results-test?
-                                                  (or (not just-added-control?)
-                                                      (not just-added-only?)
-                                                      (not just-added-experience?))))
+                                             (utils/requesting? app-state request-keys/get-products))
                           :scrim?        (contains? (:status matching)
                                                     :results.presearch/name)
 
