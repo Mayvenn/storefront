@@ -913,28 +913,23 @@
                                      :body  [{:text "If you want to play with color, it helps to choose a wig that can be dyed—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it dyed the color you want."}]}]}
           wig-templates)])
 
-(def mayvenn-install-eligible
+(def all-hair-products
   [{:catalog/category-id              "23"
-    :experience/exclude               #{"mayvenn-classic"}
     :catalog/department               #{"hair"}
     :category/show-title?             true
-    :category/new?                    true
-    :category/description             "Get a complimentary Mayvenn Service by a licensed stylist with qualifying purchases. "
-    :copy/learn-more-target           [events/popup-show-consolidated-cart-free-install]
-    :copy/title                       "Complimentary Service Eligible Products"
-    :hair/family                      #{"bundles" "closures" "frontals" "360-frontals"}
-    :page/slug                        "mayvenn-install"
-    :page/title                       "Free Hair Service - Buy 3 Items for Free Service | Mayvenn"
-    :page.meta/description            (copy "Buy 3 items and Mayvenn will pay for your hair service!"
-                                            "Shop our selection of natural human hair bundles and"
-                                            "get connected with a stylist near you.")
-    :promo.mayvenn-install/eligible   #{true}
-    :opengraph/description            (copy "Buy 3 items and Mayvenn will pay for your hair service!"
-                                            "Shop our selection of natural human hair bundles and"
-                                            "get connected with a stylist near you.")
-    :opengraph/title                  (copy "Shop Mayvenn Hair - Buy 3 items and we'll pay for your hair service.")
+    :category/description             "Choose From All of Our Hair Products"
+    :copy/title                       "All Products"
+    :hair/family                      #{"bundles" "closures" "frontals" "360-frontals" "seamless-clip-ins" "tape-ins"
+                                        "360-wigs" "lace-front-wigs" "ready-wigs" "headband-wigs" "closure-wigs"}
+    :page/slug                        "all-products"
+    :page/title                       "100% Virgin Hair | Mayvenn"
+    :page.meta/description            (copy "Mayvenn’s real human hair bundles come in different variations such as"
+                                            "Brazilian, Malaysian, straight, deep wave, and loose wave. Create your look today.")
+    :opengraph/description            (copy "100% virgin human hair, machine-wefted and backed by our 30 Day Quality Guarantee,"
+                                            "our natural human hair bundles are the best quality products on the market and ship free!")
+    :opengraph/title                  "Natural Human Hair Bundles - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
     :selector/electives               [:hair/texture :hair/family :hair/origin :hair/color :hair/base-material]
-    :selector/essentials              [:catalog/department :promo.mayvenn-install/eligible]
+    :selector/essentials              [:catalog/department]
     :subsections/subsection-selectors texture-subsection-selectors}])
 
 (def human-hair-bundles
@@ -1360,7 +1355,7 @@
 (def initial-categories
   (concat wigs
           hair-extensions-category
-          mayvenn-install-eligible
+          all-hair-products
           stylist-exclusives
           virgin-hair-nav-roots
           menu-categories
