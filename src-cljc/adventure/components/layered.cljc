@@ -561,6 +561,38 @@
        email-capture/hr-divider
        (email-capture/fine-print fine-print-prefix)])])
 
+(declare layer-view)
+(defcomponent lp-split
+  [{:keys [left-top right-bottom]} _ opts]
+  [:div
+   ;; [:div (str left-top)]
+   ;; [:div (str right-bottom)]
+   [:div.flex.flex-column-on-mb
+    (layer-view left-top opts)
+    (layer-view right-bottom opts)]])
+
+(defcomponent lp-title-text-cta-background-color
+  [data _ _]
+  (let [title         (:header/value data)
+        subtitle      (:body/value data)
+        cta-copy      (:cta/value data)
+        cta-url       (:cta/target data)
+        bg-color      (:background/color data)
+        content-color (:content/color data)]
+    [:div.p6
+     (when bg-color
+       {:class (str "bg-" bg-color " " content-color)})
+     [:div.canela.title-2.py1
+      title]
+     [:p.content-2.py1
+      subtitle]
+     (when cta-url
+       [:div.mt2
+        ;; TODO: consider alternatives to max-width
+        {:style {:max-width "300px"}}
+        (ui/button-medium-primary (utils/route-to events/external-redirect-url {:url cta-url})
+                                  cta-copy)])]))
+
 (defcomponent lp-image-text-block
   [{anchor-name      :anchor/name
     title            :header/value
@@ -700,16 +732,26 @@
     [:div.rotate-180 (svg/quotation-mark {:class "fill-gray" :width "35px" :height "30px"})]]])
 
 
+;;TODO: having `flex-auto` in this layer definition is strange. It assumes the surrounding context.
+(defcomponent lp-image
+  [{:keys [alt image navigation-message]} _ _]
+  (ui/img {:src   (:url (:file image))
+           :alt   alt
+           :class "flex-auto"}))
+
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (when type
     (component/build
      (case type
-       :lp-tiles            lp-tiles
-       :lp-image-text-block lp-image-text-block
-       :lp-image-carousel   lp-image-carousel
-       :lp-video            lp-video
-       :lp-reviews          lp-reviews
-       :lp-email-capture    lp-email-capture
+       :lp-tiles                           lp-tiles
+       :lp-image-text-block                lp-image-text-block
+       :lp-image-carousel                  lp-image-carousel
+       :lp-video                           lp-video
+       :lp-reviews                         lp-reviews
+       :lp-email-capture                   lp-email-capture
+       :lp-split                           lp-split
+       :lp-title-text-cta-background-color lp-title-text-cta-background-color
+       :lp-image                           lp-image
 
        ;; REBRAND
        :shop-text-block         shop-text-block

@@ -129,6 +129,25 @@
                                       :keypath     textfield-keypath
                                       :errors      (get-in data keypaths/field-errors ["email"])
                                       :email       (get-in data textfield-keypath)})))
+    "split"         {:layer/type   :lp-split
+                     :left-top     (determine-and-shape-layer data (:lefttop body-layer))
+                     :right-bottom (determine-and-shape-layer data (:rightbottom body-layer))}
+
+    "contentModuleTitleTextCtaBackgroundColor" {:layer/type       :lp-title-text-cta-background-color
+                                                :header/value     (:title body-layer)
+                                                :body/value       (:subtitle body-layer)
+                                                :cta/value        (:cta-copy body-layer)
+                                                :cta/id           (str "landing-page-" (:slug body-layer) "-cta")
+                                                ;; TODO: make this resilient to external or internal links
+                                                :cta/target       (:cta-url body-layer) #_(url->navigation-message (:cta-url body-layer))
+                                                :background/color (:background-color body-layer)
+                                                :content/color    (if (= "black" (:background-color body-layer))
+                                                                    "white"
+                                                                    "black")}
+    "image"                                    {:layer/type             :lp-image
+                                                :alt                    (:alt body-layer)
+                                                :image                  (:image body-layer)
+                                                :navigation-message (url->navigation-message (:url body-layer))}
     {}))
 
 (defn landing-page-body [data]
