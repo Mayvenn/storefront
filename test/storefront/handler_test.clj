@@ -819,17 +819,17 @@
                                                             "origin=indian%7Ebrazilian"))))
 
       (testing "when a category page does not have a template and has selections"
-        (-> (mock/request :get "https://shop.mayvenn.com/categories/23-mayvenn-install?origin=indian")
+        (-> (mock/request :get "https://shop.mayvenn.com/categories/23-all-products?origin=indian")
             handler
-            (validate-title-and-description-and-canonical "Free Hair Service - Buy 3 Items for Free Service | Mayvenn"
-                                                          (str "Buy 3 items and Mayvenn will pay for your hair service!"
-                                                               " Shop our selection of natural human hair bundles and"
-                                                               " get connected with a stylist near you.")
-                                                          "/categories/23-mayvenn-install"
+            (validate-title-and-description-and-canonical "100% Virgin Hair | Mayvenn"
+                                                          (str "Mayvenn’s real human hair bundles come in different variations"
+                                                               " such as Brazilian, Malaysian, straight, deep wave, and loose wave."
+                                                               " Create your look today.")
+                                                          "/categories/23-all-products"
                                                           "origin=indian")))
 
       (testing "when mayvenn-install category has a category selected, that category's seo is used"
-        (-> (mock/request :get "https://shop.mayvenn.com/categories/23-mayvenn-install?family=closures")
+        (-> (mock/request :get "https://shop.mayvenn.com/categories/23-all-products?family=closures")
             handler
             (validate-title-and-description-and-canonical
              default-closure-title
