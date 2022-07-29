@@ -506,7 +506,7 @@
    (when title
      [:div.title-1.proxima.shout.bold title])
    [:div.flex.flex-wrap.pt1.pb4.justify-center
-    (for [{:keys [image-url image alt label] :as image-data} images]
+    (for [{:keys [image-url image alt label label-shout copy] :as image-data} images]
       (when (or image image-url)
         (if-let [navigation-message (:cta/navigation-message image-data)]
           [:a.col-5.col-2-on-tb-dt.p1.border.border-cool-gray.m1
@@ -518,7 +518,13 @@
              :max-size  400
              :alt       alt}
             nil)
-           [:div.black.content-2.mt2 label]]
+           [:div.black.content-2.mt2
+            (when label-shout
+              {:class "proxima shout bold"})
+            label]
+           (when copy
+             [:div.black.left-align.mt2
+              copy])]
 
           [:div.col-6.col-3-on-tb-dt.p1
            {:key (str image-url)}
@@ -528,7 +534,12 @@
              :max-size  400
              :alt       alt}
             nil)
-           [:div.black.content-2 label]])))]
+           [:div.black.content-2
+            (when label-shout
+              {:class "proxima shout loud"})
+            label]
+           (when copy
+             [:div.black.left-align.mt2 copy])])))]
    (let [{:keys [cta]} data]
      (if (:id cta)
        (ui/button-small-primary (merge {:class "inline"}

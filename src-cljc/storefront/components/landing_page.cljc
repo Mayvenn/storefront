@@ -64,7 +64,7 @@
     "layerTilesAndCta" {:layer/type   :lp-tiles
                         :header/value (:title body-layer)
                         :images       (map (fn [tile]
-                                             (case (:content/type tile)
+                                             (case (:content/type (spice.core/spy tile))
                                                "imageTextLink"
                                                {:image-url              (:image-url tile) ; Ucare image
                                                 :image                  (:image tile)     ; contentful-hosted image
@@ -77,6 +77,14 @@
                                                 :image                  (:image tile)     ; contentful-hosted image
                                                 :alt                    (:description tile)
                                                 :label                  (:title tile)
+                                                :cta/navigation-message [events/external-redirect-url {:url (:link-url tile)}]}
+
+                                               "contentModuleImageTileInternalLinkTitleCopy"
+                                               {:image                  (:image tile)     ; contentful-hosted image
+                                                :alt                    (:description tile)
+                                                :label-shout            true
+                                                :label                  (:title tile)
+                                                :copy                   (spice.core/spy (:copy tile))
                                                 :cta/navigation-message [events/external-redirect-url {:url (:link-url tile)}]}
 
                                                {}))
