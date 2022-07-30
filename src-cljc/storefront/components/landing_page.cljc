@@ -64,7 +64,7 @@
     "layerTilesAndCta" {:layer/type   :lp-tiles
                         :header/value (:title body-layer)
                         :images       (map (fn [tile]
-                                             (case (:content/type (spice.core/spy tile))
+                                             (case (:content/type tile)
                                                "imageTextLink"
                                                {:image-url              (:image-url tile) ; Ucare image
                                                 :image                  (:image tile)     ; contentful-hosted image
@@ -84,7 +84,7 @@
                                                 :alt                    (:description tile)
                                                 :label-shout            true
                                                 :label                  (:title tile)
-                                                :copy                   (spice.core/spy (:copy tile))
+                                                :copy                   (:copy tile)
                                                 :cta/navigation-message [events/external-redirect-url {:url (:link-url tile)}]}
 
                                                {}))
@@ -129,9 +129,12 @@
                                       :keypath     textfield-keypath
                                       :errors      (get-in data keypaths/field-errors ["email"])
                                       :email       (get-in data textfield-keypath)})))
-    "split"         {:layer/type   :lp-split
-                     :left-top     (determine-and-shape-layer data (:lefttop body-layer))
-                     :right-bottom (determine-and-shape-layer data (:rightbottom body-layer))}
+    "split"         (let [adjust-width-if-image (fn [section] (cond-> (determine-and-shape-layer data section)
+                                                                #(= :lp-image (:layer/type %))
+                                                                (merge {:style {:min-width "400px"}})))]
+                      {:layer/type   :lp-split
+                       :left-top     (adjust-width-if-image (:lefttop body-layer))
+                       :right-bottom (adjust-width-if-image (:rightbottom body-layer))})
 
     "contentModuleTitleTextCtaBackgroundColor" {:layer/type       :lp-title-text-cta-background-color
                                                 :header/value     (:title body-layer)

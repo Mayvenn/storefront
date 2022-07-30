@@ -734,8 +734,9 @@
 
 ;;TODO: having `flex-auto` in this layer definition is strange. It assumes the surrounding context.
 (defcomponent lp-image
-  [{:keys [alt image navigation-message]} _ _]
+  [{:keys [alt image navigation-message style]} _ _]
   (ui/img {:src   (:url (:file image))
+           :style style
            :alt   alt
            :class "flex-auto"}))
 
