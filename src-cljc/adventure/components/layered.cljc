@@ -564,12 +564,9 @@
 (declare layer-view)
 (defcomponent lp-split
   [{:keys [left-top right-bottom]} _ opts]
-  [:div
-   ;; [:div (str left-top)]
-   ;; [:div (str right-bottom)]
-   [:div.flex.flex-column-on-mb
-    (layer-view left-top opts)
-    (layer-view right-bottom opts)]])
+  [:div.flex.flex-column-on-mb
+   (layer-view left-top opts)
+   (layer-view right-bottom opts)])
 
 (defcomponent lp-title-text-cta-background-color
   [data _ _]
@@ -736,7 +733,7 @@
   [{:keys [alt image navigation-message]} _ _]
   (ui/img {:src (:url (:file image))
            :style {:object-fit "cover"
-                   :min-width "33%"}
+                   :min-width "50%"}
            :class "flex-auto"
            :alt alt}))
 
