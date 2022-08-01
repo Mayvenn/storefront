@@ -44,7 +44,7 @@
   (let [order            (get-in app-state keypaths/order)
         store-experience (get-in app-state keypaths/store-experience)]
     (and (orders/discountable-services-on-order? order)
-         (= "mayvenn-classic" store-experience))))
+         (#{"mayvenn-classic" "classic2.1"} store-experience))))
 
 (defn- reject-inapplicable-freeinstall-promo [session-id order]
   #?(:cljs

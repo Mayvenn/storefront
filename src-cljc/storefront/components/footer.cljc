@@ -157,7 +157,7 @@
   [data]
   (let [shop?              (or (= "shop" (get-in data keypaths/store-slug))
                                (= "retail-location" (get-in data keypaths/store-experience)))
-        classic?           (= "mayvenn-classic" (get-in data keypaths/store-experience))
+        classic?           (#{"mayvenn-classic" "classic2.1"} (get-in data keypaths/store-experience))
         sort-key           :footer/order
         categories         (->> (get-in data keypaths/categories)
                                 (into []

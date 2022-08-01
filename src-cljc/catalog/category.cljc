@@ -184,11 +184,8 @@
        (scroll/enable-body-scrolling)
        (when-let [contentful-faq-id (:contentful/faq-id category)]
          (effects/fetch-cms-keypath app-state [:faq contentful-faq-id]))
-       (let [store-experience (get-in app-state k/store-experience)]
-         (when (and (= "mayvenn-classic"
-                       store-experience)
-                    (contains? (:experience/exclude category) "mayvenn-classic"))
-           (effects/redirect e/navigate-home)))
+       (when (-> category :experience/exclude (contains? (get-in app-state k/store-experience)))
+         (effects/redirect e/navigate-home))
        (if (auth/permitted-category? app-state category)
          (api/get-products (get-in app-state k/api-cache)
                            (skuers/essentials category)
