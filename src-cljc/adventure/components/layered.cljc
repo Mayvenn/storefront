@@ -732,11 +732,10 @@
     [:div.rotate-180 (svg/quotation-mark {:class "fill-gray" :width "35px" :height "30px"})]]])
 
 
-;;TODO: having `flex-auto` in this layer definition is strange. It assumes the surrounding context.
-(defcomponent lp-image
-  [{:keys [alt image navigation-message style]} _ _]
+(defcomponent lp-split-image
+  [{:keys [alt image navigation-message]} _ _]
   (ui/img {:src   (:url (:file image))
-           :style style
+           :style {:min-width "33%"}
            :alt   alt
            :class "flex-auto"}))
 
@@ -752,7 +751,7 @@
        :lp-email-capture                   lp-email-capture
        :lp-split                           lp-split
        :lp-title-text-cta-background-color lp-title-text-cta-background-color
-       :lp-image                           lp-image
+       :lp-split-image                     lp-split-image
 
        ;; REBRAND
        :shop-text-block         shop-text-block

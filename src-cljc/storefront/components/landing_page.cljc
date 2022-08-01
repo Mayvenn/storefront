@@ -89,7 +89,7 @@
 
                                                {}))
                                            (:tiles body-layer))
-                        :cta {:id      (str "landing-page-" (:slug body-layer) "-cta")
+                        :cta {:id      (when (:cta-url body-layer) (str "landing-page-" (:slug body-layer) "-cta"))
                               :attrs   {:navigation-message (url->navigation-message (:cta-url body-layer))}
                               :content (:cta-copy body-layer)}}
     "imageCarousel" {:layer/type :lp-image-carousel
@@ -129,12 +129,9 @@
                                       :keypath     textfield-keypath
                                       :errors      (get-in data keypaths/field-errors ["email"])
                                       :email       (get-in data textfield-keypath)})))
-    "split"         (let [adjust-width-if-image (fn [section] (cond-> (determine-and-shape-layer data section)
-                                                                #(= :lp-image (:layer/type %))
-                                                                (merge {:style {:min-width "400px"}})))]
-                      {:layer/type   :lp-split
-                       :left-top     (adjust-width-if-image (:lefttop body-layer))
-                       :right-bottom (adjust-width-if-image (:rightbottom body-layer))})
+    "split"         {:layer/type   :lp-split
+                     :left-top     (determine-and-shape-layer data (:lefttop body-layer))
+                     :right-bottom (determine-and-shape-layer data (:rightbottom body-layer))}
 
     "contentModuleTitleTextCtaBackgroundColor" {:layer/type       :lp-title-text-cta-background-color
                                                 :header/value     (:title body-layer)
@@ -147,7 +144,7 @@
                                                 :content/color    (if (= "black" (:background-color body-layer))
                                                                     "white"
                                                                     "black")}
-    "image"                                    {:layer/type             :lp-image
+    "image"                                    {:layer/type             :lp-split-image
                                                 :alt                    (:alt body-layer)
                                                 :image                  (:image body-layer)
                                                 :navigation-message (url->navigation-message (:url body-layer))}
