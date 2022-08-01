@@ -49,7 +49,8 @@
                         :cta          {:id      "landing-page-see-more"
                                        :attrs   {:navigation-message [events/navigate-shop-by-look {:album-keyword :look}]}
                                        :content "see more"}}
-    "faq"              (merge {:layer/type :faq}
+    "faq"              (merge {:layer/type :faq
+                               :title (:title body-layer)}
                               (faq/hd-lace-query data body-layer))
     "layerTextBlock"   {:layer/type   :lp-image-text-block
                         :header/value (:title body-layer)

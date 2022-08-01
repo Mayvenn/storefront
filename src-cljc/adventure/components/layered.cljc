@@ -178,10 +178,10 @@
         nil)])]])
 
 (defcomponent faq
-  [{:keys [expanded-index sections]} owner opts]
+  [{:keys [expanded-index sections title]} owner opts]
   [:div.bg-pale-purple.py6.px4-on-mb-tb
    [:div.mx-auto.col-6-on-dt
-    [:h2.canela.title-1.center.my7 "Frequently Asked Questions"]
+    [:h2.canela.title-1.center.my7 title]
     ^:inline
     (component/build
      accordion/component
