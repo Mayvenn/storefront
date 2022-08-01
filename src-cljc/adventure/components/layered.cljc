@@ -579,7 +579,7 @@
         cta-url       (:cta/target data)
         bg-color      (:background/color data)
         content-color (:content/color data)]
-    [:div.p6
+    [:div.p4-on-mb.p8-on-tb-dt
      (when bg-color
        {:class (str "bg-" bg-color " " content-color)})
      [:div.canela.title-2.py1
