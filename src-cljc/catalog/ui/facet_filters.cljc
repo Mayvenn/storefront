@@ -17,7 +17,8 @@
             [storefront.transitions :as t]
             [storefront.events :as e]
             [storefront.effects :as effects]
-            [spice.maps :as maps]))
+            [spice.maps :as maps]
+            [clojure.string :as str]))
 
 (defn summary-status-molecule
   [{:filtering-summary.status/keys [primary secondary]}]
@@ -82,7 +83,7 @@
     :href      "#"
     :data-test (:facet-filtering.section.filter/id data)
     :key       id}
-   [:div (ui/check-box {:value value :id (str "filter-" primary "-mobile")})]
+   [:div (ui/check-box {:value value :id (str "filter-" (str/escape primary {\" "\\\""}) "-mobile")})]
    (when icon-url
      [:img.block.pr2
       {:style {:width  "50px"
