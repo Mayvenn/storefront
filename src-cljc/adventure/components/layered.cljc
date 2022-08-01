@@ -734,10 +734,11 @@
 
 (defcomponent lp-split-image
   [{:keys [alt image navigation-message]} _ _]
-  (ui/img {:src   (:url (:file image))
-           :style {:min-width "33%"}
-           :alt   alt
-           :class "flex-auto"}))
+  (ui/img {:src (:url (:file image))
+           :style {:object-fit "cover"
+                   :min-width "33%"}
+           :class "flex-auto"
+           :alt alt}))
 
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (when type
