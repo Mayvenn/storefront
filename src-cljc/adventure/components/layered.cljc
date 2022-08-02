@@ -776,8 +776,7 @@
 
 (defcomponent lp-divider-purple-pink
   [_ _ _]
-  ;; TODO: replace with purple & pink image when we get the asset
-  (divider "url('//ucarecdn.com/7e91271e-874c-4303-bc8a-00c8babb0d77/-/resize/x24/')"))
+  (divider "url('//ucarecdn.com/ac332aa1-cc58-4c1b-b610-da363203388a/-/crop/301x24/bottom/')"))
 
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (when type
