@@ -20,7 +20,8 @@
             [ui.molecules :as ui.M]
             [storefront.config :as config]
             [storefront.effects :as fx]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [homepage.ui.contact-us :as contact-us]))
 
 (defn ^:private vertical-squiggle
   [top]
@@ -737,6 +738,47 @@
            :class "flex-auto"
            :alt alt}))
 
+;; Duplicated from src-cljc/homepage/ui_v2020_07.cljc to avoid circular dep
+(def contact-us-query
+  {:contact-us.title/primary   "Contact Us"
+   :contact-us.title/secondary "We're here to help"
+   :contact-us.body/primary    "Have Questions?"
+   :list/contact-methods
+   [{:contact-us.contact-method/uri         (ui/sms-url "346-49")
+     :contact-us.contact-method/svg-symbol  [:svg/icon-sms {:height 51
+                                                            :width  56}]
+     :contact-us.contact-method/title       "Live Chat"
+     :contact-us.contact-method/copy        "Text: 346-49"
+     :contact-us.contact-method/legal-copy  "Message & data rates may apply. Message frequency varies."
+     :contact-us.contact-method/legal-links [{:copy   "terms"
+                                              :target [events/navigate-content-sms]}
+                                             {:copy   "privacy policy"
+                                              :target [events/navigate-content-privacy]}]}
+    {:contact-us.contact-method/uri        (ui/phone-url "1 (855) 287-6868")
+     :contact-us.contact-method/svg-symbol [:svg/icon-call {:class  "bg-white fill-black stroke-black circle"
+                                                            :height 57
+                                                            :width  57}]
+     :contact-us.contact-method/title      "Call Us"
+     :contact-us.contact-method/copy       "1 (855) 287-6868"}
+    {:contact-us.contact-method/uri        (ui/email-url "help@mayvenn.com")
+     :contact-us.contact-method/svg-symbol [:svg/icon-email {:height 39
+                                                             :width  56}]
+     :contact-us.contact-method/title      "Email Us"
+     :contact-us.contact-method/copy       "help@mayvenn.com"}]})
+
+(defcomponent lp-contact-us
+  [_ _ _]
+  (component/build contact-us/organism contact-us-query))
+
+(defcomponent lp-divider-green-gray
+  [_ _ _]
+  (divider "url('//ucarecdn.com/7e91271e-874c-4303-bc8a-00c8babb0d77/-/resize/x24/')"))
+
+(defcomponent lp-divider-purple-pink
+  [_ _ _]
+  ;; TODO: replace with purple & pink image when we get the asset
+  (divider "url('//ucarecdn.com/7e91271e-874c-4303-bc8a-00c8babb0d77/-/resize/x24/')"))
+
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (when type
     (component/build
@@ -750,6 +792,9 @@
        :lp-split                           lp-split
        :lp-title-text-cta-background-color lp-title-text-cta-background-color
        :lp-split-image                     lp-split-image
+       :lp-contact-us                      lp-contact-us
+       :lp-divider-green-gray              lp-divider-green-gray
+       :lp-divider-purple-pink             lp-divider-purple-pink
 
        ;; REBRAND
        :shop-text-block         shop-text-block

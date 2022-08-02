@@ -50,7 +50,7 @@
                                        :attrs   {:navigation-message [events/navigate-shop-by-look {:album-keyword :look}]}
                                        :content "see more"}}
     "faq"              (merge {:layer/type :faq
-                               :title (:title body-layer)}
+                               :title      (:title body-layer)}
                               (faq/hd-lace-query data body-layer))
     "layerTextBlock"   {:layer/type   :lp-image-text-block
                         :header/value (:title body-layer)
@@ -140,15 +140,19 @@
                                                 :cta/value        (:cta-copy body-layer)
                                                 :cta/id           (str "landing-page-" (:slug body-layer) "-cta")
                                                 ;; TODO: make this resilient to external or internal links
-                                                :cta/target       (:cta-url body-layer) #_(url->navigation-message (:cta-url body-layer))
+                                                :cta/target       (:cta-url body-layer) #_ (url->navigation-message (:cta-url body-layer))
                                                 :background/color (:background-color body-layer)
                                                 :content/color    (if (= "black" (:background-color body-layer))
                                                                     "white"
                                                                     "black")}
-    "image"                                    {:layer/type             :lp-split-image
-                                                :alt                    (:alt body-layer)
-                                                :image                  (:image body-layer)
+    "image"                                    {:layer/type         :lp-split-image
+                                                :alt                (:alt body-layer)
+                                                :image              (:image body-layer)
                                                 :navigation-message (url->navigation-message (:url body-layer))}
+    "staticContent"                            {:layer/type (case (:module body-layer)
+                                                              "contact-us"          :lp-contact-us
+                                                              "divider-green-gray"  :lp-divider-green-gray
+                                                              "divider-purple-pink" :lp-divider-purple-pink)}
     {}))
 
 (defn landing-page-body [data]
