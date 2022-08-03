@@ -169,12 +169,13 @@
           item-quantity            (reduce + (vals sku-id->quantity))
           all-skus                 (->> (select-keys skus-db sku-ids-from-shared-cart)
                                         vals
-                                        vec)
+                                        vec
+                                        (remove (fn [sku] (and remove-free-install?
+                                                               ((:catalog/department sku) "service")))))
           ;; NOTE: assumes only one discountable service item for the look
-          discountable-service-sku (when (not remove-free-install?)
-                                     (->> all-skus
-                                          (select ?discountable)
-                                          first))
+          discountable-service-sku (->> all-skus
+                                        (select ?discountable)
+                                        first)
           product-items            (->> all-skus
                                         (select ?physical)
                                         (mapv (fn [{:as sku :keys [catalog/sku-id]}]
