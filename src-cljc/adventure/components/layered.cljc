@@ -548,6 +548,31 @@
                                 (:content cta))
        [:span]))])
 
+(defcomponent lp-images-with-copy
+  [{title  :header/value
+    images :images} _ _]
+  [:div.m10
+   (when title
+     [:div.black.title-1.canela
+      title])
+   [:div.flex.flex-wrap.justify-around.mt5
+    (for [{:keys [label alt image copy]} images]
+      (when image
+        [:div.col-12.col-3-on-tb-dt.p1.mx3
+         {:key (str label alt)}
+         (ui/screen-aware
+          ugc-image
+          {:image-url (:url (:file image))
+           :max-size  400
+           :alt       alt}
+          nil)
+         [:div.border-cool-gray.border-left.pl5
+          (when label
+            [:div.black.content-2.proxima.shout.bold
+             label])
+          (when copy
+            [:div.black.content-2.left-align.mt2 copy])]]))]])
+
 (defcomponent lp-email-capture
   [{:keys [email-capture-id template-content-id incentive fine-print-prefix] :as data} _ _]
   [:form.col-12.center.px1.max-580.my6.mx-auto.py6
@@ -729,7 +754,6 @@
       reviews)]
     [:div.rotate-180 (svg/quotation-mark {:class "fill-gray" :width "35px" :height "30px"})]]])
 
-
 (defcomponent lp-split-image
   [{:keys [alt image navigation-message]} _ _]
   (ui/img {:src (:url (:file image))
@@ -783,6 +807,7 @@
     (component/build
      (case type
        :lp-tiles                           lp-tiles
+       :lp-images-with-copy                lp-images-with-copy
        :lp-image-text-block                lp-image-text-block
        :lp-image-carousel                  lp-image-carousel
        :lp-video                           lp-video

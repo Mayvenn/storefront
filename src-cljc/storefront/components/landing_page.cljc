@@ -93,6 +93,18 @@
                         :cta {:id      (when (:cta-url body-layer) (str "landing-page-" (:slug body-layer) "-cta"))
                               :attrs   {:navigation-message (url->navigation-message (:cta-url body-layer))}
                               :content (:cta-copy body-layer)}}
+    "layerImagesWCopy" {:layer/type :lp-images-with-copy
+                        :header/value (:title body-layer)
+                        :images     (map (fn [tile]
+                                           (case (:content/type tile)
+                                             "imageTitleCopy"
+                                             {:image                  (:image tile)     ; contentful-hosted image
+                                              :alt                    (:description tile)
+                                              :label                  (:title tile)
+                                              :copy                   (:copy tile)}
+
+                                             {}))
+                                         (:images body-layer))}
     "imageCarousel" {:layer/type :lp-image-carousel
                      :images     (mapv (fn [image]
                                          (if (:image image) ; Prioritize contentful-hosted image over ucare
