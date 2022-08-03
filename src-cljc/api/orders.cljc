@@ -477,10 +477,17 @@
      :total            (- subtotal total-discounted-amount)}))
 
 (defn shared-cart->order [state sku-db shared-cart]
-  (let [holiday-promo (->> (get-in state storefront.keypaths/promotions)
-                            (filter #(= "holiday" (:code %)))
-                            first)]
+  (let [holiday-promo        (->> (get-in state storefront.keypaths/promotions)
+                                  (filter #(= "holiday" (:code %)))
+                                  first)
+        remove-free-install? (:remove-free-install (get-in state storefront.keypaths/features))]
     (some->> shared-cart
+             ;; GROT: Remove this HACK when all services have been removed from shared carts
+             (#(update %
+                       :line-items
+                       (fn [line-items]
+                         (remove (fn [li] (and remove-free-install?
+                                               (clojure.string/starts-with? (:catalog/sku-id li) "SV2"))) line-items))))
              (enrich-line-items-with-sku-data sku-db)
              (apply-promos holiday-promo)
              shared-cart->waiter-order
