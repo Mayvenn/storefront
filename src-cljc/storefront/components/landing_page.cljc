@@ -47,9 +47,7 @@
                                               :looks
                                               :acceptance-looks) body-layer))
                         :cta          {:id      "landing-page-see-more"
-                                       :attrs   (or (when-let [url (:cta-url body-layer)]
-                                                      (url->navigation-message url))
-                                                    {:navigation-message [events/navigate-shop-by-look {:album-keyword :look}]})
+                                       :attrs   {:navigation-message [events/navigate-shop-by-look {:album-keyword :look}]}
                                        :content (or (:cta-copy body-layer) "see more")}}
     "faq"              (merge {:layer/type :faq
                                :title      (:title body-layer)}
