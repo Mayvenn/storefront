@@ -34,7 +34,7 @@
                         :header/value (:title body-layer)
                         :body/value   (:subtitle body-layer) }
     "ugc-collection"   {:layer/type   :lp-tiles
-                        :header/value "Shop By Look"
+                        :header/value (or (:title body-layer) "Shop By Look")
                         :images       (map (fn [look]
                                              (when (:content/id look)
                                                {:image-url              (:photo-url look)
@@ -47,8 +47,10 @@
                                               :looks
                                               :acceptance-looks) body-layer))
                         :cta          {:id      "landing-page-see-more"
-                                       :attrs   {:navigation-message [events/navigate-shop-by-look {:album-keyword :look}]}
-                                       :content "see more"}}
+                                       :attrs   (or (when-let [url (:cta-url body-layer)]
+                                                      (url->navigation-message url))
+                                                    {:navigation-message [events/navigate-shop-by-look {:album-keyword :look}]})
+                                       :content (or (:cta-copy body-layer) "see more")}}
     "faq"              (merge {:layer/type :faq
                                :title      (:title body-layer)}
                               (faq/hd-lace-query data body-layer))
