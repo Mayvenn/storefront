@@ -756,11 +756,11 @@
 
 (defcomponent lp-split-image
   [{:keys [alt image navigation-message]} _ _]
-  (ui/img {:src (:url (:file image))
+  (ui/img {:src   (:url (:file image))
            :style {:object-fit "cover"
-                   :min-width "50%"}
-           :class "flex-auto"
-           :alt alt}))
+                   :min-width  "50%"}
+           :class "flex-auto col-12"
+           :alt   alt}))
 
 ;; Duplicated from src-cljc/homepage/ui_v2020_07.cljc to avoid circular dep
 (def contact-us-query
