@@ -220,7 +220,7 @@
                            :number             (:number order)
                            :user-id            (get-in app-state keypaths/user-id)
                            :user-token         (get-in app-state keypaths/user-token)
-                           :heat-feature-flags (keys (get-in app-state keypaths/features))
+                           :heat-feature-flags (keys (filter second (get-in app-state keypaths/features)))
                            :sku                sku
                            :quantity           quantity}
                           #(handle-message e/api-success-add-sku-to-bag

@@ -94,7 +94,7 @@
        :number             (get-in app-state keypaths/order-number)
        :user-id            (get-in app-state keypaths/user-id)
        :user-token         (get-in app-state keypaths/user-token)
-       :heat-feature-flags (keys (get-in app-state keypaths/features))}
+       :heat-feature-flags (keys (filter second (get-in app-state keypaths/features)))}
       #(do
          (messages/handle-message events/api-success-add-sku-to-bag
                                   {:order    %
