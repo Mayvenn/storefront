@@ -1143,28 +1143,6 @@
       (wrap-fetch-completed-order (:storeback-config ctx))
       (wrap-cookies (storefront-site-defaults (:environment ctx)))))
 
-(defn wrap-redirect-legacy-freeinstall-domain-routes
-  [h {:keys [environment]}]
-  (fn [{:keys [subdomains] :as req}]
-    (letfn [(freeinstall-redirects [uri]
-              (condp (fn [substr s] (string/starts-with? s substr)) (str uri)
-                "/adv/find-your-stylist" "/adv/find-your-stylist"
-                "/stylist/"              uri
-                "/adv/stylist-results"   "/adv/stylist-results"
-                "/adv/shop-hair"         "/categories/23-mayvenn-install"
-                "/adv/how-shop-hair"     "/categories/23-mayvenn-install"
-                "/adv/shop-a-la-carte"   "/categories/23-mayvenn-install"
-                "/adv/shop/bundle-sets"  "/shop/all-bundle-sets"
-                "/adv/shop/shop-by-look" "/shop/look"
-                "/cart"                  "/cart"
-                "/"))]
-      (if (= "freeinstall" (first subdomains))
-        (util.response/redirect (store-url "shop"
-                                           environment
-                                           (update req :uri freeinstall-redirects))
-                                :moved-permanently)
-        (h req)))))
-
 (defn prepare-cms-query-params [query-params]
   (maps/map-values
    (fn [v] (mapv keyword
@@ -1208,18 +1186,17 @@
                (GET "/blog/" req (util.response/redirect (store-url "shop" environment req)))
                (GET "/info" req (util.response/redirect (store-url "shop" environment req)))
                (GET "/info/*" req (util.response/redirect (store-url "shop" environment req)))
-               (GET "/install" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/"))))
                (GET "/adv/home" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/")) :moved-permanently))
                (GET "/stylist/edit" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/stylist/account" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/stylist/commissions" [] (util.response/redirect "/stylist/earnings" :moved-permanently))
                (GET "/added-to-cart" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/cart")) :found))
                (GET "/shop/deals" req (redirect-to-home environment req))
-               (GET "/freeinstall-share" req (redirect-to-home environment req))
                (GET "/categories" req (redirect-to-home environment req))
                (GET "/categories/" req (redirect-to-home environment req))
                (GET "/products" req (redirect-to-home environment req))
                (GET "/products/" req (redirect-to-home environment req))
+               #_(GET "/certified-stylists" req (redirect-to-home environment req)) ;; TODO: uncomment once FI is removed
                (GET "/products/:id-and-slug/:sku" req (redirect-to-product-details environment req))
                (GET "/how-it-works" _req (wrap-set-cache-header (partial redirect-to-home environment) "max-age=604800"))
                (GET "/mayvenn-made" req (util.response/redirect
@@ -1262,7 +1239,6 @@
                            (route/not-found views/not-found))
                    (wrap-resource "public")
                    (wrap-content-type {:mime-types extra-mimetypes})))
-       (wrap-redirect-legacy-freeinstall-domain-routes ctx)
        (wrap-add-nav-message)
        (wrap-add-domains)
        (wrap-logging logger)

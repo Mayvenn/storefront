@@ -413,19 +413,6 @@
         (is (= (str "https://shop.mayvenn.com" dest-path)
                (-> resp :headers (get "Location"))))))))
 
-(deftest legacy-freeinstall-redirects
-  (is-redirected-from-freeinstall-to-shop "/" "/")
-  (is-redirected-from-freeinstall-to-shop "/adv/find-your-stylist" "/adv/find-your-stylist")
-  (is-redirected-from-freeinstall-to-shop "/adv/stylist-results" "/adv/stylist-results")
-  (is-redirected-from-freeinstall-to-shop "/adv/match-success" "/")
-  (is-redirected-from-freeinstall-to-shop "/adv/shop-hair" "/categories/23-mayvenn-install")
-  (is-redirected-from-freeinstall-to-shop "/adv/how-shop-hair" "/categories/23-mayvenn-install")
-  (is-redirected-from-freeinstall-to-shop "/adv/shop-a-la-carte/bar" "/categories/23-mayvenn-install")
-  (is-redirected-from-freeinstall-to-shop "/adv/shop/bundle-sets-bar" "/shop/all-bundle-sets")
-  (is-redirected-from-freeinstall-to-shop "/adv/shop/shop-by-look/bar" "/shop/look")
-  (is-redirected-from-freeinstall-to-shop "/cart" "/cart")
-  (is-redirected-from-freeinstall-to-shop "/all-other/pages/on-freeinstall" "/"))
-
 (deftest redirects-dyed-virgin-to-virgin-pdp
   (testing "When a request comes for a dyed virgin pdp, the user is redirected to the virgin pdp"
     (with-services {}
