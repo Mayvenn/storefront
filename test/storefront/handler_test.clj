@@ -94,13 +94,6 @@
           (let [resp (handler (mock/request :get (str "https://phil.mayvenn.com" path)))]
             (is (= 200 (:status resp)))))))))
 
-(deftest install-path-redirects-to-shop
-  (with-services
-    (with-handler handler
-      (let [resp (handler (mock/request :get "https://bob.mayvenn.com/install"))]
-        (testing "It redirects to the shop subdomain"
-          (is-redirected-to resp "shop" "/"))))))
-
 (deftest info-path-redirects-to-shop-and-preserves-path
   (doseq [info-path ["/info" "/info/" "/info/preference-center"]]
     (with-services
