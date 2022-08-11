@@ -580,6 +580,10 @@
     (or (string/includes? url-or-image-id "ucarecdn.com")
         (not (string/includes? url-or-image-id "/")))))
 
+(defn- is-contentful-img-url? ;; NOTE(jeff): please do not make this public, use img function
+  [url]
+  (string/includes? url "images.ctfassets.net"))
+
 (defn ucare-img-id ;; NOTE(jeff): should be private insteaed of public, please use img function instead
   [url-or-image-id]
   (if (string/includes? (str url-or-image-id) "ucarecdn.com")
@@ -643,6 +647,45 @@
                                   :sizes "(min-width: 1000px) 1000px, 100vw"
                                   :key image-id)))])))
 
+(defn- -contentful-img ;; NOTE(jeff): please do not make this public, use img function
+  ;; WARN(jeff): it is strongly recommended to specify max-size to minimize srcSet sizes!!
+  [{:as   img-attrs
+    :keys [width retina-quality default-quality retina? max-size]
+    :or   {retina-quality  75
+           default-quality 50
+           retina?         true
+           max-size        nil}}
+   url]
+  (component/html
+   (let [width       (spice/parse-int width)
+         px?         (and width (or (= (str (:width img-attrs)) (str width))
+                                    (string/includes? (str (:width img-attrs)) "px")))
+         compute-url (fn [retina? width]
+                       (let [quality (if retina? retina-quality default-quality)]
+                         (str url
+                              "?"
+                              (clojure.string/join "&"
+                                                   [(str "q=" quality)
+                                                    (when width (str "w=" width))]))))
+         default-url (compute-url false (when px? width))
+         srcset      (->> (for [multiplier (if retina?
+                                             [1 2]
+                                             [1])
+                                w          COMMON-DEVICE-WIDTHS
+                                :let       [retina? (< 1 multiplier)
+                                            effective-width (if retina? (* 2 w) w)]
+                                :when      (and (or (nil? max-size) (>= max-size w))
+                                                (or (not px?) (>= width w)))]
+                            (str (compute-url retina? effective-width) " " effective-width "w"))
+                          (string/join ", "))]
+     [:img ^:attrs
+      (-> img-attrs
+          (dissoc :retina-quality :default-quality :retina? :square-size :src :max-size :preserve-url-transformations?)
+          (assoc :class (:class img-attrs))
+          (assoc :src default-url
+                 :src-set srcset
+                 :sizes "(min-width: 1000px) 1000px, 100vw"))])))
+
 (defn img
   "Smarter variation of doing [:img attrs]. Will drop to -ucare-img helper if the src image is an upload-care image.
 
@@ -655,10 +698,16 @@
            default-quality "normal"
            retina?         true
            max-size        nil}}]
-  (if (is-ucare-img-url? src)
-    (-ucare-img img-attrs src)
-    (component/html
-     [:img ^:attrs (dissoc img-attrs :retina-quality :default-quality :picture-classes :retina? :square-size :preserve-url-transformations?)])))
+  (cond
+    (is-ucare-img-url? src)      (-ucare-img img-attrs src)
+    (is-contentful-img-url? src) (-contentful-img img-attrs src)
+    :else                        [:img ^:attrs (dissoc img-attrs
+                                                       :retina-quality
+                                                       :default-quality
+                                                       :picture-classes
+                                                       :retina?
+                                                       :square-size
+                                                       :preserve-url-transformations?)]))
 
 (defn ucare-img ;; TODO(jeff): for legacy callers, we should remove this call and use img function instead
   ;; WARN(jeff): it is strongly recommended to specify max-size to minimize srcSet sizes!!

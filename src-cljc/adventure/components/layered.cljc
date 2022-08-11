@@ -760,6 +760,7 @@
            :style {:object-fit "cover"
                    :min-width  "50%"}
            :class "flex-auto col-12"
+           :max-size 1024
            :alt   alt}))
 
 ;; Duplicated from src-cljc/homepage/ui_v2020_07.cljc to avoid circular dep
