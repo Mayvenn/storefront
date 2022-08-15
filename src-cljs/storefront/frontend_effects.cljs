@@ -553,11 +553,11 @@
 
 (defmethod effects/perform-effects events/navigate-order-complete
   [_ _ {{:keys [paypal order-token]} :query-params number :number} _ state]
-  (let [query                                   (some-> (get-in state (conj keypaths/completed-order :post-purchase-stylist-matching-geo-location))
-                                                        (clojure.set/rename-keys {:lat :latitude
-                                                                                  :lng :longitude})
+  (let [query        (some-> (get-in state (conj keypaths/completed-order :post-purchase-stylist-matching-geo-location))
+                             (clojure.set/rename-keys {:lat :latitude
+                                                       :lng :longitude})
                                                         (assoc :radius "100mi"))
-        waiter-order                               (:waiter/order (api.orders/completed data))]
+        waiter-order (:waiter/order (api.orders/completed state))]
     ;; TODO(corey) getting the current stylist here seems odd, may
     ;; want to fetch the previous-stylist instead
     (messages/handle-message events/cache|current-stylist|requested)
