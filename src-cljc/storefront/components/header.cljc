@@ -531,12 +531,11 @@
                               [{:header-menu-item/navigation-target [events/navigate-shopping-quiz-unified-freeinstall-intro
                                                                      {:query-params {:location "desktop_header"}}]
                                 :header-menu-item/id                "desktop-shop-quiz-unified-fi"
-                                :header-menu-item/content           "Start Hair Quiz"}])
-                            [{:header-menu-item/navigation-target [events/navigate-adventure-find-your-stylist]
-                              :header-menu-item/id                "desktop-shop-find-stylist"
-                              :header-menu-item/content           "Browse Stylists"}
-
-                             (shop-looks-query data)
+                                :header-menu-item/content           "Start Hair Quiz"}
+                               {:header-menu-item/navigation-target [events/navigate-adventure-find-your-stylist]
+                                :header-menu-item/id                "desktop-shop-find-stylist"
+                                :header-menu-item/content           "Browse Stylists"}])
+                            [(shop-looks-query data)
                              (shop-bundle-sets-query data)])
 
                            classic?
