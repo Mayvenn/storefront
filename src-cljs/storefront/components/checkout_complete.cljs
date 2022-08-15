@@ -252,7 +252,7 @@
         newly-added-stylist                   (< rating-count 3)
         show-newly-added-stylist-ui?          newly-added-stylist
         years-of-experience                   (some->> stylist-since (- (date/year (date/now))))
-        {:keys [latitude longitude]}     salon
+        {:keys [latitude longitude]}          salon
         {:keys [specialty-sew-in-leave-out
                 specialty-sew-in-closure
                 specialty-sew-in-360-frontal
@@ -260,7 +260,7 @@
                 specialty-wig-customization]} service-menu]
     (merge {:react/key                       (str "stylist-card-" store-slug)
             :stylist-card.header/target      [events/flow|stylist-matching|selected-for-inspection {:stylist-id stylist-id
-                                                                                               :store-slug store-slug}]
+                                                                                                    :store-slug store-slug}]
             :stylist-card.header/id          (str "stylist-card-header-" store-slug)
             :stylist-card.thumbnail/id       (str "stylist-card-thumbnail-" store-slug)
             :stylist-card.thumbnail/ucare-id (-> stylist :portrait :resizable-url)
@@ -293,6 +293,14 @@
             :stylist-experience/id             (when newly-added-stylist
                                                  (str "stylist-experience-" store-slug))
             :stylist-experience/content        (str (ui/pluralize-with-amount years-of-experience "year") " of experience")
+            :stylist-card.cta/id               (str "stylist-matching-card-cta-" store-slug)
+            :stylist-card.cta/label            (str "Contact " (stylists/->display-name stylist))
+            :stylist-card.cta/target           [events/external-redirect-sms {:number      (-> stylist :address :number)
+                                                                              :sms-message (str "Hello! I just bought "
+                                                                                                "this amazing hair from "
+                                                                                                "Mayvenn, and I'm "
+                                                                                                "looking for a stylist "
+                                                                                                "to install it.")}]
             :stylist-card.services-list/id     (str "stylist-card-services-" store-slug)
             :stylist-card.services-list/items  [{:id         (str "stylist-service-leave-out-" store-slug)
                                                  :label      "Leave Out"
