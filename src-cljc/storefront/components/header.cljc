@@ -462,11 +462,11 @@
                                     [{:slide-out-nav-menu-item/target  [events/navigate-shopping-quiz-unified-freeinstall-intro
                                                                         {:query-params {:location "hamburger"}}]
                                       :slide-out-nav-menu-item/id      "menu-shop-quiz-unified-fi"
-                                      :slide-out-nav-menu-item/primary "Start Hair Quiz"}])
-                                  [{:slide-out-nav-menu-item/target  [events/navigate-adventure-find-your-stylist]
-                                    :slide-out-nav-menu-item/id      "menu-shop-find-stylist"
-                                    :slide-out-nav-menu-item/primary "Browse Stylists"}
-                                   {:slide-out-nav-menu-item/target  [events/navigate-shop-by-look {:album-keyword :look}]
+                                      :slide-out-nav-menu-item/primary "Start Hair Quiz"}
+                                     {:slide-out-nav-menu-item/target  [events/navigate-adventure-find-your-stylist]
+                                      :slide-out-nav-menu-item/id      "menu-shop-find-stylist"
+                                      :slide-out-nav-menu-item/primary "Browse Stylists"}])
+                                  [{:slide-out-nav-menu-item/target  [events/navigate-shop-by-look {:album-keyword :look}]
                                     :slide-out-nav-menu-item/nested? false
                                     :slide-out-nav-menu-item/id      "menu-shop-by-look"
                                     :slide-out-nav-menu-item/primary "Shop By Look"}
