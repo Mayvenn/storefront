@@ -513,10 +513,6 @@
   {:catalog/department #{"hair"}
    :hair/family        #{"360-frontals"}})
 
-(def ^:private ?wigs
-  {:catalog/department #{"hair"}
-   :hair/family        #{"lace-front-wigs" "360-wigs"}})
-
 (def SV2-rules
   {"LBI"  [["bundle" ?bundles 3]]
    "UPCW" [["bundle" ?bundles 3]]
@@ -525,8 +521,7 @@
    "FBI"  [["bundle" ?bundles 2] ["frontal" ?frontals 1]]
    "LFCW" [["bundle" ?bundles 2] ["frontal" ?frontals 1]]
    "3BI"  [["bundle" ?bundles 2] ["360 frontal" ?360-frontals 1]]
-   "3CW"  [["bundle" ?bundles 2] ["360 frontal" ?360-frontals 1]]
-   "WGC"  [["Virgin Lace Front or a Virgin 360 Wig" ?wigs 1]]})
+   "3CW"  [["bundle" ?bundles 2] ["360 frontal" ?360-frontals 1]]})
 
 (defn ^:private failed-rules [waiter-order rule]
   (let [physical-items (->> waiter-order
