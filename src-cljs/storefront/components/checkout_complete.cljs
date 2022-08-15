@@ -182,7 +182,7 @@
            scrim?
            tertiary
            results] :as data} _ _]
-  (ui/narrow-container
+  (component/html
    [:div.p3 {:style {:min-height "95vh"}}
     [:div.center
      [:h1.mt5.mb2.canela.title-1 {:data-test "checkout-success-message"} "Thank You"]
