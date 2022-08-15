@@ -1,6 +1,7 @@
 (ns storefront.frontend-effects
   (:require [ajax.core :as ajax]
             api.orders
+            [api.catalog :refer [select]]
             [storefront.accessors.contentful :as contentful]
             [clojure.set :as set]
             [mayvenn.concept.email-capture :as email-capture]
@@ -494,17 +495,86 @@
     (effects/redirect events/navigate-checkout-payment))
   (api/get-shipping-methods))
 
+
+;;; Discountable promotions
+(def ^:private ?bundles
+  {:catalog/department #{"hair"}
+   :hair/family        #{"bundles"}})
+
+(def ^:private ?closures
+  {:catalog/department #{"hair"}
+   :hair/family        #{"closures"}})
+
+(def ^:private ?frontals
+  {:catalog/department #{"hair"}
+   :hair/family        #{"frontals"}})
+
+(def ^:private ?360-frontals
+  {:catalog/department #{"hair"}
+   :hair/family        #{"360-frontals"}})
+
+(def ^:private ?wigs
+  {:catalog/department #{"hair"}
+   :hair/family        #{"lace-front-wigs" "360-wigs"}})
+
+(def SV2-rules
+  {"LBI"  [["bundle" ?bundles 3]]
+   "UPCW" [["bundle" ?bundles 3]]
+   "CBI"  [["bundle" ?bundles 2] ["closure" ?closures 1]]
+   "CLCW" [["bundle" ?bundles 2] ["closure" ?closures 1]]
+   "FBI"  [["bundle" ?bundles 2] ["frontal" ?frontals 1]]
+   "LFCW" [["bundle" ?bundles 2] ["frontal" ?frontals 1]]
+   "3BI"  [["bundle" ?bundles 2] ["360 frontal" ?360-frontals 1]]
+   "3CW"  [["bundle" ?bundles 2] ["360 frontal" ?360-frontals 1]]
+   "WGC"  [["Virgin Lace Front or a Virgin 360 Wig" ?wigs 1]]})
+
+(defn ^:private failed-rules [waiter-order rule]
+  (let [physical-items (->> waiter-order
+                            :shipments
+                            (mapcat :line-items)
+                            (filter (fn [item]
+                                      (= "spree" (:source item))))
+                            (map (fn [item]
+                                   (merge
+                                    (dissoc item :variant-attrs)
+                                    (:variant-attrs item)))))]
+    (keep (fn [[word essentials rule-quantity]]
+            (let [cart-quantity    (->> physical-items
+                                        (select essentials)
+                                        (map :quantity)
+                                        (apply +))
+                  missing-quantity (- rule-quantity cart-quantity)]
+              (when (pos? missing-quantity)
+                {:word             word
+                 :cart-quantity    cart-quantity
+                 :missing-quantity missing-quantity
+                 :essentials       essentials})))
+          rule)))
+
 (defmethod effects/perform-effects events/navigate-order-complete
   [_ _ {{:keys [paypal order-token]} :query-params number :number} _ state]
-  ;; TODO(corey) getting the current stylist here seems odd, may
-  ;; want to fetch the previous-stylist instead
-  (messages/handle-message events/cache|current-stylist|requested)
-  (when (and number
-             order-token)
-    (api/get-completed-order number order-token))
-  (when paypal
-    (effects/redirect events/navigate-order-complete
-                      {:number number})))
+  (let [query                                   (some-> (get-in state (conj keypaths/completed-order :post-purchase-stylist-matching-geo-location))
+                                                        (clojure.set/rename-keys {:lat :latitude
+                                                                                  :lng :longitude})
+                                                        (assoc :radius "100mi"))
+        waiter-order                               (:waiter/order (api.orders/completed data))]
+    ;; TODO(corey) getting the current stylist here seems odd, may
+    ;; want to fetch the previous-stylist instead
+    (messages/handle-message events/cache|current-stylist|requested)
+    (when (and (:remove-free-install (get-in state storefront.keypaths/features))
+               (->> SV2-rules
+                    vals
+                    (some (comp empty? (partial failed-rules waiter-order))))
+               query)
+      (api/fetch-stylists-matching-filters query
+                                           #(messages/handle-message events/api-success-fetch-stylists-matching-filters
+                                                                     (merge {:query query} %))))
+    (when (and number
+               order-token)
+      (api/get-completed-order number order-token))
+    (when paypal
+      (effects/redirect events/navigate-order-complete
+                        {:number number}))))
 
 (defmethod effects/perform-effects events/api-success-get-completed-order [_ event order _ app-state]
   (messages/handle-message events/order-completed order))

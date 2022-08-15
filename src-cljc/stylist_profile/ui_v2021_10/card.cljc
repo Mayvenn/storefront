@@ -74,15 +74,16 @@
 
 (defn ^:private cta
   [{:keys [id primary target]}]
-  [:div
-   [:div.mx-auto.col-3.mx3.mt3.mb7.hide-on-mb
-    {:id (str id "-desktop")}
-    (ui/button-medium-primary (assoc (apply utils/fake-href target)
-                                     :data-test (str id "-desktop")) primary)]
-   [:div.mx3.mt3.mb7.hide-on-tb-dt
-    {:id id}
-    (ui/button-medium-primary (assoc (apply utils/fake-href target)
-                                     :data-test id) primary)]])
+  (when id
+    [:div
+     [:div.mx-auto.col-3.mx3.mt3.mb7.hide-on-mb
+      {:id (str id "-desktop")}
+      (ui/button-medium-primary (assoc (apply utils/fake-href target)
+                                       :data-test (str id "-desktop")) primary)]
+     [:div.mx3.mt3.mb7.hide-on-tb-dt
+      {:id id}
+      (ui/button-medium-primary (assoc (apply utils/fake-href target)
+                                       :data-test id) primary)]]))
 
 (defn top-stylist-information-points-grid-molecule
   [{:keys [points]} grid-class]

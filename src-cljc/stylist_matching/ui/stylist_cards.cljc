@@ -123,18 +123,19 @@
 
 (defn top-stylist-information-points-molecule
   [{:keys [points desktop?]}]
-  [:div.pt3.mx-auto
-   {:style {:display               "grid"
-            :grid-template-columns "auto 10px auto"
-            :max-width             "305px"}}
-   (interleave
-    (for [{:keys [id icon primary]} points]
-      [:div.pb1.proxima.content-3.flex
-       [:div.flex.items-center.justify-center {:style {:width "25px"}}
-        (when icon
-          (svg/symbolic->html icon))]
-       [:div (when-not desktop? {:data-test id}) primary]])
-    (cycle [[:div] nil]))])
+  (when points
+    [:div.pt3.mx-auto
+     {:style {:display               "grid"
+              :grid-template-columns "auto 10px auto"
+              :max-width             "305px"}}
+     (interleave
+      (for [{:keys [id icon primary]} points]
+        [:div.pb1.proxima.content-3.flex
+         [:div.flex.items-center.justify-center {:style {:width "25px"}}
+          (when icon
+            (svg/symbolic->html icon))]
+         [:div (when-not desktop? {:data-test id}) primary]])
+      (cycle [[:div] nil]))]))
 
 (defn stylist-card-header-molecule
   [{:stylist-card.header/keys [target id] :keys [desktop?] :as data}]
@@ -164,7 +165,8 @@
       (stylist-card-gallery-molecule data)
       (ui/aspect-ratio 426 105 [:div]))]
    (top-stylist-information-points-molecule (with :stylist-card.top-stylist.laurels data))
-   [:div.col-12.pt1.pb3.px2 (stylist-card-cta-molecule data)]])
+   (when (:stylist-card.cta/id data)
+     [:div.col-12.pt1.pb3.px2 (stylist-card-cta-molecule data)])])
 
 (defcomponent desktop-organism
   [{:keys [stylist-card-header/id] :as data} _ {:keys [id]}]

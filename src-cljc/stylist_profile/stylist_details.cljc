@@ -138,7 +138,8 @@
     (c/build stylist-reviews-cards-v3/organism stylist-reviews)
     ui-dividers/green]
    (c/build footer/organism footer)
-   (c/build sticky-select-stylist-v2/organism sticky-select-stylist)])
+   (when sticky-select-stylist
+     (c/build sticky-select-stylist-v2/organism sticky-select-stylist))])
 
 (c/defcomponent template
   [{:keys [desktop?] :as data} _ _]
@@ -160,12 +161,15 @@
    :header.cart/value             (or quantity 0)
    :header.cart/color             "white"})
 
-(def ^:private footer<-
-  {:footer.cta/id     "browse-stylists"
+(defn ^:private footer<-
+  [remove-free-install?]
+  {:footer.cta/id     (when-not remove-free-install?
+                        "browse-stylists")
    :footer.cta/label  "Browse Stylists"
    :footer.cta/target [e/navigate-adventure-find-your-stylist]
    :footer.body/copy  "Meet more stylists in your area"
-   :footer.body/id    "meet-more-stylists"})
+   :footer.body/id    (when-not remove-free-install?
+                        "meet-more-stylists")})
 
 (defn ^:private sticky-select-stylist<-
   [current-stylist detailed-stylist]
@@ -264,7 +268,8 @@
   [{:stylist/keys         [name portrait salon slug experience]
     :stylist.address/keys [city state]
     :stylist.rating/keys  [cardinality decimal-score score]
-    :as                   stylist}]
+    :as                   stylist}
+   remove-free-install?]
   (merge
    (within :hero
            {:background/ucare-id         "72cb3389-444e-4f89-9ec2-4d845956d27c"
@@ -297,7 +302,8 @@
                                                 :class "fill-s-color mr1"}]
                       :primary "State licensed"}]})
    (within :cta
-           {:id      "stylist-profile-cta"
+           {:id      (when-not remove-free-install?
+                       "stylist-profile-cta")
             :primary (str "Select " (-> stylist :diva/stylist :store-nickname))
             :target  [e/flow|stylist-matching|matched {:stylist      (:diva/stylist stylist)
                                                        :result-index 0}]})))
@@ -352,9 +358,10 @@
                                       (nil? (first undo-history)))
 
         instagram-stylist-profile? (experiments/instagram-stylist-profile? state)
+        remove-free-install?       (:remove-free-install (get-in state storefront.keypaths/features))
         desktop?                   #?(:cljs (> (.-innerWidth js/window) 749)
                                    :clj nil)]
-    (merge {:footer footer<-}
+    (merge {:footer (footer<- remove-free-install?)}
            (if from-cart-or-direct-load?
              {:mayvenn-header {:forced-mobile-layout? true
                                :quantity              (or (:order.items/quantity current-order) 0)}}
@@ -369,11 +376,12 @@
                :gallery            (gallery<- detailed-stylist instagram-stylist-profile?)
                :stylist-reviews    (reviews<- detailed-stylist paginated-reviews desktop?)
 
-               :card                  (within :stylist-profile.card (card<- detailed-stylist))
+               :card                  (within :stylist-profile.card (card<- detailed-stylist remove-free-install?))
                :experience            (experience<- detailed-stylist)
                :google-maps           (maps/map-query state)
-               :sticky-select-stylist (sticky-select-stylist<- current-stylist
-                                                               detailed-stylist)})))))
+               :sticky-select-stylist (when-not remove-free-install?
+                                        (sticky-select-stylist<- current-stylist
+                                                                detailed-stylist))})))))
 
 (defn ^:export built-component
   [app-state]
