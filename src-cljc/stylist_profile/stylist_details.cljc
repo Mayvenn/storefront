@@ -173,18 +173,17 @@
 
 (defn ^:private sticky-select-stylist<-
   [current-stylist detailed-stylist]
-  (merge
-   {:sticky-select-stylist.cta/id     "select-stylist"
-    :sticky-select-stylist.cta/target [e/flow|stylist-matching|matched
-                                       {:stylist      (:diva/stylist detailed-stylist)
-                                        :result-index 0}]
-    :sticky-select-stylist.cta/label  (str
-                                       (cond
-                                         (empty? current-stylist)              "Select "
-                                         (not= (:stylist/id current-stylist)
-                                               (:stylist/id detailed-stylist)) "Switch to "
-                                         :else                                 "Continue with ")
-                                       (:stylist/name detailed-stylist))}))
+  {:sticky-select-stylist.cta/id     "select-stylist"
+   :sticky-select-stylist.cta/target [e/flow|stylist-matching|matched
+                                      {:stylist      (:diva/stylist detailed-stylist)
+                                       :result-index 0}]
+   :sticky-select-stylist.cta/label  (str
+                                      (cond
+                                        (empty? current-stylist)              "Select "
+                                        (not= (:stylist/id current-stylist)
+                                              (:stylist/id detailed-stylist)) "Switch to "
+                                        :else                                 "Continue with ")
+                                      (:stylist/name detailed-stylist))})
 
 (defn ^:private gallery<-
   [{:stylist/keys [slug id social-media] :stylist.gallery/keys [images]}
@@ -302,11 +301,19 @@
                                                 :class "fill-s-color mr1"}]
                       :primary "State licensed"}]})
    (within :cta
-           {:id      (when-not remove-free-install?
-                       "stylist-profile-cta")
-            :primary (str "Select " (-> stylist :diva/stylist :store-nickname))
-            :target  [e/flow|stylist-matching|matched {:stylist      (:diva/stylist stylist)
-                                                       :result-index 0}]})))
+           (if remove-free-install?
+             {:id      "stylist-profile-cta"
+              :primary (str "Message " (-> stylist :diva/stylist :store-nickname))
+              :target  [e/external-redirect-sms {:number      (-> stylist :diva/stylist :address :phone)
+                                                 :sms-message (str "Hello! I just bought "
+                                                                   "this amazing hair from "
+                                                                   "Mayvenn, and I'm "
+                                                                   "looking for a stylist "
+                                                                   "to install it.")}]}
+             {:id      "stylist-profile-cta"
+              :primary (str "Select " (-> stylist :diva/stylist :store-nickname))
+              :target  [e/flow|stylist-matching|matched {:stylist      (:diva/stylist stylist)
+                                                         :result-index 0}]}))))
 (defn ^:private experience<-
   [{:stylist/keys [experience setting licensed?]}]
   {:experience.title/id      "stylist-experience"
@@ -342,6 +349,17 @@
                  :title/primary "Services Offered"
                  :services (map service-sku-query offered-services)})))))
 
+(defn ^:private sticky-message-stylist<-
+  [detailed-stylist]
+  {:sticky-select-stylist.cta/id     "message-stylist"
+   :sticky-select-stylist.cta/target [e/external-redirect-sms {:number      (-> detailed-stylist :diva/stylist :address :phone)
+                                                               :sms-message (str "Hello! I just bought "
+                                                                                 "this amazing hair from "
+                                                                                 "Mayvenn, and I'm "
+                                                                                 "looking for a stylist "
+                                                                                 "to install it.")}]
+   :sticky-select-stylist.cta/label  (str "Contact " (:stylist/name detailed-stylist))})
+
 (defn query
   [state]
   (let [skus-db           (get-in state storefront.keypaths/v2-skus)
@@ -360,7 +378,7 @@
         instagram-stylist-profile? (experiments/instagram-stylist-profile? state)
         remove-free-install?       (:remove-free-install (get-in state storefront.keypaths/features))
         desktop?                   #?(:cljs (> (.-innerWidth js/window) 749)
-                                   :clj nil)]
+                                      :clj nil)]
     (merge {:footer (footer<- remove-free-install?)}
            (if from-cart-or-direct-load?
              {:mayvenn-header {:forced-mobile-layout? true
@@ -379,9 +397,10 @@
                :card                  (within :stylist-profile.card (card<- detailed-stylist remove-free-install?))
                :experience            (experience<- detailed-stylist)
                :google-maps           (maps/map-query state)
-               :sticky-select-stylist (when-not remove-free-install?
+               :sticky-select-stylist (if remove-free-install?
+                                        (sticky-message-stylist<- detailed-stylist)
                                         (sticky-select-stylist<- current-stylist
-                                                                detailed-stylist))})))))
+                                                                 detailed-stylist))})))))
 
 (defn ^:export built-component
   [app-state]
