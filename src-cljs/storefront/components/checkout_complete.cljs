@@ -295,7 +295,7 @@
             :stylist-experience/content        (str (ui/pluralize-with-amount years-of-experience "year") " of experience")
             :stylist-card.cta/id               (str "stylist-matching-card-cta-" store-slug)
             :stylist-card.cta/label            (str "Contact " (stylists/->display-name stylist))
-            :stylist-card.cta/target           [events/external-redirect-sms {:number      (-> stylist :address :number)
+            :stylist-card.cta/target           [events/external-redirect-sms {:number      (-> stylist :address :phone)
                                                                               :sms-message (str "Hello! I just bought "
                                                                                                 "this amazing hair from "
                                                                                                 "Mayvenn, and I'm "
