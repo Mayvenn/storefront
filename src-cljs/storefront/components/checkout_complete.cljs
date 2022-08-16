@@ -196,7 +196,7 @@
      #_(component/build desktop-search-inputs-organism desktop-stylist-search-inputs)
      (if spinning?
        [:div.mt6 ui/spinner]
-       [:div.relative.stretch
+       [:div.relative
         (component/build desktop-results-template results)
         (when scrim?
           scrim-atom)])]
@@ -204,7 +204,7 @@
      #_(component/build search-inputs-organism stylist-search-inputs)
      (if spinning?
        [:div.mt6 ui/spinner]
-       [:div.relative.stretch
+       [:div.relative
         (component/build results-template results)
         (when scrim?
           scrim-atom)])]
