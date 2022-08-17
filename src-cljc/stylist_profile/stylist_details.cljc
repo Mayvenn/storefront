@@ -302,7 +302,7 @@
                       :primary "State licensed"}]})
    (within :cta
            (if remove-free-install?
-             {} #_{:id      "stylist-profile-cta"
+             {:id      "stylist-profile-cta"
               :primary (str "Message " (-> stylist :diva/stylist :store-nickname))
               :target  [e/external-redirect-sms {:number      (-> stylist :diva/stylist :address :phone)
                                                  :sms-message (str "Hello! I just bought "
@@ -397,13 +397,10 @@
                :card                  (within :stylist-profile.card (card<- detailed-stylist remove-free-install?))
                :experience            (experience<- detailed-stylist)
                :google-maps           (maps/map-query state)
-               :sticky-select-stylist (when (not remove-free-install?)
+               :sticky-select-stylist (if remove-free-install?
+                                        (sticky-message-stylist<- detailed-stylist)
                                         (sticky-select-stylist<- current-stylist
-                                                                 detailed-stylist))
-               #_(if remove-free-install?
-                   (sticky-message-stylist<- detailed-stylist)
-                   (sticky-select-stylist<- current-stylist
-                                            detailed-stylist))})))))
+                                                                 detailed-stylist))})))))
 
 (defn ^:export built-component
   [app-state]
