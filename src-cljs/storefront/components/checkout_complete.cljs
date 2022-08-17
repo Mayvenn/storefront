@@ -193,7 +193,6 @@
        [:div.proxima.content-2.mt4 tertiary])]
 
     [:div.hide-on-mb
-     #_(component/build desktop-search-inputs-organism desktop-stylist-search-inputs)
      (if spinning?
        [:div.mt6 ui/spinner]
        [:div.relative
@@ -201,7 +200,6 @@
         (when scrim?
           scrim-atom)])]
     [:div.max-580.col-12.mx-auto.hide-on-tb-dt
-     #_(component/build search-inputs-organism stylist-search-inputs)
      (if spinning?
        [:div.mt6 ui/spinner]
        [:div.relative
@@ -387,23 +385,11 @@
     :results/keys [stylists]
     :keys         [status]}]
   (let [{matching-stylists     true
-         non-matching-stylists false}             (->> stylists
-                                                       (group-by (partial core/matches-preferences?
-                                                                      services)))
-        top-stylist                               (some #(when (:top-stylist %) %) matching-stylists)
-        matching-stylists-with-top-stylist-bumped (if top-stylist
-                                                    (concat [top-stylist]
-                                                            (remove #(= (:stylist-id %)
-                                                                        (:stylist-id top-stylist)) matching-stylists))
-                                                    matching-stylists)
-        premium-stylist-ids                       [111023 111025 111026 96040 1663 111024 111029]
-        premium-stylists                          (when-let [premium-stylists (filter #((set premium-stylist-ids) (:stylist-id %))
-                                                                                      matching-stylists-with-top-stylist-bumped)]
-                                                    (concat premium-stylists
-                                                            (remove #((set premium-stylist-ids) (:stylist-id %))
-                                                                    matching-stylists-with-top-stylist-bumped)))
+         non-matching-stylists false}             (group-by (partial core/matches-preferences?
+                                                                     services)
+                                                            stylists)
         matching-stylist-cards                    (stylist-data->stylist-cards
-                                                   {:stylists               premium-stylists})
+                                                   {:stylists               matching-stylists})
         non-matching-stylist-cards                (stylist-data->stylist-cards
                                                    {:stylists               non-matching-stylists})]
 

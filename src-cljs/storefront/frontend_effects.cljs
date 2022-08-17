@@ -514,16 +514,16 @@
    :hair/family        #{"360-frontals"}})
 
 (def SV2-rules
-  {"LBI"  [["bundle" ?bundles 3]]
-   "UPCW" [["bundle" ?bundles 3]]
-   "CBI"  [["bundle" ?bundles 2] ["closure" ?closures 1]]
-   "CLCW" [["bundle" ?bundles 2] ["closure" ?closures 1]]
-   "FBI"  [["bundle" ?bundles 2] ["frontal" ?frontals 1]]
-   "LFCW" [["bundle" ?bundles 2] ["frontal" ?frontals 1]]
-   "3BI"  [["bundle" ?bundles 2] ["360 frontal" ?360-frontals 1]]
-   "3CW"  [["bundle" ?bundles 2] ["360 frontal" ?360-frontals 1]]})
+  {"SRV-LBI-000"  [["bundle" ?bundles 3]]
+   "SRV-UPCW-000" [["bundle" ?bundles 3]]
+   "SRV-CBI-000"  [["bundle" ?bundles 2] ["closure" ?closures 1]]
+   "SRV-CLCW-000" [["bundle" ?bundles 2] ["closure" ?closures 1]]
+   "SRV-FBI-000"  [["bundle" ?bundles 2] ["frontal" ?frontals 1]]
+   "SRV-LFCW-000" [["bundle" ?bundles 2] ["frontal" ?frontals 1]]
+   "SRV-3BI-000"  [["bundle" ?bundles 2] ["360 frontal" ?360-frontals 1]]
+   "SRV-3CW-000"  [["bundle" ?bundles 2] ["360 frontal" ?360-frontals 1]]})
 
-(defn ^:private failed-rules [waiter-order rule]
+(defn ^:private check-rules [waiter-order condition-fn [service-slug rule]]
   (let [physical-items (->> waiter-order
                             :shipments
                             (mapcat :line-items)
@@ -539,27 +539,32 @@
                                         (map :quantity)
                                         (apply +))
                   missing-quantity (- rule-quantity cart-quantity)]
-              (when (pos? missing-quantity)
+              (when (condition-fn missing-quantity)
                 {:word             word
+                 :service-slug     service-slug
                  :cart-quantity    cart-quantity
                  :missing-quantity missing-quantity
                  :essentials       essentials})))
           rule)))
 
+(def rule-succeeded? zero?)
+
+(def rule-failed? pos?)
+
 (defmethod effects/perform-effects events/navigate-order-complete
   [_ _ {{:keys [paypal order-token]} :query-params number :number} _ state]
-  (let [query        (some-> (get-in state (conj keypaths/completed-order :post-purchase-stylist-matching-geo-location))
+  (let [waiter-order        (get-in state keypaths/completed-order)
+        query        (some-> (:post-purchase-stylist-matching-geo-location waiter-order)
                              (clojure.set/rename-keys {:lat :latitude
                                                        :lng :longitude})
-                                                        (assoc :radius "100mi"))
+                             (assoc :radius "100mi")
+                             (assoc :preferred-services (some (comp :service-slug (partial check-rules waiter-order rule-succeeded?)) SV2-rules)))
         waiter-order (:waiter/order (api.orders/completed state))]
     ;; TODO(corey) getting the current stylist here seems odd, may
     ;; want to fetch the previous-stylist instead
     (messages/handle-message events/cache|current-stylist|requested)
     (when (and (:remove-free-install (get-in state storefront.keypaths/features))
-               (->> SV2-rules
-                    vals
-                    (some (comp empty? (partial failed-rules waiter-order))))
+               (some (comp empty? (partial check-rules rule-failed? waiter-order)) SV2-rules))
                query)
       (api/fetch-stylists-matching-filters query
                                            #(messages/handle-message events/api-success-fetch-stylists-matching-filters
@@ -569,7 +574,7 @@
       (api/get-completed-order number order-token))
     (when paypal
       (effects/redirect events/navigate-order-complete
-                        {:number number}))))
+                        {:number number})))
 
 (defmethod effects/perform-effects events/api-success-get-completed-order [_ event order _ app-state]
   (messages/handle-message events/order-completed order))
