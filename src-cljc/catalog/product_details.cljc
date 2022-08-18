@@ -752,6 +752,7 @@
   #?(:cljs
      (let [nav-event          (get-in app-state keypaths/navigation-event)
            cart-interstitial? (and
+                               (not (:remove-free-install (get-in app-state storefront.keypaths/features)))
                                (not service-swap?)
                                (= :shop (sites/determine-site app-state)))]
        (api/add-sku-to-bag
@@ -766,9 +767,9 @@
          :heat-feature-flags (keys (filter second (get-in app-state keypaths/features)))}
         #(do
            (messages/handle-message events/api-success-add-sku-to-bag
-                                    {:order         %
-                                     :quantity      quantity
-                                     :sku           sku})
+                                    {:order    %
+                                     :quantity quantity
+                                     :sku      sku})
            (when (not (or (= events/navigate-cart nav-event) stay-on-page?))
              (history/enqueue-navigate (if cart-interstitial?
                                          events/navigate-added-to-cart
