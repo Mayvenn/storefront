@@ -73,16 +73,25 @@
 (def empty-cart<-
   {:empty-cart-body/id        "empty-cart-body"
    :empty-cart-body/primary   "Your Bag is Empty"
+   :empty-cart-body/secondary (str "Did you know that free Mayvenn Services"
+                                   " are included with qualifying purchases?")
    :empty-cart-body/image-id  "6146f2fe-27ed-4278-87b0-7dc46f344c8c"
    :cta/label                 "Start Hair Quiz"
    :cta/id                    "homepage-take-hair-quiz"
    :cta/target                [events/navigate-shopping-quiz-unified-freeinstall-intro {:query-params {:location "empty_cart"}}]})
 
+(def empty-cart-remove-freeinstall<-
+  {:empty-cart-body/id        "empty-cart-body"
+   :empty-cart-body/primary   "Your Bag is Empty"
+   :empty-cart-body/image-id  "6146f2fe-27ed-4278-87b0-7dc46f344c8c"})
+
 (defn ^:export page
   [app-state nav-event]
   (component/build template
                    {:promo-banner app-state
-                    :cart         empty-cart<-
+                    :cart         (if (:remove-free-install (spice.core/spy (get-in app-state keypaths/features)))
+                                    empty-cart-remove-freeinstall<-
+                                    empty-cart<-)
                     :return-link  return-link<-
                     :header       app-state
                     :footer       app-state
