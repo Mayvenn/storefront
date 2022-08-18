@@ -300,7 +300,8 @@
         sku-id->quantity                   (into {}
                                                  (map (fn [[sku-id skus]] [sku-id (count skus)])
                                                       (group-by :catalog/sku-id selected-skus)))
-        hide-zip?                          (experiments/hide-zip app-state)]
+        hide-zip?                          (experiments/hide-zip app-state)
+        remove-free-install?               (:remove-free-install (get-in app-state storefront.keypaths/features))]
     (merge
      {:cta/id    "add-to-cart"
       :cta/label "Add to Bag"
@@ -316,6 +317,7 @@
        {:add-to-cart.quadpay/price   sku-price
         :add-to-cart.quadpay/loaded? quadpay-loaded?})
      (when (and shop?
+                (not remove-free-install?)
                 (mayvenn-install-incentive-families sku-family))
        {:add-to-cart.incentive-block/id          "add-to-cart-incentive-block"
         :add-to-cart.incentive-block/footnote    "*Mayvenn Services cannot be combined with other promotions"
