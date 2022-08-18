@@ -346,11 +346,10 @@
     (into [] (mapcat identity [(stylist-cards-query data stylists)]))))
 
 (defn results<
-  [{:param/keys   [services]
-    :results/keys [stylists]
+  [{:results/keys [stylists]
     :keys         [status]}]
   (let [stylist-cards (stylist-data->stylist-cards
-                       {:stylists stylists})]
+                       {:stylists (take 5 stylists)})]
 
     {:stylist-results-present?  (seq stylists)
      :stylist-results-returned? (contains? status :results/stylists)
@@ -434,7 +433,7 @@
            (->> SV2-rules
                 vals
                 (some (comp empty? (partial failed-rules waiter-order))))
-           (seq matching))
+           (-> matching :results/stylists seq))
       (merge {:spinning (or
                          (utils/requesting? data request-keys/fetch-stylists)
                          (utils/requesting? data request-keys/fetch-stylists-matching-filters))
