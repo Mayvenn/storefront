@@ -73,8 +73,6 @@
 (def empty-cart<-
   {:empty-cart-body/id        "empty-cart-body"
    :empty-cart-body/primary   "Your Bag is Empty"
-   :empty-cart-body/secondary (str "Did you know that free Mayvenn Services"
-                                   " are included with qualifying purchases?")
    :empty-cart-body/image-id  "6146f2fe-27ed-4278-87b0-7dc46f344c8c"
    :cta/label                 "Start Hair Quiz"
    :cta/id                    "homepage-take-hair-quiz"
