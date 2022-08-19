@@ -15,7 +15,6 @@
                           :diishan                ui/diishan-query
                           :guarantees             ui/guarantees-query
                           :hero                   (ui/hero-query cms :unified-fi)
-                          :faq                    (ui/faq-query (-> cms :faq :free-mayvenn-services) expanded-index)
                           :hashtag-mayvenn-hair   (ui/hashtag-mayvenn-hair-query ugc)
                           :install-specific-query (ui/install-specific-query app-state)
                           :remove-free-install?   remove-free-install?})))
