@@ -522,6 +522,10 @@
   [_ _ {:keys [stylist-id]} _]
   (stringer/track-event "change_stylist_icon_pressed" {:current_servicing_stylist_id stylist-id}))
 
+(defmethod perform-track events/external-redirect-sms
+  [_ _ params _]
+  (stringer/track-event "external-redirect-sms" params))
+
 (defn cart-items-model<-
   [order images-db skus-db]
   (->> (orders/product-and-service-items order)
