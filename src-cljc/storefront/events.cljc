@@ -137,6 +137,14 @@
 (defpath navigate-about-mayvenn-install)
 (defpath navigate-landing-page)
 
+;; Wig Care Guides
+(defpath navigate-wigs-101-guide)
+(defpath navigate-wig-hair-guide)
+(defpath navigate-wig-buying-guide)
+(defpath navigate-wig-installation-guide)
+(defpath navigate-wig-care-guide)
+(defpath navigate-wig-styling-guide)
+
 (defpath menu-traverse-root)
 (defpath menu-traverse-ascend)
 (defpath menu-traverse-descend)

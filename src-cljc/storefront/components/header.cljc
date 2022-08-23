@@ -18,7 +18,6 @@
             [ui.promo-banner :as promo-banner]))
 
 (def blog-url "https://shop.mayvenn.com/blog/")
-(def wigs-101-url "https://shop.mayvenn.com/info/wigs-101-guide")
 
 (def hamburger
   (c/html
@@ -435,7 +434,7 @@
                                    {:slide-out-nav-content-item/target  {:href "https://looks.mayvenn.com/hd-lace-wigs "}
                                     :slide-out-nav-content-item/id      "content-hd-lace"
                                     :slide-out-nav-content-item/primary "Learn About HD Lace"}
-                                   {:slide-out-nav-content-item/target  {:href wigs-101-url}
+                                   {:slide-out-nav-content-item/target  [events/navigate-wigs-101-guide {}]
                                     :slide-out-nav-content-item/id      "content-wigs-101"
                                     :slide-out-nav-content-item/primary "Wigs 101"}
                                    {:slide-out-nav-content-item/target  {:href blog-url}
@@ -565,7 +564,7 @@
                               [{:header-menu-item/navigation-target [events/navigate-landing-page {:landing-page-slug "22-hd-lace"}]
                                 :header-menu-item/id                "desktop-new-arrivals"
                                 :header-menu-item/content           "New Arrivals"}])
-                            [{:header-menu-item/href    wigs-101-url
+                            [{:header-menu-item/href    "/wigs-101-guide"
                               :header-menu-item/id      "desktop-wigs-101"
                               :header-menu-item/content "Wigs 101"}
                              {:header-menu-item/href    blog-url

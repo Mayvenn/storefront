@@ -606,7 +606,7 @@
   ;; TODO(jeff): remove picture-classes (using img tag natively now)
   ;; NOTE(jeff): picture-classes is deprecated, please do not use
   [{:as   img-attrs
-    :keys [width retina-quality default-quality picture-classes retina? square-size max-size preserve-url-transformations?]
+    :keys [width retina-quality default-quality picture-classes retina? square-size max-size preserve-url-transformations? smart-crop]
     :or   {retina-quality  "lightest"
            default-quality "normal"
            retina?         true
@@ -626,6 +626,7 @@
                            :always     (str "-/format/auto/")
                            :always     (str "-/quality/" quality "/")
                            square-size (str "-/scale_crop/" square-size "x" square-size "/center/")
+                           smart-crop  (str "-/scale_crop/" smart-crop "/smart/")
                            width       (str "-/resize/" width "x/"))))
          default-url (compute-url false (when px? width))
          srcset      (->> (for [multiplier (if retina?
@@ -1247,3 +1248,22 @@
   [{:as        _item
     :join/keys [facets]}]
   (some-> facets :hair/color :option/name))
+
+(defn blog-preview-component [{:blog/keys [target heading ucare-id] :keys [id]}]
+  [:div.max-580.mx-auto.border.border-cool-gray
+   {:key (str "blog-" id)}
+   [:a
+    (merge (apply utils/route-to target)
+           {:data-test  (str "to-" id)
+            :aria-label heading})
+    (defer-ucare-img {:class      "block col-12"
+                      :smart-crop "600x400"
+                      :alt        ""}
+      ucare-id)]
+   [:div.p3
+    [:h2.proxima.title-2.mb2 heading]
+    [:div.shout (button-small-underline-primary
+                 (merge
+                  (apply utils/route-to target)
+                  {:data-test (str "go-to-" id)})
+                 "Read More")]]])

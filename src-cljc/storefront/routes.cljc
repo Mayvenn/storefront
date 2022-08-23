@@ -14,18 +14,26 @@
   (read-string (name value)))
 
 (def static-page-routes
-  {"/guarantee"         (edn->bidi events/navigate-content-guarantee)
-   "/help"              (edn->bidi events/navigate-content-help)
-   "/about-us"          (edn->bidi events/navigate-content-about-us)
-   "/policy/privacy"    (edn->bidi events/navigate-content-privacy)
-   "/policy/privacy/v2" (edn->bidi events/navigate-content-privacyv2)
-   "/policy/privacy/v1" (edn->bidi events/navigate-content-privacyv1)
-   "/policy/tos"        (edn->bidi events/navigate-content-tos)
-   "/policy/sms"        (edn->bidi events/navigate-content-sms)
-   "/ugc-usage-terms"   (edn->bidi events/navigate-content-ugc-usage-terms)
-   "/voucher-terms"     (edn->bidi events/navigate-content-voucher-terms)
-   "/program-terms"     (edn->bidi events/navigate-content-program-terms)
-   "/our-hair"          (edn->bidi events/navigate-content-our-hair)})
+  {"/guarantee"              (edn->bidi events/navigate-content-guarantee)
+   "/help"                   (edn->bidi events/navigate-content-help)
+   "/about-us"               (edn->bidi events/navigate-content-about-us)
+   "/wigs-101-guide"         (edn->bidi events/navigate-wigs-101-guide)
+   "/policy/privacy"         (edn->bidi events/navigate-content-privacy)
+   "/policy/privacy/v2"      (edn->bidi events/navigate-content-privacyv2)
+   "/policy/privacy/v1"      (edn->bidi events/navigate-content-privacyv1)
+   "/policy/tos"             (edn->bidi events/navigate-content-tos)
+   "/policy/sms"             (edn->bidi events/navigate-content-sms)
+   "/ugc-usage-terms"        (edn->bidi events/navigate-content-ugc-usage-terms)
+   "/voucher-terms"          (edn->bidi events/navigate-content-voucher-terms)
+   "/program-terms"          (edn->bidi events/navigate-content-program-terms)
+   "/our-hair"               (edn->bidi events/navigate-content-our-hair)
+
+   ;; Wig Care Guides
+   "/wig-hair-guide"         (edn->bidi events/navigate-wig-hair-guide)
+   "/wig-buying-guide"       (edn->bidi events/navigate-wig-buying-guide)
+   "/wig-installation-guide" (edn->bidi events/navigate-wig-installation-guide)
+   "/wig-care-guide"         (edn->bidi events/navigate-wig-care-guide)
+   "/wig-styling-guide"      (edn->bidi events/navigate-wig-styling-guide)})
 
 (def routes-free-from-force-set-password
   #{events/navigate-force-set-password

@@ -21,6 +21,7 @@
             adventure.informational.certified-stylists
 
             mayvenn-install.about
+            wigs-101.guide
 
             [appointment-booking.core :as booking.core]
             mayvenn.shopping-quiz.unnamed-v1
@@ -81,13 +82,13 @@
         events/navigate-order-complete                             #(ui/lazy-load-component :checkout 'storefront.components.checkout-complete/built-component events/navigate-order-complete)])
 
    events/navigate-home                       #(ui/lazy-load-component :homepage
-                                                                    'homepage.core/page
-                                                                    events/navigate-home)
+                                                                       'homepage.core/page
+                                                                       events/navigate-home)
    events/navigate-about-mayvenn-install      (constantly mayvenn-install.about/built-component)
    events/navigate-shop-by-look               #(ui/lazy-load-component :catalog 'catalog.looks/built-component
-                                                                    events/navigate-shop-by-look)
+                                                                       events/navigate-shop-by-look)
    events/navigate-shop-by-look-details       #(ui/lazy-load-component :catalog 'catalog.look-details-v202105/built-component
-                                                                    events/navigate-shop-by-look-details)
+                                                                       events/navigate-shop-by-look-details)
    events/navigate-category                   #(ui/lazy-load-component :catalog  'catalog.category/built-component events/navigate-category)
    events/navigate-product-details            #(ui/lazy-load-component :catalog  'catalog.product-details/built-component events/navigate-product-details)
    events/navigate-shared-cart                #(ui/lazy-load-component :catalog  'storefront.components.shared-cart/built-component events/navigate-shared-cart)
@@ -97,6 +98,12 @@
    events/navigate-checkout-free-install      #(ui/lazy-load-component :checkout 'checkout.free-install/built-component events/navigate-checkout-free-install)
    events/navigate-voucher-redeem             #(ui/lazy-load-component :redeem   'voucher.redeem/built-component events/navigate-voucher-redeem)
    events/navigate-voucher-redeemed           #(ui/lazy-load-component :redeem   'voucher.redeemed/built-component events/navigate-voucher-redeemed)
+   events/navigate-wigs-101-guide             (constantly wigs-101.guide/built-component)
+   events/navigate-wig-hair-guide             (constantly wigs-101.guide/built-component-hair)
+   events/navigate-wig-buying-guide           (constantly wigs-101.guide/built-component-buying)
+   events/navigate-wig-installation-guide     (constantly wigs-101.guide/built-component-installation)
+   events/navigate-wig-care-guide             (constantly wigs-101.guide/built-component-care)
+   events/navigate-wig-styling-guide          (constantly wigs-101.guide/built-component-styling)
    events/navigate-content-guarantee          (constantly content/built-component)
    events/navigate-content-help               (constantly content/built-component)
    events/navigate-content-privacy            (constantly content/built-component)
@@ -125,23 +132,23 @@
    events/navigate-info-about-our-hair     (constantly adventure.informational.about-our-hair/built-component)
 
    events/navigate-adventure-find-your-stylist       #(ui/lazy-load-component :catalog
-                                                                        'stylist-matching.find-your-stylist/page
-                                                                        events/navigate-adventure-find-your-stylist)
+                                                                              'stylist-matching.find-your-stylist/page
+                                                                              events/navigate-adventure-find-your-stylist)
    events/navigate-adventure-stylist-results         #(ui/lazy-load-component :catalog
-                                                                        'stylist-matching.stylist-results/page
-                                                                        events/navigate-adventure-stylist-results)
+                                                                              'stylist-matching.stylist-results/page
+                                                                              events/navigate-adventure-stylist-results)
    events/navigate-adventure-match-success           #(ui/lazy-load-component :catalog
-                                                                        'stylist-matching.match-success/page
-                                                                        events/navigate-adventure-match-success)
+                                                                              'stylist-matching.match-success/page
+                                                                              events/navigate-adventure-match-success)
    events/navigate-adventure-stylist-profile         #(ui/lazy-load-component :catalog
-                                                                        'stylist-profile.core/page
-                                                                        events/navigate-adventure-stylist-profile)
+                                                                              'stylist-profile.core/page
+                                                                              events/navigate-adventure-stylist-profile)
    events/navigate-adventure-stylist-profile-reviews #(ui/lazy-load-component :catalog
-                                                                                'stylist-profile.stylist-reviews-v2021-10/page
-                                                                                events/navigate-adventure-stylist-profile-reviews)
+                                                                              'stylist-profile.stylist-reviews-v2021-10/page
+                                                                              events/navigate-adventure-stylist-profile-reviews)
    events/navigate-adventure-stylist-gallery         #(ui/lazy-load-component :catalog
-                                                                        'adventure.stylist-matching.stylist-gallery/built-component
-                                                                        events/navigate-adventure-stylist-gallery)
+                                                                              'adventure.stylist-matching.stylist-gallery/built-component
+                                                                              events/navigate-adventure-stylist-gallery)
 
    events/navigate-adventure-quiz                                        (constantly mayvenn.shopping-quiz.unnamed-v1/page)
    events/navigate-adventure-appointment-booking                         (constantly booking.core/adv-flow-page)

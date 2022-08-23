@@ -1030,4 +1030,3 @@
 (defmethod effects/perform-effects events/user-identified
   [_ _ _ _ app-state]
   (email-capture/start-long-timer-if-unstarted (get-in app-state keypaths/cookie)))
-
