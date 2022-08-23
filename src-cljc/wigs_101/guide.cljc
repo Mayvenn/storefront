@@ -246,7 +246,7 @@
                    :copy          ["Now that you’ve bought your wig, you’ve got some options for styling. Perhaps you’ve already got the cut you love, but you still want to give it some body, a little curl, or a sleek, straight style?"
                                    "The beauty of a high-quality, human hair wig is that it acts just like natural hair, so you can style in a number of ways. Before you get to making it your own, we’ve got some tips on what tools to use and how to style your wig depending on if it’s a lace frontal or 360 lace. Then, it’s time to get to styling and curling."]
                    :id            "style"}
-                  {:blog/ucare-id "b91b6d3c-c7b8-402c-9154-dcb12bbeb185"
+                  {:blog/ucare-id "0e45f56e-b34c-4fc7-9d25-73921e4afbe2"
                    :blog/heading  "How to Curl Your Wig Without Heat Damage"
                    :blog/target   [events/external-redirect-blog-page {:blog-path "/blog/hair/how-to-curl-your-wig-without-heat-damage"}]
                    :copy          ["Curling your wig is a great way to get that cute new style with little effort and cost. But you also want to avoid damaging the hair with hot tools. Thankfully, there are ways to curl a wig without causing heat damage, which can shorten the life of the unit."
