@@ -26,7 +26,8 @@
          ^:inline (ui/input-group text-input-attrs
                                   button-attrs))])
 
-    ^:inline (checkout.M/freeinstall-informational query)]
+    ^:inline (checkout.M/freeinstall-informational query)
+    ^:inline (checkout.M/remove-freeinstall-informational query)]
 
    [:div.pt2.px4.bg-white-on-mb
     ^:inline (checkout.M/cart-summary-total-line query)

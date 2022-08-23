@@ -625,24 +625,29 @@
 
 (defn freeinstall-informational<-
   [order items adding-freeinstall? remove-free-install?]
-  (when (and (not remove-free-install?)
-             (not (orders/discountable-services-on-order? order))
+  (when (and (not (orders/discountable-services-on-order? order))
              (some (comp #{"bundles" "closures" "frontals" "360-frontals"} first :hair/family)
                    (filter (comp (partial = "spree") :item/source) items) ))
-    {:freeinstall-informational/button-id             "add-free-mayvenn-service"
-     :freeinstall-informational/primary               "Don't miss out on a free Mayvenn Install!"
-     :freeinstall-informational/secondary             "Get a free install by a licensed stylist when you purchase 3 or more qualifying items"
-     :freeinstall-informational/cta-label             "Add Mayvenn Install"
-     :freeinstall-informational/cta-target            [events/control-add-sku-to-bag
-                                                       {:sku                {:catalog/sku-id                     "SV2-LBI-X"
-                                                                             :promo.mayvenn-install/discountable true}
-                                                        :quantity           1}]
-     :freeinstall-informational/id                    "freeinstall-informational"
-     :freeinstall-informational/spinning?             adding-freeinstall?
-     :freeinstall-informational/secondary-link-id     "cart-learn-more"
-     :freeinstall-informational/secondary-link-target [events/popup-show-consolidated-cart-free-install]
-     :freeinstall-informational/fine-print            "*Mayvenn Services cannot be combined with other promo codes."
-     :freeinstall-informational/secondary-link-label  "learn more"}))
+    (if (not remove-free-install?)
+      {:freeinstall-informational/button-id             "add-free-mayvenn-service"
+       :freeinstall-informational/primary               "Don't miss out on a free Mayvenn Install!"
+       :freeinstall-informational/secondary             "Get a free install by a licensed stylist when you purchase 3 or more qualifying items"
+       :freeinstall-informational/cta-label             "Add Mayvenn Install"
+       :freeinstall-informational/cta-target            [events/control-add-sku-to-bag
+                                                         {:sku                {:catalog/sku-id                     "SV2-LBI-X"
+                                                                               :promo.mayvenn-install/discountable true}
+                                                          :quantity           1}]
+       :freeinstall-informational/id                    "freeinstall-informational"
+       :freeinstall-informational/spinning?             adding-freeinstall?
+       :freeinstall-informational/secondary-link-id     "cart-learn-more"
+       :freeinstall-informational/secondary-link-target [events/popup-show-consolidated-cart-free-install]
+       :freeinstall-informational/fine-print            "*Mayvenn Services cannot be combined with other promo codes."
+       :freeinstall-informational/secondary-link-label  "learn more"}
+      {:remove-freeinstall-informational/id                    "sunset-freeinstall-informational"
+       :remove-freeinstall-informational/button-id             "sunset-free-mayvenn-service"
+       :remove-freeinstall-informational/primary               "Looking for Free Install?"
+       :remove-freeinstall-informational/cta-label             "Learn More"
+       :remove-freeinstall-informational/cta-target            [events/navigate-landing-page {:landing-page-slug "free-install"}]})))
 
 (defn cart-summary<-
   [order items]
