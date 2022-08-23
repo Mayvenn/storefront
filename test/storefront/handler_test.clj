@@ -334,12 +334,6 @@
                                   (map (comp string/trim first :content)))
                                  (:content parsed-body))
             excluded-urls  #{"https://mayvenn.com/"
-                             "https://shop.mayvenn.com/info/wig-styling-guide"
-                             "https://shop.mayvenn.com/info/wig-care-guide"
-                             "https://shop.mayvenn.com/info/wig-installation-guide"
-                             "https://shop.mayvenn.com/info/wig-buying-guide-hub"
-                             "https://shop.mayvenn.com/info/wig-hair-guide"
-                             "https://shop.mayvenn.com/info/wigs-101-guide"
                              (str "https://" config/welcome-subdomain ".mayvenn.com/")
                              (str "https://" config/jobs-subdomain ".mayvenn.com/")
                              (str "https://" config/help-subdomain ".mayvenn.com/")
