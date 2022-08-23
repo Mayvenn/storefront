@@ -155,30 +155,30 @@
 
 (defn query
   [data]
-  (let [shop?              (or (= "shop" (get-in data keypaths/store-slug))
+  (let [shop?                (or (= "shop" (get-in data keypaths/store-slug))
                                (= "retail-location" (get-in data keypaths/store-experience)))
-        classic?           (#{"mayvenn-classic" "classic2.1"} (get-in data keypaths/store-experience))
+        classic?             (#{"mayvenn-classic" "classic2.1"} (get-in data keypaths/store-experience))
         remove-free-install? (:remove-free-install (get-in data keypaths/features))
-        sort-key           :footer/order
-        categories         (->> (get-in data keypaths/categories)
+        sort-key             :footer/order
+        categories           (->> (get-in data keypaths/categories)
                                 (into []
                                       (comp (filter not-services-icp?)
                                             (filter sort-key)
                                             (filter (partial auth/permitted-category? data)))))
-        non-category-links (concat (if (and shop?
-                                              (not remove-free-install?))
-                                     [{:title       "Start Hair Quiz"
-                                       :sort-order  1
-                                       :id          "quiz-unified-fi"
-                                       :nav-message [events/navigate-shopping-quiz-unified-freeinstall-intro {:query-params {:location "footer"}}]}
-                                      {:title       "Find a Stylist"
-                                       :sort-order  1
-                                       :id          "find-a-stylist"
-                                       :nav-message [events/navigate-adventure-find-your-stylist]}]
-                                     [{:title       "Looking for Free Install?"
-                                       :sort-order  1
-                                       :id          "sunset-fi"
-                                       :nav-message [events/navigate-landing-page {:landing-page-slug "free-install"}]}])
+        non-category-links   (concat (if (and shop?
+                                            (not remove-free-install?))
+                                       [{:title       "Start Hair Quiz"
+                                         :sort-order  1
+                                         :id          "quiz-unified-fi"
+                                         :nav-message [events/navigate-shopping-quiz-unified-freeinstall-intro {:query-params {:location "footer"}}]}
+                                        {:title       "Find a Stylist"
+                                         :sort-order  1
+                                         :id          "find-a-stylist"
+                                         :nav-message [events/navigate-adventure-find-your-stylist]}]
+                                       [{:title       "Looking for Free Install?"
+                                         :sort-order  1
+                                         :id          "sunset-fi"
+                                         :nav-message [events/navigate-landing-page {:landing-page-slug "free-install"}]}])
                                    (when (not classic?)
                                      [{:title       "Shop By Look"
                                        :sort-order  3
@@ -188,18 +188,18 @@
                                        :sort-order  4
                                        :id          "shop-bundle-sets"
                                        :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]}]))
-        links              (->> categories
+        links                (->> categories
                                 (mapv (partial category->link))
                                 (concat non-category-links)
                                 (remove nil?)
                                 (sort-by :sort-order))]
-    {:contacts          (contacts-query data)
-     :link-columns      (split-evenly links)
+    {:contacts     (contacts-query data)
+     :link-columns (split-evenly links)
      ;; NOTE: necessary only when promo helper exists. Can remove if it goes away.
-     :footer-links      {:minimal-footer?                (nav/show-minimal-footer? (get-in data keypaths/navigation-event))
-                         :footer-email-input-value       (get-in data keypaths/footer-email-value)
-                         :footer-email-submitted?        (get-in data keypaths/footer-email-submitted)
-                         :footer-ready-for-email-signup? (get-in data keypaths/footer-email-ready)}}))
+     :footer-links {:minimal-footer?                (nav/show-minimal-footer? (get-in data keypaths/navigation-event))
+                    :footer-email-input-value       (get-in data keypaths/footer-email-value)
+                    :footer-email-submitted?        (get-in data keypaths/footer-email-submitted)
+                    :footer-ready-for-email-signup? (get-in data keypaths/footer-email-ready)}}))
 
 (defn built-component
   [data _]

@@ -89,7 +89,7 @@
   [app-state nav-event]
   (component/build template
                    {:promo-banner app-state
-                    :cart         (if (:remove-free-install (spice.core/spy (get-in app-state keypaths/features)))
+                    :cart         (if (:remove-free-install (get-in app-state keypaths/features))
                                     empty-cart-remove-freeinstall<-
                                     empty-cart<-)
                     :return-link  return-link<-
