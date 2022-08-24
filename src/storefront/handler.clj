@@ -984,6 +984,7 @@
                                                 ["https://shop.mayvenn.com/our-hair"                       "0.60"]
                                                 ["https://shop.mayvenn.com/wig-care-guide"                 "0.60"]
                                                 ["https://shop.mayvenn.com/wig-installation-guide"         "0.60"]
+                                                ["https://shop.mayvenn.com/wig-styling-guide"              "0.60"]
                                                 ["https://shop.mayvenn.com/wig-buying-guide"               "0.60"]
                                                 ["https://shop.mayvenn.com/wig-hair-guide"                 "0.60"]
                                                 ["https://shop.mayvenn.com/wigs-101-guide"                 "0.60"]
