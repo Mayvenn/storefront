@@ -443,9 +443,7 @@
                                                                          first)
                                            discounted-price         (let [discountable-service-price (:product/essential-price discountable-service-sku)]
                                                                       (cond-> price
-                                                                        discountable-service-price                                     (- discountable-service-price)
-                                                                        ;; TODO: REMOVE AFTER BLACK FRIDAY SALE 11/30/21
-                                                                        (first (filter (comp (partial = "holiday") :code) promotions)) (* 0.8)))
+                                                                        discountable-service-price (- discountable-service-price)))
                                            price-money              (when price (mf/as-money price))
                                            discounted-money         (when discounted-price (mf/as-money discounted-price))]
                                        (assoc look :price price-money :discounted-price (when (not= price-money discounted-money) discounted-money))))
