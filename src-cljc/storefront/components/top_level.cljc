@@ -22,6 +22,7 @@
 
             mayvenn-install.about
             wigs-101.guide
+            retail.stores
 
             [appointment-booking.core :as booking.core]
             mayvenn.shopping-quiz.unnamed-v1
@@ -104,6 +105,7 @@
    events/navigate-wig-installation-guide     (constantly wigs-101.guide/built-component-installation)
    events/navigate-wig-care-guide             (constantly wigs-101.guide/built-component-care)
    events/navigate-wig-styling-guide          (constantly wigs-101.guide/built-component-styling)
+   events/navigate-retail-walmart             (constantly retail.stores/built-component)
    events/navigate-content-guarantee          (constantly content/built-component)
    events/navigate-content-help               (constantly content/built-component)
    events/navigate-content-privacy            (constantly content/built-component)

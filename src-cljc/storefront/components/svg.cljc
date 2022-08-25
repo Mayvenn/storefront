@@ -171,13 +171,21 @@
     [:svg.container-size (maps/deep-merge {:class "fill-black"} opts)
      ^:inline (svg-xlink "styleseat")])))
 
+(defn tiktok
+  ([] (tiktok {}))
+  ([opts]
+   (component/html
+    [:svg.container-size (maps/deep-merge {:class "fill-black"} opts)
+     ^:inline (svg-xlink "tiktok")])))
+
 (def social-icon
   {"instagram" instagram
    "desktop"   instagram
    "facebook"  facebook-f
    "pinterest" pinterest
    "twitter"   twitter
-   "styleseat" styleseat})
+   "styleseat" styleseat
+   "tiktok"    tiktok})
 
 ;; Footer
 

@@ -145,6 +145,14 @@
 (defpath navigate-wig-care-guide)
 (defpath navigate-wig-styling-guide)
 
+;; Retail Locations
+(defpath navigate-retail-walmart)
+(defpath navigate-retail-walmart-katy)
+(defpath navigate-retail-walmart-houston)
+(defpath navigate-retail-walmart-grand-prairie)
+(defpath navigate-retail-walmart-dallas)
+(defpath navigate-retail-walmart-mansfield)
+
 (defpath menu-traverse-root)
 (defpath menu-traverse-ascend)
 (defpath menu-traverse-descend)

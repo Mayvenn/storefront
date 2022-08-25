@@ -17,7 +17,6 @@
   {"/guarantee"              (edn->bidi events/navigate-content-guarantee)
    "/help"                   (edn->bidi events/navigate-content-help)
    "/about-us"               (edn->bidi events/navigate-content-about-us)
-   "/wigs-101-guide"         (edn->bidi events/navigate-wigs-101-guide)
    "/policy/privacy"         (edn->bidi events/navigate-content-privacy)
    "/policy/privacy/v2"      (edn->bidi events/navigate-content-privacyv2)
    "/policy/privacy/v1"      (edn->bidi events/navigate-content-privacyv1)
@@ -29,11 +28,15 @@
    "/our-hair"               (edn->bidi events/navigate-content-our-hair)
 
    ;; Wig Care Guides
+   "/wigs-101-guide"         (edn->bidi events/navigate-wigs-101-guide)
    "/wig-hair-guide"         (edn->bidi events/navigate-wig-hair-guide)
    "/wig-buying-guide"       (edn->bidi events/navigate-wig-buying-guide)
    "/wig-installation-guide" (edn->bidi events/navigate-wig-installation-guide)
    "/wig-care-guide"         (edn->bidi events/navigate-wig-care-guide)
-   "/wig-styling-guide"      (edn->bidi events/navigate-wig-styling-guide)})
+   "/wig-styling-guide"      (edn->bidi events/navigate-wig-styling-guide)
+
+   ;; Retail Stores
+   "/walmart"           (edn->bidi events/navigate-retail-walmart)})
 
 (def routes-free-from-force-set-password
   #{events/navigate-force-set-password

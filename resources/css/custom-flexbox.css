@@ -13,6 +13,7 @@
 @media (--on-mobile) {
   .flex-row-reverse-on-mb { flex-direction: row-reverse; }
   .flex-column-on-mb { flex-direction: column; }
+  .justify-center-on-mb { justify-content: center;}
 }
 
 @media (--on-tablet) {
