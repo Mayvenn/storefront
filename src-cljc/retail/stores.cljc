@@ -21,11 +21,11 @@
 (defn store-locations
   [{:keys [locations]}]
   [:div.max-960.mx-auto
-   [:h1.canela.title-1.center.my6 "Store Locations"]
-   [:div.flex.flex-wrap.col-8-on-dt.container.justify-center-on-mb.mx-auto
+   [:h1.canela.title-1.center.mb6 "Store Locations"]
+   [:div.flex.flex-wrap.container.justify-center-on-mb.mx-auto
     (for [{:keys [name img-url address1-2 city-state-zip phone mon-sat-hours sun-hours
                   directions instagram facebook tiktok email]} locations]
-      [:div.col-6-on-tb-dt.col-12-on-mb.px1.py3
+      [:div.col-6-on-tb-dt.col-12-on-mb.px2.py3
        (ui/basic-defer-img {:width "100%"  :class "col-12" :alt ""} img-url)
        [:div.left
         [:h2.canela.title-2 name]
