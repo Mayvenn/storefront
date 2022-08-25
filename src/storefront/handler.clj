@@ -330,22 +330,33 @@
            (nil? resolved-node)  node
            :else                 resolved-node))))
 
-(defn find-cms-node [nodes-db content-type id]
-  (let [content-type-id-path (case content-type
-                               :landingPageV2 [:fields :slug]
-                               :homepage      [:fields :experience]
-                               nil)]
-    (->> nodes-db
-         vals
-         (filter #(and (= content-type (-> % :sys :contentType :sys :id keyword))
-                       (= id (keyword (get-in % content-type-id-path)))))
-         first)))
+(defn find-cms-node
+  ([nodes-db content-type]
+   (->> nodes-db
+        vals
+        (filter #(= content-type (-> % :sys :contentType :sys :id keyword)))))
+  ([nodes-db content-type id]
+   (let [content-type-id-path (case content-type
+                                :landingPageV2  [:fields :slug]
+                                :homepage       [:fields :experience]
+                                :retailLocation [:fields :slug]
+                                nil)]
+     (->> nodes-db
+          vals
+          (filter #(and (= content-type (-> % :sys :contentType :sys :id keyword))
+                        (= id (keyword (get-in % content-type-id-path)))))
+          first))))
 
-(defn assemble-cms-node [nodes-db content-type id]
-  (some->> id
-           (find-cms-node nodes-db content-type)
-           contentful/extract-fields
-           (resolve-cms-node nodes-db)))
+(defn assemble-cms-node
+  ([nodes-db content-type]
+   (some->> (find-cms-node nodes-db content-type)
+            (map contentful/extract-fields)
+            (resolve-cms-node nodes-db)))
+  ([nodes-db content-type id]
+   (some->> id
+            (find-cms-node nodes-db content-type)
+            contentful/extract-fields
+            (resolve-cms-node nodes-db))))
 
 (defn ^:private copy-cms-to-data
   ([cms-data data keypath]
@@ -431,6 +442,8 @@
                                                            keyword
                                                            (assemble-cms-node normalized-cms-cache :landingPageV2))))
 
+                                    (= events/navigate-retail-walmart nav-event)
+                                    {:retailLocations (assemble-cms-node normalized-cms-cache :retailLocation)}
                                     :else nil))))))
 
 (defn wrap-set-welcome-url [h welcome-config]
