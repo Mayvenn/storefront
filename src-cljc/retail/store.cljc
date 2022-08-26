@@ -20,8 +20,8 @@
 (defn store-info
   [{:location-card/keys [name img-url address1-2 city-state-zip phone mon-sat-hours sun-hours
                          directions instagram facebook tiktok email]}]
-  [:div.max-960.mx-auto.flex.py3
-   [:div.col-6-on-tb-dt.col-12-on-mb.px2
+  [:div.max-960.py3.flex-wrap.flex
+   [:div.col-6-on-tb-dt.col-12.px2
     [:div.mb2
      [:div.left
       [:h2.canela.title-2 name]
@@ -47,18 +47,21 @@
        [:div.content-4 mon-sat-hours]
        [:div.content-4 sun-hours]]]]
     [:div.flex
-     [:div.col-5 (ui/button-medium-primary {:href directions} "Get Directions")]]]
-   [:div.col-6-on-tb-dt.col-12-on-mb.px2 (ui/basic-defer-img {:width "100%" :alt ""} img-url)]])
+     [:div.col-5.pb3 (ui/button-medium-primary {:href directions} "Get Directions")]]]
+   [:div.col-6-on-tb-dt.col-12.px2 (ui/basic-defer-img {:width "100%" :alt ""} img-url)]])
 
 (defn follow-us
   [{:follow-us/keys [instagram photos]}]
   [:div.bg-pale-purple.center.py5
    [:h2.proxima.title-2.shout.pt5 "Follow Us"]
-   [:div.title-1.canela.pb5 "@" instagram]
-   [:div.flex.justify-center
+   [:div.title-1.canela.pb5
+    {:style {:overflow-wrap "break-word"}}
+    (str "@" instagram)]
+   [:div.flex.flex-wrap
     (for [{:keys [file description]} photos]
-      [:div
-       (ui/basic-defer-img {:class "bg-pale-purple" :width "200px" :height "200px" :alt description}
+      [:div.col-6.col-3-on-tb-dt
+       {:key file}
+       (ui/basic-defer-img {:class "bg-pale-purple" :width "100%" :height "100%" :alt description}
                            (:url file))])]])
 
 (def why-mayvenn-icons-text
