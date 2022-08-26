@@ -14,9 +14,11 @@
   [:div.center
    [:div.max-960.mx-auto
     (ui/defer-ucare-img {:class "col-12"
-                         :smart-crop "1000x400"} "991a7fac-b4ed-4d1e-95d5-f2153fe678e2")]
+                         :smart-crop "1000x400"
+                         :alt ""} "991a7fac-b4ed-4d1e-95d5-f2153fe678e2")]
    [:div.max-580.mx-auto.py6
-    (ui/defer-ucare-img {:class "col-12 mb3"} "f0ac8b6a-5815-4e95-ad74-688b598498da")]])
+    (ui/defer-ucare-img {:class "col-12 mb3"
+                         :alt "Mayvenn Beauty Lounge"} "f0ac8b6a-5815-4e95-ad74-688b598498da")]])
 
 (defn store-locations
   [{:keys [locations]}]
@@ -26,7 +28,7 @@
     (for [{:keys [name img-url address1-2 city-state-zip phone mon-sat-hours sun-hours
                   directions instagram facebook tiktok email]} locations]
       [:div.col-6-on-tb-dt.col-12-on-mb.px2.py3
-       (ui/basic-defer-img {:width "100%"  :class "col-12" :alt ""} img-url)
+       (ui/basic-defer-img {:width "100%" :class "col-12" :alt ""} img-url)
        [:div.left
         [:h2.canela.title-2 name]
         [:div.proxima.content-3 "Visit us inside Walmart"]]
@@ -44,13 +46,13 @@
        [:div.flex
         [:div.col-5 (ui/button-small-underline-primary {:href directions} "Get Directions")]
         [:div.flex.col-7
-         (when instagram [:a.block.mx1.flex.items-center {:href instagram :rel "noopener" :target "_blank"}
+         (when instagram [:a.block.mx1.flex.items-center {:href instagram :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Instagram")}
                           [:div ^:inline (svg/instagram {:style {:height "20px" :width "20px"}})]])
-         (when facebook [:a.block.mx1.flex.items-center {:href facebook :rel "noopener" :target "_blank"}
+         (when facebook [:a.block.mx1.flex.items-center {:href facebook :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Facebook")}
                          [:div ^:inline (svg/facebook-f {:style {:height "20px" :width "20px"}})]])
-         (when tiktok [:a.block.mx1.flex.items-center {:href tiktok :rel "noopener" :target "_blank"}
+         (when tiktok [:a.block.mx1.flex.items-center {:href tiktok :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Tiktok")}
                        [:div ^:inline (svg/tiktok {:style {:height "20px" :width "20px"}})]])
-         (when email [:a.block.mx1.flex.items-center {:href (ui/email-url email) :rel "noopener" :target "_blank"}
+         (when email [:a.block.mx1.flex.items-center {:href (ui/email-url email) :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn email")}
                       [:div ^:inline (svg/icon-email {:height "20px" :width "28px"})]])]]])]])
 
 (def why-mayvenn-icons-text

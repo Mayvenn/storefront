@@ -20,20 +20,20 @@
 (defn store-info
   [{:location-card/keys [name img-url address1-2 city-state-zip phone mon-sat-hours sun-hours
                          directions instagram facebook tiktok email]}]
-  [:div.max-960.py3.flex-wrap.flex
+  [:div.max-960.py3.flex-wrap.flex.mx-auto
    [:div.col-6-on-tb-dt.col-12.px2
     [:div.mb2
      [:div.left
-      [:h2.canela.title-2 name]
+      [:h1.canela.title-2 name]
       [:div.proxima.content-3 "Visit us inside Walmart"]]
      [:div.flex.right
-      (when instagram [:a.block.mx1.flex.items-center {:href instagram :rel "noopener" :target "_blank"}
+      (when instagram [:a.block.mx1.flex.items-center {:href instagram :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Instagram")}
                        [:div ^:inline (svg/instagram {:style {:height "20px" :width "20px"}})]])
-      (when facebook [:a.block.mx1.flex.items-center {:href facebook :rel "noopener" :target "_blank"}
+      (when facebook [:a.block.mx1.flex.items-center {:href facebook :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Facebook")}
                       [:div ^:inline (svg/facebook-f {:style {:height "20px" :width "20px"}})]])
-      (when tiktok [:a.block.mx1.flex.items-center {:href tiktok :rel "noopener" :target "_blank"}
+      (when tiktok [:a.block.mx1.flex.items-center {:href tiktok :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Tiktok")}
                     [:div ^:inline (svg/tiktok {:style {:height "20px" :width "20px"}})]])
-      (when email [:a.block.mx1.flex.items-center {:href (ui/email-url email) :rel "noopener" :target "_blank"}
+      (when email [:a.block.mx1.flex.items-center {:href (ui/email-url email) :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn email")}
                    [:div ^:inline (svg/icon-email {:height "20px" :width "28px"})]])]]
     [:div.border-top.border-gray.flex.col-12.py2
      [:div.col-5
@@ -59,8 +59,9 @@
     (str "@" instagram)]
    [:div.flex.flex-wrap
     (for [{:keys [file description]} photos]
-      [:div.col-6.col-3-on-tb-dt
-       {:key file}
+      [:a.col-6.col-3-on-tb-dt
+       {:key file
+        :href (str "https://www.instagram.com/" instagram)}
        (ui/basic-defer-img {:class "bg-pale-purple" :width "100%" :height "100%" :alt description}
                            (:url file))])]])
 
