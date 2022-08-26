@@ -26,12 +26,17 @@
    [:h1.canela.title-1.center.mb6 "Store Locations"]
    [:div.flex.flex-wrap.container.justify-center-on-mb.mx-auto
     (for [{:keys [name img-url address1-2 city-state-zip phone mon-sat-hours sun-hours
-                  directions instagram facebook tiktok email]} locations]
+                  directions instagram facebook tiktok email show-page-target]} locations]
       [:div.col-6-on-tb-dt.col-12-on-mb.px2.py3
        (ui/basic-defer-img {:width "100%" :class "col-12" :alt ""} img-url)
-       [:div.left
-        [:h2.canela.title-2 name]
-        [:div.proxima.content-3 "Visit us inside Walmart"]]
+       [:div.flex.justify-between
+        [:div
+         [:h2.canela.title-2 name]
+         [:div.proxima.content-3 "Visit us inside Walmart"]]
+        [:div
+         (ui/button-medium-primary (merge (utils/route-to show-page-target)
+                                          {:aria-label (str "Learn more about " name " Beauty Lounge")})
+                                   "Learn More")]]
        [:div.border-top.border-gray.flex.col-12
         [:div.col-5
          [:div.title-3.proxima.shout.bold "Location"]
@@ -86,23 +91,31 @@
    (store-locations data)
    why-mayvenn])
 
+(def navigate-show-page
+  {"walmart/katy"          events/navigate-retail-walmart-katy
+   "walmart/houston"       events/navigate-retail-walmart-houston
+   "walmart/grand-prairie" events/navigate-retail-walmart-grand-prairie
+   "walmart/dallas"        events/navigate-retail-walmart-dallas
+   "walmart/mansfield"     events/navigate-retail-walmart-mansfield})
+
 (defn query [app-state]
   (let [locations (get-in app-state keypaths/cms-retail-locations)]
     {:locations (mapv (fn [{:keys [email facebook hero state hours name phone-number instagram tiktok
-                                   location address-1 address-2 address-zipcode address-city]}]
-                        (when (and name hero)
-                          {:name           (str name ", " state)
-                           :img-url        (-> hero :file :url)
-                           :address1-2     (when address-1 (str address-1 (when address-2 (str ", " address-2))))
-                           :city-state-zip (when address-city (str address-city ", " state " " address-zipcode))
-                           :phone          phone-number
-                           :mon-sat-hours  (first hours)
-                           :sun-hours      (last hours)
-                           :directions     (when (:lat location ) (str "https://www.google.com/maps/dir/?api=1&destination=" (:lat location)"," (:lon location)))
-                           :instagram      (when instagram (str "https://www.instagram.com/" instagram))
-                           :facebook       (when facebook (str "https://business.facebook.com/" facebook))
-                           :tiktok         (when tiktok (str "https://www.tiktok.com/@" tiktok))
-                           :email          email}) ) locations)}))
+                                   location address-1 address-2 address-zipcode address-city slug]}]
+                        (when (and name slug)
+                          {:name             (str name ", " state)
+                           :img-url          (-> hero :file :url)
+                           :address1-2       (when address-1 (str address-1 (when address-2 (str ", " address-2))))
+                           :city-state-zip   (when address-city (str address-city ", " state " " address-zipcode))
+                           :phone            phone-number
+                           :mon-sat-hours    (first hours)
+                           :sun-hours        (last hours)
+                           :show-page-target (get navigate-show-page slug)
+                           :directions       (when (:lat location ) (str "https://www.google.com/maps/dir/?api=1&destination=" (:lat location)"," (:lon location)))
+                           :instagram        (when instagram (str "https://www.instagram.com/" instagram))
+                           :facebook         (when facebook (str "https://business.facebook.com/" facebook))
+                           :tiktok           (when tiktok (str "https://www.tiktok.com/@" tiktok))
+                           :email            email}) ) locations)}))
 
 (defn built-component
   [data opts]
