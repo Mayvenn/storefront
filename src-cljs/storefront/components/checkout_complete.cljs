@@ -434,9 +434,9 @@
                 vals
                 (some (comp empty? (partial failed-rules waiter-order))))
            (-> matching :results/stylists seq))
-      (merge {:spinning (or
-                         (utils/requesting? data request-keys/fetch-stylists)
-                         (utils/requesting? data request-keys/fetch-stylists-matching-filters))
+      (merge {:spinning? (or
+                          (utils/requesting? data request-keys/fetch-stylists)
+                          (utils/requesting? data request-keys/fetch-stylists-matching-filters))
               :tertiary "Check out these stylists in your area that can help you install your hair."
               :results (results< matching)}))))
 
