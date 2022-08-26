@@ -88,7 +88,7 @@
 (component/defcomponent template
   [data _ _]
   [:div
-   (video data)
+   #_(video data)
    (store-info data)
    (follow-us data)
    why-mayvenn])
