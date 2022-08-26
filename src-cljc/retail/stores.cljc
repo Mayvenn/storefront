@@ -90,7 +90,7 @@
                                    location address-1 address-2 address-zipcode address-city]}]
                         (when (and name hero)
                           {:name           (str name ", " state)
-                           :img-url        (-> hero :file :url) ;; TODO: get the image working
+                           :img-url        (-> hero :file :url)
                            :address1-2     (when address-1 (str address-1 (when address-2 (str ", " address-2))))
                            :city-state-zip (when address-city (str address-city ", " state " " address-zipcode))
                            :phone          phone-number

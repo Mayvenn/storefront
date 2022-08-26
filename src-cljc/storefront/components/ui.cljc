@@ -1140,7 +1140,7 @@
                       (if (:child-handles-ref? opts)
                         (component/build embed data' opts')
                         (component/html
-                         [:div.bg-white {:ref trigger}
+                         [:div {:ref trigger}
                           (when-not seen? nbsp)  ; When the content has no height, isIntersecting is always false.
                           (component/build embed data' opts')])))))))
 

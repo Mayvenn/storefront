@@ -36,7 +36,12 @@
    "/wig-styling-guide"      (edn->bidi events/navigate-wig-styling-guide)
 
    ;; Retail Stores
-   "/walmart"           (edn->bidi events/navigate-retail-walmart)})
+   "/walmart"                (edn->bidi events/navigate-retail-walmart)
+   "/walmart/grand-prairie"  (edn->bidi events/navigate-retail-walmart-grand-prairie)
+   "/walmart/katy"           (edn->bidi events/navigate-retail-walmart-katy)
+   "/walmart/houston"        (edn->bidi events/navigate-retail-walmart-houston)
+   "/walmart/dallas"         (edn->bidi events/navigate-retail-walmart-dallas)
+   "/walmart/mansfield"      (edn->bidi events/navigate-retail-walmart-mansfield)})
 
 (def routes-free-from-force-set-password
   #{events/navigate-force-set-password

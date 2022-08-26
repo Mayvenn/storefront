@@ -442,7 +442,12 @@
                                                            keyword
                                                            (assemble-cms-node normalized-cms-cache :landingPageV2))))
 
-                                    (= events/navigate-retail-walmart nav-event)
+                                    (#{events/navigate-retail-walmart
+                                       events/navigate-retail-walmart-grand-prairie
+                                       events/navigate-retail-walmart-katy
+                                       events/navigate-retail-walmart-mansfield
+                                       events/navigate-retail-walmart-dallas
+                                       events/navigate-retail-walmart-houston}  nav-event)
                                     {:retailLocations (assemble-cms-node normalized-cms-cache :retailLocation)}
                                     :else nil))))))
 
