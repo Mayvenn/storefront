@@ -12,10 +12,21 @@
 
 (defn video
   [{:video/keys [title file]}]
-  [:div.max-580.mx-auto
-   [:video {:width "100%"}
-    [:source {:src file :type "video/mp4"}]
-    "Your browser does not support the video tag."]])
+  [:div.max-960.center.mx-auto
+   [:embed.hide-on-tb-dt {:src            file
+                          :wMode          "transparent"
+                          :alloFullscreen true
+                          :type           "video/mp4"
+                          :width          "100%"
+                          :height         "100%"
+                          :title          title}]
+   [:embed.hide-on-mb {:src            file
+                       :wMode          "transparent"
+                       :alloFullscreen true
+                       :type           "video/mp4"
+                       :width          "800px"
+                       :height         "450px"
+                       :title          title}]])
 
 (defn store-info
   [{:location-card/keys [name img-url address1-2 city-state-zip phone mon-sat-hours sun-hours
@@ -73,7 +84,7 @@
    {:icon svg/worry-free
     :text "100% Virgin Hair"}
    {:icon svg/mirror
-    :text "Certified Stylists"} ])
+    :text "Certified Stylists"}])
 
 (def why-mayvenn
   [:div.bg-cool-gray.mx-auto.center.py6
@@ -92,7 +103,7 @@
 (component/defcomponent template
   [data _ _]
   [:div
-   #_(video data)
+   (video data)
    (store-info data)
    (follow-us data)
    why-mayvenn])
