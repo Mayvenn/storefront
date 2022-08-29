@@ -8,25 +8,14 @@
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
+            [storefront.components.video :as video]
             [storefront.platform.component-utils :as utils]))
 
 (defn video
-  [{:video/keys [title file]}]
-  [:div.max-960.center.mx-auto
-   [:embed.hide-on-tb-dt {:src            file
-                          :wMode          "transparent"
-                          :alloFullscreen true
-                          :type           "video/mp4"
-                          :width          "100%"
-                          :height         "100%"
-                          :title          title}]
-   [:embed.hide-on-mb {:src            file
-                       :wMode          "transparent"
-                       :alloFullscreen true
-                       :type           "video/mp4"
-                       :width          "800px"
-                       :height         "450px"
-                       :title          title}]])
+  [{:video/keys [youtube-id]}]
+  (when youtube-id
+    [:div.max-960.center.mx-auto
+     (ui/youtube-responsive (str "https://www.youtube.com/embed/" youtube-id "?rel=0&color=white&showinfo=0&controls=1&loop=1&modestbranding"))]))
 
 (defn store-info
   [{:location-card/keys [name img-url address1-2 city-state-zip phone mon-sat-hours sun-hours
@@ -109,10 +98,9 @@
    (follow-us data)
    why-mayvenn])
 
-(defn query-all [{:keys [email facebook hero state hours name phone-number instagram tiktok
-                         location address-1 address-2 address-zipcode address-city video-tour instagram-photos]}]
-  {:video/file                   (-> video-tour :file :url)
-   :video/title                  (:title video-tour)
+(defn query-all [{:keys [email facebook hero state hours name phone-number instagram tiktok location address-1 address-2
+                         address-zipcode address-city store-tour-you-tube-video-id instagram-photos]}]
+  {:video/youtube-id             store-tour-you-tube-video-id
    :location-card/name           (str name ", " state)
    :location-card/img-url        (-> hero :file :url)
    :location-card/address1-2     (when address-1 (str address-1 (when address-2 (str ", " address-2))))
