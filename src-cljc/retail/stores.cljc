@@ -29,7 +29,7 @@
                   directions instagram facebook tiktok email show-page-target]} locations]
       [:div.col-6-on-tb-dt.col-12-on-mb.px2.py3
        (ui/aspect-ratio 3 2 (ui/basic-defer-img {:width "100%" :class "col-12" :alt ""} img-url))
-       [:div.flex.justify-between
+       [:div.flex.justify-between.pt2
         [:div
          [:h2.canela.title-2 name]
          [:div.proxima.content-3 "Visit us inside Walmart"]]
