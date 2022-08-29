@@ -65,8 +65,9 @@
   [{:follow-us/keys [instagram photos]}]
   [:div.bg-pale-purple.center.py5
    [:h2.proxima.title-2.shout.pt5 "Follow Us"]
-   [:div.title-1.canela.pb5
-    {:style {:overflow-wrap "break-word"}}
+   [:a.title-1.canela.pb5.inherit-color
+    {:style {:overflow-wrap "break-word"}
+     :href (str "https://www.instagram.com/" instagram)}
     (str "@" instagram)]
    [:div.flex.flex-wrap
     (for [{:keys [file description]} photos]
