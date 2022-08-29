@@ -1006,12 +1006,6 @@
                                                 ["https://shop.mayvenn.com/wig-buying-guide"               "0.60"]
                                                 ["https://shop.mayvenn.com/wig-hair-guide"                 "0.60"]
                                                 ["https://shop.mayvenn.com/wigs-101-guide"                 "0.60"]
-                                                ["https://shop.mayvenn.com/walmart"                        "0.60"]
-                                                ["https://shop.mayvenn.com/walmart/katy"                   "0.60"]
-                                                ["https://shop.mayvenn.com/walmart/houston"                "0.60"]
-                                                ["https://shop.mayvenn.com/walmart/dallas"                 "0.60"]
-                                                ["https://shop.mayvenn.com/walmart/mansfield"              "0.60"]
-                                                ["https://shop.mayvenn.com/walmart/grand-prairie"          "0.60"]
                                                 ["https://shop.mayvenn.com/login"                          "0.60"]
                                                 ["https://shop.mayvenn.com/signup"                         "0.60"]
                                                 ["https://shop.mayvenn.com/shop/look"                      "0.80"]
@@ -1209,23 +1203,6 @@
                (GET "/blog" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/blog/"))))
                (GET "/blog/" req (util.response/redirect (store-url "shop" environment req)))
                (GET "/info" req (util.response/redirect (store-url "shop" environment req)))
-
-               ;; Wigs Guide redirects
-               (GET "/info/wigs-101-guide" [] (util.response/redirect "/wigs-101-guide" :moved-permanently))
-               (GET "/info/wig-hair-guide" [] (util.response/redirect "/wig-hair-guide" :moved-permanently))
-               (GET "/info/wig-buying-guide-hub" [] (util.response/redirect "/wig-buying-guide" :moved-permanently))
-               (GET "/info/wig-installation-guide" [] (util.response/redirect "/wig-installation-guide" :moved-permanently))
-               (GET "/info/wig-care-guide" [] (util.response/redirect "/wig-care-guide" :moved-permanently))
-               (GET "/info/wig-styling-guide" [] (util.response/redirect "/wig-styling-guide" :moved-permanently))
-
-               ;; Retail stores redirects
-               (GET "/info/walmart" [] (util.response/redirect "/walmart" :moved-permanently))
-               (GET "/info/walmart/katy" [] (util.response/redirect "/walmart/katy" :moved-permanently))
-               (GET "/info/walmart/houston" [] (util.response/redirect "/walmart/houston" :moved-permanently))
-               (GET "/info/walmart/dallas" [] (util.response/redirect "/walmart/dallas" :moved-permanently))
-               (GET "/info/walmart/grand-prairie" [] (util.response/redirect "/walmart/grand-prairie" :moved-permanently))
-               (GET "/info/walmart/mansfield" [] (util.response/redirect "/walmart/mansfield" :moved-permanently))
-
                (GET "/info/*" req (util.response/redirect (store-url "shop" environment req)))
                (GET "/adv/home" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/")) :moved-permanently))
                (GET "/stylist/edit" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
