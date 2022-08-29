@@ -56,15 +56,18 @@
    [:h2.proxima.title-2.shout.pt5 "Follow Us"]
    [:a.title-1.canela.pb5.inherit-color
     {:style {:overflow-wrap "break-word"}
-     :href (str "https://www.instagram.com/" instagram)}
+     :href  (str "https://www.instagram.com/" instagram)}
     (str "@" instagram)]
-   [:div.flex.flex-wrap
+   [:div.flex.flex-wrap.pt3
     (for [{:keys [file description]} photos]
       [:a.col-6.col-3-on-tb-dt
-       {:key file
+       {:key  file
         :href (str "https://www.instagram.com/" instagram)}
-       (ui/basic-defer-img {:class "bg-pale-purple" :width "100%" :height "100%" :alt description}
-                           (:url file))])]])
+       (ui/aspect-ratio 1 1 (ui/img {:src      (:url file)
+                                     :style    {:object-fit "cover"
+                                                :min-height "100%"}
+                                     :class    "flex-auto col-12"
+                                     :alt      description}))])]])
 
 (def why-mayvenn-icons-text
   [{:icon svg/heart
