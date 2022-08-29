@@ -28,7 +28,7 @@
     (for [{:keys [name img-url address1-2 city-state-zip phone mon-sat-hours sun-hours
                   directions instagram facebook tiktok email show-page-target]} locations]
       [:div.col-6-on-tb-dt.col-12-on-mb.px2.py3
-       (ui/basic-defer-img {:width "100%" :class "col-12" :alt ""} img-url)
+       (ui/aspect-ratio 3 2 (ui/basic-defer-img {:width "100%" :class "col-12" :alt ""} img-url))
        [:div.flex.justify-between
         [:div
          [:h2.canela.title-2 name]
