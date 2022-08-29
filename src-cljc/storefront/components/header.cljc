@@ -461,7 +461,7 @@
                                   [{:slide-out-nav-menu-item/target  [events/navigate-landing-page {:landing-page-slug "free-install"}]
                                     :slide-out-nav-menu-item/nested? false
                                     :slide-out-nav-menu-item/id      "sunset-free-install"
-                                    :slide-out-nav-menu-item/primary "Looking for Free Install?"}])
+                                    :slide-out-nav-menu-item/primary "Free Install Ending FAQ"}])
 
                                  shop?
                                  (concat
@@ -537,7 +537,7 @@
                            (concat
                             [{:header-menu-item/navigation-target [events/navigate-landing-page {:landing-page-slug "free-install"}]
                               :header-menu-item/id                "sunset-free-install"
-                              :header-menu-item/content           "Looking for Free Install?"}])
+                              :header-menu-item/content           "Free Install Ending FAQ"}])
 
                            shop?
                            (concat
