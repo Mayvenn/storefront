@@ -212,14 +212,16 @@
     ;; If the order number's changed (i.e. order from a shared cart), we treat all sku-ids as new
     (sku-ids->quantities<- new-order)))
 
-(defn first-name-plus-last-name-initial [{:as order :keys [billing-address shipping-address]}]
+(defn first-name-plus-last-name-initial [{:as order :keys [billing-address shipping-address user]}]
   (when (seq order)
-    (str (or (:first-name billing-address)
-             (:first-name shipping-address))
-         " "
-         (first (or (:last-name billing-address)
-                    (:last-name shipping-address)))
-         ".")))
+    (if-let [f-name (or (:first-name billing-address)
+                        (:first-name shipping-address))]
+      (str f-name
+           " "
+           (first (or (:last-name billing-address)
+                      (:last-name shipping-address)))
+           ".")
+      (:email user))))
 
 (defn returned-quantities
   "Returns a map of returned items, with variant-id as the key and quantity as the value"
