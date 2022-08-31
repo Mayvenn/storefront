@@ -12,6 +12,7 @@
 
 @media (--on-mobile) {
   .flex-row-reverse-on-mb { flex-direction: row-reverse; }
+  .flex-column-reverse-on-mb { flex-direction: column-reverse; }
   .flex-column-on-mb { flex-direction: column; }
   .justify-center-on-mb { justify-content: center;}
 }

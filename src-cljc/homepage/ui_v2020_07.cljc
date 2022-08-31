@@ -11,6 +11,7 @@
             [homepage.ui.hashtag-mayvenn-hair :as hashtag-mayvenn-hair]
             [homepage.ui.hero :as hero]
             [homepage.ui.shopping-categories :as shopping-categories]
+            [homepage.ui.zip-explanation :as zip-explanation]
             [storefront.accessors.contentful :as contentful]
             [storefront.component :as c]
             [storefront.components.homepage-hero :as homepage-hero]
@@ -44,19 +45,21 @@
            hero
            shopping-categories
            install-specific-query
-           remove-free-install?]} _ _]
+           remove-free-install?
+           zip-explanation]} _ _]
   [:div
    (c/build hero/organism hero)
 
-   (c/build shopping-categories/organism shopping-categories)
-
-   (when (not remove-free-install?)
+   (if remove-free-install?
+     (c/build shopping-categories/organism shopping-categories)
      [:div
       (c/build install-specific-organism install-specific-query )
       A/horizontal-rule-atom
       (A/divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")])
 
    (c/build hashtag-mayvenn-hair/organism hashtag-mayvenn-hair)
+   (when remove-free-install?
+     (c/build zip-explanation/organism zip-explanation))
    (c/build faq/organism faq)
    (c/build guarantees/organism guarantees)
    (c/build diishan/organism diishan)
@@ -99,6 +102,30 @@
     {:shopping-categories.box/id        "need-inspiration"
      :shopping-categories.box/target    [e/navigate-shop-by-look {:album-keyword :look}]
      :shopping-categories.box/alt-label ["Need Inspiration?" "Try shop by look."]})})
+
+(defn shopping-categories-for-shop-query
+  [categories]
+  {:list/boxes
+   (conj
+    (->> categories
+         (filter ::order)
+         (sort-by ::order)
+         (mapv
+          (fn category->box
+            [{:keys [page/slug copy/title catalog/category-id]
+              ::keys [image-id]}]
+            {:shopping-categories.box/id       slug
+             :shopping-categories.box/target   [e/navigate-category
+                                                {:page/slug           slug
+                                                 :catalog/category-id category-id}]
+             :shopping-categories.box/ucare-id image-id
+             :shopping-categories.box/label    title})))
+    {:shopping-categories.box/id        "need-inspiration"
+     :shopping-categories.box/target    [e/navigate-shop-by-look {:album-keyword :look}]
+     :shopping-categories.box/alt-label ["Need Inspiration?" "Try shop by look."]})})
+
+(def zip-explanation
+  {:zip-explanation/id "zip-explanation"})
 
 (defn hashtag-mayvenn-hair-query
   [ugc]
