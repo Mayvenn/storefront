@@ -341,32 +341,33 @@
         (assoc :content content))))
 
 (defn query [data]
-  (let [selections         (get-in data catalog.keypaths/detailed-product-selections)
-        product            (products/current-product data)
-        product-skus       (products/extract-product-skus data product)
-        images-catalog     (get-in data keypaths/v2-images)
-        facets             (facets/by-slug data)
-        selected-sku       (get-in data catalog.keypaths/detailed-product-selected-sku)
-        carousel-images    (find-carousel-images product product-skus images-catalog
+  (let [selections           (get-in data catalog.keypaths/detailed-product-selections)
+        product              (products/current-product data)
+        product-skus         (products/extract-product-skus data product)
+        images-catalog       (get-in data keypaths/v2-images)
+        facets               (facets/by-slug data)
+        selected-sku         (get-in data catalog.keypaths/detailed-product-selected-sku)
+        carousel-images      (find-carousel-images product product-skus images-catalog
                                                  ;;TODO These selection election keys should not be hard coded
                                                  (select-keys selections [:hair/color
                                                                           :hair/base-material])
                                                  selected-sku)
-        length-guide-image (->> product
+        length-guide-image   (->> product
                                 (images/for-skuer images-catalog)
                                 (select {:use-case #{"length-guide"}})
                                 first)
-        product-options    (get-in data catalog.keypaths/detailed-product-options)
-        ugc                (ugc-query product selected-sku data)
-        sku-price          (or (:product/essential-price selected-sku)
+        product-options      (get-in data catalog.keypaths/detailed-product-options)
+        ugc                  (ugc-query product selected-sku data)
+        sku-price            (or (:product/essential-price selected-sku)
                                (:sku/price selected-sku))
-        review-data        (review-component/query data)
-        shop?              (or (= "shop" (get-in data keypaths/store-slug))
+        review-data          (review-component/query data)
+        shop?                (or (= "shop" (get-in data keypaths/store-slug))
                                (= "retail-location" (get-in data keypaths/store-experience)))
-        hair?              (accessors.products/hair? product)
-        faq                (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
+        hair?                (accessors.products/hair? product)
+        faq                  (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
                              (get-in data (conj keypaths/cms-faq pdp-faq-id)))
-        selected-picker    (get-in data catalog.keypaths/detailed-product-selected-picker)]
+        selected-picker      (get-in data catalog.keypaths/detailed-product-selected-picker)
+        remove-free-install? (:remove-free-install (get-in data storefront.keypaths/features))]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
@@ -408,11 +409,11 @@
                                          :icon     {:opts {:height "20px"
                                                            :width  "20px"}
                                                     :id   "info-color-circle"}
-                                         :sections (keep (partial tab-section< {:product product
+                                         :sections (keep (partial tab-section< {:product      product
                                                                                 :selected-sku selected-sku})
                                                          [(merge
                                                            (when (seq (:copy/model-wearing product))
-                                                             {:heading     "Model Wearing"
+                                                             {:heading      "Model Wearing"
                                                               :content-path [:product :copy/model-wearing]})
                                                            (when length-guide-image
                                                              {:link/content "Length Guide"
@@ -420,30 +421,30 @@
                                                                              {:length-guide-image length-guide-image
                                                                               :location           "hair-info-tab"}]
                                                               :link/id      "hair-info-tab-length-guide"}))
-                                                          {:heading     "Unit Weight"
-                                                           :content-path [:selected-sku :hair/weight]
+                                                          {:heading               "Unit Weight"
+                                                           :content-path          [:selected-sku :hair/weight]
                                                            :fallback-content-path [:product :copy/weights]}
-                                                          {:heading     "Hair Quality"
+                                                          {:heading      "Hair Quality"
                                                            :content-path [:product :copy/quality]}
-                                                          {:heading     "Hair Origin"
+                                                          {:heading      "Hair Origin"
                                                            :content-path [:product :copy/origin]}
-                                                          {:heading     "Hair Weft Type"
+                                                          {:heading      "Hair Weft Type"
                                                            :content-path [:product :copy/weft-type]}
-                                                          {:heading     "Part Design"
+                                                          {:heading      "Part Design"
                                                            :content-path [:product :copy/part-design]}
-                                                          {:heading     "Features"
+                                                          {:heading      "Features"
                                                            :content-path [:product :copy/features]}
-                                                          {:heading     "Available Materials"
+                                                          {:heading      "Available Materials"
                                                            :content-path [:product :copy/materials]}
-                                                          {:heading     "Lace Size"
+                                                          {:heading      "Lace Size"
                                                            :content-path [:product :copy/lace-size]}
-                                                          {:heading     "Silk Size"
+                                                          {:heading      "Silk Size"
                                                            :content-path [:product :copy/silk-size]}
-                                                          {:heading     "Cap Size"
+                                                          {:heading      "Cap Size"
                                                            :content-path [:product :copy/cap-size]}
-                                                          {:heading     "Wig Density"
+                                                          {:heading      "Wig Density"
                                                            :content-path [:product :copy/density]}
-                                                          {:heading     "Tape-in Glue Information"
+                                                          {:heading      "Tape-in Glue Information"
                                                            :content-path [:product :copy/tape-in-glue]}])}
                                         {:title    "Description"
                                          :id       :description
@@ -452,25 +453,26 @@
                                                            :width  "18px"}
                                                     :id   "description"}
                                          :primary  (:copy/description product)
-                                         :sections (keep (partial tab-section< {:product product
+                                         :sections (keep (partial tab-section< {:product      product
                                                                                 :selected-sku selected-sku})
-                                                         [{:heading     "Hair Type"
+                                                         [{:heading      "Hair Type"
                                                            :content-path [:product :copy/hair-type]}
-                                                          {:heading     "What's Included"
+                                                          {:heading      "What's Included"
                                                            :content-path [:product :copy/whats-included]}
-                                                          {:heading     "Available Services"
-                                                           :content-path [:product :copy/available-services]}])}
+                                                          (when (not remove-free-install?)
+                                                            {:heading      "Available Services"
+                                                             :content-path [:product :copy/available-services]})])}
                                         {:title    "Care"
                                          :id       :care
                                          :active?  (= active-tab-name :care)
                                          :icon     {:opts {:height "20px"
                                                            :width  "20px"}
                                                     :id   "heart"}
-                                         :sections (keep (partial tab-section< {:product product
+                                         :sections (keep (partial tab-section< {:product      product
                                                                                 :selected-sku selected-sku})
-                                                         [{:heading     "Maintenance Level"
+                                                         [{:heading      "Maintenance Level"
                                                            :content-path [:product :copy/maintenance-level]}
-                                                          {:heading     "Can it be Dyed?"
+                                                          {:heading      "Can it be Dyed?"
                                                            :content-path [:product :copy/dyeable?]}])}]})
        (let [{:keys [copy/description
                      copy/colors
