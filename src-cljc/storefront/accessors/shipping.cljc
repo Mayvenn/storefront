@@ -11,6 +11,7 @@
     "WAITER-SHIPPING-7" "2-4 days (Weekend Delivery Included)"
     "WAITER-SHIPPING-2" "1-2 business days (No Weekend & No P.O. Box)"
     "WAITER-SHIPPING-4" "1 business day (No Weekend & No P.O. Box)"
+    "WAITER-SHIPPING-8" "In Store Pick-Up"
     nil))
 
 (defn names-with-time-range [rate-sku-id drop-shipping?]
@@ -21,6 +22,7 @@
     "WAITER-SHIPPING-7" "Priority 2-4 Days Shipping"
     "WAITER-SHIPPING-2" "Express 1-2 Days Shipping"
     "WAITER-SHIPPING-4" "Rush Shipping"
+    "WAITER-SHIPPING-8" "In Store Pick-Up"
     nil))
 
 (defn shipping-note [rate-sku-id]
@@ -37,6 +39,7 @@
     "WAITER-SHIPPING-7" "2-4 days"
     "WAITER-SHIPPING-2" "1-2 business days"
     "WAITER-SHIPPING-4" "1 business day"
+    "WAITER-SHIPPING-8" "In Store Pick-Up"
     nil))
 
 (defn shipping-details [shipment]
@@ -48,6 +51,9 @@
         drop-shipping? (->> (map :variant-attrs (:line-items shipment))
                             (select {:warehouse/slug #{"factory-cn"}})
                             boolean)]
-    {:state     (:state shipment)
-     :timeframe (-> shipping-line-item :sku (longform-timeframe-fn drop-shipping?))
-     :name      (-> shipping-line-item :product-name)}))
+    (if shipping-line-item
+      {:state     (:state shipment)
+       :timeframe (-> shipping-line-item :sku (longform-timeframe-fn drop-shipping?))
+       :name      (-> shipping-line-item :product-name)}
+      {:state     "Shipped"
+       :name      "In Store Pickup"})))
