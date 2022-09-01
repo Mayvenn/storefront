@@ -292,9 +292,9 @@
                                                                                   (get-in app-state keypaths/v2-skus)
                                                                                   (get-in app-state keypaths/v2-facets))
                                                                          product-line-items)]
-                                   (cond-> shipment
-                                     :always                                 (assoc :line-items enriched-product-line-items)
-                                     (not (-> sale :order :is-square-order)) (assoc :shipping-details (shipping/shipping-details shipment)))))
+                                   (assoc shipment
+                                          :line-items enriched-product-line-items
+                                          :shipping-details (shipping/shipping-details shipment))))
         returned-quantities    (orders/returned-quantities (:order sale))
         shipments-with-returns (add-returns (vec shipments-enriched) returned-quantities)]
     {:sale                      (assoc-in sale [:order :shipments] shipments-with-returns)
