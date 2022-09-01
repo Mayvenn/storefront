@@ -45,21 +45,14 @@
            hero
            shopping-categories
            install-specific-query
-           remove-free-install?
            zip-explanation]} _ _]
   [:div
    (c/build hero/organism hero)
 
-   (if remove-free-install?
-     (c/build shopping-categories/organism shopping-categories)
-     [:div
-      (c/build install-specific-organism install-specific-query )
-      A/horizontal-rule-atom
-      (A/divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")])
+   (c/build shopping-categories/organism shopping-categories)
 
    (c/build hashtag-mayvenn-hair/organism hashtag-mayvenn-hair)
-   (when remove-free-install?
-     (c/build zip-explanation/organism zip-explanation))
+   (c/build zip-explanation/organism zip-explanation)
    (c/build faq/organism faq)
    (c/build guarantees/organism guarantees)
    (c/build diishan/organism diishan)
