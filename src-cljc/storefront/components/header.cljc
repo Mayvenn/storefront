@@ -455,8 +455,7 @@
 
      :slide-out-nav/menu-items (cond-> []
 
-                                 (and (-> signed-in ::auth/as (= :stylist))
-                                      remove-free-install?)
+                                 remove-free-install?
                                  (concat
                                   [{:slide-out-nav-menu-item/target  [events/navigate-landing-page {:landing-page-slug "free-install"}]
                                     :slide-out-nav-menu-item/nested? false
@@ -532,8 +531,7 @@
                                     :slide-out-nav-menu-item/primary "Stylist Exclusives"}]))
      :desktop-menu/items (cond-> []
 
-                           (and (-> signed-in ::auth/as (= :stylist))
-                                remove-free-install?)
+                           remove-free-install?
                            (concat
                             [{:header-menu-item/navigation-target [events/navigate-landing-page {:landing-page-slug "free-install"}]
                               :header-menu-item/id                "sunset-free-install"
