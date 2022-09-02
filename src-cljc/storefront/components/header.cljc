@@ -562,7 +562,7 @@
                               [{:header-menu-item/navigation-target [events/navigate-landing-page {:landing-page-slug "22-hd-lace"}]
                                 :header-menu-item/id                "desktop-new-arrivals"
                                 :header-menu-item/content           "New Arrivals"}])
-                            [{:header-menu-item/href    "/wigs-101-guide"
+                            [{:header-menu-item/href    "/info/wigs-101-guide"
                               :header-menu-item/id      "desktop-wigs-101"
                               :header-menu-item/content "Wigs 101"}
                              {:header-menu-item/href    blog-url

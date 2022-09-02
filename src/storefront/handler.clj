@@ -1000,12 +1000,12 @@
                                                 ["https://shop.mayvenn.com/help"                           "0.60"]
                                                 ["https://shop.mayvenn.com/about-us"                       "0.60"]
                                                 ["https://shop.mayvenn.com/our-hair"                       "0.60"]
-                                                ["https://shop.mayvenn.com/wig-care-guide"                 "0.60"]
-                                                ["https://shop.mayvenn.com/wig-installation-guide"         "0.60"]
-                                                ["https://shop.mayvenn.com/wig-styling-guide"              "0.60"]
-                                                ["https://shop.mayvenn.com/wig-buying-guide"               "0.60"]
-                                                ["https://shop.mayvenn.com/wig-hair-guide"                 "0.60"]
-                                                ["https://shop.mayvenn.com/wigs-101-guide"                 "0.60"]
+                                                ["https://shop.mayvenn.com/info/wig-care-guide"            "0.60"]
+                                                ["https://shop.mayvenn.com/info/wig-installation-guide"    "0.60"]
+                                                ["https://shop.mayvenn.com/info/wig-styling-guide"         "0.60"]
+                                                ["https://shop.mayvenn.com/info/wig-buying-guide-hub"      "0.60"]
+                                                ["https://shop.mayvenn.com/info/wig-hair-guide"            "0.60"]
+                                                ["https://shop.mayvenn.com/info/wigs-101-guide"            "0.60"]
                                                 ["https://shop.mayvenn.com/login"                          "0.60"]
                                                 ["https://shop.mayvenn.com/signup"                         "0.60"]
                                                 ["https://shop.mayvenn.com/shop/look"                      "0.80"]
@@ -1202,8 +1202,6 @@
                      (util.response/response) (util.response/content-type "text/html")))
                (GET "/blog" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/blog/"))))
                (GET "/blog/" req (util.response/redirect (store-url "shop" environment req)))
-               (GET "/info" req (util.response/redirect (store-url "shop" environment req)))
-               (GET "/info/*" req (util.response/redirect (store-url "shop" environment req)))
                (GET "/adv/home" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/")) :moved-permanently))
                (GET "/stylist/edit" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/stylist/account" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
