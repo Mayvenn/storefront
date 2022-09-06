@@ -9,6 +9,7 @@
             [homepage.ui.faq :as faq]
             [homepage.ui.guarantees :as guarantees]
             [homepage.ui.hashtag-mayvenn-hair :as hashtag-mayvenn-hair]
+            [homepage.ui.blog :as blog]
             [homepage.ui.hero :as hero]
             [homepage.ui.promises :as promises]
             [homepage.ui.email-capture :as email-capture]
@@ -21,11 +22,13 @@
             [storefront.events :as e]))
 
 (c/defcomponent template
-  [{:keys [hero shopping-categories] :as data} _ _]
+  [{:keys [hero shopping-categories blog1 blog2] :as data} _ _]
   [:div
    (c/build hero/organism-without-shipping-bar hero)
    (c/build promises/organism {})
    (c/build shopping-categories/organism shopping-categories)
+   (c/build blog/organism blog1)
+   (c/build blog/organism blog2)
    (c/build email-capture/organism data)])
 
 (defn hero-query
