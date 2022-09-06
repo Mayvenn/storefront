@@ -12,11 +12,24 @@
 
 (c/defcomponent organism
   [data _ _]
-  [:div.bg-cool-gray
-   [:div.flex.justify-around
-    (for [{:keys [icon text]} icons-with-copy]
-      [:div.flex.px3.items-center
-       [:span.align-top
-        (icon {:class "fill-black"
-               :width "16px"})]
-       [:div.title-3.proxima.pl1 text]])]])
+  [:div
+   [:div.bg-cool-gray.hide-on-tb-dt ; mobile
+    [:div.flex.justify-around.py1
+     (for [{:keys [icon text]} icons-with-copy]
+       [:div.flex.items-center
+        [:span.align-top
+         (icon {:class "fill-black"
+                :width "16px"
+                :height "16px"})]
+        [:div.content-3.proxima.pl1.bold text]])]]
+
+   [:div.bg-cool-gray.hide-on-mb ; desktop
+    {:style {:height "2.00em"}}
+    [:div.flex.justify-around
+     (for [{:keys [icon text]} icons-with-copy]
+       [:div.flex.px3.items-center
+        [:span.align-top
+         (icon {:class "fill-black"
+                :width "16px"
+                :height "16px"})]
+        [:div.title-3.proxima.pl1 text]])]]])
