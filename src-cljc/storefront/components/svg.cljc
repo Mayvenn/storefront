@@ -535,6 +535,20 @@
    [:svg opts
     ^:inline (svg-xlink "snowflake")]))
 
+(defn hand-heart
+  "a heart floating above and open palm"
+  [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "hand-heart")]))
+
+(defn shield
+  "shield, half-filled-in"
+  [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "shield")]))
+
 (defn symbolic->html
   "Converts a data from query that describes an svg to the appropriate html.
 
