@@ -19,7 +19,7 @@
   [label]
   (let [[first-word & rest-of-words :as words]
         (split label #" ")]
-    [:div.absolute.white.bottom-0.shout.ml3.mb2
+    [:div.absolute.white.bottom-0.shout.ml1.mb2
      [:div.hide-on-mb-tb.proxima.title-2
       (join " " words)]
      [:div.hide-on-dt.proxima.title-2
@@ -27,7 +27,7 @@
 
 (defn ^:private shopping-categories-alt-label-atom
   [[first-line last-line]]
-  [:div.p2.flex.justify-around.items-center.bg-pale-purple.dark-dark-gray.inherit-color.canela.title-2.center
+  [:div.p1.bg-pale-purple.dark-dark-gray.inherit-color
    {:style {:height "100%"
             :width  "100%"}}
    first-line [:br] last-line])
@@ -36,7 +36,7 @@
   [{:shopping-categories.box/keys [id target ucare-id label alt-label]} react-key]
   (let [height 210
         width  171]
-    [:div.col.col-6.col-4-on-tb-dt.px1.my1
+    [:div.col.col-4.px1.my1
      {:key react-key :data-test id}
      (ui/aspect-ratio width height
                       [:a.bg-black (apply utils/route-to target)
@@ -54,14 +54,12 @@
         :let [id (str "shopping-categories.box" idx)]]
     (shopping-categories-box-molecule element id)))
 
-(defn ^:private shopping-categories-title-molecule
-  [{:shopping-categories.title/keys [primary]}]
-  [:h1.mb3.center.mx-auto.title-1.canela primary])
-
 (c/defcomponent organism
   [data _ _]
   (when (seq data)
-    [:div.px2.myj3
-     (shopping-categories-title-molecule data)
-     [:div.col-8-on-dt.container
-      (boxes-list-molecule data)]]))
+    [:div.px2.myj1
+     [:div.container.hide-on-tb-dt ; mobile
+      (boxes-list-molecule data)]
+     [:div.col-10-on-dt.container.hide-on-mb.flex ; desktop
+      (let [{:list/keys [boxes]} data]
+        (boxes-list-molecule {:list/boxes (butlast boxes)}))]]))

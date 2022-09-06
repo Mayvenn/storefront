@@ -12,4 +12,5 @@
         categories           (get-in app-state k/categories)
         expanded-index       (get-in app-state k/faq-expanded-section)
         remove-free-install? (:remove-free-install (get-in app-state storefront.keypaths/features))]
-    (c/build ui/template {:hero (ui/hero-query cms :unified-fi)})))
+    (c/build ui/template {:hero                (ui/hero-query cms :unified-fi)
+                          :shopping-categories (ui/shopping-categories-query categories)})))

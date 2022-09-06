@@ -20,10 +20,11 @@
             [storefront.events :as e]))
 
 (c/defcomponent template
-  [{:keys [hero]} _ _]
+  [{:keys [hero shopping-categories]} _ _]
   [:div
    (c/build hero/organism-without-shipping-bar hero)
-   (c/build promises/organism {})])
+   (c/build promises/organism {})
+   (c/build shopping-categories/organism shopping-categories)])
 
 (defn hero-query
   "TODO homepage hero query is reused and complected
@@ -40,3 +41,24 @@
     (assoc-in (homepage-hero/query hero-content)
               [:opts :data-test]
               "hero-link")))
+
+(defn shopping-categories-query
+  [categories]
+  {:list/boxes
+   (conj
+    (->> categories
+         (filter :homepage.ui-v2022-09/order)
+         (sort-by ::order)
+         (mapv
+          (fn category->box
+            [{:keys [page/slug copy/title catalog/category-id]
+              ::keys [image-id]}]
+            {:shopping-categories.box/id       slug
+             :shopping-categories.box/target   [e/navigate-category
+                                                {:page/slug           slug
+                                                 :catalog/category-id category-id}]
+             :shopping-categories.box/ucare-id image-id
+             :shopping-categories.box/label    title})))
+    {:shopping-categories.box/id        "need-inspiration"
+     :shopping-categories.box/target    [e/navigate-shop-by-look {:album-keyword :look}]
+     :shopping-categories.box/alt-label ["Need Inspiration?" "Try shop by look."]})})

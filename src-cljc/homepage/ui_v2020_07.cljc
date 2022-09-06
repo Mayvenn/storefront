@@ -76,8 +76,7 @@
 
 (defn shopping-categories-query
   [categories]
-  {:shopping-categories.title/primary "Shop Hair"
-   :list/boxes
+  {:list/boxes
    (conj
     (->> categories
          (filter ::order)
