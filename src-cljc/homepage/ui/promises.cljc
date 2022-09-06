@@ -24,7 +24,6 @@
         [:div.content-3.proxima.pl1.bold text]])]]
 
    [:div.bg-cool-gray.hide-on-mb ; desktop
-    {:style {:height "2.00em"}}
     [:div.flex.justify-around
      (for [{:keys [icon text]} icons-with-copy]
        [:div.flex.px3.items-center
