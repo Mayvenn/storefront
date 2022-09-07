@@ -2,10 +2,15 @@
   (:require [storefront.component :as c]
             [storefront.components.ui :as ui]))
 
-(defn entry [src copy target]
-  [:div.col-12.m2.grid
-   {:style {:grid-template-rows "auto 70px"
-            :justify-items      "center"}}
+(defn entry [src copy target highlight?]
+  [:div.grid
+   (if highlight?
+     {:style {:grid-template-rows "auto 70px"
+              :justify-items      "center"
+              :width "calc(50% - 0.5rem)"}}
+     {:style {:grid-template-rows "auto 70px"
+              :justify-items      "center"
+              :width "calc(20% - 0.5rem)"}})
    (ui/img {:src   src
             :class "container-size"
             :style {:grid-row    "1 / 3"
@@ -21,16 +26,14 @@
   [{:shop-these-looks/keys [row-1 row-2]} _ _]
   [:div.hide-on-mb.my10.max-1080.mx-auto
    [:div.title-1.canela.center.mb4 "Shop these Looks"]
-   [:div.flex
-    {:style {:height "600px"}}
+   [:div.flex.flex-wrap.gap-2
     (for [e row-1]
       (entry (:shop-these-looks.entry.img/src e)
              (:shop-these-looks.entry.cta/copy e)
-             (:shop-these-looks.entry.cta/target e)))]
-   [:div.flex
-    {:style {:height "300px"}}
+             (:shop-these-looks.entry.cta/target e)
+             true))
     (for [e row-2]
       (entry (:shop-these-looks.entry.img/src e)
              (:shop-these-looks.entry.cta/copy e)
-             (:shop-these-looks.entry.cta/target e)))]]
-  )
+             (:shop-these-looks.entry.cta/target e)
+             false))]])
