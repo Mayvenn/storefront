@@ -9,7 +9,7 @@
    {:style {:background "#D5C2B4"}}
    (ui/img {:src   "//ucarecdn.com/a6fc2289-5688-44d0-94b5-5961867dab13/"
             :style {:object-fit "cover"}
-            :class "block col-6-on-tb-dt"})
+            :class "block col-12 col-6-on-tb-dt"})
    [:div.p6
     {:style {:background "linear-gradient(90deg, #D5C2B4, #E9E1DC)"}}
     [:div.title-2.canela
