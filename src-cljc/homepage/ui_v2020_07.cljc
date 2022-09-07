@@ -79,12 +79,11 @@
   {:list/boxes
    (conj
     (->> categories
-         (filter ::order)
+         (filter :homepage.ui-v2022-09/order)
          (sort-by ::order)
          (mapv
           (fn category->box
-            [{:keys [page/slug copy/title catalog/category-id]
-              ::keys [image-id]}]
+            [{:keys [page/slug copy/title catalog/category-id homepage.ui-v2022-09/image-id]}]
             {:shopping-categories.box/id       slug
              :shopping-categories.box/target   [e/navigate-category
                                                 {:page/slug           slug

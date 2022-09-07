@@ -8,12 +8,13 @@
   "Assumptions: 2 up on mobile, 3 up on tablet/desktop, within a .container.
   Does not account for 1px border."
   [image-id filename alt]
-  [:img.block.col-12
+  [:img.block.col-12.container-size
    {:src     (str "//ucarecdn.com/" image-id "/-/format/auto/-/resize/640x/-/quality/lightest/" filename)
     :src-set (str "//ucarecdn.com/" image-id "/-/format/auto/-/resize/640x/-/quality/lightest/" filename " 640w, "
                   "//ucarecdn.com/" image-id "/-/format/auto/-/resize/544x/-/quality/lightest/" filename " 544w")
     :sizes   "100%"
-    :alt     alt}])
+    :alt     alt
+    :style {:object-fit "cover"}}])
 
 (defn ^:private shopping-categories-label-atom
   [label]

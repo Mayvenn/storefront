@@ -111,7 +111,7 @@
   [(merge {:catalog/category-id              "0"
            :page/icp?                        true
            :product-list/title               "Shop All Closures"
-           :copy/title                       "Virgin Hair Closures"
+           :copy/title                       "Closures"
            :page/slug                        "virgin-closures"
            :seo/title                        "Virgin Hair Closures"
            :legacy/named-search-slug         "closures"
@@ -149,10 +149,8 @@
            :contentful/faq-id             :category-virgin-closures
            :flyout-menu/title             "Closures"
            :flyout-menu/order             1
-           :homepage.ui-v2020-07/order    2
-           :homepage.ui-v2020-07/image-id "27e942b0-136c-4f7d-8b7b-ca98869fa272"
            :homepage.ui-v2022-09/order    2
-           :homepage.ui-v2022-09/image-id "27e942b0-136c-4f7d-8b7b-ca98869fa272"
+           :homepage.ui-v2022-09/image-id "e7d0859d-7e4f-42a5-abf0-12b3713264f7"
            :footer/order                  5
            :footer/title                  "Closures"
            :category/description          (copy "Protect your hair and complete your look with Mayvenn’s collection of 100% virgin hair closures."
@@ -247,7 +245,7 @@
           {:page/title "360 Lace Frontals: Virgin Hair 360 Frontals | Mayvenn"}
           frontals-templates)
    (merge {:catalog/category-id           "1"
-           :copy/title                    "Virgin Hair Frontals"
+           :copy/title                    "Frontals"
            :page/slug                     "virgin-frontals"
            :seo/title                     "Hair Frontals"
            :legacy/named-search-slug      "frontals"
@@ -262,10 +260,8 @@
            :hair/color.process            #{"natural" "dyed"}
            :flyout-menu/title             "Frontals"
            :flyout-menu/order             2
-           :homepage.ui-v2020-07/order    3
-           :homepage.ui-v2020-07/image-id "b6dc646c-039f-48a8-b932-bd03350a3beb"
            :homepage.ui-v2022-09/order    3
-           :homepage.ui-v2022-09/image-id "b6dc646c-039f-48a8-b932-bd03350a3beb"
+           :homepage.ui-v2022-09/image-id "aae6c15c-00b3-43d0-be89-f4b9173212dc"
            :footer/order                  6
            :footer/title                  "Frontals"
            :hair/source                   #{"virgin"}
@@ -617,8 +613,6 @@
 
 (def wigs
   [(merge {:catalog/category-id           "13"
-           :homepage.ui-v2020-07/order    0
-           :homepage.ui-v2020-07/image-id "5457be03-d25b-41d6-a5e3-ef28b4fda2f5"
            :homepage.ui-v2022-09/order    0
            :homepage.ui-v2022-09/image-id "5457be03-d25b-41d6-a5e3-ef28b4fda2f5"
            :footer/order                  7
@@ -945,16 +939,14 @@
            :category/new?                    false
            :flyout-menu/title                "Hair Bundles"
            :flyout-menu/order                0
-           :homepage.ui-v2020-07/order       1
-           :homepage.ui-v2020-07/image-id    "2013a836-9fc8-4530-8696-884400fad880"
            :homepage.ui-v2022-09/order       1
-           :homepage.ui-v2022-09/image-id    "2013a836-9fc8-4530-8696-884400fad880"
+           :homepage.ui-v2022-09/image-id    "16029dd0-285c-4bc6-803c-0c201c3d402c"
            :footer/order                     4
            :footer/title                     "Hair Bundles"
            :category/description             (copy "Have a hairstyle in mind and want more volume, length, and texture? Add our 100% Virgin hair bundles."
                                                    "Purchase three high-quality human hair bundles and the install is free.")
            :category/image-url               "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
-           :copy/title                       "Hair Bundles"
+           :copy/title                       "Virgin Hair Bundles"
            :hair/family                      #{"bundles"}
            :page/icp?                        true
            :page/slug                        "human-hair-bundles"
@@ -1134,10 +1126,8 @@
      :flyout-menu/title "Hair Extensions"
      :flyout-menu/order 4
 
-     :homepage.ui-v2020-07/order    4
-     :homepage.ui-v2020-07/image-id "978c91a9-9931-40f3-abec-ca7ccefa8240"
      :homepage.ui-v2022-09/order    4
-     :homepage.ui-v2022-09/image-id "978c91a9-9931-40f3-abec-ca7ccefa8240"
+     :homepage.ui-v2022-09/image-id "4c9af3d0-3672-4550-9e9f-1a69833b2fe3"
      :footer/order 8
      :footer/title "Hair Extensions"
 
