@@ -23,7 +23,7 @@
             [storefront.events :as e]))
 
 (c/defcomponent template
-  [{:keys [hero shopping-categories blog1 blog2] :as data} _ _]
+  [{:keys [hero shopping-categories blog1 blog2 zip-explanation] :as data} _ _]
   [:div
    (c/build hero/organism-without-shipping-bar hero)
    (c/build promises/organism {})
@@ -31,6 +31,7 @@
    (c/build blog/organism blog1)
    (c/build shop-these-looks/organism data)
    (c/build blog/organism blog2)
+   (c/build zip-explanation/organism (spice.core/spy zip-explanation))
    (c/build email-capture/organism data)])
 
 (defn hero-query

@@ -14,6 +14,7 @@
         categories (get-in app-state k/categories)]
     (c/build ui/template (merge {:hero                (ui/hero-query cms :unified-fi)
                                  :shopping-categories (ui/shopping-categories-query categories)
+                                 :zip-explanation     {:zip-explanation/id "zip-explanation"}
                                  :blog1               {:blog/id        "different-ways"
                                                        :blog/target    [events/external-redirect-blog-page {:blog-path "/blog/hair/10-different-ways-to-style-your-edges/"}]
                                                        :blog/author    "Lauryn Jiles"
