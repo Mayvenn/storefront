@@ -6,12 +6,10 @@
 (c/defcomponent organism
   [{:email-capture.text-field/keys [keypath errors email focused] :as data} _ _]
   [:div.flex-on-tb-dt
+   {:style {:background "#D5C2B4"}}
    (ui/img {:src   "//ucarecdn.com/a6fc2289-5688-44d0-94b5-5961867dab13/"
             :style {:object-fit "cover"}
-            :class "block col-6-on-tb-dt"
-            })
-   #_[:div
-    "The image"]
+            :class "block col-6-on-tb-dt"})
    [:div.p6
     {:style {:background "linear-gradient(90deg, #D5C2B4, #E9E1DC)"}}
     [:div.title-2.canela
@@ -23,7 +21,6 @@
       (apply utils/send-event-callback (:email-capture.submit/target data))}
      [:div.px3
       [:div.mx-auto.mb3
-       (spice.core/spy data)
        (ui/text-field {:errors    (get errors ["email"])
                        :keypath   keypath
                        :focused   focused
