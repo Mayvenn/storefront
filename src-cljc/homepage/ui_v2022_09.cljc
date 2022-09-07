@@ -31,7 +31,7 @@
    (c/build blog/organism blog1)
    (c/build shop-these-looks/organism data)
    (c/build blog/organism blog2)
-   (c/build zip-explanation/organism (spice.core/spy zip-explanation))
+   (c/build zip-explanation/organism zip-explanation)
    (c/build email-capture/organism data)])
 
 (defn hero-query
