@@ -30,6 +30,27 @@
                                                        :blog/heading   "EntreprenHER featuring Kortlynn Jenae"
                                                        :blog/beginning "EntreprenHER is a revamped series that focuses on highlighting Black women-identifying founders, changemakers and thought leaders. We believe that the versatility in our stories is our superpower - and we want to feature these amazing women because of the difference they’re making by following their dreams and amplifying their passions."
                                                        :blog/ucare-id  "e1a06009-7e87-401c-a93d-6ffd25fd933f"}}
+                                {:shop-these-looks/row-1 [{:shop-these-looks.entry.cta/copy   "Wig Drops"
+                                                           :shop-these-looks.entry.cta/target []
+                                                           :shop-these-looks.entry.img/src    "//ucarecdn.com/fc60c39d-e422-4e60-948b-bb549c91d5b0/"}
+                                                          {:shop-these-looks.entry.cta/copy   "Fall Chic"
+                                                           :shop-these-looks.entry.cta/target []
+                                                           :shop-these-looks.entry.img/src    "//ucarecdn.com/cbe19302-6109-4c4d-aabb-5f1972570d9e/"}]
+                                 :shop-these-looks/row-2 [{:shop-these-looks.entry.cta/copy   "Virgo Queens"
+                                                           :shop-these-looks.entry.cta/target []
+                                                           :shop-these-looks.entry.img/src    "//ucarecdn.com/7bcbbc17-e523-407d-b7c4-804c5fd66093/"}
+                                                          {:shop-these-looks.entry.cta/copy   "Stylist Picks"
+                                                           :shop-these-looks.entry.cta/target []
+                                                           :shop-these-looks.entry.img/src    "//ucarecdn.com/4f5e25af-e39e-436a-9e8f-0d94d8425cea/"}
+                                                          {:shop-these-looks.entry.cta/copy   "Wedding Looks"
+                                                           :shop-these-looks.entry.cta/target []
+                                                           :shop-these-looks.entry.img/src    "//ucarecdn.com/89e5f1a2-ebf0-47b9-960d-c1f91ec87252/"}
+                                                          {:shop-these-looks.entry.cta/copy   "Thirt Trappin'"
+                                                           :shop-these-looks.entry.cta/target []
+                                                           :shop-these-looks.entry.img/src    "//ucarecdn.com/5cdea3f7-f31c-4b66-9311-ed25c7c05265/"}
+                                                          {:shop-these-looks.entry.cta/copy   "Lit Life"
+                                                           :shop-these-looks.entry.cta/target []
+                                                           :shop-these-looks.entry.img/src    "//ucarecdn.com/716bea09-8a5e-4eaa-b6a1-3ac70cd4e94d/"}]}
                                 (let [textfield-keypath email-capture/textfield-keypath
                                       email             (get-in app-state textfield-keypath)]
                                   {:email-capture.submit/target          [events/email-modal-submitted

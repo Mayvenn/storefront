@@ -14,6 +14,7 @@
             [homepage.ui.promises :as promises]
             [homepage.ui.email-capture :as email-capture]
             [homepage.ui.shopping-categories :as shopping-categories]
+            [catalog.ui.shop-these-looks :as shop-these-looks]
             [homepage.ui.zip-explanation :as zip-explanation]
             [storefront.accessors.contentful :as contentful]
             [storefront.component :as c]
@@ -28,6 +29,7 @@
    (c/build promises/organism {})
    (c/build shopping-categories/organism shopping-categories)
    (c/build blog/organism blog1)
+   (c/build shop-these-looks/organism data)
    (c/build blog/organism blog2)
    (c/build email-capture/organism data)])
 
