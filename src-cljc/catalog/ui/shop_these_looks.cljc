@@ -23,16 +23,14 @@
   [:div.my10.max-1080.mx-auto
    [:style
     "@media (min-width: 750px) {
-       .shop-these-looks-highlight {width: calc(50% - 0.5rem)}
-       .shop-these-looks-lowlight  {width: calc(20% - 0.5rem)}
-       .shop-these-looks {
-         flex-wrap: wrap;
-       }
+       .shop-these-looks-highlight {flex: 0 1 calc(50% - 0.25rem)}
+       .shop-these-looks-lowlight  {flex: 0 1 calc(20% - 0.4rem)}
+       .shop-these-looks           {flex-wrap: wrap;}
      }
 
      @media (max-width: 749px) {
        .shop-these-looks-entry {
-         width: 100%;
+         width: 90%;
          scroll-snap-align: center;
          flex-shrink: 0;
        }
