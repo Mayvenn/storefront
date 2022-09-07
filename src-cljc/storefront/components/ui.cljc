@@ -606,7 +606,8 @@
   ;; TODO(jeff): remove picture-classes (using img tag natively now)
   ;; NOTE(jeff): picture-classes is deprecated, please do not use
   [{:as   img-attrs
-    :keys [width retina-quality default-quality picture-classes retina? square-size max-size preserve-url-transformations? smart-crop]
+    :keys [width retina-quality default-quality picture-classes retina?
+           square-size max-size preserve-url-transformations? smart-crop]
     :or   {retina-quality  "lightest"
            default-quality "normal"
            retina?         true
