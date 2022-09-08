@@ -46,7 +46,7 @@
                                                           {:shop-these-looks.entry.cta/copy   "Wedding Looks"
                                                            :shop-these-looks.entry.cta/target []
                                                            :shop-these-looks.entry.img/src    "//ucarecdn.com/89e5f1a2-ebf0-47b9-960d-c1f91ec87252/"}
-                                                          {:shop-these-looks.entry.cta/copy   "Thirt Trappin'"
+                                                          {:shop-these-looks.entry.cta/copy   "Thirst Trappin'"
                                                            :shop-these-looks.entry.cta/target []
                                                            :shop-these-looks.entry.img/src    "//ucarecdn.com/5cdea3f7-f31c-4b66-9311-ed25c7c05265/"}
                                                           {:shop-these-looks.entry.cta/copy   "Lit Life"
