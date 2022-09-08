@@ -13,8 +13,8 @@
 (c/defcomponent organism
   [data _ _]
   [:div
-   [:div.bg-cool-gray.hide-on-tb-dt ; mobile
-    [:div.flex.justify-around.py1
+   [:div.bg-cool-gray.hide-on-tb-dt.pl2 ; mobile
+    [:div.flex.justify-around.p1
      (for [{:keys [icon text]} icons-with-copy]
        [:div.flex.items-center
         [:span.align-top
