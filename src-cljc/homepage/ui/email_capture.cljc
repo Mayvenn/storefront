@@ -10,6 +10,7 @@
    (ui/img {:src        "//ucarecdn.com/cbf1bb83-0ebc-4691-9c61-de6af79e6f8d/"
             :style      {:object-fit "cover"}
             :smart-crop "600x400"
+            :alt        ""
             :class      "block col-12 col-6-on-tb-dt"})
    [:div.p6
     {:style {:background "linear-gradient(90deg, #D5C2B4, #E9E1DC)"}}

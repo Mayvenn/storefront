@@ -46,9 +46,9 @@
          (some-> cms :homepage experience :hero)
          ;; TODO handle cms failure fallback
          {})]
-    (assoc-in (homepage-hero/query hero-content)
-              [:opts :data-test]
-              "hero-link")))
+    (-> (homepage-hero/query hero-content)
+        (assoc-in [:opts :data-test] "hero-link")
+        (assoc-in [:opts :h1?] true))))
 
 (defn shopping-categories-query
   [categories]

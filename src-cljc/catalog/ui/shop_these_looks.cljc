@@ -9,6 +9,7 @@
     :class (str "shop-these-looks-" (if highlight? "highlight" "lowlight"))}
    (ui/img {:src   src
             :class "container-size"
+            :alt   ""
             :style {:grid-row    "1 / 3"
                     :grid-column "1 / 2"
                     :object-fit  "cover"}})
