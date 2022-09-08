@@ -22,7 +22,7 @@
 (c/defcomponent organism
   [{:shop-these-looks/keys [row-1 row-2]} _ _]
   [:div.my10.max-1080.mx-auto
-   [:div.title-1.canela.center.mb4 "Shop these Looks"]
+   [:h2.title-1.canela.center.mb4 "Shop these Looks"]
    [:div.shop-these-looks.flex.gap-2
     [:div.shop-these-looks-spacer]
     (for [e row-1]
