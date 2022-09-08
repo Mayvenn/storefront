@@ -77,7 +77,6 @@
 
 @import 'tinyslider.css';
 @import 'custom-carousel.css';
-@import 'custom-homepage-shop-these-looks';
 
 /* Muuri */
 
@@ -90,6 +89,9 @@
 @import 'custom-yotpo.css';
 @import 'custom-kustomer.css';
 @import 'maps-suggestions.css';
+
+
+@import 'custom-homepage';
 
 /* Custom media queries */
 
