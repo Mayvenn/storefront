@@ -26,6 +26,7 @@
        .shop-these-looks-highlight {flex: 0 1 calc(50% - 0.25rem)}
        .shop-these-looks-lowlight  {flex: 0 1 calc(20% - 0.4rem)}
        .shop-these-looks           {flex-wrap: wrap;}
+       .shop-these-looks-spacer    {display: none;}
      }
 
      @media (max-width: 749px) {
@@ -34,17 +35,16 @@
          scroll-snap-align: center;
          flex-shrink: 0;
        }
-       .shop-these-looks::-webkit-scrollbar {
-         display: none;
-       }
+       .shop-these-looks::-webkit-scrollbar {display: none;}
        .shop-these-looks {
          scroll-snap-type: x mandatory;
          overflow-x: auto;
-         padding: 0 2rem;
        }
+       .shop-these-looks-spacer {min-width: 400px;}
      }"]
    [:div.title-1.canela.center.mb4 "Shop these Looks"]
    [:div.shop-these-looks.flex.gap-2
+    [:div.shop-these-looks-spacer]
     (for [e row-1]
       (entry (:shop-these-looks.entry.img/src e)
              (:shop-these-looks.entry.cta/copy e)
@@ -54,4 +54,5 @@
       (entry (:shop-these-looks.entry.img/src e)
              (:shop-these-looks.entry.cta/copy e)
              (:shop-these-looks.entry.cta/target e)
-             false))]])
+             false))
+    [:div.shop-these-looks-spacer]]])
