@@ -37,7 +37,7 @@
   [{:shopping-categories.box/keys [id target ucare-id label alt-label]} react-key]
   (let [height 210
         width  171]
-    [:div.col.col-4.px1.my1
+    [:div.col.col-6.px1.my1
      {:key react-key :data-test id}
      (ui/aspect-ratio width height
                       [:a.bg-black (apply utils/route-to target)
