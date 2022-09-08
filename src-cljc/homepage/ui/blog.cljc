@@ -18,12 +18,12 @@
                            :alt        ""}
         ucare-id)]
      [:div.p3.col-9-on-tb-dt
-      [:h2.canela.title-2.mb2 heading]
-      [:div.flex
-       [:div.content-3.shout.mr2 author]
-       [:div.dark-dark-gray.content-3.shout date " • " read-time]]
-      [:div.content-4.py3 beginning]
-      [:div.shout.col-8 (ui/button-medium-primary
+      [:h2.canela.title-1.mb2 heading]
+      [:div.flex.mt2.content-3.shout
+       [:div.mr2 author]
+       [:div.dark-dark-gray date " • " read-time]]
+      [:div.pt4 beginning]
+      [:div.shout.col-8.pt3 (ui/button-medium-primary
                          (merge
                           (apply utils/route-to target)
                           {:data-test (str "go-to-" id)})

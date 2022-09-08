@@ -9,7 +9,7 @@
   (when id
     [:div.bg-warm-gray.flex.flex-column-reverse-on-mb.justify-center.p8-on-tb-dt
      [:div.my-auto.mx6.my8-on-mb
-      [:div.title-1.canela
+      [:h2.title-1.canela
        "Hair Now, Pay Later"]
       [:div.mt4
        {:style {:max-width "400px"}}
