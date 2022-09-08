@@ -21,27 +21,6 @@
 (c/defcomponent organism
   [{:shop-these-looks/keys [row-1 row-2]} _ _]
   [:div.my10.max-1080.mx-auto
-   [:style
-    "@media (min-width: 750px) {
-       .shop-these-looks-highlight {flex: 0 1 calc(50% - 0.25rem)}
-       .shop-these-looks-lowlight  {flex: 0 1 calc(20% - 0.4rem)}
-       .shop-these-looks           {flex-wrap: wrap;}
-       .shop-these-looks-spacer    {display: none;}
-     }
-
-     @media (max-width: 749px) {
-       .shop-these-looks-entry {
-         width: 90%;
-         scroll-snap-align: center;
-         flex-shrink: 0;
-       }
-       .shop-these-looks::-webkit-scrollbar {display: none;}
-       .shop-these-looks {
-         scroll-snap-type: x mandatory;
-         overflow-x: auto;
-       }
-       .shop-these-looks-spacer {min-width: 400px;}
-     }"]
    [:div.title-1.canela.center.mb4 "Shop these Looks"]
    [:div.shop-these-looks.flex.gap-2
     [:div.shop-these-looks-spacer]
