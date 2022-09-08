@@ -28,7 +28,7 @@
 
 (defn ^:private shopping-categories-alt-label-atom
   [[first-line last-line]]
-  [:div.p1.bg-pale-purple.dark-dark-gray.inherit-color.canela.title-2.items-center.flex
+  [:div.pl2.bg-pale-purple.dark-dark-gray.inherit-color.canela.title-3.items-center.flex
    {:style {:height "100%"
             :width  "100%"}}
    first-line [:br] last-line])
