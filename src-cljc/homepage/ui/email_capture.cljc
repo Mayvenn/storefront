@@ -15,9 +15,9 @@
     {:style {:background "linear-gradient(90deg, #D8D8D8, white)"}}]
    [:div.prompt
     [:div.title-2.canela.mb4
-     "Become a Mayvenn."]
+     "Stay in the Know"]
     [:div.mb4
-     "Get the scool on launches, promos and occasional spiced cup of tea. Unsubscribe at any time."]
+     "Get the tea on the latest promos, product launches, and exclusive hair content."]
     [:form
      {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
      (ui/text-field {:errors    (get errors ["email"])
