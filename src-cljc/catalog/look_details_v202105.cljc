@@ -649,11 +649,7 @@
                  discounted-price (mf/as-money-or-dashes (when-not unavailable-lengths-selected? total))
                  discounted?      (not= total-price discounted-price)
                  applied-promo    (first (filter #(= (-> adjustments first :coupon-code) (:code %)) promotion-codes))
-                 title            (clojure.string/join " " [(get-in facets-db
-                                                                    [:hair/origin
-                                                                     :facet/options
-                                                                     (:hair/origin look-selections)
-                                                                     :sku/name])
+                 title            (clojure.string/join " " [(:origin look)
                                                             (get-in facets-db
                                                                     [:hair/texture
                                                                      :facet/options
