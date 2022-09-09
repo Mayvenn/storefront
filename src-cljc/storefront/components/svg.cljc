@@ -543,11 +543,25 @@
     ^:inline (svg-xlink "hand-heart")]))
 
 (defn shield
-  "shield, half-filled-in"
+  "shield with cross"
   [opts]
   (component/html
    [:svg opts
     ^:inline (svg-xlink "shield")]))
+
+(defn check-cloud
+  "checkmark in a cloud"
+  [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "check-cloud")]))
+
+(defn ship-truck
+  "truck with zooming motion lines"
+  [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "ship-truck")]))
 
 (defn symbolic->html
   "Converts a data from query that describes an svg to the appropriate html.
