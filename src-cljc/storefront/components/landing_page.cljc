@@ -41,7 +41,7 @@
                                                 :alt                    ""
                                                 :label                  (:title look)
                                                 :cta/navigation-message [events/navigate-shop-by-look-details
-                                                                         {:look-id       (:content/id look)
+                                                                         {:look-id       (:content/id (spice.core/spy look))
                                                                           :album-keyword :look}]}))
                                            ((if (= "production" (get-in data keypaths/environment))
                                               :looks
