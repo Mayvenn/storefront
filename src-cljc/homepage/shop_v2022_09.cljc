@@ -60,7 +60,7 @@
                                                           {:shop-these-looks.entry.cta/copy   "Low Maintenance Clip-Ins"
                                                            :shop-these-looks.entry.cta/target events/navigate-product-details
                                                            :shop-these-looks.entry.cta/args   {:catalog/product-id "112"
-                                                                                               :page/slug          "106g-straight-seamless-clip-ins"
+                                                                                               :page/slug          "160g-straight-seamless-clip-ins"
                                                                                                :query-params       {:SKU "CLIP-S-1B-20-160"}}
                                                            :shop-these-looks.entry.img/src    "//ucarecdn.com/da3e4862-1c43-4b57-ad43-509057f8fb2b/"}
                                                           {:shop-these-looks.entry.cta/copy   "Vacay Hair"
