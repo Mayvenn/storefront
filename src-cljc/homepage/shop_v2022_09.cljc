@@ -15,14 +15,14 @@
     (c/build ui/template (merge {:hero                (ui/hero-query cms :unified-fi)
                                  :shopping-categories (ui/shopping-categories-query categories)
                                  :zip-explanation     {:zip-explanation/id "zip-explanation"}
-                                 :blog1               {:blog/id        "different-ways"
-                                                       :blog/target    [events/external-redirect-blog-page {:blog-path "/blog/hair/10-different-ways-to-style-your-edges/"}]
-                                                       :blog/author    "Lauryn Jiles"
-                                                       :blog/date      "13 Jul 2022"
-                                                       :blog/read-time "2 min read"
-                                                       :blog/heading   "10 Different Ways to Style Your Edges"
-                                                       :blog/beginning "Styling your edges is not only a quick way to switch up your look, it can also take your hairstyle to the next level. Black women, once again, are trendsetters and started the trend of designing hairlines and edges years ago. With social media platforms like TikTok and Instagram, Black women have taken to these apps to showcase the many different ways that they style their edges, from the super simple to the intricate and dramatic."
-                                                       :blog/ucare-id  "f6837168-70d8-4180-a5bf-7b4ec3d3eab4"}
+                                 :blog1               {:blog/id        "dye-humann-hair-wig"
+                                                       :blog/target    [events/external-redirect-blog-page {:blog-path "/blog/hair/how-to-dye-a-human-hair-wig/"}]
+                                                       :blog/author    "Mayvenn"
+                                                       :blog/date      "16 Mar 2020"
+                                                       :blog/read-time "7 min read"
+                                                       :blog/heading   "How to Dye a Human Hair Wig"
+                                                       :blog/beginning "One of the best things about wearing wigs is their versatility. You can be subtle and reserved one day, then bold and vixen-like the next. Even better, human hair wigs can be dyed just like your natural hair. That means not only can your fashion change to suit your mood, but your hair color can, too."
+                                                       :blog/ucare-id  "51e44ac7-1b45-4cb4-a880-79fb67789feb"}
                                  :blog2               {:blog/id        "entrepreher"
                                                        :blog/target    [events/external-redirect-blog-page {:blog-path "/blog/hustle/entreprenher-featuring-kortlynn-jenae"}]
                                                        :blog/author    "Brittany Johnson"
