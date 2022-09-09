@@ -31,39 +31,39 @@
                                                        :blog/heading   "5 Money Mavens Show How to Make Your Money Move"
                                                        :blog/beginning "Lately, I have been feeling like I’m in a scene from the 90’s movie “Set it Off” with Queen Latifah and Jada Pinkett Smith. I never imagined I would walk into my bank with a mask on to ask for a withdrawal. And, many people could never imagine how much a COVID-affected lifestyle would cost. Most people’s “rainy day” fund was not strong enough to meet a 7-month pandemic. And, if you were one of those people who had to drain your savings, you’re not alone. According to CNBC.com, by September, 15% of Americans had wiped out their emergency funds."
                                                        :blog/ucare-id  "5a10f77e-6463-4efa-8ef1-0997f4e9a03f"}}
-                                {:shop-these-looks/row-1 [{:shop-these-looks.entry.cta/copy   "Wedding Looks"
+                                {:shop-these-looks/row-1 [{:shop-these-looks.entry.cta/copy   "Shop Wedding Hair"
                                                            :shop-these-looks.entry.cta/target events/navigate-shop-by-look-details
                                                            :shop-these-looks.entry.cta/args   {:album-keyword :aladdin-free-install
                                                                                                :look-id       "7e4F9lGZHmTphADJxRFL6a"}
                                                            :shop-these-looks.entry.img/src    "//ucarecdn.com/f4cfa086-edb1-4e8c-8245-6b68e93546b7/"}
-                                                          {:shop-these-looks.entry.cta/copy   "Headband Wigs"
+                                                          {:shop-these-looks.entry.cta/copy   "Quick & Easy Wigs"
                                                            :shop-these-looks.entry.cta/target events/navigate-product-details
                                                            :shop-these-looks.entry.cta/args   {:catalog/product-id "236"
                                                                                                :page/slug          "brazilian-straight-bundles"
                                                                                                :query-params       {:SKU "BNSHBW26"}}
                                                            :shop-these-looks.entry.img/src    "//ucarecdn.com/c0fab4a2-9778-4d78-b375-7fa6cfbdf73a/"}]
-                                 :shop-these-looks/row-2 [{:shop-these-looks.entry.cta/copy   "Fall Looks"
+                                 :shop-these-looks/row-2 [{:shop-these-looks.entry.cta/copy   "Shop HD Lace"
                                                            :shop-these-looks.entry.cta/target events/navigate-shop-by-look-details
                                                            :shop-these-looks.entry.cta/args   {:album-keyword :aladdin-free-install
                                                                                                :look-id       "1EI2pl3QUYwzJfYYWeuJ1y"}
                                                            :shop-these-looks.entry.img/src    "//ucarecdn.com/8892a95f-a42a-4bbd-9ae2-c2fbfea713b6/"}
-                                                          {:shop-these-looks.entry.cta/copy   "Everyday Looks"
+                                                          {:shop-these-looks.entry.cta/copy   "Shop Natural Texture"
                                                            :shop-these-looks.entry.cta/target events/navigate-shop-by-look-details
                                                            :shop-these-looks.entry.cta/args   {:album-keyword :aladdin-free-install
                                                                                                :look-id       "HKBdgo45z8HNEDLp2cegk"}
                                                            :shop-these-looks.entry.img/src    "//ucarecdn.com/ab59be43-b931-4c5c-81a5-6ef6b9fa044f/"}
-                                                          {:shop-these-looks.entry.cta/copy   "Blonde Looks"
+                                                          {:shop-these-looks.entry.cta/copy   "Shop Blonde Hair"
                                                            :shop-these-looks.entry.cta/target events/navigate-shop-by-look-details
                                                            :shop-these-looks.entry.cta/args   {:album-keyword :aladdin-free-install
                                                                                                :look-id       "3fbgLUetQgvxCPz7Dcg4Yu"}
                                                            :shop-these-looks.entry.img/src    "//ucarecdn.com/7803fa50-b947-4b59-8c91-c88badc74fdc/"}
-                                                          {:shop-these-looks.entry.cta/copy   "Low Maintenance Looks"
+                                                          {:shop-these-looks.entry.cta/copy   "Low Maintenance Clip-Ins"
                                                            :shop-these-looks.entry.cta/target events/navigate-product-details
                                                            :shop-these-looks.entry.cta/args   {:catalog/product-id "112"
                                                                                                :page/slug          "106g-straight-seamless-clip-ins"
                                                                                                :query-params       {:SKU "CLIP-S-1B-20-160"}}
                                                            :shop-these-looks.entry.img/src    "//ucarecdn.com/da3e4862-1c43-4b57-ad43-509057f8fb2b/"}
-                                                          {:shop-these-looks.entry.cta/copy   "Vacation Looks"
+                                                          {:shop-these-looks.entry.cta/copy   "Vacay Hair"
                                                            :shop-these-looks.entry.cta/target events/navigate-shop-by-look-details
                                                            :shop-these-looks.entry.cta/args   {:album-keyword :aladdin-free-install
                                                                                                :look-id       "51SUPn4tR88bvIAaUhVpo1"}
