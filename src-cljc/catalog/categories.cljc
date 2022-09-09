@@ -1185,7 +1185,7 @@
     :hair/family                      #{"lace-front-wigs" "closure-wigs" "360-frontals" "closures" "frontals"}
     :hair/base-material               #{"hd-lace"}
     :selector/essentials              [:hair/family :catalog/department :hair/base-material]
-    :selector/electives               [:hair/family :hair/texture :hair/origin]
+    :selector/electives               [:hair/family :hair/texture :hair/origin :hair/color]
     :page/title                       "100% Virgin Hair HD Lace Wig | Mayvenn"
     :page.meta/description            (copy "Mayvenn’s HD Lace comes complete with 13x4, 4x4, or 5x5 inches of parting space."
                                           "Crafted with high-quality 100% virgin human hair.")
