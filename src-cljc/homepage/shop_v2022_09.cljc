@@ -39,7 +39,7 @@
                                                           {:shop-these-looks.entry.cta/copy   "Quick & Easy Wigs"
                                                            :shop-these-looks.entry.cta/target events/navigate-product-details
                                                            :shop-these-looks.entry.cta/args   {:catalog/product-id "236"
-                                                                                               :page/slug          "brazilian-straight-bundles"
+                                                                                               :page/slug          "brazilian-straight-headband-wig"
                                                                                                :query-params       {:SKU "BNSHBW26"}}
                                                            :shop-these-looks.entry.img/src    "//ucarecdn.com/c0fab4a2-9778-4d78-b375-7fa6cfbdf73a/"}]
                                  :shop-these-looks/row-2 [{:shop-these-looks.entry.cta/copy   "Shop HD Lace"

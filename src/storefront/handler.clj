@@ -389,8 +389,7 @@
                                           {:homepage {:unified-fi (assemble-cms-node normalized-cms-cache :homepage :unified-fi)
                                                       :shop       (assemble-cms-node normalized-cms-cache :homepage :shop)}}
                                           {:homepage {:unified (assemble-cms-node normalized-cms-cache :homepage :unified)}})
-                                        (update-data [:ugc-collection :free-install-mayvenn])
-                                        (update-data [:faq :free-mayvenn-services])
+                                        (update-data [:ugc-collection :homepage-looks-spotlight])
                                         contentful/derive-all-looks)
 
                                     (= events/navigate-category nav-event)
