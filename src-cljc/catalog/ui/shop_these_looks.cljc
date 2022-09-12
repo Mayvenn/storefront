@@ -5,8 +5,9 @@
 
 (defn entry [src copy target args highlight?]
   [:div.grid.shop-these-looks-entry
-   {:style {:grid-template-rows "auto 70px"
-            :justify-items      "center"}
+   {:style {:grid-template-rows "auto 100px"
+            :justify-items      "center"
+            :align-items        "center"}
     :class (str "shop-these-looks-" (if highlight? "highlight" "lowlight"))}
    (ui/img {:src   src
             :class "container-size"
