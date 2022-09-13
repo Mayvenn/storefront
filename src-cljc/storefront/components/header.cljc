@@ -440,7 +440,7 @@
                                    {:slide-out-nav-content-item/target  {:href blog-url}
                                     :slide-out-nav-content-item/id      "content-blog"
                                     :slide-out-nav-content-item/primary "Blog"}
-                                   {:slide-out-nav-content-item/target  {:href "https://info.mayvenn.com/info/walmart"}
+                                   {:slide-out-nav-content-item/target  [events/navigate-retail-walmart]
                                     :slide-out-nav-content-item/id      "content-our-locations"
                                     :slide-out-nav-content-item/primary "Our Locations"}
                                    {:slide-out-nav-content-item/target  [events/navigate-content-about-us]
