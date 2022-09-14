@@ -330,32 +330,28 @@
            (nil? resolved-node)  node
            :else                 resolved-node))))
 
-(defn find-cms-node
+(def content-type->id-path
+  {:landingPageV2  [:slug]
+   :homepage       [:experience]
+   :retailLocation [:slug]})
+
+(defn find-cms-nodes
   ([nodes-db content-type]
-   (->> nodes-db
-        vals
-        (filter #(= content-type (-> % :sys :contentType :sys :id keyword)))))
+   (find-cms-nodes nodes-db content-type nil))
   ([nodes-db content-type id]
-   (let [content-type-id-path (case content-type
-                                :landingPageV2  [:fields :slug]
-                                :homepage       [:fields :experience]
-                                :retailLocation [:fields :slug]
-                                nil)]
+   (let [content-type-id-path (into [:fields] (content-type content-type->id-path))]
      (->> nodes-db
           vals
           (filter #(and (= content-type (-> % :sys :contentType :sys :id keyword))
-                        (= id (keyword (get-in % content-type-id-path)))))
-          first))))
+                        (or (nil? id)
+                            (= id (keyword (get-in % content-type-id-path))))))))))
 
 (defn assemble-cms-node
   ([nodes-db content-type]
-   (some->> (find-cms-node nodes-db content-type)
-            (map contentful/extract-fields)
-            (resolve-cms-node nodes-db)))
+   (assemble-cms-node nodes-db content-type nil))
   ([nodes-db content-type id]
-   (some->> id
-            (find-cms-node nodes-db content-type)
-            contentful/extract-fields
+   (some->> (find-cms-nodes nodes-db content-type id)
+            (map contentful/extract-fields)
             (resolve-cms-node nodes-db))))
 
 (defn ^:private copy-cms-to-data
@@ -385,10 +381,8 @@
                                                                                 contentful/extract-fields
                                                                                 (resolve-cms-node normalized-cms-cache))]))}
                               (cond (= events/navigate-home nav-event)
-                                    (-> (if shop?
-                                          {:homepage {:unified-fi (assemble-cms-node normalized-cms-cache :homepage :unified-fi)
-                                                      :shop       (assemble-cms-node normalized-cms-cache :homepage :shop)}}
-                                          {:homepage {:unified (assemble-cms-node normalized-cms-cache :homepage :unified)}})
+                                    (-> {:homepage (let [id (if shop? :unified-fi :unified)]
+                                                     {id (-> normalized-cms-cache (assemble-cms-node :homepage id) first)})}
                                         (update-data [:ugc-collection :homepage-looks-spotlight])
                                         contentful/derive-all-looks)
 
@@ -436,10 +430,11 @@
                                     (= events/navigate-landing-page nav-event)
                                     (-> {}
                                         (update-data [:ugc-collection :all-looks])
-                                        (assoc-in [:landingPageV2 (keyword landing-page-slug)]
+                                        (assoc-in [:landingPageV2]
                                                   (some->> landing-page-slug
                                                            keyword
-                                                           (assemble-cms-node normalized-cms-cache :landingPageV2))))
+                                                           (assemble-cms-node normalized-cms-cache :landingPageV2)
+                                                           (maps/index-by (comp keyword :slug)))))
 
                                     (#{events/navigate-retail-walmart
                                        events/navigate-retail-walmart-grand-prairie
@@ -447,7 +442,8 @@
                                        events/navigate-retail-walmart-mansfield
                                        events/navigate-retail-walmart-dallas
                                        events/navigate-retail-walmart-houston}  nav-event)
-                                    {:retailLocations (assemble-cms-node normalized-cms-cache :retailLocation)}
+                                    {:retailLocation (maps/index-by (comp keyword :slug)
+                                                                    (assemble-cms-node normalized-cms-cache :retailLocation))}
                                     :else nil))))))
 
 (defn wrap-set-welcome-url [h welcome-config]
@@ -1232,7 +1228,8 @@
                (GET "/cms2/*" {uri :uri}
                     (let [cms-cache         (contentful/read-normalized-cache contentful)
                           [content-type id] (->> (clojure.string/split uri #"/") (drop 2) (map keyword))]
-                      (some-> {content-type {id (assemble-cms-node cms-cache content-type id)}}
+                      (some-> {content-type (->> (assemble-cms-node cms-cache content-type id)
+                                                 (maps/index-by #(get-in % (content-type content-type->id-path))))}
                               json/generate-string
                               util.response/response
                               (util.response/content-type "application/json"))))

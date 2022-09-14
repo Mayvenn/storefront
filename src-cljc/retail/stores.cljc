@@ -7,6 +7,7 @@
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
+            [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]))
 
@@ -92,16 +93,16 @@
    why-mayvenn])
 
 (def navigate-show-page
-  {"walmart/katy"          events/navigate-retail-walmart-katy
-   "walmart/houston"       events/navigate-retail-walmart-houston
-   "walmart/grand-prairie" events/navigate-retail-walmart-grand-prairie
-   "walmart/dallas"        events/navigate-retail-walmart-dallas
-   "walmart/mansfield"     events/navigate-retail-walmart-mansfield})
+  {"katy"          events/navigate-retail-walmart-katy
+   "houston"       events/navigate-retail-walmart-houston
+   "grand-prairie" events/navigate-retail-walmart-grand-prairie
+   "dallas"        events/navigate-retail-walmart-dallas
+   "mansfield"     events/navigate-retail-walmart-mansfield})
 
 (defn query [app-state]
-  (let [locations (get-in app-state keypaths/cms-retail-locations)]
-    {:locations (mapv (fn [{:keys [email facebook hero state hours name phone-number instagram tiktok
-                                   location address-1 address-2 address-zipcode address-city slug]}]
+  (let [locations (get-in app-state keypaths/cms-retail-location)]
+    {:locations (mapv (fn [[_ {:keys [email facebook hero state hours name phone-number instagram tiktok
+                                      location address-1 address-2 address-zipcode address-city slug]}]]
                         (when (and name slug)
                           {:name             (str name ", " state)
                            :img-url          (-> hero :file :url)
@@ -115,8 +116,12 @@
                            :instagram        (when instagram (str "https://www.instagram.com/" instagram))
                            :facebook         (when facebook (str "https://business.facebook.com/" facebook))
                            :tiktok           (when tiktok (str "https://www.tiktok.com/@" tiktok))
-                           :email            email}) ) locations)}))
+                           :email            email})) locations)}))
 
 (defn built-component
   [data opts]
   (component/build template (query data) opts))
+
+(defmethod effects/perform-effects events/navigate-retail-walmart
+  [_ _ _ _ app-state]
+  (effects/fetch-cms2 app-state [:retailLocation]))

@@ -120,38 +120,34 @@
    :follow-us/photos             instagram-photos})
 
 (defn query-gp [app-state]
-  (let [store (->> keypaths/cms-retail-locations
-                   (get-in app-state)
-                   (filter (fn [location] (= "Grand Prairie" (:name location))))
-                   first)]
+  (let [store (-> app-state
+                  (get-in keypaths/cms-retail-location)
+                  (get :grand-prairie))]
     (query-all store)))
 
 (defn query-katy [app-state]
-  (let [store (->> keypaths/cms-retail-locations
-                   (get-in app-state)
-                   (filter (fn [location] (= "Katy" (:name location))))
-                   first)]
+  (let [store (-> app-state
+                  (get-in keypaths/cms-retail-location)
+                  (get :katy))]
     (query-all store)))
 
 (defn query-dallas [app-state]
-  (let [store (->> keypaths/cms-retail-locations
-                   (get-in app-state)
-                   (filter (fn [location] (= "Dallas" (:name location))))
-                   first)]
+  (let [store (-> app-state
+                  (get-in keypaths/cms-retail-location)
+                  (get :dallas))]
     (query-all store)))
 
 (defn query-mf [app-state]
-  (let [store (->> keypaths/cms-retail-locations
-                   (get-in app-state)
-                   (filter (fn [location] (= "Mansfield" (:name location))))
-                   first)]
+  (let [store (-> app-state
+                  (get-in keypaths/cms-retail-location)
+                  spice.core/spy
+                  (get :mansfield))]
     (query-all store)))
 
 (defn query-houston [app-state]
-  (let [store (->> keypaths/cms-retail-locations
-                   (get-in app-state)
-                   (filter (fn [location] (= "Houston" (:name location))))
-                   first)]
+  (let [store (-> app-state
+                  (get-in keypaths/cms-retail-location)
+                  (get :houston))]
     (query-all store)))
 
 (defn built-component-grand-prairie

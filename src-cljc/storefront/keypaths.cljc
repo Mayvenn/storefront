@@ -15,7 +15,7 @@
 (def cms-advertised-promo-uri (conj cms-advertised-promo :uri))
 (def cms-landing-page (conj cms :landingPage))
 (def cms-landing-page-v2 (conj cms :landingPageV2))
-(def cms-retail-locations (conj cms :retailLocations))
+(def cms-retail-location (conj cms :retailLocation))
 
 (def cms-faq (conj cms :faq))
 (def cms-email-modal (conj cms :emailModal))
