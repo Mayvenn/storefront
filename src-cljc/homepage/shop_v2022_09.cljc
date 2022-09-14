@@ -23,14 +23,14 @@
                                                        :blog/heading   "How to Dye a Human Hair Wig"
                                                        :blog/beginning "One of the best things about wearing wigs is their versatility. You can be subtle and reserved one day, then bold and vixen-like the next. Even better, human hair wigs can be dyed just like your natural hair. That means not only can your fashion change to suit your mood, but your hair color can, too."
                                                        :blog/ucare-id  "51e44ac7-1b45-4cb4-a880-79fb67789feb"}
-                                 :blog2               {:blog/id        "money-mavens"
-                                                       :blog/target    [events/external-redirect-blog-page {:blog-path "/blog/hustle/5-money-mavens-show-how-to-make-your-money-move/"}]
-                                                       :blog/author    "Yolande Clark-Jackson"
-                                                       :blog/date      "16 Mar 2021"
+                                 :blog2               {:blog/id        "right-stylist"
+                                                       :blog/target    [events/external-redirect-blog-page {:blog-path "/blog/hair/how-to-choose-the-right-hairstylist/"}]
+                                                       :blog/author    "Amber Coleman"
+                                                       :blog/date      "2 Aug 2021"
                                                        :blog/read-time "3 min read"
-                                                       :blog/heading   "5 Money Mavens Show How to Make Your Money Move"
-                                                       :blog/beginning "Lately, I have been feeling like I’m in a scene from the 90’s movie “Set it Off” with Queen Latifah and Jada Pinkett Smith. I never imagined I would walk into my bank with a mask on to ask for a withdrawal. And, many people could never imagine how much a COVID-affected lifestyle would cost. Most people’s “rainy day” fund was not strong enough to meet a 7-month pandemic. And, if you were one of those people who had to drain your savings, you’re not alone. According to CNBC.com, by September, 15% of Americans had wiped out their emergency funds."
-                                                       :blog/ucare-id  "5a10f77e-6463-4efa-8ef1-0997f4e9a03f"}}
+                                                       :blog/heading   "How to Choose the Right Hairstylist"
+                                                       :blog/beginning "Looking for a hairstylist that accommodates your hair needs can be a struggle, but it’s not impossible! There are a couple of key steps that go into finding a great stylist like research, recommendations, pricing, and consultations. Here are a few tips that’ll help you find the right stylist for all of your #hairgoals."
+                                                       :blog/ucare-id  "70f4e431-6726-4484-b91f-1a2b294aee00"}}
                                 {:shop-these-looks/row-1 [{:shop-these-looks.entry.cta/copy   "Shop Wedding Hair"
                                                            :shop-these-looks.entry.cta/target events/navigate-shop-by-look-details
                                                            :shop-these-looks.entry.cta/args   {:album-keyword :look
