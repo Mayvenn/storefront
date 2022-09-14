@@ -725,6 +725,9 @@
 (defpath email-modal-submitted)
 (defpath email-modal-dismissed)
 
+;; homepage email
+(defpath homepage-email-submitted)
+
 ;; Adventure Quiz
 (defpath navigate-adventure-quiz)
 

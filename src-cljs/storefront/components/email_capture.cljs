@@ -8,6 +8,7 @@
             [storefront.components.svg :as svg]
             [storefront.events :as e]
             [storefront.keypaths :as k]
+            [storefront.transitions :as t]
             [storefront.platform.messages :as messages
              :refer [handle-message]
              :rename {handle-message publish}]
@@ -144,6 +145,31 @@
               :variation-description variation-description
               :template-content-id   template-content-id
               :email                 email-address})))
+
+(defmethod fx/perform-effects e/homepage-email-submitted
+  [_ _ {:keys [email-modal values]} _ _]
+  (let [{{:keys [template-content-id]} :email-modal-template
+         variation-description         :description
+         {:keys [trigger-id]}          :email-modal-trigger}
+        email-modal
+
+        email-address (get values "email-capture-input")]
+    ;; TODO Identify with backend and publish after success
+    (publish e/funnel|acquisition|succeeded
+             {:prompt {:method                       :email-modal/trigger
+                       :email-modal/trigger-id       trigger-id
+                       :email-modal/template-id      template-content-id
+                       :email-modal/test-description variation-description}
+              :action {:auth.email/id email-address}})
+    (publish e/biz|email-capture|captured
+             {:trigger-id            trigger-id
+              :variation-description variation-description
+              :template-content-id   template-content-id
+              :email                 email-address})))
+
+(defmethod t/transition-state e/homepage-email-submitted
+  [_ _ _ app-state]
+  (assoc-in app-state k/homepage-email-submitted true))
 
 (defmethod fx/perform-effects e/email-modal-dismissed
   [_ _ {:keys [email-modal]} _ _]

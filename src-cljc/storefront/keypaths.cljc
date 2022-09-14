@@ -315,6 +315,8 @@
 (def footer-email-ready [:footer :email :ready])
 (def footer-email-value [:footer :email :value])
 
+(def homepage-email-submitted [:homepage :email :submitted])
+
 (def experiments [:experiments])
 (def experiments-manual (conj experiments :manual))
 (def experiments-bucketed (conj experiments :bucketed))

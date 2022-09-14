@@ -69,12 +69,14 @@
                                                                                                :look-id       "51SUPn4tR88bvIAaUhVpo1"}
                                                            :shop-these-looks.entry.img/src    "//ucarecdn.com/6690dc6c-32c7-4a7b-9485-9c4f43fe991c/"}]}
                                 (let [textfield-keypath email-capture/textfield-keypath
-                                      email             (get-in app-state textfield-keypath)]
-                                  {:email-capture.submit/target          [events/email-modal-submitted
-                                                                          {:values {"email-capture-input" email}}]
-                                   :email-capture.text-field/id          "homepage-email-capture-input"
-                                   :email-capture.text-field/placeholder "Enter your Email"
-                                   :email-capture.text-field/focused     (get-in app-state k/ui-focus)
-                                   :email-capture.text-field/keypath     textfield-keypath
-                                   :email-capture.text-field/errors      (get-in app-state (conj k/field-errors ["email"]))
-                                   :email-capture.text-field/email       email})))))
+                                      email             (get-in app-state textfield-keypath)
+                                      submitted?        (get-in app-state k/homepage-email-submitted)]
+                                  {:email-capture.submit/target             [events/homepage-email-submitted
+                                                                             {:values {"email-capture-input" email}}]
+                                   :email-capture.text-field/id             "homepage-email-capture-input"
+                                   :email-capture.text-field/placeholder    "Enter your Email"
+                                   :email-capture.text-field/focused        (get-in app-state k/ui-focus)
+                                   :email-capture.text-field/keypath        textfield-keypath
+                                   :email-capture.text-field/errors         (get-in app-state (conj k/field-errors ["email"]))
+                                   :email-capture.text-field/email          email
+                                   :email-capture.text-field/submitted-text (when submitted? "Thank you for subscribing.")})))))

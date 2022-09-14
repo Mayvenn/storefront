@@ -7,7 +7,7 @@
 (c/defcomponent organism
   [{:zip-explanation/keys [id]} _ _]
   (when id
-    [:div.bg-warm-gray.flex.flex-column-reverse-on-mb.justify-center.p8-on-tb-dt.mt8
+    [:div.bg-warm-gray.flex.flex-column-reverse-on-mb.justify-center.p8-on-tb-dt.my8
      [:div.my-auto.mx6.my8-on-mb
       [:h2.title-1.canela
        "Hair Now, Pay Later"]

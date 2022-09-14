@@ -4,7 +4,7 @@
             [storefront.platform.component-utils :as utils]))
 
 (c/defcomponent organism
-  [{:email-capture.text-field/keys [keypath errors email focused] :as data} _ _]
+  [{:email-capture.text-field/keys [keypath errors email focused submitted-text] :as data} _ _]
   [:div.homepage-email-cap
    (ui/img {:src   "//ucarecdn.com/cbf1bb83-0ebc-4691-9c61-de6af79e6f8d/"
             :style {:object-fit "cover"
@@ -30,4 +30,6 @@
                      :value     email
                      :class     "col-12 bg-white"
                      :data-test "homepage-email"})
-     (ui/submit-button-medium "Make me an expert" {:data-test "homepage-email-cta"})]]])
+     (when submitted-text
+       [:div submitted-text])
+     [:div.pt2 (ui/submit-button-medium "Make me an expert" {:data-test "homepage-email-cta"})]]]])
