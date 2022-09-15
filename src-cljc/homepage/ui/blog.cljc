@@ -10,21 +10,21 @@
     [:div.mx-auto.flex-on-tb-dt.max-1080
      {:key (str "blog-" id)}
      [:a
-      (merge (apply utils/route-to target)
-             {:data-test  (str "to-" id)
-              :aria-label heading})
+      {:href      target
+       :data-test  (str "to-" id)
+       :aria-label heading}
       (ui/defer-ucare-img {:class      "block col-12"
                            :smart-crop "600x400"
                            :alt        ""}
         ucare-id)]
      [:div.p3.col-9-on-tb-dt
-      [:h2.canela.title-1.mb2 heading]
+      [:h2.canela.title-1.mb2
+       [:a.inherit-color {:href target} heading]]
       [:div.flex.mt2.content-3.shout
        [:div.mr2 author]
        [:div.dark-dark-gray date " • " read-time]]
       [:div.pt4 beginning]
       [:div.shout.col-8.pt3 (ui/button-medium-primary
-                         (merge
-                          (apply utils/route-to target)
-                          {:data-test (str "go-to-" id)})
-                         "Read More")]]]))
+                             {:href      target
+                              :data-test (str "go-to-" id)}
+                             "Read More")]]]))

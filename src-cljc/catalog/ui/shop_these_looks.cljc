@@ -4,11 +4,12 @@
             [storefront.platform.component-utils :as utils]))
 
 (defn entry [src copy target args highlight?]
-  [:div.grid.shop-these-looks-entry
-   {:style {:grid-template-rows "auto 100px"
-            :justify-items      "center"
-            :align-items        "center"}
-    :class (str "shop-these-looks-" (if highlight? "highlight" "lowlight"))}
+  [:a.grid.shop-these-looks-entry
+   (merge (utils/route-to target args)
+          {:style {:grid-template-rows "auto 100px"
+                   :justify-items      "center"
+                   :align-items        "center"}
+           :class (str "shop-these-looks-" (if highlight? "highlight" "lowlight"))})
    (ui/img {:src   src
             :class "container-size"
             :alt   ""

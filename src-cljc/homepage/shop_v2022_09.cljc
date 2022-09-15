@@ -16,7 +16,7 @@
                                  :shopping-categories (ui/shopping-categories-query categories)
                                  :zip-explanation     {:zip-explanation/id "zip-explanation"}
                                  :blog1               {:blog/id        "dye-humann-hair-wig"
-                                                       :blog/target    [events/external-redirect-blog-page {:blog-path "/blog/hair/how-to-dye-a-human-hair-wig/"}]
+                                                       :blog/target    "https://shop.mayvenn.com/blog/hair/how-to-dye-a-human-hair-wig/"
                                                        :blog/author    "Mayvenn"
                                                        :blog/date      "16 Mar 2020"
                                                        :blog/read-time "7 min read"
@@ -24,7 +24,7 @@
                                                        :blog/beginning "One of the best things about wearing wigs is their versatility. You can be subtle and reserved one day, then bold and vixen-like the next. Even better, human hair wigs can be dyed just like your natural hair. That means not only can your fashion change to suit your mood, but your hair color can, too."
                                                        :blog/ucare-id  "51e44ac7-1b45-4cb4-a880-79fb67789feb"}
                                  :blog2               {:blog/id        "right-stylist"
-                                                       :blog/target    [events/external-redirect-blog-page {:blog-path "/blog/hair/how-to-choose-the-right-hairstylist/"}]
+                                                       :blog/target    "https://shop.mayvenn.com/blog/hair/how-to-choose-the-right-hairstylist/"
                                                        :blog/author    "Amber Coleman"
                                                        :blog/date      "2 Aug 2021"
                                                        :blog/read-time "3 min read"
