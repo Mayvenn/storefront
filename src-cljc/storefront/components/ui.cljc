@@ -1254,9 +1254,9 @@
   [:div.max-580.mx-auto.border.border-cool-gray
    {:key (str "blog-" id)}
    [:a
-    (merge (apply utils/route-to target)
-           {:data-test  (str "to-" id)
-            :aria-label heading})
+    {:href       target
+     :data-test  (str "to-" id)
+     :aria-label heading}
     (defer-ucare-img {:class      "block col-12"
                       :smart-crop "600x400"
                       :alt        ""}
@@ -1264,7 +1264,6 @@
    [:div.p3
     [:h2.proxima.title-2.mb2 heading]
     [:div.shout (button-small-underline-primary
-                 (merge
-                  (apply utils/route-to target)
-                  {:data-test (str "go-to-" id)})
+                 {:href target
+                  :data-test (str "go-to-" id)}
                  "Read More")]]])
