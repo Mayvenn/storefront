@@ -149,6 +149,8 @@
            :contentful/faq-id             :category-virgin-closures
            :flyout-menu/title             "Closures"
            :flyout-menu/order             1
+           :desktop-menu/title            "Virgin Hair Closures"
+           :desktop-menu/order            2
            :homepage.ui-v2022-09/order    2
            :homepage.ui-v2022-09/image-id "e7d0859d-7e4f-42a5-abf0-12b3713264f7"
            :footer/order                  5
@@ -260,6 +262,8 @@
            :hair/color.process            #{"natural" "dyed"}
            :flyout-menu/title             "Frontals"
            :flyout-menu/order             2
+           :desktop-menu/title            "Virgin Hair Frontals"
+           :desktop-menu/order            3
            :homepage.ui-v2022-09/order    3
            :homepage.ui-v2022-09/image-id "aae6c15c-00b3-43d0-be89-f4b9173212dc"
            :footer/order                  6
@@ -619,6 +623,8 @@
            :footer/title                  "Wigs"
            :flyout-menu/order             3
            :flyout-menu/title             "Wigs"
+           :desktop-menu/order            0
+           :desktop-menu/title            "Wigs"
            :header/title                  "Wigs"
 
            :page/icp?            true
@@ -939,6 +945,8 @@
            :category/new?                    false
            :flyout-menu/title                "Hair Bundles"
            :flyout-menu/order                0
+           :desktop-menu/title               "Hair Bundles"
+           :desktop-menu/order               1
            :homepage.ui-v2022-09/order       1
            :homepage.ui-v2022-09/image-id    "16029dd0-285c-4bc6-803c-0c201c3d402c"
            :footer/order                     4
@@ -1116,20 +1124,19 @@
     {:catalog/category-id "28"
      :catalog/department  #{"hair"}
      :category/new?       false
-
-     :page/icp? true
-
+     :page/icp?           true
      :hair/family         #{"seamless-clip-ins" "tape-ins"}
      :selector/essentials [:catalog/department :hair/family]
      :selector/electives  [:hair/weight :hair/color :hair/texture]
-
-     :flyout-menu/title "Hair Extensions"
-     :flyout-menu/order 4
+     :flyout-menu/title   "Hair Extensions"
+     :flyout-menu/order   4
+     :desktop-menu/title  "Hair Extensions"
+     :desktop-menu/order   4
 
      :homepage.ui-v2022-09/order    4
      :homepage.ui-v2022-09/image-id "4c9af3d0-3672-4550-9e9f-1a69833b2fe3"
-     :footer/order 8
-     :footer/title "Hair Extensions"
+     :footer/order                  8
+     :footer/title                  "Hair Extensions"
 
      :copy/title         "Hair Extensions"
      :product-list/title "Shop All Hair Extensions"

@@ -351,6 +351,35 @@
                  logo-nav-event
                  (merge {:event logo-nav-event})))]]))
 
+(defn hair-shop-query [data]
+  {:header-menu-item/flyout-menu-path  keypaths/shop-a-la-carte-menu-expanded
+   :header-menu-item/navigation-target "#" ; needed for tab navigation through menu
+   :header-menu-item/content           "Hair Shop"
+   :header-menu-item/id                "desktop-hair-shop"
+   :flyout/items                       (->> (get-in data keypaths/categories)
+                                            (filter :desktop-menu/order)
+                                            (filter (fn [category]
+                                                      (or (auth/stylist? (auth/signed-in data))
+                                                          (not (-> category
+                                                                   :catalog/department
+                                                                   (contains? "stylist-exclusives"))))))
+                                            (sort-by :desktop-menu/order)
+                                            (mapv (fn category->icp-flyout-option
+                                                    [{:as category :keys [:page/slug desktop-menu/title category/new?]}]
+                                                    {:key         slug
+                                                     :nav-message (let [{:direct-to-details/keys [id slug sku-id]} category]
+                                                                    (if id
+                                                                      [events/navigate-product-details
+                                                                       (merge
+                                                                        {:catalog/product-id id
+                                                                         :page/slug          slug}
+                                                                        (when sku-id {:query-params {:SKU sku-id}}))]
+                                                                      [events/navigate-category category]))
+                                                     :copy        title
+                                                     :new?        new?})))
+   :flyout/id                          (when (get-in data keypaths/shop-a-la-carte-menu-expanded)
+                                         "shop-a-la-carte-menu-expanded")})
+
 ;; NOTE: This a-la-carte does not mean services, it refers to not using shared-carts/looks
 (defn shop-a-la-carte-flyout-query [data]
   {:header-menu-item/flyout-menu-path  keypaths/shop-a-la-carte-menu-expanded
@@ -384,27 +413,56 @@
 (defn shop-looks-query [data]
   {:header-menu-item/navigation-target [events/navigate-shop-by-look {:album-keyword :look}]
    :header-menu-item/id                "desktop-shop-by-look"
-   :header-menu-item/content           "Shop by look"})
+   :header-menu-item/content           "Shop by Look"})
 
 (defn shop-bundle-sets-query [data]
-  {:header-menu-item/flyout-menu-path  keypaths/shop-bundle-sets-menu-expanded
-   :header-menu-item/id                "desktop-shop-bundle-sets"
-   :header-menu-item/content           "Shop bundle sets"
+  (let [new-header? (:new-header-2022-09 (get-in data keypaths/features))]
+    {:header-menu-item/flyout-menu-path  keypaths/shop-bundle-sets-menu-expanded
+     :header-menu-item/id                "desktop-shop-bundle-sets"
+     :header-menu-item/content           (if new-header? "Bundle Sets" "Shop bundle sets")
+     :header-menu-item/navigation-target "#" ; needed for tab navigation through menu
+     :flyout/items                       [{:key         "all"
+                                           :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]
+                                           :new?        false
+                                           :copy        "All Bundle Sets"}
+                                          ;; TODO: Bring back in when a blonde bundle set concept exists
+                                          #_(when new-header?
+                                            {:key         "blonde"
+                                             :nav-message [events/navigate-shop-by-look {:album-keyword :blonde-bundle-sets}]
+                                             :new?        false
+                                             :copy        "Blonde Bundle Sets"})
+                                          {:key         "straight"
+                                           :nav-message [events/navigate-shop-by-look {:album-keyword :straight-bundle-sets}]
+                                           :new?        false
+                                           :copy        "Straight Bundle Sets"}
+                                          {:key         "curly"
+                                           :nav-message [events/navigate-shop-by-look {:album-keyword :wavy-curly-bundle-sets}]
+                                           :new?        false
+                                           :copy        "Wavy & Curly Bundle Sets"}]
+     :flyout/id                          (when (get-in data keypaths/shop-bundle-sets-menu-expanded)
+                                           "shop-bundle-sets-menu-expanded")}))
+
+(defn shop-wigs-query [data]
+  {:header-menu-item/flyout-menu-path  keypaths/shop-wigs-menu-expanded
+   :header-menu-item/id                "desktop-shop-wigs"
+   :header-menu-item/content           "Wigs"
    :header-menu-item/navigation-target "#" ; needed for tab navigation through menu
    :flyout/items                       [{:key         "all"
-                                         :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]
+                                         :nav-message [events/navigate-category {:page/slug "wigs" :catalog/category-id "13"}]
                                          :new?        false
-                                         :copy        "All Bundle Sets"}
-                                        {:key         "straight"
-                                         :nav-message [events/navigate-shop-by-look {:album-keyword :straight-bundle-sets}]
+                                         :copy        "All Wigs"}
+                                        {:key         "wigs-101"
+                                         :nav-message [events/navigate-wigs-101-guide {}]
                                          :new?        false
-                                         :copy        "Straight Bundle Sets"}
-                                        {:key         "curly"
-                                         :nav-message [events/navigate-shop-by-look {:album-keyword :wavy-curly-bundle-sets}]
+                                         :copy        "Wigs 101"}
+                                        {:key         "ready-to-wear"
+                                         :nav-message [events/navigate-category {:page/slug           "wigs"
+                                                                                 :catalog/category-id "13"
+                                                                                 :query-params        {:family "ready-wigs"}}]
                                          :new?        false
-                                         :copy        "Wavy & Curly Bundle Sets"}]
-   :flyout/id                          (when (get-in data keypaths/shop-bundle-sets-menu-expanded)
-                                        "shop-bundle-sets-menu-expanded")})
+                                         :copy        "Ready to Wear Wigs"}]
+   :flyout/id                          (when (get-in data keypaths/shop-wigs-menu-expanded)
+                                         "shop-wigs-menu-expanded")})
 
 (defn basic-query [data]
   (let [store                (marquee/query data)
@@ -412,7 +470,7 @@
         shop?                (= :shop site)
         classic?             (= :classic site)
         signed-in            (auth/signed-in data)
-        new-hd-lace?         (:2022-new-products-hd-lace (get-in data keypaths/features))
+        new-header?          (:new-header-2022-09 (get-in data keypaths/features))
         remove-free-install? (:remove-free-install (get-in data keypaths/features))]
     {:signed-in                   signed-in
      :on-taxon?                   (get-in data keypaths/current-traverse-nav)
@@ -524,44 +582,43 @@
                                     :slide-out-nav-menu-item/nested? false
                                     :slide-out-nav-menu-item/id      "menu-stylist-products"
                                     :slide-out-nav-menu-item/primary "Stylist Exclusives"}]))
-     :desktop-menu/items (cond-> []
+     :desktop-menu/items (if new-header?
+                           (concat [{:header-menu-item/navigation-target [events/navigate-home]
+                                     :header-menu-item/id                "desktop-home"
+                                     :header-menu-item/content           "Home"}]
+                                   [(hair-shop-query data)
+                                    (shop-bundle-sets-query data)
+                                    (shop-wigs-query data)]
+                                   [{:header-menu-item/navigation-target [events/navigate-landing-page {:landing-page-slug "new-arrivals"}]
+                                     :header-menu-item/id                "desktop-new-arrivals"
+                                     :header-menu-item/content           "New Arrivals!"}]
+                                   [(shop-looks-query data)
+                                    {:header-menu-item/href    blog-url
+                                     :header-menu-item/id      "desktop-blog"
+                                     :header-menu-item/content "Blog"}])
+                           (cond-> []
+                             shop?
+                             (concat
+                              [(shop-looks-query data)
+                               (shop-bundle-sets-query data)])
 
-                           remove-free-install?
-                           (concat
-                            [{:header-menu-item/navigation-target [events/navigate-landing-page {:landing-page-slug "free-install"}]
-                              :header-menu-item/id                "sunset-free-install"
-                              :header-menu-item/content           "Free Install Ending FAQ"}])
+                             classic?
+                             (concat [{:header-menu-item/navigation-target [events/navigate-shop-by-look {:album-keyword :look}]
+                                       :header-menu-item/id                "desktop-shop-by-look"
+                                       :header-menu-item/content           "Shop by look"}])
 
-                           shop?
-                           (concat
-                            (when (not remove-free-install?)
-                              [{:header-menu-item/navigation-target [events/navigate-shopping-quiz-unified-freeinstall-intro
-                                                                     {:query-params {:location "desktop_header"}}]
-                                :header-menu-item/id                "desktop-shop-quiz-unified-fi"
-                                :header-menu-item/content           "Start Hair Quiz"}
-                               {:header-menu-item/navigation-target [events/navigate-adventure-find-your-stylist]
-                                :header-menu-item/id                "desktop-shop-find-stylist"
-                                :header-menu-item/content           "Browse Stylists"}])
-                            [(shop-looks-query data)
-                             (shop-bundle-sets-query data)])
-
-                           classic?
-                           (concat [{:header-menu-item/navigation-target [events/navigate-shop-by-look {:album-keyword :look}]
-                                     :header-menu-item/id                "desktop-shop-by-look"
-                                     :header-menu-item/content           "Shop by look"}])
-
-                           :always
-                           (concat
-                            [(shop-a-la-carte-flyout-query data)]
-                            [{:header-menu-item/navigation-target [events/navigate-landing-page {:landing-page-slug "new-arrivals"}]
-                              :header-menu-item/id                "desktop-new-arrivals"
-                              :header-menu-item/content           "New Arrivals!"}]
-                            [{:header-menu-item/href    "/info/wigs-101-guide"
-                              :header-menu-item/id      "desktop-wigs-101"
-                              :header-menu-item/content "Wigs 101"}
-                             {:header-menu-item/href    blog-url
-                              :header-menu-item/id      "desktop-blog"
-                              :header-menu-item/content "Blog"}]))}))
+                             :always
+                             (concat
+                              [(shop-a-la-carte-flyout-query data)]
+                              [{:header-menu-item/navigation-target [events/navigate-landing-page {:landing-page-slug "new-arrivals"}]
+                                :header-menu-item/id                "desktop-new-arrivals"
+                                :header-menu-item/content           "New Arrivals!"}]
+                              [{:header-menu-item/href    "/info/wigs-101-guide"
+                                :header-menu-item/id      "desktop-wigs-101"
+                                :header-menu-item/content "Wigs 101"}
+                               {:header-menu-item/href    blog-url
+                                :header-menu-item/id      "desktop-blog"
+                                :header-menu-item/content "Blog"}])))}))
 
 (defn query [data]
   (-> (basic-query data)
