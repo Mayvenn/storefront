@@ -1,9 +1,7 @@
 (ns retail.stores
-  (:require #?@(:cljs [[storefront.hooks.google-maps :as google-maps]])
+  (:require #?@(:cljs [[goog.string]])
             [storefront.component :as component]
             [storefront.effects :as effects]
-            [storefront.components.formatters :as formatters]
-            [adventure.components.layered :as layered]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
@@ -28,8 +26,10 @@
    [:div.flex.flex-wrap.container.justify-center-on-mb.mx-auto
     (for [{:keys [name img-url address1-2 city-state-zip phone mon-sat-hours sun-hours
                   directions instagram facebook tiktok email show-page-target]} locations]
-      [:div.col-6-on-tb-dt.col-12-on-mb.px2.py3
-       (ui/aspect-ratio 3 2 (ui/img {:width "100%" :class "col-12" :alt "" :src img-url}))
+      [:div.col-6-on-tb-dt.col-12.px2.py3
+       [:a (merge (utils/route-to show-page-target)
+                  {:aria-label (str name " Mayvenn Beauty Lounge")})
+        (ui/aspect-ratio 3 2 (ui/img {:width "100%" :class "col-12" :alt "" :src img-url}))]
        [:div.flex.justify-between.pt2
         [:div
          [:h2.canela.title-2 name]
@@ -112,7 +112,8 @@
                            :mon-sat-hours    (first hours)
                            :sun-hours        (last hours)
                            :show-page-target (get navigate-show-page slug)
-                           :directions       (when (:lat location ) (str "https://www.google.com/maps/dir/?api=1&destination=" (:lat location)"," (:lon location)))
+                           :directions       #?(:cljs (when (:lat location) (str "https://maps.apple.com/?q=" (goog.string/urlEncode (str "Mayvenn Beauty Lounge " address-1 (when address-2 address-2))) "&ll=" (:lat location)"," (:lon location)))
+                                                :clj  "")
                            :instagram        (when instagram (str "https://www.instagram.com/" instagram))
                            :facebook         (when facebook (str "https://business.facebook.com/" facebook))
                            :tiktok           (when tiktok (str "https://www.tiktok.com/@" tiktok))
