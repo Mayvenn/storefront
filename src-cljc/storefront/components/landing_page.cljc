@@ -33,7 +33,7 @@
 
 (defn look<-
   [skus-db looks-shared-carts-db facets-db look promotions album-keyword index remove-free-install?]
-  (when-let [shared-cart-id (spice.core/spy (contentful/shared-cart-id look))]
+  (when-let [shared-cart-id (contentful/shared-cart-id look)]
     (let [shared-cart              (get looks-shared-carts-db shared-cart-id)
           album-copy               (get ugc/album-copy album-keyword)
           sku-ids-from-shared-cart (->> shared-cart

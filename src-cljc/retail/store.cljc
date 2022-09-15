@@ -35,19 +35,19 @@
                     [:div ^:inline (svg/tiktok {:style {:height "20px" :width "20px"}})]])
       (when email [:a.block.mx1.flex.items-center {:href (ui/email-url email) :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn email")}
                    [:div ^:inline (svg/icon-email {:height "20px" :width "28px"})]])]]
-    [:div.border-top.border-gray.flex.col-12.py2
-     [:div.col-5
+    [:div.border-top.border-gray.flex.col-12.py2.justify-between.gap-4
+     [:div
       [:div.title-3.proxima.shout.bold "Location"]
       [:div.content-4 address1-2]
       [:div.content-4 city-state-zip]
       [:div.content-4.my2 phone]]
-     [:div.col-7
+     [:div
       [:div.title-3.proxima.shout.bold "Hours"]
       [:div
        [:div.content-4 mon-sat-hours]
        [:div.content-4 sun-hours]]]]
     [:div.flex
-     [:div.col-5.pb3 (ui/button-medium-primary {:href directions} "Get Directions")]]]
+     [:div.pb3 (ui/button-small-underline-primary {:href directions} "Get Directions")]]]
    [:div.col-6-on-tb-dt.col-12.px2 (ui/basic-defer-img {:width "100%" :alt ""} img-url)]])
 
 (defn follow-us
@@ -111,7 +111,8 @@
    :location-card/phone          phone-number
    :location-card/mon-sat-hours  (first hours)
    :location-card/sun-hours      (last hours)
-   :location-card/directions     (when (:lat location ) (str "https://www.google.com/maps/dir/?api=1&destination=" (:lat location)"," (:lon location)))
+   :location-card/directions     #?(:cljs (when (:lat location ) (str "https://www.google.com/maps/search/?api=1&query=" (goog.string/urlEncode (str "Mayvenn Beauty Lounge " address-1 (when address-2 address-2)) "," (:lat location)"," (:lon location))))
+                                    :clj "")
    :location-card/instagram      (when instagram (str "https://www.instagram.com/" instagram))
    :location-card/facebook       (when facebook (str "https://business.facebook.com/" facebook))
    :location-card/tiktok         (when tiktok (str "https://www.tiktok.com/@" tiktok))
@@ -140,7 +141,6 @@
 (defn query-mf [app-state]
   (let [store (-> app-state
                   (get-in keypaths/cms-retail-location)
-                  spice.core/spy
                   (get :mansfield))]
     (query-all store)))
 
