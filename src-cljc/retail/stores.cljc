@@ -38,20 +38,20 @@
          (ui/button-medium-primary (merge (utils/route-to show-page-target)
                                           {:aria-label (str "Learn more about " name " Beauty Lounge")})
                                    "Learn More")]]
-       [:div.border-top.border-gray.flex.col-12
-        [:div.col-5
+       [:div.border-top.border-gray.flex.col-12.justify-between.gap-4
+        [:div
          [:div.title-3.proxima.shout.bold "Location"]
          [:div.content-4 address1-2]
          [:div.content-4 city-state-zip]
          [:div.content-4.my2 phone]]
-        [:div.col-7
+        [:div
          [:div.title-3.proxima.shout.bold "Hours"]
          [:div
           [:div.content-4 mon-sat-hours]
           [:div.content-4 sun-hours]]]]
-       [:div.flex
-        [:div.col-5 (ui/button-small-underline-primary {:href directions} "Get Directions")]
-        [:div.flex.col-7
+       [:div.flex.justify-between.gap-4
+        [:div (ui/button-small-underline-primary {:href directions} "Get Directions")]
+        [:div.flex
          (when instagram [:a.block.mx1.flex.items-center {:href instagram :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Instagram")}
                           [:div ^:inline (svg/instagram {:style {:height "20px" :width "20px"}})]])
          (when facebook [:a.block.mx1.flex.items-center {:href facebook :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Facebook")}
