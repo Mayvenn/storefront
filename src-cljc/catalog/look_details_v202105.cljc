@@ -227,10 +227,10 @@
                                      {:hair/texture (first texture)
                                       :hair/color   (first color)
                                       :per-item     (into []
-                                                      (comp
-                                                       (map #(select-keys % [:hair/origin :hair/family :hair/length]))
-                                                       (map (partial maps/map-values first)))
-                                                      physical-line-items)})
+                                                          (comp
+                                                           (map #(select-keys % [:hair/origin :hair/family :hair/length :hair/base-material]))
+                                                           (map (partial maps/map-values first)))
+                                                          physical-line-items)})
         sliced-sku-db              (slice-sku-db (get-in app-state keypaths/v2-skus) services initial-selections)
         availability               (catalog.products/index-by-selectors
                                     [:hair/family :hair/color :hair/length]
