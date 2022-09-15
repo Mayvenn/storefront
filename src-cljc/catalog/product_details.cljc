@@ -284,22 +284,10 @@
   (let [shop?                              (or (= "shop" (get-in app-state keypaths/store-slug))
                                                (= "retail-location" (get-in app-state keypaths/store-experience)))
         selected-sku                       (get-in app-state catalog.keypaths/detailed-product-selected-sku)
-        selections                         (get-in app-state catalog.keypaths/detailed-product-selections)
         quadpay-loaded?                    (get-in app-state keypaths/loaded-quadpay)
         sku-family                         (-> selected-sku :hair/family first)
         mayvenn-install-incentive-families #{"bundles" "closures" "frontals" "360-frontals"}
-        selected-skus                      (->> (get-in app-state catalog.keypaths/detailed-product-multiple-lengths-selections)
-                                                (filterv not-empty)
-                                                (mapv
-                                                 #(determine-sku-from-selections app-state (merge selections %)))
-                                                (concat [selected-sku]))
-        sku-price                          (->> selected-skus
-                                                (mapv :sku/price)
-                                                (filterv identity)
-                                                (apply +))
-        sku-id->quantity                   (into {}
-                                                 (map (fn [[sku-id skus]] [sku-id (count skus)])
-                                                      (group-by :catalog/sku-id selected-skus)))
+        sku-price                          (:sku/price selected-sku)
         hide-zip?                          (experiments/hide-zip app-state)
         remove-free-install?               (:remove-free-install (get-in app-state storefront.keypaths/features))]
     (merge
@@ -310,9 +298,8 @@
       :cta/target    [events/control-add-sku-to-bag
                       {:sku      selected-sku
                        :quantity (get-in app-state keypaths/browse-sku-quantity 1)}]
-      :cta/spinning? (or (utils/requesting? app-state (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-                                       (utils/requesting? app-state (conj request-keys/add-to-bag (set (keys sku-id->quantity)))))
-      :cta/disabled? (some #(not (:inventory/in-stock? %)) selected-skus)}
+      :cta/spinning? (utils/requesting? app-state (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+      :cta/disabled? (not (:inventory/in-stock? selected-sku))}
      (when (not hide-zip?)
        {:add-to-cart.quadpay/price   sku-price
         :add-to-cart.quadpay/loaded? quadpay-loaded?})
