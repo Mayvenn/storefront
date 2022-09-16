@@ -8,8 +8,7 @@
                        [checkout.shop.addon-services-menu]
 
                        ;; popups, must be required to load properly
-                       storefront.components.share-your-cart
-                       storefront.components.wig-customization-popup])
+                       storefront.components.share-your-cart])
 
             #?@(:clj [[design-system.home :as design-system]])
 
