@@ -471,9 +471,6 @@
 (defpath popup-show-length-guide)
 (defpath popup-hide-length-guide)
 
-(defpath popup-show-wigs-customization)
-(defpath control-wigs-customization-dismiss)
-
 (defpath add-sku-to-bag)
 (defpath api-success-add-multiple-skus-to-bag)
 (defpath bulk-add-sku-to-bag)

@@ -76,12 +76,11 @@
     (handle-message events/escape-key-pressed)))
 
 (def popup-dismiss-events
-  {:consolidated-cart-free-install events/control-consolidated-cart-free-install-dismiss
-   :share-cart                     events/control-popup-hide
-   :design-system                  events/control-design-system-popup-dismiss
-   :addon-services-menu            events/control-addon-service-menu-dismiss
-   :stylist-search-filters         events/control-stylist-search-filters-dismiss
-   :length-guide                   events/popup-hide-length-guide})
+  {:share-cart             events/control-popup-hide
+   :design-system          events/control-design-system-popup-dismiss
+   :addon-services-menu    events/control-addon-service-menu-dismiss
+   :stylist-search-filters events/control-stylist-search-filters-dismiss
+   :length-guide           events/popup-hide-length-guide})
 
 (defn dismiss-stylist-filter-modal-event
   [app-state]
