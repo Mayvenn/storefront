@@ -133,7 +133,6 @@
 (defpath navigate-checkout-add)
 (defpath navigate-checkout-free-install)
 
-(defpath navigate-about-mayvenn-install)
 (defpath navigate-landing-page)
 
 ;; Wig Care Guides

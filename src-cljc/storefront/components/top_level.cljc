@@ -19,7 +19,6 @@
             adventure.informational.about-our-hair
             adventure.informational.certified-stylists
 
-            mayvenn-install.about
             wigs-101.guide
             retail.stores
             retail.store
@@ -84,7 +83,6 @@
    events/navigate-home                         #(ui/lazy-load-component :homepage
                                                                          'homepage.core/page
                                                                          events/navigate-home)
-   events/navigate-about-mayvenn-install        (constantly mayvenn-install.about/built-component)
    events/navigate-shop-by-look                 #(ui/lazy-load-component :catalog 'catalog.looks/built-component
                                                                          events/navigate-shop-by-look)
    events/navigate-shop-by-look-details         #(ui/lazy-load-component :catalog 'catalog.look-details-v202105/built-component

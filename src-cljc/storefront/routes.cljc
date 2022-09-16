@@ -81,8 +81,7 @@
    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug "/reviews"] (edn->bidi events/navigate-adventure-stylist-profile-reviews)
    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug "/gallery"] (edn->bidi events/navigate-adventure-stylist-gallery)
    "/certified-stylists"                                         (edn->bidi events/navigate-info-certified-stylists)
-   "/about-our-hair"                                             (edn->bidi events/navigate-info-about-our-hair)
-   "/about-mayvenn-install"                                      (edn->bidi events/navigate-about-mayvenn-install)})
+   "/about-our-hair"                                             (edn->bidi events/navigate-info-about-our-hair)})
 
 (def adventure-quiz-routes
   {"/adv/quiz"                                     (edn->bidi events/navigate-adventure-quiz)

@@ -303,15 +303,6 @@
                      [:faq :free-mayvenn-services]]]
       (effects/fetch-cms-keypath app-state keypath))))
 
-(defmethod effects/perform-effects events/navigate-about-mayvenn-install
-  [_ _ _ _ app-state]
-  (if (not= :shop (sites/determine-site app-state))
-    (effects/redirect events/navigate-home)
-    (doseq [keypath [[:advertisedPromo]
-                     [:ugc-collection :free-install-mayvenn]
-                     [:faq :free-mayvenn-services]]]
-      (effects/fetch-cms-keypath app-state keypath))))
-
 (defmethod effects/perform-effects events/navigate-info
   [_ _ _ _ app-state]
   (effects/fetch-cms-keypath app-state [:ugc-collection :free-install-mayvenn]))

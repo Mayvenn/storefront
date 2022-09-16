@@ -416,12 +416,6 @@
                                         (update-data [:ugc-collection :free-install-mayvenn])
                                         contentful/derive-all-looks)
 
-                                    (= events/navigate-about-mayvenn-install nav-event)
-                                    (-> {}
-                                        (update-data [:ugc-collection :free-install-mayvenn])
-                                        (update-data [:faq :free-mayvenn-services])
-                                        contentful/derive-all-looks)
-
                                     (#{events/navigate-info-about-our-hair
                                        events/navigate-info-certified-stylists} nav-event)
                                     (-> {}
@@ -629,8 +623,15 @@
                    #{#"^\/adv\/.*"
                      #"^\/stylist\/.*"
                      #"^\/certified-stylists$"
-                     #"^\/about-our-hair$"
-                     #"^\/about-mayvenn-install$"}))
+                     #"^\/about-our-hair$"}))
+      (redirect-to-home environment req :found)
+      (h req))))
+
+(defn wrap-redirect-free-install-sunset
+  [h environment]
+  (fn [req]
+    (if (some #(re-find % (:uri req))
+              #{#"^\/about-mayvenn-install$"})
       (redirect-to-home environment req :found)
       (h req))))
 
@@ -640,6 +641,7 @@
       (wrap-set-preferred-store environment)
       (wrap-redirect-affiliates environment)
       (wrap-redirect-aladdin environment)
+      (wrap-redirect-free-install-sunset environment)
       (wrap-redirect-shop-only-routes environment)
       (wrap-stylist-not-found-redirect environment)
       (wrap-defaults (dissoc (storefront-site-defaults environment) :cookies))
