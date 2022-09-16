@@ -127,7 +127,6 @@
 (defpath navigate-checkout-confirmation)
 (defpath navigate-checkout-processing)
 (defpath navigate-checkout-add)
-(defpath navigate-checkout-free-install)
 
 (defpath navigate-landing-page)
 
@@ -259,9 +258,6 @@
 (defpath control-checkout-quadpay-confirmation-submit)
 (defpath control-checkout-add-checked)
 (defpath control-checkout-add-continued)
-
-(defpath control-checkout-free-install-added)
-(defpath control-checkout-free-install-skipped)
 
 (defpath control-footer-email-submit)
 (defpath control-footer-email-on-focus)
@@ -483,7 +479,6 @@
 (defpath bulk-add-sku-to-bag)
 (defpath control-bulk-add-skus-to-bag)
 (defpath add-servicing-stylist-and-sku)
-(defpath free-install-upsold)
 
 (defpath image-picker-component-mounted)
 (defpath image-picker-component-will-unmount)

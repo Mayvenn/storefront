@@ -439,8 +439,7 @@
                        events/navigate-checkout-address
                        events/navigate-checkout-returning-or-guest
                        events/navigate-checkout-sign-in
-                       events/navigate-checkout-processing
-                       events/navigate-checkout-free-install} event)))
+                       events/navigate-checkout-processing} event)))
 
       (effects/redirect events/navigate-checkout-address))))
 

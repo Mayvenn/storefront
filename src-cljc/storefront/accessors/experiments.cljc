@@ -129,10 +129,6 @@
   [data]
   (display-feature? data "stylist-profile"))
 
-(defn fi-upsell-interstitial?
-  [data]
-  (display-feature? data "fi-upsell-interstitial"))
-
 (defn inventory-count-shipping-halt?
   [data]
   (display-feature? data "inventory-count-shipping-halt"))

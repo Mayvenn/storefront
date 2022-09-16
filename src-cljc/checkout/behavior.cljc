@@ -77,12 +77,6 @@
   [_ _ _ _ state]
   (let [current-order (api.orders/current state)]
     (->> (cond
-           (and
-            (experiments/fi-upsell-interstitial? state)
-            (:free-mayvenn-service/eligible current-order)
-            (->> current-order :order/items (select ?service) empty?))
-           events/navigate-checkout-free-install
-
            (api.orders/requires-addons-followup? current-order)
            events/navigate-checkout-add
 
