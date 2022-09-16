@@ -75,7 +75,6 @@
         events/navigate-v2-stylist-dashboard-payout-rates          #(ui/lazy-load-component :dashboard 'stylist.dashboard-payout-rates/page events/navigate-v2-stylist-dashboard-payout-rates)
         events/navigate-gallery-image-picker                       #(ui/lazy-load-component :dashboard 'storefront.components.stylist.gallery-image-picker/built-component events/navigate-gallery-image-picker)
         events/navigate-account-manage                             #(partial sign-in/requires-sign-in account/built-component)
-        events/navigate-added-to-cart                              #(ui/lazy-load-component :catalog 'checkout.added-to-cart/built-component events/navigate-added-to-cart)
         events/navigate-checkout-returning-or-guest                #(ui/lazy-load-component :checkout 'storefront.components.checkout-returning-or-guest/built-component events/navigate-checkout-returning-or-guest)
         events/navigate-checkout-sign-in                           #(ui/lazy-load-component :checkout 'storefront.components.checkout-sign-in/built-component events/navigate-checkout-sign-in)
         events/navigate-checkout-address                           #(ui/lazy-load-component :checkout 'storefront.components.checkout-address-auth-required/built-component events/navigate-checkout-address)

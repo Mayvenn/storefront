@@ -13,7 +13,6 @@
             ;; Cart
             checkout.processing
             checkout.cart
-            checkout.added-to-cart
             checkout.classic-cart
             checkout.shop.cart-v2020-09
             checkout.behavior

@@ -711,58 +711,42 @@
 (defmethod effects/perform-effects events/control-bulk-add-skus-to-bag
   [_ _ {:keys [sku-id->quantity]} _ app-state]
   #?(:cljs
-     (let [nav-event              (get-in app-state keypaths/navigation-event)
-           shop?                  (= :shop (sites/determine-site app-state))
-           ;; NOTE: This doesn't take into account skus that aren't bundles right now.
-           free-install-eligible? (> (apply + (vals sku-id->quantity)) 2)
-           remove-free-install?   (:remove-free-install (get-in app-state storefront.keypaths/features))]
+     (let [nav-event (get-in app-state keypaths/navigation-event)]
        (api/add-skus-to-bag (get-in app-state keypaths/session-id)
                             {:stylist-id       (get-in app-state keypaths/store-stylist-id)
                              :number           (get-in app-state keypaths/order-number)
                              :token            (get-in app-state keypaths/order-token)
                              :user-id          (get-in app-state keypaths/user-id)
                              :user-token       (get-in app-state keypaths/user-token)
-                             :sku-id->quantity (merge sku-id->quantity
-                                                      (when (and shop? free-install-eligible?)
-                                                        ;; NOTE: This assumes only bundles are being added.
-                                                        {"SV2-LBI-X" 1}))}
+                             :sku-id->quantity sku-id->quantity}
                             #(do
                                (messages/handle-message events/api-success-add-multiple-skus-to-bag
                                                         (select-keys % [:order :sku-id->quantity]))
                                (when (not (= events/navigate-cart nav-event))
-                                 (history/enqueue-navigate (if (and (not remove-free-install?)
-                                                                    shop?)
-                                                             events/navigate-added-to-cart
-                                                             events/navigate-cart))))))))
+                                 (history/enqueue-navigate events/navigate-cart)))))))
 
 ;; TODO(corey) Move this to cart
 (defmethod effects/perform-effects events/add-sku-to-bag
-  [dispatch event {:keys [sku quantity stay-on-page? service-swap?] :as args} _ app-state]
+  [_ _ {:keys [sku quantity stay-on-page?]} _ state]
   #?(:cljs
-     (let [nav-event          (get-in app-state keypaths/navigation-event)
-           cart-interstitial? (and
-                               (not (:remove-free-install (get-in app-state storefront.keypaths/features)))
-                               (not service-swap?)
-                               (= :shop (sites/determine-site app-state)))]
+     (let [nav-event          (get-in state keypaths/navigation-event)]
        (api/add-sku-to-bag
-        (get-in app-state keypaths/session-id)
+        (get-in state keypaths/session-id)
         {:sku                sku
          :quantity           quantity
-         :stylist-id         (get-in app-state keypaths/store-stylist-id)
-         :token              (get-in app-state keypaths/order-token)
-         :number             (get-in app-state keypaths/order-number)
-         :user-id            (get-in app-state keypaths/user-id)
-         :user-token         (get-in app-state keypaths/user-token)
-         :heat-feature-flags (keys (filter second (get-in app-state keypaths/features)))}
+         :stylist-id         (get-in state keypaths/store-stylist-id)
+         :token              (get-in state keypaths/order-token)
+         :number             (get-in state keypaths/order-number)
+         :user-id            (get-in state keypaths/user-id)
+         :user-token         (get-in state keypaths/user-token)
+         :heat-feature-flags (keys (filter second (get-in state keypaths/features)))}
         #(do
            (messages/handle-message events/api-success-add-sku-to-bag
                                     {:order    %
                                      :quantity quantity
                                      :sku      sku})
            (when (not (or (= events/navigate-cart nav-event) stay-on-page?))
-             (history/enqueue-navigate (if cart-interstitial?
-                                         events/navigate-added-to-cart
-                                         events/navigate-cart))))))))
+             (history/enqueue-navigate events/navigate-cart)))))))
 
 (defmethod effects/perform-effects events/add-servicing-stylist-and-sku
   [_ _ {:keys [sku quantity servicing-stylist]} _ state]

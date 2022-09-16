@@ -51,7 +51,6 @@
 (defpath navigate-reset-password)
 (defpath navigate-force-set-password)
 (defpath navigate-cart)
-(defpath navigate-added-to-cart)
 (defpath navigate-shared-cart)
 (defpath navigate-store-gallery)
 (defpath navigate-gallery-edit)
@@ -594,12 +593,6 @@
 ;; Stripe Payment Button
 (defpath stripe-payment-request-button-inserted)
 (defpath stripe-payment-request-button-removed)
-
-(defpath cart-interstitial-browse-stylist-mounted)
-(defpath cart-interstitial-free-mayvenn-service-tracker-mounted)
-(defpath control-cart-interstitial-browse-stylist-cta)
-(defpath control-cart-interstitial-view-cart)
-
 
 ;; Spreedly
 

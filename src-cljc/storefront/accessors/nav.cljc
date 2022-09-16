@@ -69,7 +69,6 @@
 
 (def return-blacklisted?
   (-> auth-events
-      (conj events/navigate-added-to-cart)
       (conj events/navigate-not-found)))
 
 (def minimal-footer-events
@@ -89,9 +88,6 @@
              checkout-events
              payout-events))
 
-(def interstitial-page-events
-  #{events/navigate-added-to-cart})
-
 (def gallery-page-events
   #{events/navigate-gallery-edit
     events/navigate-gallery-appointments
@@ -103,7 +99,6 @@
 
 (defn hide-footer? [event]
   (contains? (set/union gallery-page-events
-                        interstitial-page-events
                         adventures-quiz-events)
              event))
 

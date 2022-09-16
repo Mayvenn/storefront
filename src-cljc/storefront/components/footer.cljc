@@ -195,7 +195,6 @@
                                 (sort-by :sort-order))]
     {:contacts     (contacts-query data)
      :link-columns (split-evenly links)
-     ;; NOTE: necessary only when promo helper exists. Can remove if it goes away.
      :footer-links {:minimal-footer?                (nav/show-minimal-footer? (get-in data keypaths/navigation-event))
                     :footer-email-input-value       (get-in data keypaths/footer-email-value)
                     :footer-email-submitted?        (get-in data keypaths/footer-email-submitted)

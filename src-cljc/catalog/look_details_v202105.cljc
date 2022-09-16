@@ -829,28 +829,25 @@
   (assoc-in app-state catalog.keypaths/detailed-look-picker-visible? false))
 
 (defmethod effects/perform-effects events/control-create-order-from-customized-look
-  [_ event {:keys [items promotion-codes look-id] :as args} _ app-state]
-  (let [remove-free-install? (:remove-free-install (get-in app-state storefront.keypaths/features))]
-    #?(:cljs
-       (api/new-order-from-sku-ids (get-in app-state keypaths/session-id)
-                                   {:store-stylist-id     (get-in app-state keypaths/store-stylist-id)
-                                    :user-id              (get-in app-state keypaths/user-id)
-                                    :user-token           (get-in app-state keypaths/user-token)
-                                    :servicing-stylist-id (get-in app-state keypaths/order-servicing-stylist-id)
-                                    :sku-id->quantity     items
-                                    :promotion-codes      promotion-codes
-                                    :ignore-promo-absence true}
-                                   (fn [{:keys [order]}]
-                                     (messages/handle-message
-                                      events/api-success-update-order
-                                      {:order    order
-                                       :navigate (if remove-free-install?
-                                                   events/navigate-cart
-                                                   events/navigate-added-to-cart)})
-                                     (trackings/track-cart-initialization
-                                      "look-customization"
-                                      look-id
-                                      {:skus-db          (get-in app-state keypaths/v2-skus)
-                                       :image-catalog    (get-in app-state keypaths/v2-images)
-                                       :store-experience (get-in app-state keypaths/store-experience)
-                                       :order            order}))))))
+  [_ _ {:keys [items promotion-codes look-id]} _ state]
+  #?(:cljs
+     (api/new-order-from-sku-ids (get-in state keypaths/session-id)
+                                 {:store-stylist-id     (get-in state keypaths/store-stylist-id)
+                                  :user-id              (get-in state keypaths/user-id)
+                                  :user-token           (get-in state keypaths/user-token)
+                                  :servicing-stylist-id (get-in state keypaths/order-servicing-stylist-id)
+                                  :sku-id->quantity     items
+                                  :promotion-codes      promotion-codes
+                                  :ignore-promo-absence true}
+                                 (fn [{:keys [order]}]
+                                   (messages/handle-message
+                                    events/api-success-update-order
+                                    {:order    order
+                                     :navigate events/navigate-cart})
+                                   (trackings/track-cart-initialization
+                                    "look-customization"
+                                    look-id
+                                    {:skus-db          (get-in state keypaths/v2-skus)
+                                     :image-catalog    (get-in state keypaths/v2-images)
+                                     :store-experience (get-in state keypaths/store-experience)
+                                     :order            order})))))
