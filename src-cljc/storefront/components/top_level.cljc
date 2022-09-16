@@ -10,8 +10,7 @@
                        ;; popups, must be required to load properly
                        adventure.components.program-details-popup
                        storefront.components.share-your-cart
-                       storefront.components.wig-customization-popup
-                       checkout.cart.swap])
+                       storefront.components.wig-customization-popup])
 
             #?@(:clj [[design-system.home :as design-system]])
 

@@ -492,10 +492,6 @@
 (defpath add-servicing-stylist-and-sku)
 (defpath free-install-upsold)
 
-(defpath cart-swap-popup-show)
-(defpath control-cart-swap-popup-dismiss)
-(defpath control-cart-swap-popup-confirm)
-
 (defpath image-picker-component-mounted)
 (defpath image-picker-component-will-unmount)
 
@@ -595,8 +591,6 @@
 (defpath stripe-payment-request-button-removed)
 
 ;; Spreedly
-
-
 (defpath loaded-spreedly)
 (defpath spreedly-did-mount)
 (defpath spreedly-did-unmount)

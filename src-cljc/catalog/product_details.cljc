@@ -25,7 +25,6 @@
             [catalog.selector.sku :as sku-selector]
             [catalog.ui.add-to-cart :as add-to-cart]
             [catalog.ui.molecules :as catalog.M]
-            [checkout.cart.swap :as swap]
             [homepage.ui.faq :as faq]
             [mayvenn.visual.lib.call-out-box :as call-out-box]
             [mayvenn.visual.tools :refer [with within]]
@@ -697,16 +696,11 @@
 
 
 (defmethod effects/perform-effects events/control-add-sku-to-bag
-  [_ _ {:keys [sku quantity]} _ state]
-  (let [cart-swap (swap/cart-swap<- state {:service/intended sku})]
-    (if (:service/swap? cart-swap)
-      (messages/handle-message events/cart-swap-popup-show
-                               cart-swap)
-      (messages/handle-message events/add-sku-to-bag
-                               {:sku           sku
-                                :stay-on-page? false
-                                :service-swap? false
-                                :quantity      quantity}))))
+  [_ _ {:keys [sku quantity]} _ _]
+  (messages/handle-message events/add-sku-to-bag
+                           {:sku           sku
+                            :stay-on-page? false
+                            :quantity      quantity}))
 
 (defmethod effects/perform-effects events/control-bulk-add-skus-to-bag
   [_ _ {:keys [sku-id->quantity]} _ app-state]

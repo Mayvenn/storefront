@@ -2,8 +2,7 @@
   "Stylist profile"
   (:require [storefront.accessors.experiments :as experiments]
             [storefront.component :as c]
-            [stylist-profile.stylist-details :as v2]
-            checkout.cart.swap))
+            [stylist-profile.stylist-details :as v2]))
 
 ;; This should require stylist results and stylist details
 ;; and set module loaded
