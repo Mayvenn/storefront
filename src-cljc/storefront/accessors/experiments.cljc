@@ -137,12 +137,6 @@
   [data]
   (display-feature? data "hide-zip"))
 
-(defn order-details?
-  [data]
-  true
-  #_
-  (display-feature? data "order-details"))
-
 (defn quiz-always-adds-holiday-promo?
   [data]
   (display-feature? data "quiz-always-adds-holiday-promo"))

@@ -14,7 +14,6 @@
 
 ;;NOTE Used by slideout-nav
 
-
 (defn major-menu-row [& content]
   [:div.py3
    (into [:a.block.inherit-color.flex.items-center.content-1.proxima] content)])
@@ -90,6 +89,52 @@
                                 :nav-message [events/navigate-shop-by-look {:album-keyword :wavy-curly-bundle-sets}]
                                 :new? false
                                 :copy "Wavy & Curly Bundle Sets"}]})
+
+(defn hair-shop-query [data]
+  {:return-link/event-message [events/menu-home]
+   :return-link/copy          "Back"
+   :return-link/id            "back-from-hair-shop"
+   :menu/title                "Hair Shop"
+   :menu/options              [{:key "wigs"
+                                :nav-message [events/navigate-category {:page/slug "wigs" :catalog/category-id "13"}]
+                                :new? false
+                                :copy "Wigs"}
+                               {:key "hair-bundles"
+                                :nav-message [events/navigate-category {:page/slug "human-hair-bundles" :catalog/category-id "27"}]
+                                :new? false
+                                :copy "Hair Bundles"}
+                               {:key "closures"
+                                :nav-message [events/navigate-category {:page/slug "virgin-closures" :catalog/category-id "0"}]
+                                :new? false
+                                :copy "Virgin Hair Closures"}
+                               {:key "frontals"
+                                :nav-message [events/navigate-category {:page/slug "virgin-frontals" :catalog/category-id "1"}]
+                                :new? false
+                                :copy "Virgin Hair Frontals"}
+                               {:key "extensions"
+                                :nav-message [events/navigate-category {:page/slug "extensions" :catalog/category-id "28"}]
+                                :new? false
+                                :copy "Hair Extensions"}]})
+
+(defn wigs-query [data]
+  {:return-link/event-message [events/menu-home]
+   :return-link/copy          "Back"
+   :return-link/id            "back-from-wigs"
+   :menu/title                "Wigs"
+   :menu/options              [{:key         "all-wigs"
+                                :nav-message [events/navigate-category {:page/slug "wigs" :catalog/category-id "13"}]
+                                :new?        false
+                                :copy        "All Wigs"}
+                               {:key         "wigs-101"
+                                :nav-message [events/navigate-wigs-101-guide {}]
+                                :new?        false
+                                :copy        "Wigs 101"}
+                               {:key         "ready-to-wear-wigs"
+                                :nav-message [events/navigate-category {:page/slug           "wigs"
+                                                                        :catalog/category-id "13"
+                                                                        :query-params        {:family "ready-wigs"}}]
+                                :new?        false
+                                :copy        "Ready to Wear Wigs"}]})
 
 (defmethod transitions/transition-state events/menu-home
   [_ _ _ app-state]
