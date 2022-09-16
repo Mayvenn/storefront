@@ -280,15 +280,10 @@
 
 (defn add-to-cart-query
   [app-state]
-  (let [shop?                              (or (= "shop" (get-in app-state keypaths/store-slug))
-                                               (= "retail-location" (get-in app-state keypaths/store-experience)))
-        selected-sku                       (get-in app-state catalog.keypaths/detailed-product-selected-sku)
-        quadpay-loaded?                    (get-in app-state keypaths/loaded-quadpay)
-        sku-family                         (-> selected-sku :hair/family first)
-        mayvenn-install-incentive-families #{"bundles" "closures" "frontals" "360-frontals"}
-        sku-price                          (:sku/price selected-sku)
-        hide-zip?                          (experiments/hide-zip app-state)
-        remove-free-install?               (:remove-free-install (get-in app-state storefront.keypaths/features))]
+  (let [selected-sku    (get-in app-state catalog.keypaths/detailed-product-selected-sku)
+        quadpay-loaded? (get-in app-state keypaths/loaded-quadpay)
+        sku-price       (:sku/price selected-sku)
+        hide-zip?       (experiments/hide-zip app-state)]
     (merge
      {:cta/id    "add-to-cart"
       :cta/label "Add to Bag"
@@ -301,18 +296,7 @@
       :cta/disabled? (not (:inventory/in-stock? selected-sku))}
      (when (not hide-zip?)
        {:add-to-cart.quadpay/price   sku-price
-        :add-to-cart.quadpay/loaded? quadpay-loaded?})
-     (when (and shop?
-                (not remove-free-install?)
-                (mayvenn-install-incentive-families sku-family))
-       {:add-to-cart.incentive-block/id          "add-to-cart-incentive-block"
-        :add-to-cart.incentive-block/footnote    "*Mayvenn Services cannot be combined with other promotions"
-        :add-to-cart.incentive-block/link-id     "learn-more-mayvenn-install"
-        :add-to-cart.incentive-block/link-label  "Learn more"
-        :add-to-cart.incentive-block/link-target [events/popup-show-consolidated-cart-free-install]
-        :add-to-cart.incentive-block/callout     "✋Don't miss out on free Mayvenn Service"
-        :add-to-cart.incentive-block/message     (str "Get a free Mayvenn Service by a licensed "
-                                                      "stylist with qualifying purchases.* ")}))))
+        :add-to-cart.quadpay/loaded? quadpay-loaded?}))))
 
 (defn ^:private tab-section<
   [data

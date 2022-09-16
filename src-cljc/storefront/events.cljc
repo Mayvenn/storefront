@@ -471,8 +471,6 @@
 
 (defpath popup-hide)
 (defpath popup-show)
-(defpath popup-show-consolidated-cart-free-install)
-(defpath control-consolidated-cart-free-install-dismiss)
 
 (defpath popup-show-length-guide)
 (defpath popup-hide-length-guide)

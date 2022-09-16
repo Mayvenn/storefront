@@ -639,8 +639,6 @@
                                                           :quantity           1}]
        :freeinstall-informational/id                    "freeinstall-informational"
        :freeinstall-informational/spinning?             adding-freeinstall?
-       :freeinstall-informational/secondary-link-id     "cart-learn-more"
-       :freeinstall-informational/secondary-link-target [events/popup-show-consolidated-cart-free-install]
        :freeinstall-informational/fine-print            "*Mayvenn Services cannot be combined with other promo codes."
        :freeinstall-informational/secondary-link-label  "learn more"}
       {:remove-freeinstall-informational/id                    "sunset-freeinstall-informational"
