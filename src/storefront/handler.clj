@@ -416,11 +416,6 @@
                                         (update-data [:ugc-collection :free-install-mayvenn])
                                         contentful/derive-all-looks)
 
-                                    (#{events/navigate-info-about-our-hair
-                                       events/navigate-info-certified-stylists} nav-event)
-                                    (-> {}
-                                        (update-data [:faq :free-mayvenn-services]))
-
                                     (= events/navigate-landing-page nav-event)
                                     (-> {}
                                         (update-data [:ugc-collection :all-looks])
@@ -622,8 +617,7 @@
              (some #(re-find % (:uri req))
                    #{#"^\/adv\/.*"
                      #"^\/stylist\/.*"
-                     #"^\/certified-stylists$"
-                     #"^\/about-our-hair$"}))
+                     #"^\/certified-stylists$"}))
       (redirect-to-home environment req :found)
       (h req))))
 
@@ -631,7 +625,8 @@
   [h environment]
   (fn [req]
     (if (some #(re-find % (:uri req))
-              #{#"^\/about-mayvenn-install$"})
+              #{#"^\/about-mayvenn-install$"
+                #"^\/about-our-hair$"})
       (redirect-to-home environment req :found)
       (h req))))
 

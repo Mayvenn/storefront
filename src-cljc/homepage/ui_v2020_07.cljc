@@ -242,15 +242,4 @@
                         :ucare?     true
                         :mob-uuid   "bd8888d3-9d1a-4944-a840-2863b50ba5d6"
                         :dsk-uuid   "36bd1978-b3e2-457a-9c8d-303661f57924"
-                        :file-name  "who-shop-hair"}
-
-
-   :hold-hair-high {:layer/type         :shop-text-block
-                    ;; NOTE: this is a design exception
-                    :big-header/content [{:text "Hold your hair" :attrs {:style {:font-size "19px"}}}
-                                         {:text "high" :attrs {:style {:font-size "72px"}}}]
-                    :body/value         "With the highest industry standards in mind, we have curated a wide variety of textures and colors for you to choose from."
-                    :cta/id             "info-about-our-hair"
-                    :cta/value          "shop hair"
-                    :cta/target         [e/navigate-category {:page/slug           "mayvenn-install"
-                                                              :catalog/category-id "23"}]}})
+                        :file-name  "who-shop-hair"}})
