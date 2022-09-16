@@ -19,22 +19,6 @@
       (apply utils/fake-href target))
      label)))
 
-(defn add-to-cart-incentive-block-molecule
-  [{:add-to-cart.incentive-block/keys
-    [id callout message link-id link-label link-target footnote]}]
-  (when id
-    [:div.py2.mb2.bg-refresh-gray.px3
-     [:div.proxima.content-2.line-height-1.bold callout]
-     [:div.pl4.pr1
-      [:div.proxima.content-3.mb1
-       message
-       (when link-id
-         (ui/button-small-underline-primary
-          {:data-test "freeinstall-add-to-cart-info-link"
-           :on-click  (apply utils/send-event-callback link-target)}
-          link-label))]
-      [:div.content-4.black footnote]]]))
-
 (defn add-to-cart-quadpay-molecule
   [{:add-to-cart.quadpay/keys [price loaded?]}]
   #?(:cljs
@@ -49,7 +33,6 @@
   "Add to Cart organism"
   [data _ _]
   [:div
-   (add-to-cart-incentive-block-molecule data)
    [:div.px3.py1
     (cta-molecule data)
     (add-to-cart-quadpay-molecule data)]])

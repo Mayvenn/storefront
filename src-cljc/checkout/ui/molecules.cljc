@@ -50,37 +50,6 @@
           [:span.bold.p-color {:data-test "total-savings"}
            savings]])]])))
 
-(defn freeinstall-informational
-  [{:freeinstall-informational/keys
-    [id primary secondary cta-label cta-target fine-print
-     secondary-link-id secondary-link-label secondary-link-target
-     button-id spinning?]}]
-  (component/html
-   (when id
-     [:div.flex.py2 {:data-test id}
-      "✋"
-      [:div.flex.flex-column.pl1
-       [:div.proxima.content-2.line-height-1.bold primary]
-       [:div.content-3.proxima secondary]
-       [:div.flex.justify-left.py1
-        (ui/button-small-primary
-         (assoc (apply utils/route-to cta-target)
-                :data-test button-id
-                :disabled? spinning?
-                :spinning? spinning?
-                :style {:min-width "170px"})
-         cta-label)
-        (when secondary-link-id
-          [:div.p-color.flex.items-center.px2.button-font-3.shout
-           [:a
-            ^:attrs (merge
-                     (apply utils/fake-href secondary-link-target)
-                     {:class      "inherit-color border-bottom border-width-2"
-                      :data-test  secondary-link-id
-                      :aria-label "Learn More about Free Install"})
-            secondary-link-label]])]
-       [:div.content-4.black fine-print]]])))
-
 (defn remove-freeinstall-informational
   [{:remove-freeinstall-informational/keys
     [id primary cta-label cta-target]}]
