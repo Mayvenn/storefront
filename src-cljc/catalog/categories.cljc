@@ -147,8 +147,6 @@
 
 
            :contentful/faq-id             :category-virgin-closures
-           :flyout-menu/title             "Closures"
-           :flyout-menu/order             1
            :desktop-menu/title            "Virgin Hair Closures"
            :desktop-menu/order            2
            :homepage.ui-v2022-09/order    2
@@ -260,8 +258,6 @@
            :catalog/department            #{"hair"}
            :hair/family                   #{"frontals" "360-frontals"}
            :hair/color.process            #{"natural" "dyed"}
-           :flyout-menu/title             "Frontals"
-           :flyout-menu/order             2
            :desktop-menu/title            "Virgin Hair Frontals"
            :desktop-menu/order            3
            :homepage.ui-v2022-09/order    3
@@ -621,8 +617,6 @@
            :homepage.ui-v2022-09/image-id "5457be03-d25b-41d6-a5e3-ef28b4fda2f5"
            :footer/order                  7
            :footer/title                  "Wigs"
-           :flyout-menu/order             3
-           :flyout-menu/title             "Wigs"
            :desktop-menu/order            0
            :desktop-menu/title            "Wigs"
            :header/title                  "Wigs"
@@ -943,8 +937,6 @@
            :catalog/department               #{"hair"}
            :category/show-title?             true
            :category/new?                    false
-           :flyout-menu/title                "Hair Bundles"
-           :flyout-menu/order                0
            :desktop-menu/title               "Hair Bundles"
            :desktop-menu/order               1
            :homepage.ui-v2022-09/order       1
@@ -993,8 +985,6 @@
    :footer/order              9
    :footer/title              "Stylist Exclusives"
    :header/title              "Stylist Exclusives"
-   :flyout-menu/title         "Stylist Exclusives"
-   :flyout-menu/order         5
    :copy/title                "Stylist Exclusives"
    :page/slug                 "stylist-exclusives"
    :direct-to-details/id      "49"
@@ -1128,8 +1118,6 @@
      :hair/family         #{"seamless-clip-ins" "tape-ins"}
      :selector/essentials [:catalog/department :hair/family]
      :selector/electives  [:hair/weight :hair/color :hair/texture]
-     :flyout-menu/title   "Hair Extensions"
-     :flyout-menu/order   4
      :desktop-menu/title  "Hair Extensions"
      :desktop-menu/order   4
 
