@@ -16,8 +16,6 @@
 
             [mayvenn.stylist-pay.core :as stylist-pay]
 
-            adventure.informational.certified-stylists
-
             wigs-101.guide
             retail.stores
             retail.store
@@ -130,8 +128,6 @@
    events/navigate-gallery-photo                (constantly gallery-photo/built-component)
    events/navigate-yourlooks-order-details      #(ui/lazy-load-component :dashboard 'order-details.core/page events/navigate-yourlooks-order-details)
    events/navigate-yourlooks-order-history      #(ui/lazy-load-component :dashboard 'order-history.core/page events/navigate-yourlooks-order-history)
-
-   events/navigate-info-certified-stylists (constantly adventure.informational.certified-stylists/built-component)
 
    events/navigate-adventure-find-your-stylist       #(ui/lazy-load-component :catalog
                                                                               'stylist-matching.find-your-stylist/page

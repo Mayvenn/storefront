@@ -33,9 +33,6 @@
 
 (defpath navigate-home)
 
-(defpath navigate-info)
-(defpath navigate-info-certified-stylists)
-
 (defpath navigate-category)
 (defpath navigate-legacy-product-page)
 (defpath navigate-legacy-named-search)

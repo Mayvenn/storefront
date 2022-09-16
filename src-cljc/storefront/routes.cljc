@@ -79,8 +79,7 @@
    "/adv/match-success"                                          (edn->bidi events/navigate-adventure-match-success)
    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug]            (edn->bidi events/navigate-adventure-stylist-profile)
    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug "/reviews"] (edn->bidi events/navigate-adventure-stylist-profile-reviews)
-   ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug "/gallery"] (edn->bidi events/navigate-adventure-stylist-gallery)
-   "/certified-stylists"                                         (edn->bidi events/navigate-info-certified-stylists)})
+   ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug "/gallery"] (edn->bidi events/navigate-adventure-stylist-gallery)})
 
 (def adventure-quiz-routes
   {"/adv/quiz"                                     (edn->bidi events/navigate-adventure-quiz)

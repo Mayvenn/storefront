@@ -615,9 +615,7 @@
     (if (and (not (or (= "shop" (get-in-req-state req keypaths/store-slug))
                       (= "retail-location" (get-in-req-state req keypaths/store-experience))))
              (some #(re-find % (:uri req))
-                   #{#"^\/adv\/.*"
-                     #"^\/stylist\/.*"
-                     #"^\/certified-stylists$"}))
+                   #{#"^\/adv\/.*" #"^\/stylist\/.*"}))
       (redirect-to-home environment req :found)
       (h req))))
 
@@ -626,7 +624,8 @@
   (fn [req]
     (if (some #(re-find % (:uri req))
               #{#"^\/about-mayvenn-install$"
-                #"^\/about-our-hair$"})
+                #"^\/about-our-hair$"
+                #"^\/certified-stylists$"})
       (redirect-to-home environment req :found)
       (h req))))
 
@@ -1205,7 +1204,6 @@
                (GET "/categories/" req (redirect-to-home environment req))
                (GET "/products" req (redirect-to-home environment req))
                (GET "/products/" req (redirect-to-home environment req))
-               #_(GET "/certified-stylists" req (redirect-to-home environment req)) ;; TODO: uncomment once FI is removed
                (GET "/products/:id-and-slug/:sku" req (redirect-to-product-details environment req))
                (GET "/how-it-works" _req (wrap-set-cache-header (partial redirect-to-home environment) "max-age=604800"))
                (GET "/mayvenn-made" req (util.response/redirect

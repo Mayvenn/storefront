@@ -229,15 +229,6 @@
                                                           :height "30px"}]
                         :cta/target     [(get-in app-state k/navigation-event)
                                          {:query-params {:video "free-install"}}]}
-   :sit-back-and-relax {:layer/type         :shop-text-block
-                        ;; NOTE: this is a design exception
-                        :big-header/content [{:text "Sit back and" :attrs {:style {:font-size "34px"}}}
-                                             {:text "relax" :attrs {:style {:font-size "54px"}}}]
-                        :body/value         "We’ve rounded up the best stylists in the country so you can be sure your hair is in really, really good hands."
-                        :cta/value          "Learn more"
-                        :cta/aria-label     "Learn more about certified stylists"
-                        :cta/id             "info-certified-stylists"
-                        :cta/target         [e/navigate-info-certified-stylists]}
    :who-shop-hair      {:layer/type :image-block
                         :ucare?     true
                         :mob-uuid   "bd8888d3-9d1a-4944-a840-2863b50ba5d6"
