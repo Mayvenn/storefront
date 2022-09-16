@@ -303,10 +303,6 @@
                      [:faq :free-mayvenn-services]]]
       (effects/fetch-cms-keypath app-state keypath))))
 
-(defmethod effects/perform-effects events/navigate-info
-  [_ _ _ _ app-state]
-  (effects/fetch-cms-keypath app-state [:ugc-collection :free-install-mayvenn]))
-
 (defmethod effects/perform-effects events/navigate-landing-page
   [_ _ args _ app-state]
   (-> app-state
