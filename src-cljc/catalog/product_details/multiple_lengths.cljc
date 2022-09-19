@@ -672,9 +672,7 @@
                                                          [{:heading      "Hair Type"
                                                            :content-path [:product :copy/hair-type]}
                                                           {:heading      "What's Included"
-                                                           :content-path [:product :copy/whats-included]}
-                                                          {:heading      "Available Services"
-                                                           :content-path [:product :copy/available-services]}])}
+                                                           :content-path [:product :copy/whats-included]}])}
                                         {:title    "Care"
                                          :id       :care
                                          :active?  (= active-tab-name :care)
