@@ -248,7 +248,7 @@
 (defn wrap-known-subdomains-redirect [h environment]
   (fn [{:keys [subdomains] :as req}]
     (cond
-      (#{[] ["ambassador"] ["www"] ["internal"] ["vistaprint"] ["classes"] ["stylist"] ["community"]} subdomains)
+      (#{[] ["ambassador"] ["www"] ["internal"] ["vistaprint"] ["classes"] ["stylist"] ["community"] ["info"]} subdomains)
       (util.response/redirect (store-url "shop" environment req) 301)
 
       (#{["peakmill"]} subdomains)
