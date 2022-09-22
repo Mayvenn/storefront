@@ -1222,8 +1222,6 @@
                               json/generate-string
                               util.response/response
                               (util.response/content-type "application/json"))))
-               (GET "/marketing-site" req
-                 (contentful/marketing-site-redirect req))
                (POST "/contentful/webhook" req
                      (if (and (#{"development" "test" "acceptance"}  environment)
                               (spice.core/constant-time= (:webhook-secret contentful)

@@ -330,14 +330,6 @@
           retrieved-entry (:body (contentful-request c resource-type content-id {}))]
       (swap! (:normalized-cache c) #(assoc % (keyword content-id) retrieved-entry)))))
 
-(defn marketing-site-redirect [req]
-  (let [prefix (partial str "https://")
-        url    (-> req :query-params (get "to") prefix)
-        host   (-> url uri/uri :host)
-        to     (if (contains? #{"looks.mayvenn.com"} host)
-                 url "https://shop.mayvenn.com")]
-    (util.response/redirect to)))
-
 (defn derive-all-looks [cms-data]
   (-> cms-data
       (assoc-in [:ugc-collection :all-looks]
