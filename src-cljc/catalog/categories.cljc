@@ -123,7 +123,7 @@
            :subcategories/ids                ["38" "39" "46"]
            :subcategories/layout             :list
            :selector/essentials              [:catalog/department :hair/family :hair/color.process :hair/source]
-           :selector/electives               [:hair/origin :hair/texture :hair/color :hair/base-material]
+           :selector/electives               [:hair/origin :hair/texture :hair.closure/area :hair/color :hair/base-material]
            :subsections/subsection-selectors [#:subsection{:title "Standard Lace Closures" :selector #:hair{:base-material #{"lace"}}}
                                               #:subsection{:title "Silk Closures" :selector #:hair{:base-material #{"silk"}}}
                                               #:subsection{:title "HD Lace Closures" :selector #:hair{:family #{"closures"} :base-material #{"hd-lace"}}}]
@@ -178,7 +178,7 @@
            :hair/source                      #{"virgin"}
            :category/tags                    #{"closures-and-frontals"}
            :selector/essentials              [:catalog/department :hair/family :hair/color.process :hair/source :hair/base-material]
-           :selector/electives               [:hair/origin :hair/texture :hair/color]
+           :selector/electives               [:hair/origin :hair/texture :hair.closure/area :hair/color]
            :subsections/subsection-selectors texture-subsection-selectors
            :header/title                     "Lace Virgin Hair Closures"
 
