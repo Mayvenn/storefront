@@ -435,9 +435,6 @@
                                    {:slide-out-nav-content-item/target  [events/navigate-content-our-hair]
                                     :slide-out-nav-content-item/id      "content-our-hair"
                                     :slide-out-nav-content-item/primary "Our Hair"}
-                                   {:slide-out-nav-content-item/target  {:href "https://looks.mayvenn.com/hd-lace-wigs "}
-                                    :slide-out-nav-content-item/id      "content-hd-lace"
-                                    :slide-out-nav-content-item/primary "Learn About HD Lace"}
                                    {:slide-out-nav-content-item/target  [events/navigate-retail-walmart]
                                     :slide-out-nav-content-item/id      "content-our-locations"
                                     :slide-out-nav-content-item/primary "Our Locations"}
