@@ -218,6 +218,34 @@
           (is (= "https://shop.mayvenn.com/"
                  (get-in resp [:headers "Location"]))))))))
 
+(deftest redirects-old-instapage-subdomains
+  (with-services {}
+    (with-handler handler
+      (testing "looks"
+        (testing "http"
+          (let [resp (handler (mock/request :get "http://looks.mayvenn.com"))]
+            (is (= 301 (:status resp)))
+            (is (= "https://shop.mayvenn.com/"
+                   (get-in resp [:headers "Location"])))))
+
+        (testing "https"
+          (let [resp (handler (mock/request :get "https://looks.mayvenn.com"))]
+            (is (= 301 (:status resp)))
+            (is (= "https://shop.mayvenn.com/"
+                   (get-in resp [:headers "Location"]))))))
+      (testing "info"
+        (testing "http"
+          (let [resp (handler (mock/request :get "http://info.mayvenn.com"))]
+            (is (= 301 (:status resp)))
+            (is (= "https://shop.mayvenn.com/"
+                   (get-in resp [:headers "Location"])))))
+
+        (testing "https"
+          (let [resp (handler (mock/request :get "https://info.mayvenn.com"))]
+            (is (= 301 (:status resp)))
+            (is (= "https://shop.mayvenn.com/"
+                   (get-in resp [:headers "Location"])))))))))
+
 (deftest redirects-the-literal-stylist-subdomain
   (with-services {}
     (with-handler handler
