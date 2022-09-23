@@ -311,33 +311,33 @@
         (assoc :content content))))
 
 (defn query [data]
-  (let [selections           (get-in data catalog.keypaths/detailed-product-selections)
-        product              (products/current-product data)
-        product-skus         (products/extract-product-skus data product)
-        images-catalog       (get-in data keypaths/v2-images)
-        facets               (facets/by-slug data)
-        selected-sku         (get-in data catalog.keypaths/detailed-product-selected-sku)
-        carousel-images      (find-carousel-images product product-skus images-catalog
+  (let [selections         (get-in data catalog.keypaths/detailed-product-selections)
+        product            (products/current-product data)
+        product-skus       (products/extract-product-skus data product)
+        images-catalog     (get-in data keypaths/v2-images)
+        facets             (facets/by-slug data)
+        selected-sku       (get-in data catalog.keypaths/detailed-product-selected-sku)
+        carousel-images    (find-carousel-images product product-skus images-catalog
                                                  ;;TODO These selection election keys should not be hard coded
                                                  (select-keys selections [:hair/color
                                                                           :hair/base-material])
                                                  selected-sku)
-        length-guide-image   (->> product
+        length-guide-image (->> product
                                 (images/for-skuer images-catalog)
                                 (select {:use-case #{"length-guide"}})
                                 first)
-        product-options      (get-in data catalog.keypaths/detailed-product-options)
-        ugc                  (ugc-query product selected-sku data)
-        sku-price            (or (:product/essential-price selected-sku)
+        product-options    (get-in data catalog.keypaths/detailed-product-options)
+        ugc                (ugc-query product selected-sku data)
+        sku-price          (or (:product/essential-price selected-sku)
                                (:sku/price selected-sku))
-        review-data          (review-component/query data)
-        shop?                (or (= "shop" (get-in data keypaths/store-slug))
+        review-data        (review-component/query data)
+        shop?              (or (= "shop" (get-in data keypaths/store-slug))
                                (= "retail-location" (get-in data keypaths/store-experience)))
-        hair?                (accessors.products/hair? product)
-        faq                  (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
+        hair?              (accessors.products/hair? product)
+        faq                (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
                              (get-in data (conj keypaths/cms-faq pdp-faq-id)))
-        selected-picker      (get-in data catalog.keypaths/detailed-product-selected-picker)
-        remove-free-install? (:remove-free-install (get-in data storefront.keypaths/features))]
+        selected-picker    (get-in data catalog.keypaths/detailed-product-selected-picker)
+        model-image        (first (filter :copy/model-wearing carousel-images))]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
@@ -380,11 +380,14 @@
                                                            :width  "20px"}
                                                     :id   "info-color-circle"}
                                          :sections (keep (partial tab-section< {:product      product
+                                                                                :model-image  model-image
                                                                                 :selected-sku selected-sku})
                                                          [(merge
-                                                           (when (seq (:copy/model-wearing product))
-                                                             {:heading      "Model Wearing"
-                                                              :content-path [:product :copy/model-wearing]})
+                                                           (when (seq (or (:copy/model-wearing model-image)
+                                                                          (:copy/model-wearing product)))
+                                                             {:heading               "Model Wearing"
+                                                              :content-path          [:model-image :copy/model-wearing]
+                                                              :fallback-content-path [:product :copy/model-wearing]})
                                                            (when length-guide-image
                                                              {:link/content "Length Guide"
                                                               :link/target  [events/popup-show-length-guide
