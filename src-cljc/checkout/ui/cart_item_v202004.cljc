@@ -29,9 +29,10 @@
                                 :data-test id} value])]))
 
 (defn cart-item-title-molecule
-  [{:cart-item-title/keys [id primary secondary]}]
+  [{:cart-item-title/keys [id primary secondary target]}]
   (when (and id primary)
-    [:div
+    [:a.inherit-color
+     (apply utils/route-to target)
      [:div.proxima.content-2
       {:data-test id}
       primary]
@@ -39,32 +40,34 @@
 
 (defn cart-item-square-thumbnail-molecule
   [{:cart-item-square-thumbnail/keys
-    [id ucare-id sku-id sticker-label]}]
+    [id ucare-id sku-id sticker-label aria-label target]}]
   (when id
-    (if ucare-id
-      (let [sticker-id (str "line-item-length-" sku-id)]
-        [:div.relative.pt1
-         {:style {:height "45px"
-                  :width  "48px"}}
-         (when sticker-label
-           [:div.absolute.z1.circle.border.border-gray.bg-white.proxima.title-3.flex.items-center.justify-center
-            {:key       sticker-id
-             :data-test sticker-id
-             :style     {:height "26px"
-                         :width  "26px"
-                         :right  "-10px"
-                         :top    "-5px"}}
-            sticker-label])
-         [:div.flex.items-center.justify-center
-          {:style     {:height "45px"
-                       :width  "48px"}
-           :key       (str "cart-item-square-thumbnail-" sku-id)
-           :data-test (str "line-item-img-" sku-id)}
-          (ui/ucare-img {:width "48"
-                         :class "block border border-cool-gray"
-                         :alt   ""}
-                        ucare-id)]])
-      [:div.flex.items-center.justify-center (svg/mayvenn-logo {:width "48px" :height "45px"})])))
+    [:a.inherit-color (merge {:aria-label aria-label}
+               (apply utils/route-to target))
+     (if ucare-id
+       (let [sticker-id (str "line-item-length-" sku-id)]
+         [:div.relative.pt1
+          {:style {:height "45px"
+                   :width  "48px"}}
+          (when sticker-label
+            [:div.absolute.z1.circle.border.border-gray.bg-white.proxima.title-3.flex.items-center.justify-center
+             {:key       sticker-id
+              :data-test sticker-id
+              :style     {:height "26px"
+                          :width  "26px"
+                          :right  "-10px"
+                          :top    "-5px"}}
+             sticker-label])
+          [:div.flex.items-center.justify-center
+           {:style     {:height "45px"
+                        :width  "48px"}
+            :key       (str "cart-item-square-thumbnail-" sku-id)
+            :data-test (str "line-item-img-" sku-id)}
+           (ui/ucare-img {:width "48"
+                          :class "block border border-cool-gray"
+                          :alt   ""}
+                         ucare-id)]])
+       [:div.flex.items-center.justify-center (svg/mayvenn-logo {:width "48px" :height "45px"})])]))
 
 (defn cart-item-service-thumbnail-molecule
   [{:cart-item-service-thumbnail/keys [id image-url]}]

@@ -414,7 +414,7 @@
                              (a-la-carte-services<- items delete-line-item-requests))}))))
 
 (defn physical-items<-
-  [items update-line-item-requests delete-line-item-requests]
+  [items update-line-item-requests delete-line-item-requests products-catalog]
   (for [{:as           item
          :catalog/keys [sku-id]
          :sku/keys     [price]
@@ -426,11 +426,15 @@
         :let
         [qty-adjustment-args {:variant {:id id :sku sku-id}}
          removing?           (get delete-line-item-requests id)
-         updating?           (get update-line-item-requests sku-id)]]
+         updating?           (get update-line-item-requests sku-id)
+         relevant-product    (get products-catalog (-> item :selector/from-products first))]]
     {:react/key                                      (str sku-id "-" quantity)
      :cart-item-title/id                             (str "line-item-title-" sku-id)
      :cart-item-title/primary                        (or cart-title product-name)
      :cart-item-title/secondary                      (ui/sku-card-secondary-text item)
+     :cart-item-title/target                         [events/navigate-product-details {:catalog/product-id (:catalog/product-id relevant-product)
+                                                                                       :page/slug          (:page/slug relevant-product)
+                                                                                       :query-params       {:SKU sku-id}}]
      :cart-item-floating-box/id                      (str "line-item-price-ea-with-label-" sku-id)
      :cart-item-floating-box/contents                (let [price (mf/as-money (or price unit-price))]
                                                        [{:text price :attrs {:data-test (str "line-item-price-ea-" sku-id)}}
@@ -440,6 +444,10 @@
      :cart-item-square-thumbnail/sticker-label       (when-let [length-circle-value (some-> item :hair/length first)]
                                                        (str length-circle-value "”"))
      :cart-item-square-thumbnail/ucare-id            (hacky-cart-image item)
+     :cart-item-square-thumbnail/aria-label          (or cart-title product-name)
+     :cart-item-square-thumbnail/target              [events/navigate-product-details {:catalog/product-id (:catalog/product-id relevant-product)
+                                                                                       :page/slug          (:page/slug relevant-product)
+                                                                                       :query-params       {:SKU sku-id}}]
      :cart-item-adjustable-quantity/id               (str "line-item-quantity-" sku-id)
      :cart-item-adjustable-quantity/spinning?        updating?
      :cart-item-adjustable-quantity/value            quantity
@@ -757,7 +765,8 @@
                              :cta             (cta<- no-items? hair-missing-quantity pending-requests?)
                              :physical-items  (physical-items<- items
                                                                 update-line-item-requests
-                                                                delete-line-item-requests)
+                                                                delete-line-item-requests
+                                                                (get-in app-state keypaths/v2-products))
                              :service-items   (service-items<-
                                                (api.current/stylist app-state)
                                                items
