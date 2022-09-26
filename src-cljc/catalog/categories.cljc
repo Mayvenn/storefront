@@ -612,14 +612,15 @@
           texture-templates)])
 
 (def wigs
-  [(merge {:catalog/category-id           "13"
-           :homepage.ui-v2022-09/order    0
-           :homepage.ui-v2022-09/image-id "5457be03-d25b-41d6-a5e3-ef28b4fda2f5"
-           :footer/order                  7
-           :footer/title                  "Wigs"
-           :desktop-menu/order            0
-           :desktop-menu/title            "Wigs"
-           :header/title                  "Wigs"
+  [(merge {:catalog/category-id              "13"
+           :homepage.ui-v2022-09/order       0
+           :homepage.ui-v2022-09/image-id    "adff9da9-7820-42ad-b978-869b7a2f8548"
+           :homepage.ui-v2022-09/white-text? true
+           :footer/order                     7
+           :footer/title                     "Wigs"
+           :desktop-menu/order               0
+           :desktop-menu/title               "Wigs"
+           :header/title                     "Wigs"
 
            :page/icp?            true
            :category/new?        true

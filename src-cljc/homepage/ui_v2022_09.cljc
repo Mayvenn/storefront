@@ -59,14 +59,17 @@
          (sort-by ::order)
          (mapv
           (fn category->box
-            [{:keys [page/slug copy/title catalog/category-id]
-              ::keys [image-id]}]
-            {:shopping-categories.box/id       slug
-             :shopping-categories.box/target   [e/navigate-category
-                                                {:page/slug           slug
-                                                 :catalog/category-id category-id}]
-             :shopping-categories.box/ucare-id image-id
-             :shopping-categories.box/label    title})))
-    {:shopping-categories.box/id        "need-inspiration"
-     :shopping-categories.box/target    [e/navigate-shop-by-look {:album-keyword :look}]
-     :shopping-categories.box/alt-label ["Need Inspiration?" "Try shop by look."]})})
+            [{:keys  [page/slug copy/title catalog/category-id]
+              ::keys [image-id white-text?]}]
+            (merge {:shopping-categories.box/id          slug
+                    :shopping-categories.box/target      [e/navigate-category
+                                                          {:page/slug           slug
+                                                           :catalog/category-id category-id}]
+                    :shopping-categories.box/ucare-id    image-id
+                    :shopping-categories.box/label       title
+                    :shopping-categories.box/white-text? white-text?}))))
+    {:shopping-categories.box/id          "need-inspiration"
+     :shopping-categories.box/target      [e/navigate-shop-by-look {:album-keyword :look}]
+     :shopping-categories.box/ucare-id    "f3edea56-1e6c-4897-8b83-9581fdf6463a"
+     :shopping-categories.box/alt-label   ["Need Inspiration?" "Try shop by look."]
+     :shopping-categories.box/white-text? true})})
