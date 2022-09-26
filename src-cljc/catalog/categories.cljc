@@ -614,8 +614,7 @@
 (def wigs
   [(merge {:catalog/category-id              "13"
            :homepage.ui-v2022-09/order       0
-           :homepage.ui-v2022-09/image-id    "adff9da9-7820-42ad-b978-869b7a2f8548"
-           :homepage.ui-v2022-09/white-text? true
+           :homepage.ui-v2022-09/image-id    "0dcffd67-bf94-4819-a2ee-a70e6b2c243a"
            :footer/order                     7
            :footer/title                     "Wigs"
            :desktop-menu/order               0
