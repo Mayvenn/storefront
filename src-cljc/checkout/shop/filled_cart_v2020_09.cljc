@@ -432,9 +432,11 @@
      :cart-item-title/id                             (str "line-item-title-" sku-id)
      :cart-item-title/primary                        (or cart-title product-name)
      :cart-item-title/secondary                      (ui/sku-card-secondary-text item)
-     :cart-item-title/target                         [events/navigate-product-details {:catalog/product-id (:catalog/product-id relevant-product)
-                                                                                       :page/slug          (:page/slug relevant-product)
-                                                                                       :query-params       {:SKU sku-id}}]
+     :cart-item-title/target                         (when relevant-product
+                                                       [events/navigate-product-details
+                                                        {:catalog/product-id (:catalog/product-id relevant-product)
+                                                         :page/slug          (:page/slug relevant-product)
+                                                         :query-params       {:SKU sku-id}}])
      :cart-item-floating-box/id                      (str "line-item-price-ea-with-label-" sku-id)
      :cart-item-floating-box/contents                (let [price (mf/as-money (or price unit-price))]
                                                        [{:text price :attrs {:data-test (str "line-item-price-ea-" sku-id)}}

@@ -42,8 +42,10 @@
   [{:cart-item-square-thumbnail/keys
     [id ucare-id sku-id sticker-label aria-label target]}]
   (when id
-    [:a.inherit-color (merge {:aria-label aria-label}
-               (apply utils/route-to target))
+    [:a.inherit-color
+     (merge {:aria-label aria-label}
+            (when target
+              (apply utils/route-to target)))
      (if ucare-id
        (let [sticker-id (str "line-item-length-" sku-id)]
          [:div.relative.pt1
