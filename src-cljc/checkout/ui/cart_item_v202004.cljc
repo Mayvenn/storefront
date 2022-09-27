@@ -32,7 +32,8 @@
   [{:cart-item-title/keys [id primary secondary target]}]
   (when (and id primary)
     [:a.inherit-color
-     (apply utils/route-to target)
+     (when target
+       (apply utils/route-to target))
      [:div.proxima.content-2
       {:data-test id}
       primary]
