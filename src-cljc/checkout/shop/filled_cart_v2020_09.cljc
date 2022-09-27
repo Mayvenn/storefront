@@ -447,9 +447,11 @@
                                                        (str length-circle-value "”"))
      :cart-item-square-thumbnail/ucare-id            (hacky-cart-image item)
      :cart-item-square-thumbnail/aria-label          (or cart-title product-name)
-     :cart-item-square-thumbnail/target              [events/navigate-product-details {:catalog/product-id (:catalog/product-id relevant-product)
-                                                                                       :page/slug          (:page/slug relevant-product)
-                                                                                       :query-params       {:SKU sku-id}}]
+     :cart-item-square-thumbnail/target              (when relevant-product
+                                                       [events/navigate-product-details
+                                                        {:catalog/product-id (:catalog/product-id relevant-product)
+                                                         :page/slug          (:page/slug relevant-product)
+                                                         :query-params       {:SKU sku-id}}])
      :cart-item-adjustable-quantity/id               (str "line-item-quantity-" sku-id)
      :cart-item-adjustable-quantity/spinning?        updating?
      :cart-item-adjustable-quantity/value            quantity
