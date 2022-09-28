@@ -52,7 +52,8 @@
   "Add to Cart organism"
   [data _ _]
   [:div
-   [:div.px3.py1
-    (cta-molecule data)
+   [:div.px3.my1
+    (cta-molecule data)]
+   [:div.px5.my1
     (sub-cta-molecule data)
     (add-to-cart-quadpay-molecule data)]])
