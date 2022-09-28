@@ -563,6 +563,13 @@
    [:svg opts
     ^:inline (svg-xlink "ship-truck")]))
 
+(defn market
+  "A stall in a market"
+  [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "market")]))
+
 (defn symbolic->html
   "Converts a data from query that describes an svg to the appropriate html.
 
@@ -594,5 +601,8 @@
        :svg/whole-star                      ^:inline (whole-star attrs)
        :svg/worry-free                      ^:inline (worry-free attrs)
        :svg/snowflake                       ^:inline (snowflake attrs)
+       :svg/shield                          ^:inline (shield attrs)
+       :svg/ship-truck                      ^:inline (ship-truck attrs)
+       :svg/market                          ^:inline (market attrs)
        [:div])
      [:div])))

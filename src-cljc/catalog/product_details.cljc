@@ -289,11 +289,19 @@
       :cta/label "Add to Bag"
 
       ;; Fork here to use bulk add to cart
-      :cta/target    [events/control-add-sku-to-bag
-                      {:sku      selected-sku
-                       :quantity (get-in app-state keypaths/browse-sku-quantity 1)}]
-      :cta/spinning? (utils/requesting? app-state (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-      :cta/disabled? (not (:inventory/in-stock? selected-sku))}
+      :cta/target                [events/control-add-sku-to-bag
+                                  {:sku      selected-sku
+                                   :quantity (get-in app-state keypaths/browse-sku-quantity 1)}]
+      :cta/spinning?             (utils/requesting? app-state (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+      :cta/disabled?             (not (:inventory/in-stock? selected-sku))
+      :sub-cta/promises          [{:icon :svg/shield
+                                   :copy "30 day guarantee"}
+                                  {:icon :svg/ship-truck
+                                   :copy "Free standard shipping"}
+                                  {:icon :svg/market
+                                   :copy "Come visit our Texas locations"}]
+      :sub-cta/learn-more-copy   "Find my store"
+      :sub-cta/learn-more-target [events/navigate-retail-walmart {}]}
      (when (not hide-zip?)
        {:add-to-cart.quadpay/price   sku-price
         :add-to-cart.quadpay/loaded? quadpay-loaded?}))))
