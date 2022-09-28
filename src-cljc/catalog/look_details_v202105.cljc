@@ -226,6 +226,7 @@
                                      ;; TODO make this more tolerable
                                      {:hair/texture (first texture)
                                       :hair/color   (first color)
+                                      :hair/origin  (first origin)
                                       :per-item     (into []
                                                           (comp
                                                            (map #(select-keys % [:hair/origin :hair/family :hair/length :hair/base-material]))
