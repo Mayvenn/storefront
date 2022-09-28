@@ -9,7 +9,7 @@
 (defn ^:private tab-content
   [{:keys [id primary sections active?]}]
   (when (or active? #?(:clj true))  ;; always show for server-side rendered html
-    [:div.my3
+    [:div.bg-cool-gray.p2
      {:key (str id "-tab")}
      [:div primary]
      [:div.flex.flex-wrap.justify-between
@@ -32,24 +32,24 @@
 (c/defcomponent component [{:tabbed-information/keys [tabs id keypath]} owner _]
   (when id
     [:div.mx4
-     [:div.flex.mx-auto.justify-between
-      (for [{:keys [title id icon active?]} tabs]
-        [:a.block.canela.title-3.col-4.border-bottom.flex.flex-column.justify-end.pt3
+     (for [{:keys [title id icon active?] :as tab} tabs]
+       [:div
+        [:a.flex.justify-between.shout.proxima.title-3.inherit-color.p2.border-bottom.border-cool-gray
          ^:attrs (merge
                   (utils/fake-href events/tabbed-information-tab-selected {:tab     id
                                                                            :keypath keypath})
-                  {:class     (if active?
-                                "black border-width-4 border-black"
-                                "dark-dark-gray border-width-2 border-cool-gray")
-                   :style     {:padding-bottom (when-not active? "2px")} ; counter the thick border
-                   :key       (str "tab-" (name id))
+                  {:key       (str "tab-" (name id))
                    :data-test (str "tab-" (name id))})
-
-         [:div.flex.justify-center
-          [:svg (assoc (:opts icon) :class (if active? "fill-black" "fill-gray"))
-           ^:inline (svg/svg-xlink (:id icon))]]
-         [:h2.center title]])]
-     (map tab-content tabs)]))
+         [:div title]
+         [:div
+          ^:inline
+          (when (not active?)
+            (svg/dropdown-arrow {:class  (str "ml1 "
+                                              #_(when active? "rotate-180"))
+                                 :height "1em"
+                                 :width  "1em"
+                                 :data-test "toggle-cash-balance"}))]]
+        (tab-content tab)])]))
 
 (defmethod transitions/transition-state events/tabbed-information-tab-selected [_ _ {:keys [tab keypath]} app-state]
   (let [selected-tab (get-in app-state keypath)]
