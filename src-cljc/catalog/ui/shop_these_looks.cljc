@@ -20,8 +20,7 @@
     {:style {:max-width   "170px"
              :grid-row    "2 / 3"
              :grid-column "1 / 2"}}
-    (ui/button-medium-secondary (utils/route-to target args)
-                                copy)]])
+    [:div.btn-medium.btn-outline.button-font-1.shout copy]]])
 
 (c/defcomponent organism
   [{:shop-these-looks/keys [row-1 row-2]} _ _]
