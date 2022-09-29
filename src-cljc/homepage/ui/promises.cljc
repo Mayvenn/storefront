@@ -3,22 +3,27 @@
             [storefront.components.svg :as svg]))
 
 (def icons-with-copy
-  [{:icon svg/hand-heart
+  [{:id   "hand-heart"
+    :icon svg/hand-heart
     :text "Top-Notch Service"}
-   {:icon svg/shield
+   {:id   "shield"
+    :icon svg/shield
     :text "30 Day Guarantee"}
-   {:icon svg/check-cloud
+   {:id   "check-cloud"
+    :icon svg/check-cloud
     :text "100% Virgin Human Hair"}
-   {:icon svg/ship-truck
+   {:id   "ship-truck"
+    :icon svg/ship-truck
     :text "Free Standard Shipping"} ])
 
 (c/defcomponent organism
   [data _ _]
   [:div
    [:div.bg-cool-gray.hide-on-tb-dt ; mobile
-    [:div.flex.justify-around.
-     (for [{:keys [icon text]} icons-with-copy]
+    [:div.flex.justify-around
+     (for [{:keys [id icon text]} icons-with-copy]
        [:div.col-3.flex.flex-column.justify-start.items-center.gap-1.p1
+        {:key id}
         (icon {:class "fill-black"
                :width "24px"
                :height "24px"})
@@ -27,8 +32,9 @@
          text]])]]
    [:div.bg-cool-gray.hide-on-mb ; desktop
     [:div.flex.justify-around.py2
-     (for [{:keys [icon text]} icons-with-copy]
+     (for [{:keys [id icon text]} icons-with-copy]
        [:div.flex.items-center.gap-1
+        {:key id}
         (icon {:class "fill-black"
                :width "24px"
                :height "24px"})

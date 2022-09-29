@@ -3,10 +3,11 @@
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]))
 
-(defn entry [src copy target args highlight?]
+(defn entry [ix src copy target args highlight?]
   [:a.grid.shop-these-looks-entry
    (merge (utils/route-to target args)
-          {:style {:grid-template-rows "auto 100px"
+          {:key   ix
+           :style {:grid-template-rows "auto 100px"
                    :justify-items      "center"
                    :align-items        "center"}
            :class (str "shop-these-looks-" (if highlight? "highlight" "lowlight"))})
@@ -28,16 +29,20 @@
    [:h2.title-1.canela.center.mb4 "Fresh Looks for Fall"]
    [:div.shop-these-looks.flex.gap-2
     [:div.shop-these-looks-spacer]
-    (for [e row-1]
-      (entry (:shop-these-looks.entry.img/src e)
-             (:shop-these-looks.entry.cta/copy e)
-             (:shop-these-looks.entry.cta/target e)
-             (:shop-these-looks.entry.cta/args e)
-             true))
-    (for [e row-2]
-      (entry (:shop-these-looks.entry.img/src e)
-             (:shop-these-looks.entry.cta/copy e)
-             (:shop-these-looks.entry.cta/target e)
-             (:shop-these-looks.entry.cta/args e)
-             false))
+    (map-indexed (fn [ix e]
+                   (entry ix
+                          (:shop-these-looks.entry.img/src e)
+                          (:shop-these-looks.entry.cta/copy e)
+                          (:shop-these-looks.entry.cta/target e)
+                          (:shop-these-looks.entry.cta/args e)
+                          true))
+                 row-1)
+    (map-indexed (fn [ix e]
+                   (entry ix
+                          (:shop-these-looks.entry.img/src e)
+                          (:shop-these-looks.entry.cta/copy e)
+                          (:shop-these-looks.entry.cta/target e)
+                          (:shop-these-looks.entry.cta/args e)
+                          false))
+                 row-2)
     [:div.shop-these-looks-spacer]]])
