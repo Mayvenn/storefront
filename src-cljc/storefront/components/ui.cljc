@@ -106,34 +106,32 @@
     :as   opts}
    content]
   (component/html
-   (let [shref   (str href)
-         attrs   (cond-> opts
-                   :always                                                   (dissoc :spinning? :disabled? :disabled-class :navigation-message :submit-button?)
-                   navigation-message                                        (merge (apply utils/route-to navigation-message))
-                   (and (string/starts-with? shref "#") (> (count shref) 1)) (merge (utils/scroll-href (subs href 1)))
-                   (or disabled? spinning?)                                  (assoc :on-click utils/noop-callback)
-                   disabled?                                                 (assoc :data-test-disabled "yes")
-                   spinning?                                                 (assoc :data-test-spinning "yes")
-                   :always                                                   (update :class str " " additional-classes)
-                   disabled?                                                 (update :class str " btn-gray cursor-not-allowed" (or disabled-class "is-disabled")))
-         content (cond
-                   spinning?
-                   [spinner]
-                   (and disabled?
-                        disabled-content)
-                   disabled-content
-                   :else content)]
-     (if (= type "submit") ; form submit buttons should not be links for a11y
-       [:button (merge {:href "#"} attrs)
-        ;; FIXME: the button helper functions with & content force us to do this for consistency
-        (if (seq? content)
-          (into [:span] content)
-          content)]
-       [:a (merge (if disabled? {:aria-disabled true :role "link" :disabled true} {:href "#"}) attrs) ; a11y: when disabled, links have aria-disabled true
-        ;; FIXME: the button helper functions with & content force us to do this for consistency
-        (if (seq? content)
-          (into [:span] content)
-          content)]))))
+   (let [shref          (str href)
+         submit-button? (= type "submit")
+         attrs          (cond-> opts
+                          :always                    (dissoc :spinning? :disabled? :disabled-class :disabled-content :navigation-message :submit-button?)
+                          navigation-message         (merge (apply utils/route-to navigation-message))
+                          (and (string/starts-with? shref "#")
+                               (> (count shref) 1))  (merge (utils/scroll-href (subs href 1)))
+                          (or disabled? spinning?)   (assoc :on-click utils/noop-callback)
+                          disabled?                  (assoc :data-test-disabled "yes")
+                          spinning?                  (assoc :data-test-spinning "yes")
+                          disabled?                  (update :class str " btn-gray cursor-not-allowed" (or disabled-class " is-disabled"))
+                          ;; a11y: when disabled, links have aria-disabled true
+                          (and disabled?
+                               (not submit-button?)) (assoc :aria-disabled true
+                                                            :role "link"
+                                                            :disabled true)
+                          :always                    (update :class str " " additional-classes))
+         content        (cond spinning?              [spinner]
+                              (and disabled?
+                                   disabled-content) disabled-content
+                              :else                  content)]
+     [(if submit-button? :button :a)
+      attrs
+      ;; FIXME: the button helper functions with & content force us to do this for consistency
+      (cond->> content
+        (seq? content) (into [:span]))])))
 
 (def ^:private button-large-primary-classes "btn-large btn-p-color button-font-1 shout")
 (def ^:private disabled-button-large-primary-classes "btn-large btn-gray button-font-1 shout")
