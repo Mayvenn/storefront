@@ -1,7 +1,6 @@
 (ns catalog.core
   (:require catalog.category
             catalog.product-details
-            catalog.product-details.multiple-lengths
 
             ;; Looks
             catalog.looks

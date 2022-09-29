@@ -512,6 +512,4 @@
      :product-sold-out-style sold-out-style
      :sku-quantity           (get-in data keypaths/browse-sku-quantity 1)
      :navigation-event       events/navigate-product-details
-     :length-guide-image     length-guide-image
-     :multiple-lengths-pdp?  (and (-> current-product :hair/family first (= "bundles"))
-                                      (experiments/multiple-lengths-pdp? data))}))
+     :length-guide-image     length-guide-image}))

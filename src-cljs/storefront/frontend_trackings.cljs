@@ -124,18 +124,7 @@
 
 (defmethod perform-track events/control-product-detail-picker-option-select
   [_ event {:keys [selection value] :as options} app-state]
-  (if (and (-> (products/current-product app-state)
-               :hair/family
-               first
-               (= "bundles"))
-           (experiments/multiple-lengths-pdp? app-state))
-    (stringer/track-event "look_facet-changed"
-                          (merge {:selected-color value
-                                  :facet-selected selection}
-                               (->data-event-format
-                                  (get-in app-state catalog.keypaths/detailed-product-multiple-lengths-selections)
-                                  (get-in app-state catalog.keypaths/detailed-product-availability))))
-    (track-select-bundle-option selection value)))
+  (track-select-bundle-option selection value))
 
 (defmethod perform-track events/api-success-suggested-add-to-bag [_ event {:keys [order sku-id->quantity initial-sku]} app-state]
   (let [line-item-skuers (sku-id->quantity-to-line-item-skuer (get-in app-state keypaths/v2-skus) sku-id->quantity)

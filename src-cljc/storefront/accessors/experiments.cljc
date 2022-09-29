@@ -117,10 +117,6 @@
   [data]
   (display-feature? data "top-stylist-v2"))
 
-(defn multiple-lengths-pdp?
-  [data]
-  (display-feature? data "multiple-lengths-pdp"))
-
 (defn instagram-stylist-profile?
   [data]
   (display-feature? data "instagram-stylist-profile"))

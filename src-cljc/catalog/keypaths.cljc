@@ -14,7 +14,6 @@
 (def detailed-product-selected-sku-id (conj detailed-product-selected-sku :catalog/sku-id))
 (def detailed-product-selected-picker (conj detailed-product :selected-picker))
 (def detailed-product-picker-visible? (conj detailed-product :picker-visible?))
-(def detailed-product-multiple-lengths-selections (conj detailed-product :multiple-lengths-selections))
 (def detailed-product-availability (conj detailed-product :availability))
 
 ;; TODO: re-address

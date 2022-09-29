@@ -47,9 +47,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
             [storefront.platform.reviews :as review-component]
-            [catalog.product-details.multiple-lengths :as multiple-lengths]
             [storefront.request-keys :as request-keys]
-            [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
             storefront.ugc
             [spice.core :as spice]))
@@ -474,15 +472,10 @@
 
 (defn ^:export built-component
   [state opts]
-  (if (and (-> (products/current-product state) :hair/family first (= "bundles"))
-           (experiments/multiple-lengths-pdp? state))
-    (component/build multiple-lengths/component (merge (multiple-lengths/query state)
-                                                       {:add-to-cart (multiple-lengths/add-to-cart-query state)})
-                     opts)
-    (component/build component
-                     (merge (query state)
-                            {:add-to-cart (add-to-cart-query state)})
-                     opts)))
+  (component/build component
+                   (merge (query state)
+                          {:add-to-cart (add-to-cart-query state)})
+                   opts))
 
 (defn url-points-to-invalid-sku? [selected-sku query-params]
   (boolean
@@ -551,21 +544,13 @@
                                            {selection #{value}})
                                          (determine-sku-from-selections app-state))
         options                     (generate-product-options (get-in app-state catalog.keypaths/detailed-product-id)
-                                                              app-state)
-        new-multiple-lengths        (when (and (-> (products/current-product app-state) :hair/family first (= "bundles"))
-                                               (experiments/multiple-lengths-pdp? app-state))
-                                      (mapv (fn[length-selection]
-                                              (if (and (= selection :hair/color) (not-empty length-selection))
-                                                (merge length-selection {:hair/color value})
-                                                length-selection))
-                                            (get-in app-state catalog.keypaths/detailed-product-multiple-lengths-selections)))]
+                                                              app-state)]
     (-> app-state
         (assoc-in catalog.keypaths/detailed-product-picker-visible? false)
         (assoc-in catalog.keypaths/detailed-product-selected-sku selected-sku)
         (update-in catalog.keypaths/detailed-product-selections merge (if switching-to-short-hd-lace?
                                                                         {selection value :hair/length "16"}
                                                                         {selection value}))
-        (assoc-in catalog.keypaths/detailed-product-multiple-lengths-selections new-multiple-lengths)
         (assoc-in catalog.keypaths/detailed-product-options options))))
 
 (defmethod effects/perform-effects events/control-product-detail-picker-option-select
@@ -658,8 +643,6 @@
         (assoc-in catalog.keypaths/detailed-product-selected-picker nil)
         (assoc-in catalog.keypaths/detailed-product-picker-visible? nil)
         (assoc-in catalog.keypaths/detailed-product-availability availability)
-        (assoc-in catalog.keypaths/detailed-product-multiple-lengths-selections [{:hair/color  (first (:hair/color sku))
-                                                                                  :hair/length (first (:hair/length sku))} {} {}])
         (assoc-selections sku)
         (assoc-in catalog.keypaths/detailed-product-options product-options))))
 
