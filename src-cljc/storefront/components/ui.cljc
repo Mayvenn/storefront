@@ -676,7 +676,7 @@
                                 w          COMMON-DEVICE-WIDTHS
                                 :let       [retina? (< 1 multiplier)
                                             effective-width (if retina? (* 2 w) w)]
-                                :when      (and (or (nil? max-size) (>= (spice.core/spy max-size) (spice.core/spy w)))
+                                :when      (and (or (nil? max-size) (>= max-size w))
                                                 (or (not px?) (>= width w)))]
                             (str (compute-url retina? effective-width) " " effective-width "w"))
                           (string/join ", "))]
