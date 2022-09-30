@@ -117,18 +117,6 @@
   [data]
   (display-feature? data "hide-zip"))
 
-(defn quiz-always-adds-holiday-promo?
-  [data]
-  (display-feature? data "quiz-always-adds-holiday-promo"))
-
-(defn quiz-results-email-send-look?
-  [data]
-  (display-feature? data "quiz-results-email-send-look"))
-
-(defn quiz-results-email-offer-discount?
-  [data]
-  (display-feature? data "quiz-results-email-offer-discount"))
-
 (defn looks-tags?
   ; NOTE: can be done without the experiement: if no tags are tagged on the contentful looks, the filters will not show up
   [data]

@@ -407,8 +407,6 @@
     :as           selected-look}
    undo-history
    email-capture?
-   email-send-look?
-   email-send-discount?
    email
    field-errors
    focus email-keypath]
@@ -447,8 +445,7 @@
                   review-sku                          (first skus)
                   review-product                      (products/find-product-by-sku-id products-db (:catalog/sku-id review-sku))]
               (merge
-               (within :quiz-email {:primary          (cond email-send-look?     "Share your email to get a copy of the result."
-                                                            email-send-discount? "Share your email for $25 off.")
+               (within :quiz-email {:primary          ""
                                     :email-capture?   email-capture?
                                     :focused          focus
                                     :field-errors     field-errors
@@ -456,17 +453,12 @@
                                     :label            "Enter your email"
                                     :submit-target    [e/control-quiz-email-submit {:look-id            look-id
                                                                                     :look-img           img-id
-                                                                                    :sku-ids            (conj sku-ids service-id)
-                                                                                    :offer              (cond email-send-look?     "quiz-result-look"
-                                                                                                              email-send-discount? "$25-off")
-                                                                                    :email-capture-type (cond email-send-look?     "quiz-results-email-send-look"
-                                                                                                              email-send-discount? "quiz-results-email-offer-discount")}]
+                                                                                    :sku-ids            (conj sku-ids service-id)}]
                                     :skip-target      [e/control-quiz-email-skip {:look-id  look-id
                                                                                   :look-img img-id
                                                                                   :sku-ids  (conj sku-ids service-id)}]
                                     :email            email
-                                    :target-primary   (cond email-send-look?     "Send me my results*"
-                                                            email-send-discount? "Send me my discount*")
+                                    :target-primary   ""
                                     :target-secondary "Skip this step"
                                     :target-opts      {:data-test "quiz-email-submit"}})
                (within :image-grid {:gap-px 3})
@@ -804,12 +796,8 @@
                products-db          (get-in state k/v2-products)
                skus-db              (get-in state k/v2-skus)
                images-db            (get-in state k/v2-images)
-               email-send-look?     (experiments/quiz-results-email-send-look? state)
-               email-send-discount? (experiments/quiz-results-email-offer-discount? state)
-               email-capture?       (and (or email-send-look?
-                                              email-send-discount?)
-                                          (not (get-in state email-capture/long-timer-started-keypath))
-                                          (not (::auth/at-all (auth/signed-in state))))
+               email-capture?       (and (not (get-in state email-capture/long-timer-started-keypath))
+                                         (not (::auth/at-all (auth/signed-in state))))
                email                (get-in state email-capture/textfield-keypath)
                field-errors         (get-in state (conj k/field-errors ["email"]))
                email-keypath        email-capture/textfield-keypath
@@ -826,7 +814,7 @@
 
              selected-look
              (c/build summary-template-v2
-                      (summary< products-db skus-db images-db quiz-progression selected-look undo-history email-capture? email-send-look? email-send-discount? email field-errors focus email-keypath))
+                      (summary< products-db skus-db images-db quiz-progression selected-look undo-history email-capture? email field-errors focus email-keypath))
 
              :else
              (c/build suggestions-template-v2
@@ -1043,11 +1031,7 @@
                                                      :look-img look-img
                                                      :offer    offer}
                                            :email   email})
-    (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]})
-    (publish e/flash-later-show-success {:message (case email-capture-type
-                                                    "quiz-results-email-offer-discount" "Your discount will be emailed to you shortly"
-                                                    "quiz-results-email-send-look"      "A copy of your quiz result was sent to your email"
-                                                    nil)})))
+    (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]})))
 
 (defmethod trackings/perform-track e/control-quiz-email-submit
   [_ _ {:keys [sku-ids look-id look-img]} state]

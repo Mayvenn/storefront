@@ -606,8 +606,7 @@
                                     :user-token           (get-in state k/user-token)
                                     :sku-id->quantity     (->> (conj product-sku-ids service-sku-id)
                                                                (map (fn [s] [s 1]))
-                                                               (into {}))
-                                    :promotion-codes      (when (experiments/quiz-always-adds-holiday-promo? state) ["holiday"])}
+                                                               (into {}))}
                                    ;; TODO: more specific handler
                                    (fn [{:keys [order]}]
                                      (messages/handle-message e/biz|looks-suggestions|confirmed

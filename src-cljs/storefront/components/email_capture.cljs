@@ -276,9 +276,7 @@
 
 (defn- hidden-email-modal-for-in-situ-email-capture?
   [state {{:keys [trigger-id]} :email-modal-trigger}]
-  (and (= trigger-id "adv-quiz-email-capture")
-       (or (experiments/quiz-results-email-offer-discount? state)
-           (experiments/quiz-results-email-send-look? state))))
+  (= trigger-id "adv-quiz-email-capture"))
 
 (defn ^:export built-component [state opts]
   (let [long-timer   (get-in state concept/long-timer-started-keypath)
