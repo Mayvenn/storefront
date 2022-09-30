@@ -245,7 +245,7 @@
                                   :variant_ids      (->> line-item-skuers (map :legacy/variant-id) (string/join ","))
                                   :context          {:cart-items cart-items}
                                   :initialized_by   (merge
-                                                     {:type initialized-by} ;; shopping-quiz-result, shop-by-look, shared-cart
+                                                     {:type initialized-by} ;; shop-by-look, shared-cart
                                                      (when initialized-id   ;; look-id, shared-cart-id
                                                        {:id initialized-id}))}))))
 

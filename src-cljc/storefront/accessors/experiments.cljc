@@ -71,14 +71,6 @@
   [data]
   (display-feature? data "promo-link"))
 
-(defn hide-star-distribution?
-  [data]
-  (display-feature? data "hide-star-distribution"))
-
-(defn stylist-blocked?
-  [data]
-  (display-feature? data "stylist-blocked"))
-
 (defn stylist-results-test?
   [data]
   (display-feature? data "stylist-results-test"))
@@ -94,10 +86,6 @@
 (defn just-added-only?
   [data]
   (display-feature? data "just-added-only"))
-
-(defn reinstall-services?
-  [data]
-  (display-feature? data "reinstall-services"))
 
 (defn edit-gallery?
   [data]
@@ -120,10 +108,6 @@
 (defn instagram-stylist-profile?
   [data]
   (display-feature? data "instagram-stylist-profile"))
-
-(defn stylist-profile?
-  [data]
-  (display-feature? data "stylist-profile"))
 
 (defn inventory-count-shipping-halt?
   [data]
