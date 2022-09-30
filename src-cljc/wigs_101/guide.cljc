@@ -17,7 +17,8 @@
      [:div.max-580.mx-auto.p3
       {:key id}
       [:div.mb3 (ui/defer-ucare-img {:class      "block col-12"
-                                     :smart-crop "600x400"}
+                                     :smart-crop "600x400"
+                                     :alt        ""}
                   ucare-id)]
       [:h2.proxima.title-3.shout heading]
       [:div copy]
