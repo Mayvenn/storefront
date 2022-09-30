@@ -435,9 +435,6 @@
                                    {:slide-out-nav-content-item/target  [events/navigate-content-our-hair]
                                     :slide-out-nav-content-item/id      "content-our-hair"
                                     :slide-out-nav-content-item/primary "Our Hair"}
-                                   {:slide-out-nav-content-item/target  [events/navigate-retail-walmart]
-                                    :slide-out-nav-content-item/id      "content-our-locations"
-                                    :slide-out-nav-content-item/primary "Our Locations"}
                                    {:slide-out-nav-content-item/target  [events/navigate-content-about-us]
                                     :slide-out-nav-content-item/id      "content-about-us"
                                     :slide-out-nav-content-item/primary "About Us"}
@@ -475,6 +472,10 @@
                                     :slide-out-nav-menu-item/nested? false
                                     :slide-out-nav-menu-item/id      "menu-shop-by-look"
                                     :slide-out-nav-menu-item/primary "Shop by Look"}
+                                   {:slide-out-nav-menu-item/target  [events/navigate-retail-walmart]
+                                    :slide-out-nav-menu-item/nested? false
+                                    :slide-out-nav-menu-item/id      "menu-visit-us"
+                                    :slide-out-nav-menu-item/primary "Visit Us"}
                                    {:slide-out-nav-menu-item/target  {:href blog-url}
                                     :slide-out-nav-menu-item/nested? false
                                     :slide-out-nav-menu-item/id      "menu-blog"
@@ -501,6 +502,9 @@
                                  [{:header-menu-item/navigation-target [events/navigate-shop-by-look {:album-keyword :look}]
                                    :header-menu-item/id                "desktop-shop-by-look"
                                    :header-menu-item/content           "Shop by Look"}
+                                  {:header-menu-item/navigation-target [events/navigate-retail-walmart]
+                                   :header-menu-item/id                "menu-visit-us"
+                                   :header-menu-item/content           "Visit Us"}
                                   {:header-menu-item/href    blog-url
                                    :header-menu-item/id      "desktop-blog"
                                    :header-menu-item/content "Blog"}])}))
