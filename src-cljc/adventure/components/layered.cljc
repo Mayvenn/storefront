@@ -34,10 +34,12 @@
   [data _ opts]
   [:div.mx-auto.relative {:style {:min-height "300px"}}
    (let [{:keys [opts]} data]
-     (component/build ui.M/hero (merge data
-                                       {:opts (merge opts {:class     "block"
-                                                           :style     {:min-height "300px"}
-                                                           :data-test "hero-link"})})))])
+     (component/build
+      (if (:navigation-message opts) ui.M/hero ui.M/fullsize-image)
+      (merge data
+             {:opts (merge opts {:class     "block"
+                                 :style     {:min-height "300px"}
+                                 :data-test "hero-link"})})))])
 
 (defcomponent free-standard-shipping-bar
   [_ _ _]

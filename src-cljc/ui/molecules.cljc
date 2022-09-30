@@ -86,64 +86,28 @@
     [:img.block.col-12 {:src mob-url
                         :alt alt}]]))
 
-(defcomponent hero
-  [{:keys [opts
-           dsk-uuid
-           mob-uuid
-           dsk-url
-           mob-url
-           file-name
-           alt
-           ucare?
-           off-screen?]
-    :or   {file-name "hero-image"}} _ _]
-  (if (:h1? opts )
-    [:h1
-     (if (:navigation-message opts)
-       [:a (cond-> opts
-             (:navigation-message opts)
-             (-> (merge (apply utils/route-to (:navigation-message opts)))
-                 (dissoc :navigation-message)))
-        (cond
-          off-screen? [:div.col-12]
-          ucare?      (ucare-hero mob-uuid dsk-uuid file-name alt)
-          :else       (image-hero mob-url dsk-url alt))]
-       (cond
-         off-screen? [:div.col-12]
-         ucare?      (ucare-hero mob-uuid dsk-uuid file-name alt)
-         :else       (image-hero mob-url dsk-url alt)))]
-    (if (:navigation-message opts)
-      [:a (cond-> opts
-            (:navigation-message opts)
-            (-> (merge (apply utils/route-to (:navigation-message opts)))
-                (dissoc :navigation-message)))
-       (cond
-         off-screen? [:div.col-12]
-         ucare?      (ucare-hero mob-uuid dsk-uuid file-name alt)
-         :else       (image-hero mob-url dsk-url alt))]
-      (cond
-        off-screen? [:div.col-12]
-        ucare?      (ucare-hero mob-uuid dsk-uuid file-name alt)
-        :else       (image-hero mob-url dsk-url alt)))))
+(defn ^:private hero-block
+  [{:keys [dsk-uuid mob-uuid dsk-url mob-url file-name alt ucare? off-screen?]
+    :or   {file-name "hero-image"}}]
+  (cond
+    off-screen? [:div.col-12]
+    ucare?      (ucare-hero mob-uuid dsk-uuid file-name alt)
+    :else       (image-hero mob-url dsk-url alt)))
 
 (defcomponent fullsize-image
   "The difference between this and the hero is that there is no <a> tag. The <a> tag implies a link away
    for screen readers and there is no link here. This exists for a11y reasons."
-  [{:keys [opts
-           dsk-uuid
-           mob-uuid
-           dsk-url
-           mob-url
-           file-name
-           alt
-           ucare?
-           off-screen?]
-    :or   {file-name "hero-image"}} _ _]
-  [:div
-   (cond
-     off-screen? [:div.col-12]
-     ucare?      (ucare-hero mob-uuid dsk-uuid file-name alt)
-     :else       (image-hero mob-url dsk-url alt))])
+  [data _ _]
+  [:div (hero-block data)])
+
+(defcomponent hero
+  [{:as data
+    :keys [opts]} _ _]
+  [:a (-> opts
+          (merge (apply utils/route-to (:navigation-message opts)))
+          (dissoc :navigation-message :h1?))
+   (cond->> (hero-block data)
+     (:h1? opts) (conj [:h1]))])
 
 (defn field-reveal-molecule
   [{:field-reveal/keys [id label target]}]
