@@ -196,12 +196,17 @@
 
                               :else "p-color")
       :detail/value (mf/as-money-or-free price)
-      :primary/copy    #?(:clj nil
-                          :cljs
-                          (formatters/format-date {:weekday "short"
-                                                   :month   "long"
-                                                   :day     "numeric"}
-                                                  (date/add-delta current-local-time {:days revised-max})))
+
+      :primary/copy (if (and drop-shipping?
+                             (= sku "WAITER-SHIPPING-1")
+                             (date/after? (date/date-time 2022 10 7) (date/now)))
+                      "Wed, October 19"
+                      #?(:clj nil
+                         :cljs
+                         (formatters/format-date {:weekday "short"
+                                                  :month   "long"
+                                                  :day     "numeric"}
+                                                 (date/add-delta current-local-time {:days revised-max}))))
       :secondary/copy  (str (shipping/names-with-time-range sku
                                                             drop-shipping?)
                             " "
