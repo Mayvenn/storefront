@@ -31,7 +31,7 @@
                                                        :blog/heading   "How to Choose the Right Hairstylist"
                                                        :blog/beginning "Looking for a hairstylist that accommodates your hair needs can be a struggle, but it’s not impossible! There are a couple of key steps that go into finding a great stylist like research, recommendations, pricing, and consultations. Here are a few tips that’ll help you find the right stylist for all of your #hairgoals."
                                                        :blog/ucare-id  "70f4e431-6726-4484-b91f-1a2b294aee00"}}
-                                {:shop-these-looks/row-1 [{:shop-these-looks.entry.cta/copy   "Shop Wedding Hair"
+                                {:shop-these-looks/row-1 [{:shop-these-looks.entry.cta/copy   "Wedding Hair"
                                                            :shop-these-looks.entry.cta/target events/navigate-shop-by-look-details
                                                            :shop-these-looks.entry.cta/args   {:album-keyword :look
                                                                                                :look-id       "7e4F9lGZHmTphADJxRFL6a"}
@@ -42,22 +42,22 @@
                                                                                                :page/slug          "brazilian-straight-headband-wig"
                                                                                                :query-params       {:SKU "BNSHBW26"}}
                                                            :shop-these-looks.entry.img/src    "//ucarecdn.com/c0fab4a2-9778-4d78-b375-7fa6cfbdf73a/"}]
-                                 :shop-these-looks/row-2 [{:shop-these-looks.entry.cta/copy   "Shop HD Lace"
+                                 :shop-these-looks/row-2 [{:shop-these-looks.entry.cta/copy   "HD Lace"
                                                            :shop-these-looks.entry.cta/target events/navigate-shop-by-look-details
                                                            :shop-these-looks.entry.cta/args   {:album-keyword :look
                                                                                                :look-id       "1EI2pl3QUYwzJfYYWeuJ1y"}
                                                            :shop-these-looks.entry.img/src    "//ucarecdn.com/8892a95f-a42a-4bbd-9ae2-c2fbfea713b6/"}
-                                                          {:shop-these-looks.entry.cta/copy   "Shop Natural Texture"
+                                                          {:shop-these-looks.entry.cta/copy   "Natural Texture"
                                                            :shop-these-looks.entry.cta/target events/navigate-shop-by-look-details
                                                            :shop-these-looks.entry.cta/args   {:album-keyword :look
                                                                                                :look-id       "HKBdgo45z8HNEDLp2cegk"}
                                                            :shop-these-looks.entry.img/src    "//ucarecdn.com/ab59be43-b931-4c5c-81a5-6ef6b9fa044f/"}
-                                                          {:shop-these-looks.entry.cta/copy   "Shop Blonde Hair"
+                                                          {:shop-these-looks.entry.cta/copy   "Blonde Hair"
                                                            :shop-these-looks.entry.cta/target events/navigate-shop-by-look-details
                                                            :shop-these-looks.entry.cta/args   {:album-keyword :look
                                                                                                :look-id       "3fbgLUetQgvxCPz7Dcg4Yu"}
                                                            :shop-these-looks.entry.img/src    "//ucarecdn.com/7803fa50-b947-4b59-8c91-c88badc74fdc/"}
-                                                          {:shop-these-looks.entry.cta/copy   "Low Maintenance Clip-Ins"
+                                                          {:shop-these-looks.entry.cta/copy   "Versatile Clip-Ins"
                                                            :shop-these-looks.entry.cta/target events/navigate-product-details
                                                            :shop-these-looks.entry.cta/args   {:catalog/product-id "112"
                                                                                                :page/slug          "160g-straight-seamless-clip-ins"
