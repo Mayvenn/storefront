@@ -18,6 +18,7 @@
             api.current
             api.orders
             api.products
+            [catalog.cms-dynamic-content :as cms-dynamic-content]
             [catalog.facets :as facets]
             catalog.keypaths
             [catalog.product-details-ugc :as ugc]
@@ -316,6 +317,18 @@
         (select-keys [:heading :link/content :link/target :link/id])
         (assoc :content content))))
 
+;; TODO: replace the fake product details below with contentful data from the app-state
+(def ^:private fake-contentful-product-details-data
+  [{:content-slot-id "pdp/colorable"
+    :selector        {"hair/color" #{"black"}}
+    :content-value   "Yes - This virgin human hair can be lifted (bleached) and colored with professional products."}
+   {:content-slot-id "pdp/colorable"
+    :selector        {"hair/color" #{"blonde" "blonde-dark-roots" "dark-blonde" "dark-blonde-dark-roots"}}
+    :content-value   "Yes - keep in mind pre-lightened blonde should not be lifted (bleached) any further, but can be colored with deposit-only products or toners."}
+   {:content-slot-id "pdp/colorable"
+    :selector        {"hair/color" #{"#1-jet-black" "#2-chocolate-brown" "#4-caramel-brown" "vibrant-burgundy"}}
+    :content-value   "No - Since this hair has already been professionally processed, we don't recommend any lifting (bleaching) or coloring."}])
+
 (defn query [data]
   (let [selections         (get-in data catalog.keypaths/detailed-product-selections)
         product            (products/current-product data)
@@ -376,7 +389,13 @@
         :price-block/secondary "each"})
 
      (if hair?
-       (let [active-tab-name (get-in data keypaths/product-details-information-tab)]
+       (let [active-tab-name  (get-in data keypaths/product-details-information-tab)
+             description-data {:product         product
+                               :model-image     model-image
+                               :selected-sku    selected-sku
+                               ;; TODO: replace the fake product details below with contentful data from the app-state
+                               :dynamic-content (cms-dynamic-content/derive-product-details fake-contentful-product-details-data
+                                                                                            selected-sku)}]
          #:tabbed-information{:id      "product-description-tabs"
                               :keypath keypaths/product-details-information-tab
                               :tabs    [{:title    "Hair Info"
@@ -385,9 +404,7 @@
                                          :icon     {:opts {:height "20px"
                                                            :width  "20px"}
                                                     :id   "info-color-circle"}
-                                         :sections (keep (partial tab-section< {:product      product
-                                                                                :model-image  model-image
-                                                                                :selected-sku selected-sku})
+                                         :sections (keep (partial tab-section< description-data)
                                                          [(merge
                                                            (when (seq (or (:copy/model-wearing model-image)
                                                                           (:copy/model-wearing product)))
@@ -432,8 +449,7 @@
                                                            :width  "18px"}
                                                     :id   "description"}
                                          :primary  (:copy/description product)
-                                         :sections (keep (partial tab-section< {:product      product
-                                                                                :selected-sku selected-sku})
+                                         :sections (keep (partial tab-section< description-data)
                                                          [{:heading      "Hair Type"
                                                            :content-path [:product :copy/hair-type]}
                                                           {:heading      "What's Included"
@@ -444,12 +460,11 @@
                                          :icon     {:opts {:height "20px"
                                                            :width  "20px"}
                                                     :id   "heart"}
-                                         :sections (keep (partial tab-section< {:product      product
-                                                                                :selected-sku selected-sku})
+                                         :sections (keep (partial tab-section< description-data)
                                                          [{:heading      "Maintenance Level"
                                                            :content-path [:product :copy/maintenance-level]}
                                                           {:heading      "Can it be Dyed?"
-                                                           :content-path [:product :copy/dyeable?]}])}]})
+                                                           :content-path [:dynamic-content :pdp/colorable]}])}]})
        (let [{:keys [copy/description
                      copy/colors
                      copy/weights
