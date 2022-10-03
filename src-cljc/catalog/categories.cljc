@@ -335,7 +335,7 @@
            :content-block/sections        [{:title "Our Hair"
                                             :body  [{:text "We feature premium quality untreated Virgin Brazilian, Virgin Malaysian, and Virgin Peruvian hair weaves in many lengths and textures, from Straight to Yaki Straight to Wet & Wavy, in lengths including 16”, 18”, 20”, 22” and 24”."}]}
                                            {:title "How to Choose Bundles"
-                                            :body  [{:text "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Dyed Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}]}
+                                            :body  [{:text "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Colored Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}]}
                                            {:title "What to Know About Your Hair"
                                             :body  [{:text "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}]}]
            :catalog/department            #{"hair"}
@@ -371,7 +371,7 @@
            :content-block/sections        [{:title "Our Hair"
                                             :body  [{:text "We feature premium quality untreated Virgin Brazilian, Virgin Malaysian, and Virgin Peruvian hair weaves in many lengths and textures, from Straight to Yaki Straight to Wet & Wavy, in lengths including 16”, 18”, 20”, 22” and 24”."}]}
                                            {:title "How to Choose Bundles"
-                                            :body  [{:text "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Dyed Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}]}
+                                            :body  [{:text "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Colored Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}]}
                                            {:title "What to Know About Your Hair"
                                             :body  [{:text "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}]}]
            :catalog/department            #{"hair"}
@@ -417,7 +417,7 @@
            :content-block/sections        [{:title "Our Hair"
                                             :body  [{:text "We feature premium quality untreated Virgin Brazilian, Virgin Malaysian, and Virgin Peruvian hair weaves in many lengths and textures, from Straight to Yaki Straight to Wet & Wavy, in lengths including 16”, 18”, 20”, 22” and 24”."}]}
                                            {:title "How to Choose Bundles"
-                                            :body  [{:text "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Dyed Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}]}
+                                            :body  [{:text "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Colored Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}]}
                                            {:title "What to Know About Your Hair"
                                             :body  [{:text "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}]}]
            :category/description          (copy "Blending is a breeze with our Kinky Straight"
@@ -454,7 +454,7 @@
            :content-block/sections        [{:title "Our Hair"
                                             :body  [{:text "We feature premium quality untreated Virgin Brazilian, Virgin Malaysian, and Virgin Peruvian hair weaves in many lengths and textures, from Straight to Yaki Straight to Wet & Wavy, in lengths including 16”, 18”, 20”, 22” and 24”."}]}
                                            {:title "How to Choose Bundles"
-                                            :body  [{:text "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Dyed Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}]}
+                                            :body  [{:text "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Colored Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}]}
                                            {:title "What to Know About Your Hair"
                                             :body  [{:text "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}]}]
            :category/description          (copy "Step into the spotlight with our collection of luscious Body Wave hair bundles."
@@ -487,7 +487,7 @@
            :content-block/sections        [{:title "Our Hair"
                                             :body  [{:text "We feature premium quality untreated Virgin Brazilian, Virgin Malaysian, and Virgin Peruvian hair weaves in many lengths and textures, from Straight to Yaki Straight to Wet & Wavy, in lengths including 16”, 18”, 20”, 22” and 24”."}]}
                                            {:title "How to Choose Bundles"
-                                            :body  [{:text "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Dyed Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}]}
+                                            :body  [{:text "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Colored Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}]}
                                            {:title "What to Know About Your Hair"
                                             :body  [{:text "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}]}]
            :category/description          (copy "For hair that holds a curl beautifully,"
@@ -528,7 +528,7 @@
            :content-block/sections        [{:title "Our Hair"
                                             :body  [{:text "We feature premium quality untreated Virgin Brazilian, Virgin Malaysian, and Virgin Peruvian hair weaves in many lengths and textures, from Straight to Yaki Straight to Wet & Wavy, in lengths including 16”, 18”, 20”, 22” and 24”."}]}
                                            {:title "How to Choose Bundles"
-                                            :body  [{:text "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Dyed Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}]}
+                                            :body  [{:text "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Colored Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}]}
                                            {:title "What to Know About Your Hair"
                                             :body  [{:text "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}]}]
            :icon                          "/images/categories/water-wave-icon.svg"
@@ -563,7 +563,7 @@
            :content-block/sections        [{:title "Our Hair"
                                             :body  [{:text "We feature premium quality untreated Virgin Brazilian, Virgin Malaysian, and Virgin Peruvian hair weaves in many lengths and textures, from Straight to Yaki Straight to Wet & Wavy, in lengths including 16”, 18”, 20”, 22” and 24”."}]}
                                            {:title "How to Choose Bundles"
-                                            :body  [{:text "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Dyed Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}]}
+                                            :body  [{:text "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Colored Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}]}
                                            {:title "What to Know About Your Hair"
                                             :body  [{:text "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}]}]
            :icon                          "/images/categories/deep-wave-icon.svg"
@@ -598,7 +598,7 @@
            :content-block/sections        [{:title "Our Hair"
                                             :body  [{:text "We feature premium quality untreated Virgin Brazilian, Virgin Malaysian, and Virgin Peruvian hair weaves in many lengths and textures, from Straight to Yaki Straight to Wet & Wavy, in lengths including 16”, 18”, 20”, 22” and 24”."}]}
                                            {:title "How to Choose Bundles"
-                                            :body  [{:text "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Dyed Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}]}
+                                            :body  [{:text "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Colored Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}]}
                                            {:title "What to Know About Your Hair"
                                             :body  [{:text "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}]}]
            :icon                          "/images/categories/curly-icon.svg"
@@ -673,7 +673,7 @@
                                                   "lifestyle and your budget, the rest will fall "
                                                   "into place. Ask yourself the density, lace color, "
                                                   "length of hair you want, and if you prefer virgin "
-                                                  "hair or dyed hair.")
+                                                  "hair or colored hair.")
            :content-block/sections           [{:title "Cap Size"
                                                :body  [{:text "Cap size ranges between 20-21 inches. If for any reason your wig doesn’t fit, reach out to Customer Service for details to return or exchange your product."}]}
                                               {:title "Density"
@@ -682,8 +682,8 @@
                                                :body  [{:text "For a wig that blends in and looks as natural as possible, you’ll want to choose a lace backing shade that most closely matches your skin tone."}]}
                                               {:title "Length"
                                                :body  [{:text "Short and sassy or drama down to your ankles? The choice is yours! Available in lengths ranging from 10” to 24”."}]}
-                                              {:title "Virgin & Dyed"
-                                               :body  [{:text "If you want to play with color, it helps to choose a wig that can be dyed—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it dyed the color you want."}]}]}
+                                              {:title "Virgin & Colored"
+                                               :body  [{:text "If you want to play with color, it helps to choose a wig that can be colored—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it colored the color you want."}]}]}
           wig-templates)
    (merge {:catalog/category-id "24"
            :category/new?       true
@@ -852,7 +852,7 @@
                                         "lifestyle and your budget, the rest will fall "
                                         "into place. Ask yourself the density, lace color, "
                                         "length of hair you want, and if you prefer virgin "
-                                        "hair or dyed hair.")
+                                        "hair or colored hair.")
            :content-block/sections [{:title "Cap Size"
                                      :body  [{:text "Cap size ranges between 20-21 inches. If for any reason your wig doesn’t fit, reach out to Customer Service for details to return or exchange your product."}]}
                                     {:title "Density"
@@ -861,8 +861,8 @@
                                      :body  [{:text "For a wig that blends in and looks as natural as possible, you’ll want to choose a lace backing shade that most closely matches your skin tone."}]}
                                     {:title "Length"
                                      :body  [{:text "Short and sassy or drama down to your ankles? The choice is yours! Available in lengths ranging from 10” to 24”."}]}
-                                    {:title "Virgin & Dyed"
-                                     :body  [{:text "If you want to play with color, it helps to choose a wig that can be dyed—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it dyed the color you want."}]}]}
+                                    {:title "Virgin & Colored"
+                                     :body  [{:text "If you want to play with color, it helps to choose a wig that can be colored—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it colored the color you want."}]}]}
           wig-templates)
    (merge {:catalog/category-id  "43"
            :header/title         "Standard Lace Wigs"
@@ -900,7 +900,7 @@
                                         "lifestyle and your budget, the rest will fall "
                                         "into place. Ask yourself the density, lace color, "
                                         "length of hair you want, and if you prefer virgin "
-                                        "hair or dyed hair.")
+                                        "hair or colored hair.")
            :content-block/sections [{:title "Cap Size"
                                      :body  [{:text "Cap size ranges between 20-21 inches. If for any reason your wig doesn’t fit, reach out to Customer Service for details to return or exchange your product."}]}
                                     {:title "Density"
@@ -909,8 +909,8 @@
                                      :body  [{:text "For a wig that blends in and looks as natural as possible, you’ll want to choose a lace backing shade that most closely matches your skin tone."}]}
                                     {:title "Length"
                                      :body  [{:text "Short and sassy or drama down to your ankles? The choice is yours! Available in lengths ranging from 10” to 24”."}]}
-                                    {:title "Virgin & Dyed"
-                                     :body  [{:text "If you want to play with color, it helps to choose a wig that can be dyed—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it dyed the color you want."}]}]}
+                                    {:title "Virgin & Colored"
+                                     :body  [{:text "If you want to play with color, it helps to choose a wig that can be colored—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it colored the color you want."}]}]}
           wig-templates)])
 
 (def all-hair-products
@@ -974,7 +974,7 @@
            :content-block/sections [{:title "Our Hair"
                                      :body  [{:text "We feature premium quality untreated Virgin Brazilian, Virgin Malaysian, and Virgin Peruvian hair weaves in many lengths and textures, from Straight to Yaki Straight to Wet & Wavy, in lengths including 16”, 18”, 20”, 22” and 24”."}]}
                                     {:title "How to Choose Bundles"
-                                     :body  [{:text "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Dyed Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}]}
+                                     :body  [{:text "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Colored Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}]}
                                     {:title "What to Know About Your Install"
                                      :body  [{:text "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}]}]}
           bundle-templates)])
@@ -1202,8 +1202,8 @@
                                         :body  [{:text "For a wig that blends in and looks as natural as possible, you’ll want to choose a lace backing shade that most closely matches your skin tone."}]}
                                        {:title "Length"
                                         :body  [{:text "Short and sassy or drama down to your ankles? The choice is yours! Available in lengths ranging from 10” to 24”."}]}
-                                       {:title "Virgin & Dyed"
-                                        :body  [{:text "If you want to play with color, it helps to choose a wig that can be dyed—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it dyed the color you want."}]}]
+                                       {:title "Virgin & Colored"
+                                        :body  [{:text "If you want to play with color, it helps to choose a wig that can be colored—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it colored the color you want."}]}]
     :page/title-template              [:computed/selected-facet-string " Virgin " :seo/title " | Mayvenn"]
     :page.meta/description-template   ["Get the hair of your dreams with our "
                                      :computed/selected-facet-string
