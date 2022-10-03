@@ -463,7 +463,7 @@
                                          :sections (keep (partial tab-section< description-data)
                                                          [{:heading      "Maintenance Level"
                                                            :content-path [:product :copy/maintenance-level]}
-                                                          {:heading      "Can it be Dyed?"
+                                                          {:heading      "Can it be Colored?"
                                                            :content-path [:dynamic-content :pdp/colorable]}])}]})
        (let [{:keys [copy/description
                      copy/colors
