@@ -692,23 +692,6 @@
                             :stay-on-page? false
                             :quantity      quantity}))
 
-(defmethod effects/perform-effects events/control-bulk-add-skus-to-bag
-  [_ _ {:keys [sku-id->quantity]} _ app-state]
-  #?(:cljs
-     (let [nav-event (get-in app-state keypaths/navigation-event)]
-       (api/add-skus-to-bag (get-in app-state keypaths/session-id)
-                            {:stylist-id       (get-in app-state keypaths/store-stylist-id)
-                             :number           (get-in app-state keypaths/order-number)
-                             :token            (get-in app-state keypaths/order-token)
-                             :user-id          (get-in app-state keypaths/user-id)
-                             :user-token       (get-in app-state keypaths/user-token)
-                             :sku-id->quantity sku-id->quantity}
-                            #(do
-                               (messages/handle-message events/api-success-add-multiple-skus-to-bag
-                                                        (select-keys % [:order :sku-id->quantity]))
-                               (when (not (= events/navigate-cart nav-event))
-                                 (history/enqueue-navigate events/navigate-cart)))))))
-
 ;; TODO(corey) Move this to cart
 (defmethod effects/perform-effects events/add-sku-to-bag
   [_ _ {:keys [sku quantity stay-on-page?]} _ state]
