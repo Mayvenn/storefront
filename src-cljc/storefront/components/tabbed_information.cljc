@@ -43,15 +43,15 @@
          [:div title]
          [:div
           ^:inline
-          (when (not active?)
-            (svg/dropdown-arrow {:class  (str "ml1 "
-                                              #_(when active? "rotate-180"))
-                                 :height "1em"
-                                 :width  "1em"
-                                 :data-test "toggle-cash-balance"}))]]
+          (svg/dropdown-arrow {:class  (str "ml1 "
+                                            (when active? "rotate-180"))
+                               :height "1em"
+                               :width  "1em"
+                               :data-test "toggle-cash-balance"})]]
         (tab-content tab)])]))
 
 (defmethod transitions/transition-state events/tabbed-information-tab-selected [_ _ {:keys [tab keypath]} app-state]
   (let [selected-tab (get-in app-state keypath)]
-    (when-not (= tab selected-tab)
+    (if (= tab selected-tab)
+      (assoc-in app-state keypath nil)
       (assoc-in app-state keypath tab))))
