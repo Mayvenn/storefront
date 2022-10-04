@@ -7,6 +7,7 @@
                 [[storefront.components.tabs :as tabs]
                  [storefront.loader :as loader]])
             [storefront.components.ui :as ui]
+            [storefront.events :as e]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :refer [handle-message]]
@@ -16,8 +17,14 @@
             [storefront.components.svg :as svg]
             [storefront.components.picker.picker :as picker]))
 
-(defn- header [name]
-  [:h2.h3.py1.my3.shout.medium.border-bottom [:a {:name (string/lower-case name)} name]])
+(defn- header
+  ([name] (header name nil))
+  ([name id]
+   (let [id (or id
+                (-> name string/lower-case (string/replace #" " "-")))]
+     [:h2.h3.py1.my3.shout.medium.border-bottom
+      {:id        (str "section-" id)}
+      [:a {:name id} name]])))
 
 (defn subheader [& copy]
   (into [:div.shout.medium.gray] copy))
@@ -84,17 +91,17 @@
    [:ul.list-reset.py2.col-8.mx-auto
     [:li [:h2.h5.my1 "Style"]
      [:ul.list-reset.ml1
-      [:li (section-link "Typography" events/navigate-design-system)]
-      [:li (section-link "Color" events/navigate-design-system-color)]]]
+      [:li (section-link "Typography" e/navigate-design-system)]
+      [:li (section-link "Color" e/navigate-design-system-color)]]]
     [:li [:h2.h5.my1 "Layout"]
      [:ul.list-reset.ml1
-      [:li (section-link "Spacing" events/navigate-design-system-spacing)]]]
+      [:li (section-link "Spacing" e/navigate-design-system-spacing)]]]
     [:li [:h2.h5.my1 "Components"]
      [:ul.list-reset.ml1
-      [:li (section-link "Buttons" events/navigate-design-system-buttons)]
-      [:li (section-link "Form Fields" events/navigate-design-system-form-fields)]
-      [:li (section-link "Navigation" events/navigate-design-system-navigation)]
-      [:li (section-link "Carousels" events/navigate-design-system-carousel)]]]]])
+      [:li (section-link "Buttons" e/navigate-design-system-buttons)]
+      [:li (section-link "Form Fields" e/navigate-design-system-form-fields)]
+      [:li (section-link "Navigation" e/navigate-design-system-navigation)]
+      [:li (section-link "Carousels" e/navigate-design-system-carousel)]]]]])
 
 (def lorem "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam euismod justo ut metus blandit commodo. Quisque iaculis odio non sem suscipit porta. Donec id bibendum tellus. Proin eu malesuada massa, mattis vestibulum orci.")
 
@@ -141,12 +148,12 @@
 (declare color-swatch)
 (defn ^:private buttons [data]
   (let [toggle-state (fn [keypath e]
-                       (handle-message events/control-change-state
+                       (handle-message e/control-change-state
                                        {:keypath keypath
                                         :value   (.. e -target -checked)}))
         set-state    (fn [keypath value e]
                        (.preventDefault e)
-                       (handle-message events/control-change-state {:keypath keypath :value value}))
+                       (handle-message e/control-change-state {:keypath keypath :value value}))
         button-attrs (get-in data [:design-system :buttons])]
     [:section
      (header "Buttons")
@@ -596,9 +603,9 @@
                           {:selected-tab (get-in data keypaths/navigation-event)}
                           {:opts {:tab-refs ["one" "two" "three"]
                                   :labels   ["One" "Two" "Three"]
-                                  :tabs     [events/navigate-design-system-navigation-tab1
-                                             events/navigate-design-system-navigation
-                                             events/navigate-design-system-navigation-tab3]}}))]]]])
+                                  :tabs     [e/navigate-design-system-navigation-tab1
+                                             e/navigate-design-system-navigation
+                                             e/navigate-design-system-navigation-tab3]}}))]]]])
 
 (defcomponent ^:private carousel [data _ _]
   [:section
@@ -733,6 +740,7 @@
         [:div.proxima.content-3.p3
          "To use your $126.74 store credit credit, please remove promo code from your bag."]]
     [:section.flex.flex-column
+     (header "Alerts")
      [:div.col-4.my2
       (ui/note-box {:color "red"
                     :data-test "red-alert"}
@@ -746,6 +754,19 @@
                     :data-test "s-color-alert"}
                    content)]]))
 
+(def components
+  [:section
+   (header "Components")
+   [:div "HEYYYYYYYY"]])
+
+(defn menu [menu-items]
+  (into [:div.flex.flex-wrap]
+        #?(:cljs
+           (for [[title section-id] menu-items]
+             (ui/button-medium-primary
+              {:href (str "#section-" section-id)}
+              title)))))
+
 (defcomponent component [data owner opts]
   [:div
    [:div.mx3
@@ -757,27 +778,35 @@
        [:span.hide-on-mb.hide-on-dt "tablet"]
        [:span.hide-on-mb-tb "desktop"]
        " breakpoint")]
-
+     (subheader "Navigation")
+     (menu [["Compression" "compression"]
+            ["Palette" "palette"]
+            ["Typography" "typography"]
+            ["Form Fields" "form-fields"]
+            ["Buttons" "buttons"]
+            ["Alerts" "alerts"]
+            #_["Components" "components"]])
      (compression data)
      colors
      typography
      (form-fields data)
      (buttons data)
      alerts
+     #_     components
 
      #_simple-custom-options
      #_swatch-custom-options
 
      #_(condp = (get-in data keypaths/navigation-event)
-         events/navigate-design-system                 typography
-         events/navigate-design-system-color           colors
-         events/navigate-design-system-buttons         buttons
-         events/navigate-design-system-spacing         spacing
-         events/navigate-design-system-form-fields     (form-fields data)
-         events/navigate-design-system-navigation      (component/build navigation data opts)
-         events/navigate-design-system-navigation-tab1 (component/build navigation data opts)
-         events/navigate-design-system-navigation-tab3 (component/build navigation data opts)
-         events/navigate-design-system-carousel        (component/build carousel data opts))]]])
+         e/navigate-design-system                 typography
+         e/navigate-design-system-color           colors
+         e/navigate-design-system-buttons         buttons
+         e/navigate-design-system-spacing         spacing
+         e/navigate-design-system-form-fields     (form-fields data)
+         e/navigate-design-system-navigation      (component/build navigation data opts)
+         e/navigate-design-system-navigation-tab1 (component/build navigation data opts)
+         e/navigate-design-system-navigation-tab3 (component/build navigation data opts)
+         e/navigate-design-system-carousel        (component/build carousel data opts))]]])
 
 (defn ^:export built-component [data opts]
   (component/build component data opts))
