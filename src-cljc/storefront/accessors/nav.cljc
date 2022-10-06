@@ -66,6 +66,9 @@
 (def ^:private order-complete-events
   #{events/navigate-order-complete})
 
+(def ^:private design-system
+  #{events/navigate-design-system})
+
 (def return-blacklisted?
   (-> auth-events
       (conj events/navigate-not-found)))
@@ -80,12 +83,14 @@
              sharing-store-events
              share-cart-events
              stylist-dashboard-events
-             voucher-events))
+             voucher-events
+             design-system))
 
 (def minimal-header-events
   (set/union cart-events
              checkout-events
-             payout-events))
+             payout-events
+             design-system))
 
 (def gallery-page-events
   #{events/navigate-gallery-edit

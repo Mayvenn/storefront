@@ -69,18 +69,6 @@
 (defpath navigate-content-our-hair)
 
 (defpath navigate-design-system)
-(defpath navigate-design-system-color)
-(defpath navigate-design-system-buttons)
-(defpath navigate-design-system-spacing)
-(defpath navigate-design-system-form-fields)
-(defpath navigate-design-system-navigation)
-(defpath navigate-design-system-navigation-tab1)
-(defpath navigate-design-system-navigation-tab3)
-(defpath navigate-design-system-progress)
-(defpath navigate-design-system-carousel)
-(defpath navigate-design-system-classic)
-(defpath navigate-design-system-adventure)
-(defpath navigate-design-system-ui)
 
 (defpath navigate-order-complete)
 

@@ -1,18 +1,13 @@
 (ns design-system.home
-  (:require [design-system.adventure :as adventure]
-            [design-system.classic :as classic]
-            [design-system.ui :as common]
+  (:require
             [storefront.component :as component :refer [defcomponent]]
             #?@(:cljs
-                [[storefront.components.tabs :as tabs]
-                 [storefront.loader :as loader]])
+                [[storefront.loader :as loader]])
             [storefront.components.ui :as ui]
             [storefront.events :as e]
             [storefront.platform.carousel :as carousel]
-            [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.keypaths :as keypaths]
-            [storefront.events :as events]
             [clojure.string :as string]
             [storefront.components.svg :as svg]
             [storefront.components.picker.picker :as picker]))
@@ -28,9 +23,6 @@
 
 (defn subheader [& copy]
   (into [:div.shout.medium.gray] copy))
-
-(defn- section-link [name navigation-event]
-  [:a.h5 (utils/route-to navigation-event) name])
 
 (defn compression [data]
   (let [{:keys [viewport-width file-width format quality]} (get-in data [:design-system :compression])
@@ -82,26 +74,6 @@
                                        (when (seq format) (str "-/format/" format "/"))
                                        (when (seq quality) (str "-/quality/" quality "/"))
                                        (when (seq file-width) (str "-/resize/" file-width "x/")))}]])]]))
-
-(def ^:private styles-menu
-  [:nav.col.col-2
-   [:div.border-bottom.border-gray.p1
-    [:div.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "35px"}}]
-    [:h1.hide "Mayvenn Styleguide"]]
-   [:ul.list-reset.py2.col-8.mx-auto
-    [:li [:h2.h5.my1 "Style"]
-     [:ul.list-reset.ml1
-      [:li (section-link "Typography" e/navigate-design-system)]
-      [:li (section-link "Color" e/navigate-design-system-color)]]]
-    [:li [:h2.h5.my1 "Layout"]
-     [:ul.list-reset.ml1
-      [:li (section-link "Spacing" e/navigate-design-system-spacing)]]]
-    [:li [:h2.h5.my1 "Components"]
-     [:ul.list-reset.ml1
-      [:li (section-link "Buttons" e/navigate-design-system-buttons)]
-      [:li (section-link "Form Fields" e/navigate-design-system-form-fields)]
-      [:li (section-link "Navigation" e/navigate-design-system-navigation)]
-      [:li (section-link "Carousels" e/navigate-design-system-carousel)]]]]])
 
 (def lorem "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam euismod justo ut metus blandit commodo. Quisque iaculis odio non sem suscipit porta. Donec id bibendum tellus. Proin eu malesuada massa, mattis vestibulum orci.")
 
@@ -592,21 +564,6 @@
    (input-toggles data)
    (radio-buttons data)])
 
-(defcomponent ^:private navigation [data _ _]
-  [:section
-   (header "Navigation")
-   [:div
-    [:div.bg-cool-gray
-     [:div.col-6-on-tb-dt.mx-auto
-      #?(:cljs
-         (component/build tabs/component
-                          {:selected-tab (get-in data keypaths/navigation-event)}
-                          {:opts {:tab-refs ["one" "two" "three"]
-                                  :labels   ["One" "Two" "Three"]
-                                  :tabs     [e/navigate-design-system-navigation-tab1
-                                             e/navigate-design-system-navigation
-                                             e/navigate-design-system-navigation-tab3]}}))]]]])
-
 (defcomponent ^:private carousel [data _ _]
   [:section
    (header "Carousels")
@@ -754,11 +711,6 @@
                     :data-test "s-color-alert"}
                    content)]]))
 
-(def components
-  [:section
-   (header "Components")
-   [:div "HEYYYYYYYY"]])
-
 (defn menu [menu-items]
   (into [:div.flex.flex-wrap]
         #?(:cljs
@@ -778,7 +730,6 @@
        [:span.hide-on-mb.hide-on-dt "tablet"]
        [:span.hide-on-mb-tb "desktop"]
        " breakpoint")]
-     (subheader "Navigation")
      (menu [["Compression" "compression"]
             ["Palette" "palette"]
             ["Typography" "typography"]
@@ -791,22 +742,7 @@
      typography
      (form-fields data)
      (buttons data)
-     alerts
-     #_     components
-
-     #_simple-custom-options
-     #_swatch-custom-options
-
-     #_(condp = (get-in data keypaths/navigation-event)
-         e/navigate-design-system                 typography
-         e/navigate-design-system-color           colors
-         e/navigate-design-system-buttons         buttons
-         e/navigate-design-system-spacing         spacing
-         e/navigate-design-system-form-fields     (form-fields data)
-         e/navigate-design-system-navigation      (component/build navigation data opts)
-         e/navigate-design-system-navigation-tab1 (component/build navigation data opts)
-         e/navigate-design-system-navigation-tab3 (component/build navigation data opts)
-         e/navigate-design-system-carousel        (component/build carousel data opts))]]])
+     alerts]]])
 
 (defn ^:export built-component [data opts]
   (component/build component data opts))

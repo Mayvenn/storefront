@@ -59,19 +59,7 @@
   ["/static" static-page-routes])
 
 (def design-system-routes
-  {"/_style"                 (edn->bidi events/navigate-design-system)
-   "/_style/color"           (edn->bidi events/navigate-design-system-color)
-   "/_style/spacing"         (edn->bidi events/navigate-design-system-spacing)
-   "/_style/buttons"         (edn->bidi events/navigate-design-system-buttons)
-   "/_style/form-fields"     (edn->bidi events/navigate-design-system-form-fields)
-   "/_style/navigation"      (edn->bidi events/navigate-design-system-navigation)
-   "/_style/navigation/tab1" (edn->bidi events/navigate-design-system-navigation-tab1)
-   "/_style/navigation/tab3" (edn->bidi events/navigate-design-system-navigation-tab3)
-   "/_style/progress"        (edn->bidi events/navigate-design-system-progress)
-   "/_style/carousel"        (edn->bidi events/navigate-design-system-carousel)
-   "/_style/classic"         (edn->bidi events/navigate-design-system-classic)
-   "/_style/adventure"       (edn->bidi events/navigate-design-system-adventure)
-   "/_style/ui"              (edn->bidi events/navigate-design-system-ui)})
+  {"/_style"                 (edn->bidi events/navigate-design-system)})
 
 (def stylist-matching-routes
   {"/adv/find-your-stylist"                                      (edn->bidi events/navigate-adventure-find-your-stylist)

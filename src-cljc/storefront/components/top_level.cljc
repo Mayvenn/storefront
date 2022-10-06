@@ -179,8 +179,11 @@
                                                                            :checkout
                                                                            'mayvenn.shopping-quiz.unified-freeinstall/page
                                                                            events/navigate-shopping-quiz-unified-freeinstall-match-success)
+   events/navigate-landing-page                                          (constantly landing-page/built-component)
+   events/navigate-design-system                                         #(ui/lazy-load-component :design-system
+                                                                                                  'design-system.home/built-top-level
+                                                                                                  events/navigate-design-system)})
 
-   events/navigate-landing-page (constantly landing-page/built-component)})
 
 (defn main-component
   [nav-event]
@@ -238,16 +241,6 @@
   (component/html
    (let [nav-event (get-in data keypaths/navigation-event)]
      (cond
-       ;; Design System
-       (routes/sub-page? [nav-event] [events/navigate-design-system])
-       #?(:clj
-          (design-system.home/built-top-level data nil)
-          :cljs
-          ((ui/lazy-load-component :design-system
-                                   'design-system.home/built-top-level
-                                   (get-in data keypaths/navigation-event))
-           data nil))
-
        ;; Slideout nav
        (boolean (get-in data keypaths/menu-expanded))
        (slideout-nav/built-component data nil)
