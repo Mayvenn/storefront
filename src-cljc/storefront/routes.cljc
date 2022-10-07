@@ -59,7 +59,8 @@
   ["/static" static-page-routes])
 
 (def design-system-routes
-  {"/_style"                 (edn->bidi events/navigate-design-system)})
+  {"/_style"      (edn->bidi events/navigate-design-system)
+   "/_components" (edn->bidi events/navigate-design-system-component-library)})
 
 (def stylist-matching-routes
   {"/adv/find-your-stylist"                                      (edn->bidi events/navigate-adventure-find-your-stylist)

@@ -67,7 +67,8 @@
   #{events/navigate-order-complete})
 
 (def ^:private design-system
-  #{events/navigate-design-system})
+  #{events/navigate-design-system
+    events/navigate-design-system-component-library})
 
 (def return-blacklisted?
   (-> auth-events

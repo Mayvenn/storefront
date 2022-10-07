@@ -310,6 +310,8 @@
 ;; Kustomer integration requires to be called and completed after tag insertion
 (def started-kustomer (conj ui :started :kustomer))
 
+(def ui-component-library-user-params (conj ui :component-library :user-params))
+
 (def loaded-muuri (conj loaded :muuri))
 (def initialize-muuri (conj loaded :initialize-muuri))
 

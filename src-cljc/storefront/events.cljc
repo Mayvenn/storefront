@@ -69,6 +69,7 @@
 (defpath navigate-content-our-hair)
 
 (defpath navigate-design-system)
+(defpath navigate-design-system-component-library)
 
 (defpath navigate-order-complete)
 

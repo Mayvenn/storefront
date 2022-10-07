@@ -182,8 +182,10 @@
    events/navigate-landing-page                                          (constantly landing-page/built-component)
    events/navigate-design-system                                         #(ui/lazy-load-component :design-system
                                                                                                   'design-system.home/built-top-level
-                                                                                                  events/navigate-design-system)})
-
+                                                                                                  events/navigate-design-system)
+   events/navigate-design-system-component-library                       #(ui/lazy-load-component :design-system
+                                                                                                  'design-system.component-library/built-component
+                                                                                                  events/navigate-design-system-component-library)})
 
 (defn main-component
   [nav-event]

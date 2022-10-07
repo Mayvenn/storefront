@@ -248,6 +248,25 @@
                                                :value   (.. e -target -value)})))}
      (dissoc input-attributes :id :type :label :keypath :value))]))
 
+(defn textarea [{:keys [id label keypath value] :as input-attributes}]
+  (component/html
+   [:textarea.container-size
+    ^:attrs
+    (merge
+     {:key         id
+      :label       label
+      :data-test   (str id "-input")
+      :name        id
+      :id          (str id "-input")
+      :value       (or value "")
+      :placeholder label
+      :on-change   #?(:clj (fn [_e] nil)
+                      :cljs (fn [^js/Event e]
+                              (handle-message events/control-change-state
+                                              {:keypath keypath
+                                               :value   (.. e -target -value)})))}
+     (dissoc input-attributes :id :type :label :keypath :value))]))
+
 (defn ^:private plain-text-field
   [label keypath value error? {:keys [type data-test wrapper-class wrapper-style id hint focused large?] :as input-attributes}]
   (component/html
