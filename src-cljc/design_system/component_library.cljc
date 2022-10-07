@@ -16,8 +16,10 @@
 (def components-list
   [{:title          "Accordion"
     :id             "accordion"
-    :default-params {:expanded-indices #{0 1}
-                     :sections         [{:title   "example!"
+    :default-params {:expanded-indices #{1 2}
+                     :sections         [{:title   "To show spacing"
+                                         :content [{:paragraph [{:text "Stuff"}]}]}
+                                        {:title   "example!"
                                          :content [{:paragraph [{:text "Yarr, Content!"}]}]}
                                         {:title   "Also open!"
                                          :content [{:paragraph [{:text "Don’t worry, "}
@@ -26,7 +28,9 @@
                                                                 {:text " isn’t as complicated as it seems. Check out our easy to follow instructions here."}]}
                                                    {:paragraph [{:text "Paragraph 2"}]}]}
                                         {:title   "This one is closed, though"
-                                         :content [{:paragraph [{:text "This is invisible."}]}]}]}
+                                         :content [{:paragraph [{:text "This is invisible."}]}]}
+                                        {:title   "A Fourth"
+                                         :content [{:paragraph [{:text "Stuff"}]}]}]}
     :component      storefront.components.accordion/component}
    {:title          "Minimal Footer"
     :id             "minimal-footer"

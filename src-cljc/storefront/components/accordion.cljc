@@ -12,7 +12,7 @@
 
 (defn content-block [content]
   (map-indexed (fn [i {blocks :paragraph}]
-                 [:p.py2.h6 {:key (str "paragraph-" i)}
+                 [:div.p2.bg-cool-gray {:key (str "paragraph-" i)}
                   (map-indexed (fn [j {:keys [text url]}]
                                  (if url
                                    [:a.p-color {:href url :key (str "text-" j)} text]
@@ -23,11 +23,14 @@
 (defn- section-element
   [expanded? index title content section-click-event]
   (component/html
-   [:div.h5.py1 {:key (str "accordion-" index)}
-    [:a.pointer.col-12.h5.py2.flex.items-center.justify-center.inherit-color
+   [:div.h5.border-bottom.border-cool-gray {:key (str "accordion-" index)}
+    [:a.pointer.col-12.h5.p2.flex.items-center.justify-center.inherit-color
      ^:attrs (merge (utils/fake-href section-click-event {:index index})
                     {:data-test (str "accordion-" index)})
-     [:h3.flex-auto title]
+     [:h3.proxima.shout.title-3.flex-auto
+      (when (not expanded?)
+        {:style {:font-weight 400}})
+      title]
      [:div.px2
       (when expanded?
         {:class "rotate-180"})
@@ -37,7 +40,7 @@
     ^:inline (css-transitions/slide-down
               (when (or expanded? #?(:clj true)) ;; always show for server-side rendered html
                 (component/html
-                 [:div.mr8
+                 [:div
                   (content-block content)])))]))
 
 (defcomponent component [{:keys [expanded-indices sections]} owner {:keys [section-click-event]}]
