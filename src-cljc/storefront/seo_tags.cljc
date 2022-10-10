@@ -328,7 +328,7 @@
 
        events/navigate-content-our-hair
        (merge default-tagmap
-              {:title "Our Hair: Virgin and Dyed Virgin Human Hair | Mayvenn"})
+              {:title "Our Hair: Virgin and Colored Virgin Human Hair | Mayvenn"})
 
        events/navigate-adventure-stylist-profile
        (let [{:stylist/keys [salon] :stylist.address/keys [city state]}
