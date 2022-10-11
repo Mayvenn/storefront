@@ -95,7 +95,7 @@
                  :keypath keypaths/ui-component-library-user-params
                  :value   (with-out-str (clojure.pprint/pprint component-params))})])
 
-(defn built-component
+(defn ^:export built-component
   [data _opts]
   (c/build component {:current-component-id (:id (get-in data keypaths/navigation-query-params))
                       :component-params (-> (get-in data keypaths/ui-component-library-user-params)
