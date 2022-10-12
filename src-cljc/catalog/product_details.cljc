@@ -40,6 +40,7 @@
             [storefront.components.money-formatters :as mf]
             [storefront.components.picker.picker :as picker]
             [storefront.components.tabbed-information :as tabbed-information]
+            [storefront.components.accordion-v2022-10 :as accordion]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -101,7 +102,7 @@
                    {:opts {:settings {:edgePadding 0
                                       :items       1}}}))
 
-(defn get-selected-options [selections options]
+(defn ^:private get-selected-options [selections options]
   (reduce
    (fn [acc selection]
      (assoc acc selection
@@ -121,6 +122,12 @@
      (catalog.M/price-block data)]]
    (catalog.M/yotpo-reviews-summary data)])
 
+(defcomponent info-face [{:keys [copy]} _ _]
+  [:div copy])
+
+(defcomponent info-contents [{:keys [copy]} _ _]
+  [:div copy])
+
 (defcomponent component
   [{:keys [carousel-images
            product
@@ -129,7 +136,8 @@
            picker-data
            ugc
            faq-section
-           add-to-cart] :as data} _ opts]
+           add-to-cart
+           accordion-v2?] :as data} _ opts]
   (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
     (if-not product
@@ -163,7 +171,13 @@
                :else        (component/build add-to-cart/organism add-to-cart))]
             (when (products/stylist-only? product)
               shipping-and-guarantee)
-            (component/build tabbed-information/component data)
+            (if accordion-v2?
+              (component/build accordion/component
+                               (with :product-details-accordion data)
+                               {:opts
+                                {:face-component     info-face
+                                 :contents-component info-contents}})
+              (component/build tabbed-information/component data))
             (component/build catalog.M/non-hair-product-description data opts)
             [:div.hide-on-tb-dt.m3
              [:div.mxn2.mb3 (component/build ugc/component (assoc ugc :id "ugc-mb") opts)]]]))]]
@@ -330,6 +344,18 @@
     :selector        {"hair/color" #{"#1-jet-black" "vibrant-burgundy"}}
     :content-value   "No - Since this hair has already been professionally processed, we don't recommend any lifting (bleaching) or coloring."}])
 
+
+(defn product-details-accordion<-
+  []
+  #:product-details-accordion
+  {:id      "product-details-accordion"
+   :drawers [{:face     {:title "Hair Info"}
+              :contents {:copy "contents-1"}}
+             {:face     {:copy "Description"}
+              :contents {:copy "contents-2"}}
+             {:face     {:copy "Care"}
+              :contents {:copy "contents-3"}}]})
+
 (defn query [data]
   (let [selections         (get-in data catalog.keypaths/detailed-product-selections)
         product            (products/current-product data)
@@ -357,7 +383,8 @@
         faq                (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
                              (get-in data (conj keypaths/cms-faq pdp-faq-id)))
         selected-picker    (get-in data catalog.keypaths/detailed-product-selected-picker)
-        model-image        (first (filter :copy/model-wearing carousel-images))]
+        model-image        (first (filter :copy/model-wearing carousel-images))
+        accordion-v2?      (experiments/accordion-v2? data)]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
@@ -384,107 +411,110 @@
                                                                       :faq/content answer})}))
       :carousel-images                    carousel-images
       :selected-picker                    selected-picker
-      :picker-data                        (picker/query data length-guide-image)}
+      :picker-data                        (picker/query data length-guide-image)
+      :accordion-v2?                      accordion-v2?}
      (when sku-price
        {:price-block/primary   (mf/as-money sku-price)
         :price-block/secondary "each"})
 
-     (if hair?
-       (let [active-tab-name  (get-in data keypaths/product-details-information-tab)
-             description-data {:product         product
-                               :model-image     model-image
-                               :selected-sku    selected-sku
-                               ;; TODO: replace the fake product details below with contentful data from the app-state
-                               :dynamic-content (cms-dynamic-content/derive-product-details fake-contentful-product-details-data
-                                                                                            selected-sku)}]
-         #:tabbed-information{:id      "product-description-tabs"
-                              :keypath keypaths/product-details-information-tab
-                              :tabs    [{:title    "Hair Info"
-                                         :id       :hair-info
-                                         :active?  (= active-tab-name :hair-info)
-                                         :icon     {:opts {:height "20px"
-                                                           :width  "20px"}
-                                                    :id   "info-color-circle"}
-                                         :sections (keep (partial tab-section< description-data)
-                                                         [(merge
-                                                           (when (seq (or (:copy/model-wearing model-image)
-                                                                          (:copy/model-wearing product)))
-                                                             {:heading               "Model Wearing"
-                                                              :content-path          [:model-image :copy/model-wearing]
-                                                              :fallback-content-path [:product :copy/model-wearing]})
-                                                           (when length-guide-image
-                                                             {:link/content "Length Guide"
-                                                              :link/target  [events/popup-show-length-guide
-                                                                             {:length-guide-image length-guide-image
-                                                                              :location           "hair-info-tab"}]
-                                                              :link/id      "hair-info-tab-length-guide"}))
-                                                          {:heading               "Unit Weight"
-                                                           :content-path          [:selected-sku :hair/weight]
-                                                           :fallback-content-path [:product :copy/weights]}
-                                                          {:heading      "Hair Quality"
-                                                           :content-path [:product :copy/quality]}
-                                                          {:heading      "Hair Origin"
-                                                           :content-path [:product :copy/origin]}
-                                                          {:heading      "Hair Weft Type"
-                                                           :content-path [:product :copy/weft-type]}
-                                                          {:heading      "Part Design"
-                                                           :content-path [:product :copy/part-design]}
-                                                          {:heading      "Features"
-                                                           :content-path [:product :copy/features]}
-                                                          {:heading      "Available Materials"
-                                                           :content-path [:product :copy/materials]}
-                                                          {:heading      "Lace Size"
-                                                           :content-path [:product :copy/lace-size]}
-                                                          {:heading      "Silk Size"
-                                                           :content-path [:product :copy/silk-size]}
-                                                          {:heading      "Cap Size"
-                                                           :content-path [:product :copy/cap-size]}
-                                                          {:heading      "Wig Density"
-                                                           :content-path [:product :copy/density]}
-                                                          {:heading      "Tape-in Glue Information"
-                                                           :content-path [:product :copy/tape-in-glue]}])}
-                                        {:title    "Description"
-                                         :id       :description
-                                         :active?  (= active-tab-name :description)
-                                         :icon     {:opts {:height "18px"
-                                                           :width  "18px"}
-                                                    :id   "description"}
-                                         :primary  (:copy/description product)
-                                         :sections (keep (partial tab-section< description-data)
-                                                         [{:heading      "Hair Type"
-                                                           :content-path [:product :copy/hair-type]}
-                                                          {:heading      "What's Included"
-                                                           :content-path [:product :copy/whats-included]}])}
-                                        {:title    "Care"
-                                         :id       :care
-                                         :active?  (= active-tab-name :care)
-                                         :icon     {:opts {:height "20px"
-                                                           :width  "20px"}
-                                                    :id   "heart"}
-                                         :sections (keep (partial tab-section< description-data)
-                                                         [{:heading      "Maintenance Level"
-                                                           :content-path [:product :copy/maintenance-level]}
-                                                          {:heading      "Can it be Colored?"
-                                                           :content-path [:dynamic-content :pdp/colorable]}])}]})
-       (let [{:keys [copy/description
-                     copy/colors
-                     copy/weights
-                     copy/density
-                     copy/materials
-                     copy/whats-included
-                     copy/summary
-                     copy/duration]} product]
-         #:product-description {:duration             duration
-                                :summary              summary
-                                :description          description
-                                :materials            materials
-                                :colors               colors
-                                :density              density
-                                :whats-included       whats-included
-                                :weights              (when-not density
-                                                        weights)
-                                :learn-more-nav-event (when-not (contains? (:stylist-exclusives/family product) "kits")
-                                                        events/navigate-content-our-hair)})))))
+     (if accordion-v2?
+       (product-details-accordion<-)
+       (if hair?
+         (let [active-tab-name  (get-in data keypaths/product-details-information-tab)
+               description-data {:product         product
+                                 :model-image     model-image
+                                 :selected-sku    selected-sku
+                                 ;; TODO: replace the fake product details below with contentful data from the app-state
+                                 :dynamic-content (cms-dynamic-content/derive-product-details fake-contentful-product-details-data
+                                                                                              selected-sku)}]
+           #:tabbed-information{:id      "product-description-tabs"
+                                :keypath keypaths/product-details-information-tab
+                                :tabs    [{:title    "Hair Info"
+                                           :id       :hair-info
+                                           :active?  (= active-tab-name :hair-info)
+                                           :icon     {:opts {:height "20px"
+                                                             :width  "20px"}
+                                                      :id   "info-color-circle"}
+                                           :sections (keep (partial tab-section< description-data)
+                                                           [(merge
+                                                             (when (seq (or (:copy/model-wearing model-image)
+                                                                            (:copy/model-wearing product)))
+                                                               {:heading               "Model Wearing"
+                                                                :content-path          [:model-image :copy/model-wearing]
+                                                                :fallback-content-path [:product :copy/model-wearing]})
+                                                             (when length-guide-image
+                                                               {:link/content "Length Guide"
+                                                                :link/target  [events/popup-show-length-guide
+                                                                               {:length-guide-image length-guide-image
+                                                                                :location           "hair-info-tab"}]
+                                                                :link/id      "hair-info-tab-length-guide"}))
+                                                            {:heading               "Unit Weight"
+                                                             :content-path          [:selected-sku :hair/weight]
+                                                             :fallback-content-path [:product :copy/weights]}
+                                                            {:heading      "Hair Quality"
+                                                             :content-path [:product :copy/quality]}
+                                                            {:heading      "Hair Origin"
+                                                             :content-path [:product :copy/origin]}
+                                                            {:heading      "Hair Weft Type"
+                                                             :content-path [:product :copy/weft-type]}
+                                                            {:heading      "Part Design"
+                                                             :content-path [:product :copy/part-design]}
+                                                            {:heading      "Features"
+                                                             :content-path [:product :copy/features]}
+                                                            {:heading      "Available Materials"
+                                                             :content-path [:product :copy/materials]}
+                                                            {:heading      "Lace Size"
+                                                             :content-path [:product :copy/lace-size]}
+                                                            {:heading      "Silk Size"
+                                                             :content-path [:product :copy/silk-size]}
+                                                            {:heading      "Cap Size"
+                                                             :content-path [:product :copy/cap-size]}
+                                                            {:heading      "Wig Density"
+                                                             :content-path [:product :copy/density]}
+                                                            {:heading      "Tape-in Glue Information"
+                                                             :content-path [:product :copy/tape-in-glue]}])}
+                                          {:title    "Description"
+                                           :id       :description
+                                           :active?  (= active-tab-name :description)
+                                           :icon     {:opts {:height "18px"
+                                                             :width  "18px"}
+                                                      :id   "description"}
+                                           :primary  (:copy/description product)
+                                           :sections (keep (partial tab-section< description-data)
+                                                           [{:heading      "Hair Type"
+                                                             :content-path [:product :copy/hair-type]}
+                                                            {:heading      "What's Included"
+                                                             :content-path [:product :copy/whats-included]}])}
+                                          {:title    "Care"
+                                           :id       :care
+                                           :active?  (= active-tab-name :care)
+                                           :icon     {:opts {:height "20px"
+                                                             :width  "20px"}
+                                                      :id   "heart"}
+                                           :sections (keep (partial tab-section< description-data)
+                                                           [{:heading      "Maintenance Level"
+                                                             :content-path [:product :copy/maintenance-level]}
+                                                            {:heading      "Can it be Colored?"
+                                                             :content-path [:dynamic-content :pdp/colorable]}])}]})
+         (let [{:keys [copy/description
+                       copy/colors
+                       copy/weights
+                       copy/density
+                       copy/materials
+                       copy/whats-included
+                       copy/summary
+                       copy/duration]} product]
+           #:product-description {:duration             duration
+                                  :summary              summary
+                                  :description          description
+                                  :materials            materials
+                                  :colors               colors
+                                  :density              density
+                                  :whats-included       whats-included
+                                  :weights              (when-not density
+                                                          weights)
+                                  :learn-more-nav-event (when-not (contains? (:stylist-exclusives/family product) "kits")
+                                                          events/navigate-content-our-hair)}))))))
 
 (defn ^:export built-component
   [state opts]

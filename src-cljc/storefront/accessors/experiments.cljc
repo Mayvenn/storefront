@@ -121,3 +121,7 @@
   ; NOTE: can be done without the experiement: if no tags are tagged on the contentful looks, the filters will not show up
   [data]
   (display-feature? data "looks-tags"))
+
+(defn accordion-v2?
+  [data]
+  (display-feature? data "accordion-v2"))

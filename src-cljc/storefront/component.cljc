@@ -315,11 +315,12 @@
   ([organism data elems-key]
    (elements organism data elems-key :default))
   ([organism data elems-key variation]
+   (elements organism data elems-key variation nil))
+  ([organism data elems-key variation opts]
    (let [elems (get data elems-key)]
      (for [[idx elem] (map-indexed vector elems)]
        (build organism
               elem
-              (component-id elems-key
-                            variation
-                            (:id elem)
-                            idx))))))
+              (-> elems-key
+                  (component-id variation (:id elem) idx)
+                  (update :opts merge opts)))))))
