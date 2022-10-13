@@ -30,7 +30,7 @@
   [{:keys [yotpo-data-attributes] :as queried-data} owner opts]
   [:div {:key (str "reviews-summary-" (:data-product-id yotpo-data-attributes))}
    [:div
-    [:div.clearfix.flex.justify-start.flex-wrap.my1
+    [:div.clearfix.flex.justify-start.flex-wrap
      [:.yotpo.bottomLine.mr2 yotpo-data-attributes]
      [:.yotpo.QABottomLine yotpo-data-attributes]]]])
 

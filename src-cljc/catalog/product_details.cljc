@@ -116,12 +116,11 @@
   "Displays basic information about a particular product"
   [data _ _]
   [:div.mt3.mx3
-   [:div.flex.items-center.justify-between
-    [:h1.flex-auto
-     (titles/proxima-left (with :title data))]
-    [:div.col-2
-     (catalog.M/price-block data)]]
-   (catalog.M/yotpo-reviews-summary data)
+   [:h1.flex-auto
+    (titles/proxima-left (with :title data))]
+   [:div.flex.justify-between.my2
+    (catalog.M/yotpo-reviews-summary data)
+    [:div.col-2 (catalog.M/price-block data)]]
    #?(:cljs
       (component/build zip/pdp-component data _))])
 
