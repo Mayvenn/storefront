@@ -295,8 +295,7 @@
   [app-state]
   (let [selected-sku    (get-in app-state catalog.keypaths/detailed-product-selected-sku)
         quadpay-loaded? (get-in app-state keypaths/loaded-quadpay)
-        sku-price       (:sku/price selected-sku)
-        hide-zip?       (experiments/hide-zip app-state)]
+        sku-price       (:sku/price selected-sku)]
     (merge
      {:cta/id    "add-to-cart"
       :cta/label "Add to Bag"
@@ -315,9 +314,8 @@
                                    :copy "Come visit our Texas locations"}]
       :sub-cta/learn-more-copy   "Find my store"
       :sub-cta/learn-more-target [events/navigate-retail-walmart {}]}
-     (when (not hide-zip?)
-       {:add-to-cart.quadpay/price   sku-price
-        :add-to-cart.quadpay/loaded? quadpay-loaded?}))))
+     {:add-to-cart.quadpay/price   sku-price
+      :add-to-cart.quadpay/loaded? quadpay-loaded?})))
 
 (defn ^:private tab-section<
   [data

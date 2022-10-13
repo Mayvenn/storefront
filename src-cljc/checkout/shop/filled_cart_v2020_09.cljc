@@ -785,8 +785,7 @@
                                                                                 waiter-order
                                                                                 pending-requests?))
                              :shared-cart                 (shared-cart<- app-state)
-                             :quadpay                     (when-not (experiments/hide-zip app-state)
-                                                            (quadpay<- app-state waiter-order))
+                             :quadpay                     (quadpay<- app-state waiter-order)
                              :paypal                      (paypal<- app-state
                                                                     items
                                                                     pending-requests?)

@@ -739,8 +739,7 @@
                                          [events/navigate-shop-by-look {:album-keyword album-keyword}])
             :return-link/back          back}
 
-           {:quadpay/show?       (and (get-in data keypaths/loaded-quadpay)
-                                      (not (experiments/hide-zip data)))
+           {:quadpay/show?       (get-in data keypaths/loaded-quadpay)
             :quadpay/order-total total
             :quadpay/directive   :just-select}
 

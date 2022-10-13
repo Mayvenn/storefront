@@ -162,9 +162,7 @@
 
       (if (and fully-covered? can-use-store-credit?)
         (store-credit-note data)
-        (if (:payment-method/suppress-zip? data)
-          (credit-card-entry data)
-          (payment-method-selection data)))
+        (payment-method-selection data))
 
       (cta-submit data)]])])
 
@@ -213,8 +211,7 @@
 
      {:payment-method/show-quadpay-component?          (get-in data keypaths/loaded-quadpay)
       :payment-method/selected-stripe-or-store-credit? (some #{:stripe :store-credit} selected-payment-methods)
-      :payment-method/selected-quadpay?                selected-quadpay?
-      :payment-method/suppress-zip?                    (experiments/hide-zip data)}
+      :payment-method/selected-quadpay?                selected-quadpay?}
 
      {:cta/disabled? (or (and (utils/requesting? data request-keys/get-saved-cards)
                               ;; Requesting cards, no existing cards, or not fully covered
