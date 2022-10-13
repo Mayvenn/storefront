@@ -41,7 +41,7 @@
             [storefront.components.money-formatters :as mf]
             [storefront.components.picker.picker :as picker]
             [storefront.components.tabbed-information :as tabbed-information]
-            [storefront.components.accordion-v2022-10 :as accordion]
+            [storefront.components.accordion-v2022-10 :as accordion-neue]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -53,7 +53,8 @@
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
             storefront.ugc
-            [spice.core :as spice]))
+            [spice.core :as spice]
+            [storefront.components.accordion :as accordion]))
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
@@ -124,11 +125,12 @@
    #?(:cljs
       (component/build zip/pdp-component data _))])
 
-(defcomponent info-face [{:keys [copy]} _ _]
+(defcomponent info-face-open [{:keys [copy]} _ _]
+  [:div.bold copy])
+(defcomponent info-face-closed [{:keys [copy]} _ _]
   [:div copy])
-
 (defcomponent info-contents [{:keys [copy]} _ _]
-  [:div copy])
+  [:div.bg-gray copy])
 
 (defcomponent component
   [{:keys [carousel-images
@@ -174,16 +176,20 @@
             (when (products/stylist-only? product)
               shipping-and-guarantee)
             (if accordion-v2?
-              (component/build accordion/component
+              ;; TODO make helper
+              (component/build accordion-neue/component
                                (with :product-details-accordion data)
                                {:opts
-                                {:face-component     info-face
-                                 :contents-component info-contents}})
+                                {:accordion/id                           :product-details-accordion ;; TODO: shouldn't this be in the props?
+                                 :accordion/allow-all-closed?            true
+                                 :accordion/allow-multi-opened?          true
+                                 :accordion.drawer.open/face-component   info-face-open
+                                 :accordion.drawer.closed/face-component info-face-closed
+                                 :accordion.drawer/contents-component    info-contents}})
               (component/build tabbed-information/component data))
             (component/build catalog.M/non-hair-product-description data opts)
             [:div.hide-on-tb-dt.m3
              [:div.mxn2.mb3 (component/build ugc/component (assoc ugc :id "ugc-mb") opts)]]]))]]
-
        (when (seq reviews)
          [:div.container.col-7-on-tb-dt.px2
           (component/build review-component/reviews-component reviews opts)])
@@ -340,17 +346,32 @@
     :selector        {"hair/color" #{"#1-jet-black" "vibrant-burgundy"}}
     :content-value   "No - Since this hair has already been professionally processed, we don't recommend any lifting (bleaching) or coloring."}])
 
+(defn ^:private drawer [face contents drawer-id]
+  {:drawer-id drawer-id
+   :face      face
+   :contents  contents})
 
 (defn product-details-accordion<-
-  []
+  [{:accordion/keys [id open-drawers]}]
   #:product-details-accordion
-  {:id      "product-details-accordion"
-   :drawers [{:face     {:title "Hair Info"}
-              :contents {:copy "contents-1"}}
-             {:face     {:copy "Description"}
-              :contents {:copy "contents-2"}}
-             {:face     {:copy "Care"}
-              :contents {:copy "contents-3"}}]})
+  {:id           id
+   :open-drawers open-drawers
+   :drawers      [(drawer
+                   {:copy "Hair Info"}
+                   {:copy "contents-1"}
+                   "drawer-1")
+                  (drawer
+                   {:copy "Description"}
+                   {:copy "contents-2"}
+                   "drawer-2")
+                  (drawer
+                   {:copy "Hair Info"}
+                   {:copy "contents-3"}
+                   "drawer-3")
+                  (drawer
+                   {:copy "Care"}
+                   {:copy "contents-4"}
+                   "drawer-4")]})
 
 (defn query [data]
   (let [selections         (get-in data catalog.keypaths/detailed-product-selections)
@@ -380,7 +401,8 @@
                              (get-in data (conj keypaths/cms-faq pdp-faq-id)))
         selected-picker    (get-in data catalog.keypaths/detailed-product-selected-picker)
         model-image        (first (filter :copy/model-wearing carousel-images))
-        accordion-v2?      (experiments/accordion-v2? data)]
+        accordion-v2?      (experiments/accordion-v2? data)
+        accordion-neue     (accordion-neue/<- data :product-details-accordion)]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
@@ -416,7 +438,7 @@
         :price-block/secondary "each"})
 
      (if accordion-v2?
-       (product-details-accordion<-)
+       (product-details-accordion<- accordion-neue)
        (if hair?
          (let [active-tab-name  (get-in data keypaths/product-details-information-tab)
                description-data {:product         product
