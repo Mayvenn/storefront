@@ -10,6 +10,7 @@
                        [storefront.history :as history]
                        [storefront.hooks.exception-handler :as exception-handler]
                        [storefront.hooks.facebook-analytics :as facebook-analytics]
+                       [storefront.hooks.quadpay :as zip]
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.hooks.stringer :as stringer]
                        [storefront.hooks.seo :as seo]
@@ -120,7 +121,9 @@
      (titles/proxima-left (with :title data))]
     [:div.col-2
      (catalog.M/price-block data)]]
-   (catalog.M/yotpo-reviews-summary data)])
+   (catalog.M/yotpo-reviews-summary data)
+   #?(:cljs
+      (component/build zip/pdp-component data _))])
 
 (defcomponent info-face [{:keys [copy]} _ _]
   [:div copy])
@@ -293,9 +296,7 @@
 
 (defn add-to-cart-query
   [app-state]
-  (let [selected-sku    (get-in app-state catalog.keypaths/detailed-product-selected-sku)
-        quadpay-loaded? (get-in app-state keypaths/loaded-quadpay)
-        sku-price       (:sku/price selected-sku)]
+  (let [selected-sku    (get-in app-state catalog.keypaths/detailed-product-selected-sku)]
     (merge
      {:cta/id    "add-to-cart"
       :cta/label "Add to Bag"
@@ -313,9 +314,7 @@
                                   {:icon :svg/market
                                    :copy "Come visit our Texas locations"}]
       :sub-cta/learn-more-copy   "Find my store"
-      :sub-cta/learn-more-target [events/navigate-retail-walmart {}]}
-     {:add-to-cart.quadpay/price   sku-price
-      :add-to-cart.quadpay/loaded? quadpay-loaded?})))
+      :sub-cta/learn-more-target [events/navigate-retail-walmart {}]})))
 
 (defn ^:private tab-section<
   [data
@@ -388,6 +387,8 @@
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
       :yotpo-reviews-summary/product-id   (some-> review-data :yotpo-data-attributes :data-product-id)
       :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
+      :zip-payments/sku-price             (:sku/price selected-sku)
+      :zip-payments/loaded?               (get-in data keypaths/loaded-quadpay)
       :title/primary                      (:copy/title product)
       :ugc                                ugc
       :fetching-product?                  (utils/requesting? data (conj request-keys/get-products

@@ -78,3 +78,24 @@
                                        (show-modal))}
           "Learn more."]]
         [:div.hide (component/build widget-component {:full-amount order-total} nil)]]))])
+
+(defcomponent pdp-component [{:zip-payments/keys [loaded? sku-price]} owner opts]
+  (when loaded?
+    (let [qp-logo ^:inline (svg/quadpay-logo)]
+      [:div.content-3
+       (when sku-price
+         [:span.mb2
+          "or 4 interest-free payments of $" [:span {:data-test "zip-payment-amount"}
+                                              (calc-installment-amount sku-price)]
+          " with "
+          qp-logo
+          [:a.quadpay.mx1 {:href       "#"
+                           :data-test  "zip-learn-more"
+                           :aria-label "Learn more about Zip payments."
+                           :on-click   (fn [e]
+                                         (.preventDefault e)
+                                         (show-modal))}
+           (svg/info {:height "14px"
+                      :width  "14px"
+                      :class  "stroke-p-color"})]])
+       [:div.hide (component/build widget-component {:full-amount sku-price} nil)]])))

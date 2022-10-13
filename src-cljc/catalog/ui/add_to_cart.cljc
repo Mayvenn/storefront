@@ -38,16 +38,6 @@
      {:style {:grid-column "2 / 3"}})
     learn-more-copy)])
 
-(defn add-to-cart-quadpay-molecule
-  [{:add-to-cart.quadpay/keys [price loaded?]}]
-  #?(:cljs
-     [:div
-      (component/build quadpay/component
-                       {:quadpay/order-total price
-                        :quadpay/show?       loaded?
-                        :quadpay/directive   :just-select}
-                       nil)]))
-
 (defcomponent organism
   "Add to Cart organism"
   [data _ _]
@@ -55,5 +45,4 @@
    [:div.px3.my1
     (cta-molecule data)]
    [:div.px5.my1
-    (sub-cta-molecule data)
-    (add-to-cart-quadpay-molecule data)]])
+    (sub-cta-molecule data)]])
