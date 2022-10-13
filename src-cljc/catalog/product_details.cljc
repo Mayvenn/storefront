@@ -180,9 +180,8 @@
               (component/build accordion-neue/component
                                (with :product-details-accordion data)
                                {:opts
-                                {:accordion/id                           :product-details-accordion ;; TODO: shouldn't this be in the props?
-                                 :accordion/allow-all-closed?            true
-                                 :accordion/allow-multi-opened?          true
+                                {:accordion/allow-all-closed?            false
+                                 :accordion/allow-multi-opened?          false
                                  :accordion.drawer.open/face-component   info-face-open
                                  :accordion.drawer.closed/face-component info-face-closed
                                  :accordion.drawer/contents-component    info-contents}})
