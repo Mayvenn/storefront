@@ -452,7 +452,7 @@
                              (get-in data (conj keypaths/cms-faq pdp-faq-id)))
         selected-picker    (get-in data catalog.keypaths/detailed-product-selected-picker)
         model-image        (first (filter :copy/model-wearing carousel-images))
-        accordion-v2?      true #_(experiments/accordion-v2? data)
+        accordion-v2?      (experiments/accordion-v2? data)
         accordion-neue     (accordion-neue/<- data :product-details-accordion)]
     (merge
      {:reviews                            review-data
