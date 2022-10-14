@@ -28,7 +28,7 @@
     [:div.border-bottom.border-cool-gray
      (cond
        (not opened?)
-       [:a.block.inherit-color.flex.justify-between
+       [:a.block.inherit-color.flex.justify-between.p2
         ;; Button states: up, down, hidden
         (utils/fake-href accordion--opened
                          {:accordion/id accordion-id
@@ -40,7 +40,7 @@
                                        :width  "16px"})]]
 
        (and opened? closeable?)
-       [:a.block.inherit-color.flex.justify-between
+       [:a.block.inherit-color.flex.justify-between.p2
         ;; Button states: up, down, hidden
         (utils/fake-href accordion--closed
                          {:accordion/id accordion-id
@@ -76,7 +76,7 @@
          opts                           (c/get-opts this)]
      (when (and id (seq drawers))
        (c/html
-        [:div.mx4
+        [:div
          {:key id}
          (c/elements drawer-component props :drawers :default opts)])))))
 

@@ -126,9 +126,9 @@
       (component/build zip/pdp-component data _))])
 
 (defcomponent info-face-open [{:keys [copy]} _ _]
-  [:div.bold copy])
+  [:div.shout.bold.content-3 copy])
 (defcomponent info-face-closed [{:keys [copy]} _ _]
-  [:div copy])
+  [:div.shout.content-3 copy])
 (defcomponent info-contents [{:keys [id primary sections]} _ _]
   [:div.bg-cool-gray.p2
    {:key (str id "-tab")}
