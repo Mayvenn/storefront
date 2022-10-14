@@ -52,15 +52,7 @@
      [:div.proxima.title-2.m2.shout "#MayvennMade"]
      (component/build
       carousel/component
-      {:data   social-cards
-       :slides (map-indexed
-                  (partial carousel-slide
-                           destination-event
-                           product-id
-                           page-slug
-                           sku-id
-                           id)
-                  social-cards)}
+      {:data social-cards}
       (update opts
               :opts
               merge {:settings {:nav         false
@@ -73,7 +65,15 @@
                                 ;; default values apply to the smallest screens, and
                                 ;; 1000 means 1000 and above.
                                 :items       2
-                                :responsive  {1000 {:items 3}}}}))
+                                :responsive  {1000 {:items 3}}}
+                     :slides   (map-indexed
+                                (partial carousel-slide
+                                         destination-event
+                                         product-id
+                                         page-slug
+                                         sku-id
+                                         id)
+                              social-cards)}))
      [:p.center.px6.mb2.mt4.content-2.proxima
       "Want to show up on our homepage? "
       "Tag your best pictures wearing Mayvenn with "]
@@ -88,23 +88,23 @@
      (component/html
       [:div.relative
        (component/build carousel/component
-                        {:data   (:social-cards carousel-data)
-                         :slides (mapv (partial popup-slide (:product-name carousel-data))
-                                       (:social-cards carousel-data))}
+                        {:data (:social-cards carousel-data)}
                         {:opts {:settings {:items       1
                                            :edgePadding 0
                                            :nav         false
                                            :startIndex  (spice/parse-int offset)}
-                                :events   [["indexChanged"
-                                            (fn [info _]
-                                              #?(:cljs
-                                                 (storefront.history/enqueue-redirect
-                                                  nav-event (-> nav-args
-                                                                (update
-                                                                 :query-params
-                                                                 assoc :offset (some-> info
-                                                                                       .-index
-                                                                                       dec))))))]]}})
+                                :slides (mapv (partial popup-slide (:product-name carousel-data))
+                                              (:social-cards carousel-data))
+                                :events [["indexChanged"
+                                          (fn [info _]
+                                            #?(:cljs
+                                               (storefront.history/enqueue-redirect
+                                                nav-event (-> nav-args
+                                                              (update
+                                                               :query-params
+                                                               assoc :offset (some-> info
+                                                                                     .-index
+                                                                                     dec))))))]]}})
        [:div.absolute
         {:style {:top "1.5rem" :right "1.5rem"}}
         (ui/modal-close {:class       "stroke-black fill-gray"
