@@ -16,16 +16,16 @@
 (def accordion--closed [:accordion :closed])
 
 (def default-state
-  #:accordion{:open-drawers        #{}
-              :allow-multi-opened? false
-              :allow-all-closed?   false})
+  #:accordion{:open-drawers      #{}
+              :allow-multi-open? false
+              :allow-all-closed? false})
 
 (c/defcomponent drawer-component
   [{:keys [face contents opened? closeable? drawer-id accordion-id] :as drawer} _  opts]
-  (let [{:accordion.drawer/keys [contents-component]
+  (let [{contents-component    :accordion.drawer/contents-component
          opened-face-component :accordion.drawer.open/face-component
          closed-face-component :accordion.drawer.closed/face-component} opts]
-    [:div
+    [:div.border-bottom.border-cool-gray
      (cond
        (not opened?)
        [:a.block.inherit-color.flex.justify-between
@@ -66,29 +66,19 @@
    (publish accordion--reset
             (-> this
                 c/get-opts
-                (select-keys [:accordion/allow-all-closed? :accordion/allow-multi-opened?])
                 (assoc :accordion/default-drawer-id (-> this c/get-props :drawers first :drawer-id)
-                       :accordion/id                (-> this c/get-props :id)))))
+                       :accordion/id                (-> this c/get-props :id)
+                       :accordion/allow-all-closed? (-> this c/get-props :allow-all-closed?)
+                       :accordion/allow-multi-open? (-> this c/get-props :allow-multi-open?)))))
   (render
    [this]
-   (let [{:keys [id drawers
-                 open-drawers]} (c/get-props this)
-         {:accordion/keys [allow-all-closed?]
-          :as             opts} (c/get-opts this)
-         drawers'               (map (fn [drawer]
-                                       (let [opened? (contains? (set open-drawers) (:drawer-id drawer))]
-                                         (-> drawer
-                                             (assoc :accordion-id id)
-                                             (assoc :opened? opened?)
-                                             (assoc :closeable? (and opened?
-                                                                     (or allow-all-closed?
-                                                                         (< 1 (count open-drawers))))))))
-                                     drawers)]
+   (let [{:keys [id drawers] :as props} (c/get-props this)
+         opts                           (c/get-opts this)]
      (when (and id (seq drawers))
        (c/html
         [:div.mx4
          {:key id}
-         (c/elements drawer-component {:drawers drawers'} :drawers :default opts)])))))
+         (c/elements drawer-component props :drawers :default opts)])))))
 
 (defn <-
   [state id]
@@ -96,8 +86,29 @@
    (get-in state (conj keypaths/accordion id))
    {:accordion/id id}))
 
+(defn ^:private drawer-base-query [drawer-id accordion-id open-drawers allow-all-closed?]
+  (let [opened?   (contains? (set open-drawers) drawer-id)]
+    {:drawer-id    drawer-id
+     :accordion-id accordion-id
+     :opened?      opened?
+     :closeable?   (and opened?
+                        (or allow-all-closed?
+                            (< 1 (count open-drawers))))}))
+
+(defn accordion-query [{:keys [id open-drawers allow-all-closed? allow-multi-open? drawers]}]
+  (within id {:id                id
+              :open-drawers      open-drawers
+              :allow-all-closed? allow-all-closed?
+              :allow-multi-open? allow-multi-open?
+              :drawers           (map (fn [drawer]
+                                          (merge (drawer-base-query (:id drawer)
+                                                                    id
+                                                                    open-drawers
+                                                                    allow-all-closed?)
+                                                 drawer)) drawers)}))
+
 (defmethod transitions/transition-state accordion--reset
-  [_ _ {:accordion/keys [id allow-multi-opened? allow-all-closed? default-drawer-id] :as args} state]
+  [_ _ {:accordion/keys [id default-drawer-id allow-all-closed?] :as args} state]
   (let [{:accordion/keys [open-drawers] :as accordion} (<- state id)
         corrected-open-drawers                         (if (and (not allow-all-closed?) (empty? open-drawers))
                                                          #{default-drawer-id}
@@ -105,19 +116,19 @@
     (assoc-in state (conj keypaths/accordion id)
               (merge default-state
                      (select-keys args [:accordion/allow-all-closed?
-                                        :accordion/allow-multi-opened?])
+                                        :accordion/allow-multi-open?])
                      {:accordion/open-drawers corrected-open-drawers}))))
 
 (defmethod transitions/transition-state accordion--opened
   [_ _ {:accordion/keys [id] :keys [drawer-id]} state]
   (let [accordion (<- state id)]
     (cond-> state
-      (:accordion/allow-multi-opened? accordion)
+      (:accordion/allow-multi-open? accordion)
       (update-in (conj keypaths/accordion id :accordion/open-drawers)
                  (fnil conj #{})
                  drawer-id)
 
-      (not (:accordion/allow-multi-opened? accordion))
+      (not (:accordion/allow-multi-open? accordion))
       (assoc-in (conj keypaths/accordion id :accordion/open-drawers)
                 #{drawer-id}))))
 
