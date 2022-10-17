@@ -569,6 +569,7 @@
       (assoc _ :show-guaranteed-shipping (feature-flags/retrieve-flag ld "show-guaranteed-shipping" :bool true))
       (assoc _ :remove-free-install (feature-flags/retrieve-flag ld "remove-free-install" :bool true))
       (assoc _ :new-homepage-2022-09 (feature-flags/retrieve-flag ld "new-homepage-2022-09" :bool true))
+      (assoc _ :accordion-v2 (feature-flags/retrieve-flag ld "accordion-v2" :bool false))
       (assoc-in-req-state req keypaths/features _)
       (h _))))
 
