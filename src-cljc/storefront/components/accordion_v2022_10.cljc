@@ -53,7 +53,7 @@
                                        :width  "16px"})]]
 
        :else
-       [:div (c/build opened-face-component face)])
+       [:div.p2 (c/build opened-face-component face)])
      [:div
       #?(:cljs
          (when (not opened?)
@@ -76,7 +76,7 @@
          opts                           (c/get-opts this)]
      (when (and id (seq drawers))
        (c/html
-        [:div
+        [:div.mx2-on-mb
          {:key id}
          (c/elements drawer-component props :drawers :default opts)])))))
 
