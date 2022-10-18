@@ -499,13 +499,15 @@
        {:price-block/primary   (mf/as-money sku-price)
         :price-block/secondary "each"})
 
-     (if accordion-v2?
-       (product-details-accordion<- accordion-neue {:product         product
-                                                    :model-image     model-image
-                                                    :selected-sku    selected-sku
-                                                    ;; TODO: replace the fake product details below with contentful data from the app-state
-                                                    :dynamic-content (cms-dynamic-content/derive-product-details fake-contentful-product-details-data
-                                                                                                                 selected-sku)} length-guide-image)
+     (if (and product accordion-v2?)
+       (product-details-accordion<- accordion-neue
+                                    {:product         product
+                                     :model-image     model-image
+                                     :selected-sku    selected-sku
+                                     ;; TODO: replace the fake product details below with contentful data from the app-state
+                                     :dynamic-content (cms-dynamic-content/derive-product-details fake-contentful-product-details-data
+                                                                                                  selected-sku)}
+                                    length-guide-image)
        (if hair?
          (let [active-tab-name  (get-in data keypaths/product-details-information-tab)
                description-data {:product         product
