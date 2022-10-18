@@ -1245,20 +1245,6 @@
                                           "Take advantage of high-quality HD Lace and 4 classic textures.")
     :product-list/title             "Shop All HD Lace Frontals"
     :contentful/faq-id              :category-hd-lace
-    :content-block/type             :about-attributes
-    :content-block/title            "Sample Copy"
-    :content-block/header           "How to Choose"
-    :content-block/summary          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vel ultrices eros. Vivamus vestibulum purus non tristique consectetur. Donec auctor et urna sit amet blandit. In hac habitasse platea dictumst. Vestibulum ac condimentum sapien."
-    :content-block/sections         [{:title "Interesting"
-                                      :body  [{:text "So fine"}]}
-                                     {:title "Cool"
-                                      :body  [{:text "Awesome possum"}]}
-                                     {:title "Lace Color"
-                                      :body  [{:text "For a wig that blends in and looks as natural as possible, you’ll want to choose a lace backing shade that most closely matches your skin tone."}]}
-                                     {:title "Length"
-                                      :body  [{:text "Comes in 14 and 18 inches"}]}
-                                     {:title "Virgin"
-                                      :body  [{:text "This hair can be lightened"}]}]
     :page/title-template            [:computed/selected-facet-string " Virgin " :seo/title " | Mayvenn"]
     :page.meta/description-template ["Get the hair of your dreams with our "
                                      :computed/selected-facet-string
@@ -1291,20 +1277,6 @@
                                           "Take advantage of high-quality HD Lace and 4 classic textures.")
     :product-list/title             "Shop All HD Lace Closures"
     :contentful/faq-id              :category-hd-lace
-    :content-block/type             :about-attributes
-    :content-block/title            "Sample Copy"
-    :content-block/header           "How to Choose"
-    :content-block/summary          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vel ultrices eros. Vivamus vestibulum purus non tristique consectetur. Donec auctor et urna sit amet blandit. In hac habitasse platea dictumst. Vestibulum ac condimentum sapien."
-    :content-block/sections         [{:title "Interesting"
-                                      :body  [{:text "So fine"}]}
-                                     {:title "Cool"
-                                      :body  [{:text "Awesome possum"}]}
-                                     {:title "Lace Color"
-                                      :body  [{:text "For a wig that blends in and looks as natural as possible, you’ll want to choose a lace backing shade that most closely matches your skin tone."}]}
-                                     {:title "Length"
-                                      :body  [{:text "Comes in 14 and 18 inches"}]}
-                                     {:title "Virgin"
-                                      :body  [{:text "This hair can be lightened"}]}]
     :page/title-template            [:computed/selected-facet-string " Virgin " :seo/title " | Mayvenn"]
     :page.meta/description-template ["Get the hair of your dreams with our "
                                      :computed/selected-facet-string
