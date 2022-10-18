@@ -1,63 +1,24 @@
 (ns design-system.component-library
   (:require [storefront.component :as c]
-            [storefront.components.ui :as ui]
-            [storefront.keypaths :as keypaths]
-            storefront.components.accordion
-            storefront.components.footer-minimal
-            storefront.components.flash
-            storefront.components.sign-in
-            storefront.components.video
+            [storefront.keypaths :as k]
+            [storefront.components.accordion-v2022-10 :as accordion]
             [storefront.platform.component-utils :as util]
             [storefront.events :as e]
-            [storefront.transitions :as transitions]
+            [mayvenn.visual.tools :refer [with within]]
             clojure.edn
             clojure.pprint))
 
-(def components-list
-  [{:title          "Accordion"
-    :id             "accordion"
-    :default-params {:expanded-indices #{1 2}
-                     :sections         [{:title   "To show spacing"
-                                         :content [{:paragraph [{:text "Stuff"}]}]}
-                                        {:title   "example!"
-                                         :content [{:paragraph [{:text "Yarr, Content!"}]}]}
-                                        {:title   "Also open!"
-                                         :content [{:paragraph [{:text "Don’t worry, "}
-                                                                {:text "measuring your head for a wig",
-                                                                 :url  "https://shop.mayvenn.com/blog/hair/how-to-measure-head-for-wig-size/"}
-                                                                {:text " isn’t as complicated as it seems. Check out our easy to follow instructions here."}]}
-                                                   {:paragraph [{:text "Paragraph 2"}]}]}
-                                        {:title   "This one is closed, though"
-                                         :content [{:paragraph [{:text "This is invisible."}]}]}
-                                        {:title   "A Fourth"
-                                         :content [{:paragraph [{:text "Stuff"}]}]}]}
-    :component      storefront.components.accordion/component}
-   {:title          "Minimal Footer"
-    :id             "minimal-footer"
-    :default-params {:call-number "510-867-5309"}
-    :component      storefront.components.footer-minimal/component}
-   {:title          "Flash"
-    :id             "flash"
-    :default-params {:success "It worked!"
-                     :failure "It didn't work..."
-                     :errors  {:error-message "Things went horribly wrong."}}
-    :component      storefront.components.flash/component}
-   {:title          "Sign In"
-    :id             "sign-in"
-    :default-params {:email          "acceptance+jasmine@mayvenn.com"
-                     :password       "password"
-                     :show-password? false
-                     :field-errors   {["password"] [{:long-message "Something terrible happened!"}]}}
-    :component      storefront.components.sign-in/component}
-   {:title          "Video"
-    :id             "video"
-    :default-params {:youtube-id "dQw4w9WgXcQ"}
-    :component      storefront.components.video/component}])
 
-(defn ^:private component-id->component [component-id]
-  (->> components-list
-       (filter #(= component-id (:id %)))
-       first))
+(def components-list
+  [{:title           "Accordion"
+    :id              "accordion"
+    :component-class accordion/component
+    :opts            {:accordion.drawer.open/face-component   accordion/simple-face-open
+                      :accordion.drawer.closed/face-component accordion/simple-face-closed
+                      :accordion.drawer/contents-component    accordion/simple-contents}}])
+
+(defn ^:private component-id->component-entry [component-id]
+  (->> components-list (filter #(= component-id (:id %))) first))
 
 (def ^:private checkered-background
   {:background-color    "#ffffff"
@@ -66,7 +27,7 @@
    :background-size     "12px 12px"})
 
 (c/defcomponent component
-  [{:keys [current-component-id component-params]} _owner _opts]
+  [{:keys [current-component-id] :as props} _owner opts]
   [:div.grid
    {:style {:grid-template-columns "150px auto"
             :grid-template-rows    "1fr 1fr"
@@ -83,30 +44,37 @@
              (util/route-to e/navigate-design-system-component-library {:query-params {:id id}})
              title]]) components-list)]
    [:div.p4
-    {:style checkered-background}
+    {:style (merge checkered-background
+                   {:grid-row "1 / 3"})}
     [:div.border-dotted.border-p-color
-     (if component-params
-       (-> current-component-id
-           component-id->component
-           :component
-           (c/build component-params))
-       [:div.error "Invalid user params!"])]]
-   (ui/textarea {:id      "user-param-textarea"
-                 :keypath keypaths/ui-component-library-user-params
-                 :value   (with-out-str (clojure.pprint/pprint component-params))})])
+
+     (when-let [{:keys [title id component-class]} (component-id->component-entry current-component-id)]
+       [:div
+        [:div title " (" id ")"]
+        ;; TODO: don't hard code namespace ("example-accordion")
+        (c/build component-class (with "example-accordion" props) {:opts opts})])]]])
+
+(defn query [app-state]
+  (when-let [component-id (-> app-state (get-in k/navigation-query-params) :id component-id->component-entry :id)]
+    (merge
+     {:current-component-id component-id}
+     (accordion/accordion-query (let [{:accordion/keys [open-drawers]} (accordion/<- app-state "example-accordion")]
+                                  {:id                   "example-accordion"
+                                   :open-drawers         open-drawers
+                                   :allow-all-closed?    false
+                                   :allow-multi-open?    false
+                                   :initial-open-drawers #{"drawer-1"}
+                                   :drawers              [{:id       "drawer-1"
+                                                           :face     {:copy "foo"}
+                                                           :contents {:copy "bar"}}
+                                                          {:id       "drawer-2"
+                                                           :face     {:copy "food"}
+                                                           :contents {:copy "bard"}}]})))))
 
 (defn ^:export built-component
-  [data _opts]
-  (c/build component {:current-component-id (:id (get-in data keypaths/navigation-query-params))
-                      :component-params (-> (get-in data keypaths/ui-component-library-user-params)
-                                       clojure.edn/read-string
-                                       (try (catch #?(:cljs :default :clj Throwable) _ nil)))} nil))
-
-(defmethod transitions/transition-state e/navigate-design-system-component-library
-  [_ event {:keys [query-params]} app-state]
-  (->> query-params
-       :id
-       component-id->component
-       :default-params
-       str
-       (assoc-in app-state keypaths/ui-component-library-user-params)))
+  [app-state _opts]
+  (c/build component (query app-state) {:opts (-> app-state
+                                                  (get-in k/navigation-query-params)
+                                                  :id
+                                                  component-id->component-entry
+                                                  :opts)}))

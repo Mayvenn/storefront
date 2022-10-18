@@ -10,7 +10,7 @@
             [storefront.platform.messages :refer [handle-message] :rename {handle-message publish}]
             [storefront.effects :as effects]))
 
-;; TODO c'mon do this right
+;; TODO move to events.cljc?
 (def accordion--reset [:accordion :reset])
 (def accordion--opened [:accordion :opened])
 (def accordion--closed [:accordion :closed])
@@ -19,6 +19,10 @@
   #:accordion{:open-drawers      #{}
               :allow-multi-open? false
               :allow-all-closed? false})
+
+(c/defcomponent simple-face-open [{:keys [copy]} _ _] [:div.shout.content-3.bold copy])
+(c/defcomponent simple-face-closed [{:keys [copy]} _ _] [:div.shout.content-3 copy])
+(c/defcomponent simple-contents [{:keys [copy]} _ _] [:div.bg-cool-gray.p2 copy])
 
 (c/defcomponent drawer-component
   [{:keys [face contents opened? closeable? drawer-id accordion-id] :as drawer} _  opts]
@@ -63,13 +67,12 @@
 (c/defdynamic-component component
   (did-mount
    [this]
-   (publish accordion--reset
-            (-> this
-                c/get-opts
-                (assoc :accordion/initial-open-drawers (-> this c/get-props :initial-open-drawers)
-                       :accordion/id                   (-> this c/get-props :id)
-                       :accordion/allow-all-closed?    (-> this c/get-props :allow-all-closed?)
-                       :accordion/allow-multi-open?    (-> this c/get-props :allow-multi-open?)))))
+   (let [props (c/get-props this)]
+     (publish accordion--reset
+              {:accordion/initial-open-drawers (:initial-open-drawers props)
+               :accordion/id                   (:id props)
+               :accordion/allow-all-closed?    (:allow-all-closed? props)
+               :accordion/allow-multi-open?    (:allow-multi-open? props)})))
   (render
    [this]
    (let [{:keys [id drawers] :as props} (c/get-props this)
@@ -102,11 +105,11 @@
               :allow-multi-open?    allow-multi-open?
               :initial-open-drawers initial-open-drawers
               :drawers              (map (fn [drawer]
-                                        (merge (drawer-base-query (:id drawer)
-                                                                  id
-                                                                  open-drawers
-                                                                  allow-all-closed?)
-                                               drawer)) drawers)}))
+                                           (merge (drawer-base-query (:id drawer)
+                                                                     id
+                                                                     open-drawers
+                                                                     allow-all-closed?)
+                                                  drawer)) drawers)}))
 
 (defmethod transitions/transition-state accordion--reset
   [_ _ {:accordion/keys [id initial-open-drawers] :as args} state]
