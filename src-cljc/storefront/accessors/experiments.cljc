@@ -124,5 +124,4 @@
 
 (defn bf-2022-sale?
   [data]
-  true #_
   (display-feature? data "bf-2022-sale"))

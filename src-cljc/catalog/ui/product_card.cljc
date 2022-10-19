@@ -92,7 +92,8 @@
                                       (if (= 1 (count product-colors))
                                         [:text (:option/name (first product-colors))]
                                         [:swatches [product-slug product-colors]])
-                                      [:starting-price (:sku/price cheapest-sku)]])
+                                      [:pricing [(:sku/price cheapest-sku) (when (first (:promo.clearance/eligible cheapest-sku))
+                                                                             (* 0.7 (:sku/price cheapest-sku)))]]])
      :card-image/src               (str (:url image) "-/format/auto/" (:filename image))
      :card-image/alt               (:alt image)}))
 
@@ -126,29 +127,33 @@
       (for [[idx [kind item]] (map-indexed vector content)]
         [:div.py1 {:key (str id "-" idx)}
          (case kind
-           :text           (str item)
-           :starting-price [:span.black "Starting at " [:span.content-2.proxima (mf/as-money item)]]
-           :swatches       [:div.flex.col-10.mx-auto.justify-center
-                            {:style {:height "9px"}}
-                            (when seen?
-                              (let [[product-slug options] item]
-                                (for [{option-slug  :option/slug
-                                       option-name  :option/name
-                                       :option/keys [rectangle-swatch]} options]
-                                  [:div.mx1.overflow-hidden
-                                   {:style {:transform "rotate(45deg)"
-                                            :width     "9px"
-                                            :height    "9px"
-                                            :padding   "0"}
-                                    :key   option-slug}
-                                   [:img
-                                    {:key   (str "product-card-details-" product-slug "-" option-slug)
-                                     :style {:transform "rotate(-45deg) translateY(-3px)"
-                                             ;; :margin     "5px 5px"
-                                             :width     "13px"
-                                             :height    "13px"}
-                                     :alt   option-name
-                                     :src   (str "https://ucarecdn.com/" (ui/ucare-img-id rectangle-swatch) "/-/format/auto/-/resize/13x/")}]])))])])])))
+           :text     (str item)
+           :pricing  (let [[price discounted-price] item]
+                       (if discounted-price
+                         [:span.black "Starting at " [:span.strike (mf/as-money price)] " "
+                          [:span.title-1.proxima.red (mf/as-money discounted-price)]]
+                         [:span.black "Starting at " [:span.content-2.proxima (mf/as-money price)]]))
+           :swatches [:div.flex.col-10.mx-auto.justify-center
+                      {:style {:height "9px"}}
+                      (when seen?
+                        (let [[product-slug options] item]
+                          (for [{option-slug  :option/slug
+                                 option-name  :option/name
+                                 :option/keys [rectangle-swatch]} options]
+                            [:div.mx1.overflow-hidden
+                             {:style {:transform "rotate(45deg)"
+                                      :width     "9px"
+                                      :height    "9px"
+                                      :padding   "0"}
+                              :key   option-slug}
+                             [:img
+                              {:key   (str "product-card-details-" product-slug "-" option-slug)
+                               :style {:transform "rotate(-45deg) translateY(-3px)"
+                                       ;; :margin     "5px 5px"
+                                       :width     "13px"
+                                       :height    "13px"}
+                               :alt   option-name
+                               :src   (str "https://ucarecdn.com/" (ui/ucare-img-id rectangle-swatch) "/-/format/auto/-/resize/13x/")}]])))])])])))
 
 (defn organism
   [{:as data react-key :react/key :product-card/keys [target]}]
