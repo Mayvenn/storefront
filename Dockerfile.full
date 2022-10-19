@@ -33,7 +33,7 @@ RUN zip -r -g target/$ZIPPED_APP container_files/
 ############# BEGIN ASSET BUILD #####################
 FROM node:current-alpine3.16 AS assets
 WORKDIR /app
-COPY --from=builder /app .
+COPY --from=clojure_uberjar /app .
 
 RUN npm install && (which gulp || npm install -g gulp)
 RUN gulp compile-assets --host $CDN_HOST
