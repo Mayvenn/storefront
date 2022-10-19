@@ -5,14 +5,16 @@
             [storefront.platform.reviews :as review-component]))
 
 (defn price-block
-  [{:price-block/keys [primary primary-struck secondary secondary-classes]}]
+  [{:price-block/keys [primary primary-struck secondary secondary-classes new-primary]}]
   [:div.right-align
    (when (or primary primary-struck)
      [:div
       (when primary
         [:span.proxima.content-2 primary])
       (when primary-struck
-        [:span.proxima.content-2.strike primary-struck])
+        [:div
+         [:span.proxima.content-2.strike primary-struck]
+         [:div.proxima.title-1.red.right new-primary]])
       [:div.proxima.content-3 {:class secondary-classes}
        secondary]])])
 

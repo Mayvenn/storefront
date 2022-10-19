@@ -464,13 +464,15 @@
         selected-picker    (get-in data catalog.keypaths/detailed-product-selected-picker)
         model-image        (first (filter :copy/model-wearing carousel-images))
         accordion-v2?      (experiments/accordion-v2? data)
-        accordion-neue     (accordion-neue/<- data :product-details-accordion)]
+        accordion-neue     (accordion-neue/<- data :product-details-accordion)
+        bf-2022-sale?      (and (experiments/bf-2022-sale? data)
+                                (:promo.clearance/eligible selected-sku))]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
       :yotpo-reviews-summary/product-id   (some-> review-data :yotpo-data-attributes :data-product-id)
       :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
-      :zip-payments/sku-price             (:sku/price selected-sku)
+      :zip-payments/sku-price             (if bf-2022-sale? (* 0.7 (:sku/price selected-sku)) (:sku/price selected-sku))
       :zip-payments/loaded?               (get-in data keypaths/loaded-quadpay)
       :title/primary                      (:copy/title product)
       :ugc                                ugc
@@ -496,8 +498,12 @@
       :picker-data                        (picker/query data length-guide-image)
       :accordion-v2?                      accordion-v2?}
      (when sku-price
-       {:price-block/primary   (mf/as-money sku-price)
-        :price-block/secondary "each"})
+       (if bf-2022-sale?
+         {:price-block/primary-struck (mf/as-money sku-price)
+          :price-block/new-primary    (mf/as-money (* 0.7 sku-price))
+          :price-block/secondary      "each"}
+         {:price-block/primary   (mf/as-money sku-price)
+          :price-block/secondary "each"}))
 
      (if (and product accordion-v2?)
        (product-details-accordion<- accordion-neue
