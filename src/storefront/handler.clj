@@ -570,6 +570,7 @@
       (assoc _ :remove-free-install (feature-flags/retrieve-flag ld "remove-free-install" :bool true))
       (assoc _ :new-homepage-2022-09 (feature-flags/retrieve-flag ld "new-homepage-2022-09" :bool true))
       (assoc _ :accordion-v2 (feature-flags/retrieve-flag ld "accordion-v2" :bool false))
+      (assoc _ :bf-2022-sale (feature-flags/retrieve-flag ld "bf-2022-sale" :bool false))
       (assoc-in-req-state req keypaths/features _)
       (h _))))
 

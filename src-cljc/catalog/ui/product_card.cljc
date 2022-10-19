@@ -62,8 +62,9 @@
                                 ((juxt first last))
                                 (mapv :option/name))
 
-        cheapest-sku (skus/determine-cheapest color-order-map skus-to-search)
-        epitome      (skus/determine-epitome color-order-map skus-to-search)
+        cheapest-sku  (skus/determine-cheapest color-order-map skus-to-search)
+        epitome       (skus/determine-epitome color-order-map skus-to-search)
+        bf-2022-sale? (experiments/bf-2022-sale? data)
 
         image (->> epitome
                    (images/for-skuer images-catalog)
@@ -92,7 +93,10 @@
                                       (if (= 1 (count product-colors))
                                         [:text (:option/name (first product-colors))]
                                         [:swatches [product-slug product-colors]])
-                                      [:pricing [(:sku/price cheapest-sku) (when (first (:promo.clearance/eligible cheapest-sku))
+                                      [:pricing [(:sku/price cheapest-sku) (when (and bf-2022-sale?
+                                                                                      (-> cheapest-sku
+                                                                                          :promo.clearance/eligible
+                                                                                          first))
                                                                              (* 0.7 (:sku/price cheapest-sku)))]]])
      :card-image/src               (str (:url image) "-/format/auto/" (:filename image))
      :card-image/alt               (:alt image)}))
