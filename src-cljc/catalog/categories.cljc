@@ -1183,11 +1183,11 @@
     :selector/electives               [:hair/family :hair/texture :hair/origin :hair/color]
     :page/title                       "100% Virgin Hair HD Lace Wig | Mayvenn"
     :page.meta/description            (copy "Mayvenn’s HD Lace comes complete with 13x4, 4x4, or 5x5 inches of parting space."
-                                          "Crafted with high-quality 100% virgin human hair.")
+                                            "Crafted with high-quality 100% virgin human hair.")
     :opengraph/title                  (copy "Mayvenn HD Lace - Free shipping."
-                                          "Free 30 day returns. Made with 100% virgin human hair.")
+                                            "Free 30 day returns. Made with 100% virgin human hair.")
     :opengraph/description            (copy "Our HD Lace is sure to be a favorite."
-                                          "Take advantage of high-quality HD Lace and 4 classic textures.")
+                                            "Take advantage of high-quality HD Lace and 4 classic textures.")
     :product-list/title               "Shop All HD Lace"
     :contentful/faq-id                :category-hd-lace
     :content-block/type               :about-attributes
@@ -1206,11 +1206,11 @@
                                         :body  [{:text "If you want to play with color, it helps to choose a wig that can be colored—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it colored the color you want."}]}]
     :page/title-template              [:computed/selected-facet-string " Virgin " :seo/title " | Mayvenn"]
     :page.meta/description-template   ["Get the hair of your dreams with our "
-                                     :computed/selected-facet-string
-                                     " "
-                                     :seo/title
-                                     ". Featuring a thin, polyurethane"
-                                     " weft that flawlessly blends with your own hair."]
+                                       :computed/selected-facet-string
+                                       " "
+                                       :seo/title
+                                       ". Featuring a thin, polyurethane"
+                                       " weft that flawlessly blends with your own hair."]
     :subcategories/ids                ["47" "46" "42"]
     :subcategories/layout             :list
     :subsections/subsection-selectors [{:subsection/title    "HD Lace Closures"
@@ -1312,6 +1312,31 @@
     :page/title          "Wigs | Mayvenn"
     :page/title-template [:computed/selected-facet-string " Virgin " :seo/title " | Mayvenn"]}])
 
+(def sale-clearance
+  [{:catalog/category-id  "48"
+    :header/title         "Sale"
+    :category/description (copy "Lorem Ipsum"
+                                "Party Time")
+    :subcategory/image-id "e4266735-42fc-40b1-bd37-ce5a243fa681"
+    :copy/title           "Sale"
+    :page/slug            "sale"
+    :seo/title            "Sale"
+    :seo/sitemap          true
+
+    :promo.clearance/eligible #{true}
+    :selector/essentials      [:promo.clearance/eligible]
+    :selector/electives       [:hair/family :hair/texture :hair/origin :hair/color]
+    :page/title               "Sale | Mayvenn"
+    :page.meta/description    (copy "Mayvenn’s virgin human hair wigs allow you to achieve a new look in minutes"
+                                    "& come in different variations such as Brazilian, Malaysian, straight,"
+                                    "& deep wave.")
+    :opengraph/title          (copy "Mayvenn Wigs - Free shipping."
+                                    "Free 30 day returns. Made with 100% virgin human hair.")
+    :opengraph/description    (copy "100% virgin human hair, machine-wefted and backed by our"
+                                    "30 Day Quality Guarantee, our Wigs can be customized to fit"
+                                    "your unique look using the built-in combs and adjustable strap.")
+    :product-list/title       "Shop All Sale Items"}])
+
 (def nb-hyphen "‑")
 
 (def menu-categories
@@ -1329,4 +1354,5 @@
           tape-ins-category
           human-hair-bundles
           base-materials-categories
-          special-wigs-promo))
+          special-wigs-promo
+          sale-clearance))
