@@ -3,6 +3,7 @@
             [storefront.browser.events :as browser.events]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.svg :as svg]
+            [storefront.components.ui :as ui]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.events :as events]))
 
@@ -95,7 +96,5 @@
                            :on-click   (fn [e]
                                          (.preventDefault e)
                                          (show-modal))}
-           (svg/info {:height "14px"
-                      :width  "14px"
-                      :class  "stroke-p-color"})]])
+           (ui/ucare-img {:width "14px" :alt ""} "6a84159e-900e-4dc4-8709-f922ec92ffa5")]])
        [:div.hide (component/build widget-component {:full-amount sku-price} nil)]])))
