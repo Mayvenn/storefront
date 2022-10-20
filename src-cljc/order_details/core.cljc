@@ -63,7 +63,8 @@
                          total
                          returns
                          canceled
-                         pending]}]
+                         pending
+                         adjustments]}]
   (when id
        [:div.my6.max-960.mx-auto
         {:key id}
@@ -129,7 +130,11 @@
                  (c/build cart-item-v202004/organism {:cart-item returned-item}
                           (c/component-id (str index "-returned-item-" react-key)))])])])
         (titled-content "Payment" [:div {:data-test "payment-total"}
-                                   "Total: "(mf/as-money total)])]))
+                                   (when (seq adjustments)
+                                     (map (fn [adjustment]
+                                            [:div (:name adjustment) [:span.right (mf/as-money (:price adjustment))]])
+                                          adjustments))
+                                   [:div.content-1 "Total: " [:span.right (mf/as-money total)]]])]))
 
 ;; TODO: does appointment status header need to be there when there's no appt set?
 (defn appointment-details-template
@@ -414,19 +419,19 @@
 
 (defn query [app-state]
   (when (boolean (get-in app-state k/user-verified-at))
-    (let [order-number         (:order-number (last (get-in app-state k/navigation-message)))
-          images-catalog       (get-in app-state k/v2-images)
-          skus                 (get-in app-state k/v2-skus)
+    (let [order-number       (:order-number (last (get-in app-state k/navigation-message)))
+          images-catalog     (get-in app-state k/v2-images)
+          skus               (get-in app-state k/v2-skus)
           {:as   order
            :keys [fulfillments
                   placed-at
                   shipments
                   shipping-address
-                  total]}      (->> (get-in app-state k/order-history-orders)
+                  total]}    (->> (get-in app-state k/order-history-orders)
                                     (filter (fn [o] (= order-number (:number o))))
                                     first)
-          canceled-shipment    (first (filter #(= "canceled" (:state %)) shipments))
-          pending-line-items   (->> shipments
+          canceled-shipment  (first (filter #(= "canceled" (:state %)) shipments))
+          pending-line-items (->> shipments
                                     (filter #(= "pending" (:state %)))
                                     (mapcat :line-items)
                                     (filter #(= "spree" (:source %))))]
@@ -439,6 +444,7 @@
               :skus             skus
               :images-catalog   images-catalog
               :returns          (->returns-query app-state)
+              :adjustments      (:adjustments order)
               :fulfillments     (for [{:keys [carrier tracking-number line-item-ids tracking-status expected-delivery-date]} fulfillments]
                                   {:url              (generate-tracking-url carrier tracking-number)
                                    :carrier          carrier
