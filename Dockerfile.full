@@ -29,7 +29,7 @@ ENV DOCKERFILE=Dockerfile.full
 
 RUN lein uberjar
 
-RUN mv target/$STANDALONE_APP target/$zipped_app
+RUN mv target/$STANDALONE_APP target/$ZIPPED_APP
 RUN cd target && zip $ZIPPED_APP $BUILT_APP
 # NOTE: Didn't we just change dirs?
 RUN zip -r -g target/$ZIPPED_APP $DOCKERFILE
