@@ -24,7 +24,7 @@ RUN lein deps
 FROM deps AS clojure_uberjar
 #WORKDIR /app
 
-ENV STANDALONE_APP=standalone.jar
+ENV STANDALONE_APP=storefront-*-standalone.jar
 ENV BUILT_APP=storefront.jar
 ENV ZIPPED_APP=storefront.zip
 ENV DOCKERFILE=Dockerfile.full
@@ -37,6 +37,7 @@ RUN ls target
 RUN mv target/$STANDALONE_APP target/$ZIPPED_APP
 RUN cd target && zip $ZIPPED_APP $BUILT_APP
 # NOTE: Didn't we just change dirs?
+RUN pwd
 RUN zip -r -g target/$ZIPPED_APP $DOCKERFILE
 RUN zip -r -g target/$ZIPPED_APP container_files/
 
