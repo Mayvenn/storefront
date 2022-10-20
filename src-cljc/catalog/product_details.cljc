@@ -188,7 +188,7 @@
                    :width     "42.5px"
                    :height    "42.5px"}
            :alt   option-name
-           :src   (str "https://ucarecdn.com/" (ui/ucare-img-id rectangle-swatch) "/-/format/auto/-/resize/13x/")}]]])
+           :src   (str "https://ucarecdn.com/" (ui/ucare-img-id rectangle-swatch) "/-/format/auto/-/resize/86x/")}]]])
      (for [{:keys [copy selected target option-swatch]} options]
        [(if target :div :a)
         (merge {:style {:width  "2.5rem"
