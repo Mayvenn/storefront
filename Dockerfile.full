@@ -33,7 +33,7 @@ RUN lein uberjar
 
 RUN pwd
 RUN ls
-RUN cd ..
+RUN ls target
 RUN mv target/$STANDALONE_APP target/$ZIPPED_APP
 RUN cd target && zip $ZIPPED_APP $BUILT_APP
 # NOTE: Didn't we just change dirs?
