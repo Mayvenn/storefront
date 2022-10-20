@@ -5,8 +5,9 @@ FROM clojure:temurin-8-lein AS deps
 
 ARG CDN_HOST
 
-RUN apk update;
-RUN apk add openssh-client;
+RUN apt-get update;
+RUN apt-get install -qqy openssh-client;
+
 RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 WORKDIR /app
