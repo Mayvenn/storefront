@@ -496,69 +496,6 @@
                                                              :content-path [:dynamic-content :pdp/colorable]}])}}]})))
 
 (defn query [data]
-<<<<<<< HEAD
-  (let [selections         (get-in data catalog.keypaths/detailed-product-selections)
-        product            (products/current-product data)
-        product-skus       (products/extract-product-skus data product)
-        images-catalog     (get-in data keypaths/v2-images)
-        facets             (facets/by-slug data)
-        selected-sku       (get-in data catalog.keypaths/detailed-product-selected-sku)
-        carousel-images    (find-carousel-images product product-skus images-catalog
-                                                 ;;TODO These selection election keys should not be hard coded
-                                                 (select-keys selections [:hair/color
-                                                                          :hair/base-material])
-                                                 selected-sku)
-        length-guide-image (->> product
-                                (images/for-skuer images-catalog)
-                                (select {:use-case #{"length-guide"}})
-                                first)
-        product-options    (get-in data catalog.keypaths/detailed-product-options)
-        ugc                (ugc-query product selected-sku data)
-        sku-price          (or (:product/essential-price selected-sku)
-                               (:sku/price selected-sku))
-        review-data        (review-component/query data)
-        shop?              (or (= "shop" (get-in data keypaths/store-slug))
-                               (= "retail-location" (get-in data keypaths/store-experience)))
-        hair?              (accessors.products/hair? product)
-        faq                (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
-                             (get-in data (conj keypaths/cms-faq pdp-faq-id)))
-        selected-picker    (get-in data catalog.keypaths/detailed-product-selected-picker)
-        model-image        (first (filter :copy/model-wearing carousel-images))
-        accordion-v2?      (experiments/accordion-v2? data)
-        accordion-neue     (accordion-neue/<- data :product-details-accordion)
-        bf-2022-sale?      (and (experiments/bf-2022-sale? data)
-                                (:promo.clearance/eligible selected-sku))]
-||||||| parent of 092542eb8 (PDP Redesign: pdp - pickers into accordion (behind FF))
-  (let [selections         (get-in data catalog.keypaths/detailed-product-selections)
-        product            (products/current-product data)
-        product-skus       (products/extract-product-skus data product)
-        images-catalog     (get-in data keypaths/v2-images)
-        facets             (facets/by-slug data)
-        selected-sku       (get-in data catalog.keypaths/detailed-product-selected-sku)
-        carousel-images    (find-carousel-images product product-skus images-catalog
-                                                 ;;TODO These selection election keys should not be hard coded
-                                                 (select-keys selections [:hair/color
-                                                                          :hair/base-material])
-                                                 selected-sku)
-        length-guide-image (->> product
-                                (images/for-skuer images-catalog)
-                                (select {:use-case #{"length-guide"}})
-                                first)
-        product-options    (get-in data catalog.keypaths/detailed-product-options)
-        ugc                (ugc-query product selected-sku data)
-        sku-price          (or (:product/essential-price selected-sku)
-                               (:sku/price selected-sku))
-        review-data        (review-component/query data)
-        shop?              (or (= "shop" (get-in data keypaths/store-slug))
-                               (= "retail-location" (get-in data keypaths/store-experience)))
-        hair?              (accessors.products/hair? product)
-        faq                (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
-                             (get-in data (conj keypaths/cms-faq pdp-faq-id)))
-        selected-picker    (get-in data catalog.keypaths/detailed-product-selected-picker)
-        model-image        (first (filter :copy/model-wearing carousel-images))
-        accordion-v2?      (experiments/accordion-v2? data)
-        accordion-neue     (accordion-neue/<- data :product-details-accordion)]
-=======
   (let [selections                (get-in data catalog.keypaths/detailed-product-selections)
         product                   (products/current-product data)
         product-skus              (products/extract-product-skus data product)
@@ -590,8 +527,9 @@
         accordion-v2?             (experiments/accordion-v2? data)
         product-details-accordion (when accordion-v2?
                                     (accordion-neue/<- data :product-details-accordion))
-        picker-data               (picker/query data length-guide-image)]
->>>>>>> 092542eb8 (PDP Redesign: pdp - pickers into accordion (behind FF))
+        picker-data               (picker/query data length-guide-image)
+        bf-2022-sale?      (and (experiments/bf-2022-sale? data)
+                                (:promo.clearance/eligible selected-sku))]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
@@ -623,19 +561,12 @@
       :picker-data                        picker-data
       :accordion-v2?                      accordion-v2?}
      (when sku-price
-<<<<<<< HEAD
        (if bf-2022-sale?
          {:price-block/primary-struck (mf/as-money sku-price)
           :price-block/new-primary    (mf/as-money (* 0.7 sku-price))
           :price-block/secondary      "each"}
          {:price-block/primary   (mf/as-money sku-price)
           :price-block/secondary "each"}))
-||||||| parent of 092542eb8 (PDP Redesign: pdp - pickers into accordion (behind FF))
-       {:price-block/primary   (mf/as-money sku-price)
-        :price-block/secondary "each"})
-=======
-       {:price-block/primary   (mf/as-money sku-price)
-        :price-block/secondary "each"})
      (when pdp-accordion-picker?
        (accordion-neue/accordion-query
         {:id                :pdp-picker
@@ -687,7 +618,6 @@
                                                                   :selected (= sku-quantity qty)}
                                                                  (when (not (= sku-quantity qty))
                                                                    {:target [events/control-product-detail-picker-option-quantity-select {:value qty}]})))))}}])}))
->>>>>>> 092542eb8 (PDP Redesign: pdp - pickers into accordion (behind FF))
 
      (if (and product accordion-v2?)
        (product-details-accordion<- product-details-accordion
