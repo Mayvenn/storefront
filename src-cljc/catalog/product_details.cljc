@@ -134,21 +134,74 @@
    {:key (str id "-tab")}
    [:div primary]
    [:div.flex.flex-wrap.justify-between
-    (for [{:keys [content heading] :as section} sections]
-      [:div.my2.pr2
-       {:style {:min-width "50%"}}
-       [:h3.proxima.title-3.shout heading]
-       [:div
-        (if-not (string? content)
-          (for [block content]
-            [:div block])
-          content)]
-       (when-let [link-content (:link/content section)]
-         (ui/button-small-underline-primary
-          (assoc
-           (apply utils/fake-href (:link/target section))
-           :data-test (:link/id section))
-          link-content))])]])
+    (map-indexed
+     (fn sections [idx {:keys [content heading] :as section}]
+       [:div.my2.pr2
+        {:style {:min-width "50%"}
+         :key   idx}
+        [:h3.proxima.title-3.shout heading]
+        [:div
+         (if-not (string? content)
+           (for [block content]
+             [:div block])
+           content)]
+        (when-let [link-content (:link/content section)]
+          (ui/button-small-underline-primary
+           (assoc
+            (apply utils/fake-href (:link/target section))
+            :data-test (:link/id section))
+           link-content))])
+     sections)]])
+
+(defcomponent picker-accordion-face-open [{:keys [facet-name selected-option]} _ _]
+  [:div.grid
+   {:style {:grid-template-columns "5rem auto"}}
+   [:div.shout.bold.content-3 facet-name]
+   [:div selected-option]])
+(defcomponent picker-accordion-face-closed [{:keys [facet-name selected-option]} _ _]
+  [:div.grid
+   {:style {:grid-template-columns "5rem auto"}}
+   [:div.shout.content-3 facet-name]
+   [:div selected-option]])
+(defcomponent picker-accordion-contents [{:keys [swatches? options]} _ _]
+  [:div.flex.flex-wrap.gap-2.px2.pb2
+   (if swatches?
+     (for [{:keys [option-slug selected option-name rectangle-swatch target]} options]
+       [(if target :a :div)
+        (merge {:style {:width "42.5px"
+                        :height "42.5px"}
+                :class (str "flex items-center justify-center"
+                            (when target " inherit-color pointer"))}
+               (when target
+                 (apply utils/fake-href target)))
+        [:div.overflow-hidden
+         {:style {:transform "rotate(45deg)"
+                  :width     "30px"
+                  :height    "30px"
+                  :padding   "0"}
+          :key   option-slug
+          :class (when selected "border border-p-color")}
+         [:img
+          {:key   (str "product-details-color-" option-slug)
+           :style {:transform "rotate(-45deg) translateY(-10px)"
+                   ;; :margin     "5px 5px"
+                   :width     "42.5px"
+                   :height    "42.5px"}
+           :alt   option-name
+           :src   (str "https://ucarecdn.com/" (ui/ucare-img-id rectangle-swatch) "/-/format/auto/-/resize/13x/")}]]])
+     (for [{:keys [copy selected target option-swatch]} options]
+       [(if target :div :a)
+        (merge {:style {:width  "2.5rem"
+                        :height "2.5rem"}
+                :class (str "border flex items-center justify-center"
+                            (if selected
+                              " border-p-color"
+                              " border-gray")
+                            (when target
+                              " inherit-color pointer"))}
+               (when target
+                 (apply utils/fake-href target)))
+        copy]))])
 
 (defcomponent component
   [{:keys [carousel-images
@@ -186,6 +239,13 @@
             (component/build product-summary-organism data)
             [:div.px2
              (component/build picker/component picker-data opts)]
+            [:div
+             (component/build accordion-neue/component
+                              (with :pdp-picker data)
+                              {:opts
+                               {:accordion.drawer.open/face-component   picker-accordion-face-open
+                                :accordion.drawer.closed/face-component picker-accordion-face-closed
+                                :accordion.drawer/contents-component    picker-accordion-contents}})]
             [:div
              (cond
                unavailable? unavailable-button
@@ -436,6 +496,7 @@
                                                              :content-path [:dynamic-content :pdp/colorable]}])}}]})))
 
 (defn query [data]
+<<<<<<< HEAD
   (let [selections         (get-in data catalog.keypaths/detailed-product-selections)
         product            (products/current-product data)
         product-skus       (products/extract-product-skus data product)
@@ -467,6 +528,70 @@
         accordion-neue     (accordion-neue/<- data :product-details-accordion)
         bf-2022-sale?      (and (experiments/bf-2022-sale? data)
                                 (:promo.clearance/eligible selected-sku))]
+||||||| parent of 092542eb8 (PDP Redesign: pdp - pickers into accordion (behind FF))
+  (let [selections         (get-in data catalog.keypaths/detailed-product-selections)
+        product            (products/current-product data)
+        product-skus       (products/extract-product-skus data product)
+        images-catalog     (get-in data keypaths/v2-images)
+        facets             (facets/by-slug data)
+        selected-sku       (get-in data catalog.keypaths/detailed-product-selected-sku)
+        carousel-images    (find-carousel-images product product-skus images-catalog
+                                                 ;;TODO These selection election keys should not be hard coded
+                                                 (select-keys selections [:hair/color
+                                                                          :hair/base-material])
+                                                 selected-sku)
+        length-guide-image (->> product
+                                (images/for-skuer images-catalog)
+                                (select {:use-case #{"length-guide"}})
+                                first)
+        product-options    (get-in data catalog.keypaths/detailed-product-options)
+        ugc                (ugc-query product selected-sku data)
+        sku-price          (or (:product/essential-price selected-sku)
+                               (:sku/price selected-sku))
+        review-data        (review-component/query data)
+        shop?              (or (= "shop" (get-in data keypaths/store-slug))
+                               (= "retail-location" (get-in data keypaths/store-experience)))
+        hair?              (accessors.products/hair? product)
+        faq                (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
+                             (get-in data (conj keypaths/cms-faq pdp-faq-id)))
+        selected-picker    (get-in data catalog.keypaths/detailed-product-selected-picker)
+        model-image        (first (filter :copy/model-wearing carousel-images))
+        accordion-v2?      (experiments/accordion-v2? data)
+        accordion-neue     (accordion-neue/<- data :product-details-accordion)]
+=======
+  (let [selections                (get-in data catalog.keypaths/detailed-product-selections)
+        product                   (products/current-product data)
+        product-skus              (products/extract-product-skus data product)
+        images-catalog            (get-in data keypaths/v2-images)
+        facets                    (facets/by-slug data)
+        selected-sku              (get-in data catalog.keypaths/detailed-product-selected-sku)
+        carousel-images           (find-carousel-images product product-skus images-catalog
+                                                        ;;TODO These selection election keys should not be hard coded
+                                                        (select-keys selections [:hair/color
+                                                                                 :hair/base-material])
+                                                        selected-sku)
+        length-guide-image        (->> product
+                                       (images/for-skuer images-catalog)
+                                       (select {:use-case #{"length-guide"}})
+                                       first)
+        product-options           (get-in data catalog.keypaths/detailed-product-options)
+        ugc                       (ugc-query product selected-sku data)
+        sku-price                 (or (:product/essential-price selected-sku)
+                                      (:sku/price selected-sku))
+        review-data               (review-component/query data)
+        shop?                     (or (= "shop" (get-in data keypaths/store-slug))
+                                      (= "retail-location" (get-in data keypaths/store-experience)))
+        hair?                     (accessors.products/hair? product)
+        faq                       (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
+                                    (get-in data (conj keypaths/cms-faq pdp-faq-id)))
+        selected-picker           (get-in data catalog.keypaths/detailed-product-selected-picker)
+        model-image               (first (filter :copy/model-wearing carousel-images))
+        pdp-accordion-picker?     (experiments/pdp-accordion-picker? data)
+        accordion-v2?             (experiments/accordion-v2? data)
+        product-details-accordion (when accordion-v2?
+                                    (accordion-neue/<- data :product-details-accordion))
+        picker-data               (picker/query data length-guide-image)]
+>>>>>>> 092542eb8 (PDP Redesign: pdp - pickers into accordion (behind FF))
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
@@ -495,18 +620,77 @@
                                                                       :faq/content answer})}))
       :carousel-images                    carousel-images
       :selected-picker                    selected-picker
-      :picker-data                        (picker/query data length-guide-image)
+      :picker-data                        picker-data
       :accordion-v2?                      accordion-v2?}
      (when sku-price
+<<<<<<< HEAD
        (if bf-2022-sale?
          {:price-block/primary-struck (mf/as-money sku-price)
           :price-block/new-primary    (mf/as-money (* 0.7 sku-price))
           :price-block/secondary      "each"}
          {:price-block/primary   (mf/as-money sku-price)
           :price-block/secondary "each"}))
+||||||| parent of 092542eb8 (PDP Redesign: pdp - pickers into accordion (behind FF))
+       {:price-block/primary   (mf/as-money sku-price)
+        :price-block/secondary "each"})
+=======
+       {:price-block/primary   (mf/as-money sku-price)
+        :price-block/secondary "each"})
+     (when pdp-accordion-picker?
+       (accordion-neue/accordion-query
+        {:id                :pdp-picker
+         :allow-all-closed? true
+         :allow-multi-open? true
+         :open-drawers      (-> data (accordion-neue/<- :pdp-picker) :accordion/open-drawers)
+         :drawers           (let [{:keys [sku-quantity selected-length selected-color options]} picker-data]
+                              ;; [option-slug option-name rectangle-swatch]
+                              [{:id       "color"
+                                :face     {:facet-name      "color"
+                                           :selected-option (:option/name selected-color)}
+                                :contents {:swatches? true
+                                           :options   (->> options
+                                                           :hair/color
+                                                           (sort-by :filter/order)
+                                                           (map (fn [{:keys [option/slug option/name option/rectangle-swatch option/slug stocked?]}]
+                                                                  (merge {:option-slug      slug
+                                                                          :option-name      name
+                                                                          :rectangle-swatch rectangle-swatch
+                                                                          :selected         (= (:option/slug selected-color) slug)}
+                                                                         (when (not (= (:option/slug selected-color) slug))
+                                                                           {:target [events/control-product-detail-picker-option-select
+                                                                                     {:navigation-event events/navigate-product-details ;; When would it be anything else?
+                                                                                      :selection        :hair/color
+                                                                                      :value            slug}]})))))}}
+                               {:id       "length"
+                                :face     {:facet-name      "Length"
+                                           :selected-option (:option/name selected-length)}
+                                :contents {:options (->> options
+                                                         :hair/length
+                                                         (sort-by :filter/order)
+                                                         (map (fn [{:keys [option/name option/sku-swatch option/slug stocked?]}]
+                                                                (merge {:copy     name
+                                                                        :selected (= (:option/slug selected-length) slug)}
+                                                                       (when (not (= (:option/slug selected-length) slug))
+                                                                         {:target [events/control-product-detail-picker-option-select
+                                                                                   {:navigation-event events/navigate-product-details ;; When would it be anything else?
+                                                                                    :selection        :hair/length
+                                                                                    :value            slug}]})))))}}
+                               {:id       "quantity"
+                                :face     {:facet-name      "Qty"
+                                           :selected-option sku-quantity}
+                                :contents {:options (->> (range)
+                                                         (take 10)
+                                                         (map inc)
+                                                         (map (fn [qty]
+                                                                (merge
+                                                                 {:copy     (str qty)
+                                                                  :selected (= sku-quantity qty)}
+                                                                 (when (not (= sku-quantity qty))
+                                                                   {:target [events/control-product-detail-picker-option-quantity-select {:value qty}]})))))}}])}))
+>>>>>>> 092542eb8 (PDP Redesign: pdp - pickers into accordion (behind FF))
 
      (if (and product accordion-v2?)
-       (product-details-accordion<- accordion-neue
+       (product-details-accordion<- product-details-accordion
                                     {:product         product
                                      :model-image     model-image
                                      :selected-sku    selected-sku

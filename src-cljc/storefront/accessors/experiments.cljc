@@ -125,3 +125,7 @@
 (defn bf-2022-sale?
   [data]
   (display-feature? data "bf-2022-sale"))
+
+(defn pdp-accordion-picker?
+  [data]
+  (display-feature? data "pdp-accordion-picker"))
