@@ -153,44 +153,48 @@
            link-content))])
      sections)]])
 
-(defcomponent picker-accordion-face-open [{:keys [facet-name selected-option]} _ _]
+(defn diamond-swatch [ucare-id option-slug option-name selected? target size]
+  (let [container-width #?(:clj (.hypot java.lang.Math size size)
+                           :cljs (js/Math.hypot size size))]
+    [(if target :a :div)
+     (merge {:style {:width (str container-width "px")
+                     :height (str container-width "px")}
+             :class (str "flex items-center justify-center"
+                         (when target " inherit-color pointer"))}
+            (when target
+              (apply utils/fake-href target)))
+     [:div.overflow-hidden.flex.items-center.justify-center
+      {:style {:transform "rotate(45deg)"
+               :width     (str size "px")
+               :height    (str size "px")
+               :padding   "0"}
+       :key   option-slug
+       :class (when selected? "border border-p-color")}
+      [:img
+       {:key   (str "product-details-" option-name "-" option-slug)
+        :style {:transform "rotate(-45deg)"
+                :width     (str container-width "px")
+                :height    (str container-width "px")}
+        :alt   option-name
+        :src   (str "https://ucarecdn.com/" (ui/ucare-img-id ucare-id) "/-/format/auto/")}]]]))
+
+(defcomponent picker-accordion-face-open [{:keys [facet-name swatch option-slug option-name]} _ _]
   [:div.grid
-   {:style {:grid-template-columns "5rem auto"}}
+   {:style {:grid-template-columns "4rem auto"}}
    [:div.shout.bold.content-3 facet-name]
-   [:div selected-option]])
-(defcomponent picker-accordion-face-closed [{:keys [facet-name selected-option]} _ _]
+   [:div.flex option-name]])
+(defcomponent picker-accordion-face-closed [{:keys [facet-name swatch option-slug option-name]} _ _]
   [:div.grid
-   {:style {:grid-template-columns "5rem auto"}}
+   {:style {:grid-template-columns "4rem auto"}}
    [:div.shout.content-3 facet-name]
-   [:div selected-option]])
+   [:div.flex option-name]])
 (defcomponent picker-accordion-contents [{:keys [swatches? options]} _ _]
-  [:div.flex.flex-wrap.gap-2.px2.pb2
+  [:div.flex.flex-wrap.gap-2.p2
    (if swatches?
-     (for [{:keys [option-slug selected option-name rectangle-swatch target]} options]
-       [(if target :a :div)
-        (merge {:style {:width "42.5px"
-                        :height "42.5px"}
-                :class (str "flex items-center justify-center"
-                            (when target " inherit-color pointer"))}
-               (when target
-                 (apply utils/fake-href target)))
-        [:div.overflow-hidden
-         {:style {:transform "rotate(45deg)"
-                  :width     "30px"
-                  :height    "30px"
-                  :padding   "0"}
-          :key   option-slug
-          :class (when selected "border border-p-color")}
-         [:img
-          {:key   (str "product-details-color-" option-slug)
-           :style {:transform "rotate(-45deg) translateY(-10px)"
-                   ;; :margin     "5px 5px"
-                   :width     "42.5px"
-                   :height    "42.5px"}
-           :alt   option-name
-           :src   (str "https://ucarecdn.com/" (ui/ucare-img-id rectangle-swatch) "/-/format/auto/-/resize/86x/")}]]])
+     (for [{:keys [option-slug selected? option-name rectangle-swatch target]} options]
+       (diamond-swatch rectangle-swatch option-slug option-name selected? target 30))
      (for [{:keys [copy selected target option-swatch]} options]
-       [(if target :div :a)
+       [(if target :a :div)
         (merge {:style {:width  "2.5rem"
                         :height "2.5rem"}
                 :class (str "border flex items-center justify-center"
@@ -528,8 +532,8 @@
         product-details-accordion (when accordion-v2?
                                     (accordion-neue/<- data :product-details-accordion))
         picker-data               (picker/query data length-guide-image)
-        bf-2022-sale?      (and (experiments/bf-2022-sale? data)
-                                (:promo.clearance/eligible selected-sku))]
+        bf-2022-sale?             (and (experiments/bf-2022-sale? data)
+                                       (:promo.clearance/eligible selected-sku))]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
@@ -577,48 +581,49 @@
          :allow-multi-open? true
          :open-drawers      (-> data (accordion-neue/<- :pdp-picker) :accordion/open-drawers)
          :drawers           (let [{:keys [sku-quantity selected-length selected-color options]} picker-data]
-                              ;; [option-slug option-name rectangle-swatch]
                               [{:id       "color"
-                                :face     {:facet-name      "color"
-                                           :selected-option (:option/name selected-color)}
+                                :face     {:facet-name  "color"
+                                           :option-name (:option/name selected-color)
+                                           :option-slug (:option/slug selected-color)
+                                           :swatch      (:option/rectangle-swatch selected-color)}
                                 :contents {:swatches? true
                                            :options   (->> options
                                                            :hair/color
                                                            (sort-by :filter/order)
-                                                           (map (fn [{:keys [option/slug option/name option/rectangle-swatch option/slug stocked?]}]
+                                                           (map (fn [{:keys [option/slug option/name option/rectangle-swatch stocked?]}]
                                                                   (merge {:option-slug      slug
                                                                           :option-name      name
                                                                           :rectangle-swatch rectangle-swatch
-                                                                          :selected         (= (:option/slug selected-color) slug)}
+                                                                          :selected?        (= (:option/slug selected-color) slug)}
                                                                          (when (not (= (:option/slug selected-color) slug))
                                                                            {:target [events/control-product-detail-picker-option-select
                                                                                      {:navigation-event events/navigate-product-details ;; When would it be anything else?
                                                                                       :selection        :hair/color
                                                                                       :value            slug}]})))))}}
                                {:id       "length"
-                                :face     {:facet-name      "Length"
-                                           :selected-option (:option/name selected-length)}
+                                :face     {:facet-name  "Length"
+                                           :option-name (:option/name selected-length)}
                                 :contents {:options (->> options
                                                          :hair/length
                                                          (sort-by :filter/order)
                                                          (map (fn [{:keys [option/name option/sku-swatch option/slug stocked?]}]
-                                                                (merge {:copy     name
-                                                                        :selected (= (:option/slug selected-length) slug)}
+                                                                (merge {:copy      name
+                                                                        :selected? (= (:option/slug selected-length) slug)}
                                                                        (when (not (= (:option/slug selected-length) slug))
                                                                          {:target [events/control-product-detail-picker-option-select
                                                                                    {:navigation-event events/navigate-product-details ;; When would it be anything else?
                                                                                     :selection        :hair/length
                                                                                     :value            slug}]})))))}}
                                {:id       "quantity"
-                                :face     {:facet-name      "Qty"
-                                           :selected-option sku-quantity}
+                                :face     {:facet-name  "Qty"
+                                           :option-name sku-quantity}
                                 :contents {:options (->> (range)
                                                          (take 10)
                                                          (map inc)
                                                          (map (fn [qty]
                                                                 (merge
-                                                                 {:copy     (str qty)
-                                                                  :selected (= sku-quantity qty)}
+                                                                 {:copy      (str qty)
+                                                                  :selected? (= sku-quantity qty)}
                                                                  (when (not (= sku-quantity qty))
                                                                    {:target [events/control-product-detail-picker-option-quantity-select {:value qty}]})))))}}])}))
 
