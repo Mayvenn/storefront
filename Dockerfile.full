@@ -1,66 +1,78 @@
 # syntax=docker/dockerfile:1.0.0-experimental
 
-############# BEGIN PRE-BUILD #####################
-FROM clojure:temurin-8-lein AS deps
+FROM clojure:temurin-8-lein AS setup
 
 ARG CDN_HOST
 ARG AWS_SECRET_ACCESS_KEY
 ARG AWS_ACCESS_KEY_ID
 
+ENV STANDALONE_JAR=/app/target/storefront-*-standalone.jar
+ENV JAR_PATH=/app/target/storefront.jar
+ENV NODE_VERSION=16.x
+ENV INSTALL_NODE_FILE=install-node.sh
 
 RUN apt-get update;
-RUN apt-get install -qqy openssh-client;
+RUN curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION > $INSTALL_NODE_FILE
+RUN chmod +x $INSTALL_NODE_FILE
+
+RUN cat $INSTALL_NODE_FILE | bash -
+RUN apt-get install -qqy openssh-client zip unzip curl nodejs git;
 
 RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
 
+
+############# BEGIN LEIN CLEAN #####################
+FROM setup AS lein_clean
+
+ARG CDN_HOST
+ARG AWS_SECRET_ACCESS_KEY
+ARG AWS_ACCESS_KEY_ID
+
 WORKDIR /app
-RUN
+
 ADD project.clj project.clj
 ADD . .
-RUN lein clean
-RUN lein deps
 
-############# BEGIN CLOJURE UBERJAR BUILD #####################
-FROM deps AS clojure_uberjar
-#WORKDIR /app
+############# BEGIN LEIN DEPS #####################
+FROM lein_clean AS lein_deps
 
-ENV STANDALONE_APP=storefront-*-standalone.jar
-ENV BUILT_APP=storefront.jar
-ENV ZIPPED_APP=storefront.zip
-ENV DOCKERFILE=Dockerfile.full
-
-RUN lein uberjar
-
-RUN pwd
-RUN ls
-RUN ls target
-RUN mv target/$STANDALONE_APP target/$ZIPPED_APP
-RUN cd target && zip $ZIPPED_APP $BUILT_APP
-# NOTE: Didn't we just change dirs?
-RUN pwd
-RUN zip -r -g target/$ZIPPED_APP $DOCKERFILE
-RUN zip -r -g target/$ZIPPED_APP container_files/
-
-
-############# BEGIN ASSET BUILD #####################
-FROM node:current-alpine3.16 AS assets
-WORKDIR /app
-COPY --from=clojure_uberjar /app .
+ARG CDN_HOST
+ARG AWS_SECRET_ACCESS_KEY
+ARG AWS_ACCESS_KEY_ID
 
 RUN npm install && (which gulp || npm install -g gulp)
+
+RUN lein clean
+
+############# BEGIN ASSET BUILD #####################
+
+WORKDIR /app
+
+
+RUN pwd && ls
 RUN gulp compile-assets --host $CDN_HOST
 
+############# BEGIN CLOJURE UBERJAR BUILD #####################
+FROM lein_deps AS builder
 
+ARG AWS_SECRET_ACCESS_KEY
+ARG AWS_ACCESS_KEY_ID
+
+RUN lein clean
+RUN lein deps
+RUN lein uberjar
+
+RUN mv $STANDALONE_JAR $JAR_PATH
 
 ############# BEGIN POST-BUILD #####################
 FROM amazoncorretto:8 AS runner
 
+WORKDIR /app
+
 RUN curl -LO https://github.com/jmxtrans/jmxtrans-agent/releases/download/jmxtrans-agent-1.2.4/jmxtrans-agent-1.2.4.jar
 
-COPY --from=assets /app/target/storefront-*.jar storefront.jar
+COPY --from=builder $JAR_PATH $JAR_PATH
 COPY container_files /
-
-
 
 USER nobody
 CMD exec java -javaagent:/jmxtrans-agent-1.2.4.jar=/jmxtrans-agent.xml -server -XX:-OmitStackTraceInFastThrow -Xmx1024m -XX:MaxMetaspaceSize=128m -Xss1m -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -jar storefront.jar
