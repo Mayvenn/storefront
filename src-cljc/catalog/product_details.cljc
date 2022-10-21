@@ -558,7 +558,6 @@
                                                                       :faq/content answer})}))
       :carousel-images                    carousel-images
       :selected-picker                    selected-picker
-      :picker-data                        picker-data
       :accordion-v2?                      accordion-v2?}
      (when sku-price
        (if bf-2022-sale?
@@ -567,6 +566,10 @@
           :price-block/secondary      "each"}
          {:price-block/primary   (mf/as-money sku-price)
           :price-block/secondary "each"}))
+
+     (when-not pdp-accordion-picker?
+       {:picker-data picker-data})
+
      (when pdp-accordion-picker?
        (accordion-neue/accordion-query
         {:id                :pdp-picker
