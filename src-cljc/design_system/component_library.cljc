@@ -20,12 +20,6 @@
 (defn ^:private component-id->component-entry [component-id]
   (->> components-list (filter #(= component-id (:id %))) first))
 
-(def ^:private checkered-background
-  {:background-color    "#ffffff"
-   :background-image    "repeating-linear-gradient(45deg, #4427c111 25%, transparent 25%, transparent 75%, #4427c111 75%, #4427c111), repeating-linear-gradient(45deg, #4427c111 25%, #ffffff 25%, #ffffff 75%, #4427c111 75%, #4427c111)"
-   :background-position "0 0, 6px 6px"
-   :background-size     "12px 12px"})
-
 (c/defcomponent component
   [{:keys [current-component-id] :as props} _owner opts]
   [:div.grid
@@ -38,14 +32,12 @@
            [:li
             (merge {:key id}
                    (when (= id current-component-id)
-                     {:style checkered-background
-                      :class "bold"}))
+                     {:class "bold bg-checkerboard"}))
             [:a.block.inherit-color.p2
              (util/route-to e/navigate-design-system-component-library {:query-params {:id id}})
              title]]) components-list)]
-   [:div.p4
-    {:style (merge checkered-background
-                   {:grid-row "1 / 3"})}
+   [:div.p4.bg-checkerboard
+    {:style {:grid-row "1 / 3"}}
     [:div.border-dotted.border-p-color
 
      (when-let [{:keys [title id component-class]} (component-id->component-entry current-component-id)]

@@ -15,6 +15,13 @@
     background-repeat: "repeat";
 }
 
+.bg-checkerboard {
+    background-color:    #ffffff;
+    background-image:    repeating-linear-gradient(45deg, #4427c111 25%, transparent 25%, transparent 75%, #4427c111 75%, #4427c111), repeating-linear-gradient(45deg, #4427c111 25%, #ffffff 25%, #ffffff 75%, #4427c111 75%, #4427c111);
+    background-position: 0 0, 6px 6px;
+    background-size:     12px 12px;
+}
+
 :root {
     --p-color:     #4427c1;
 }
