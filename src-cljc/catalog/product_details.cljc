@@ -126,9 +126,9 @@
       (component/build zip/pdp-component data _))])
 
 (defcomponent info-face-open [{:keys [copy]} _ _]
-  [:div.shout.bold.content-3 copy])
+  [:div.shout.content-3.p2.bold copy])
 (defcomponent info-face-closed [{:keys [copy]} _ _]
-  [:div.shout.content-3 copy])
+  [:div.shout.content-3.p2 copy])
 (defcomponent info-contents [{:keys [id primary sections]} _ _]
   [:div.bg-cool-gray.p2
    {:key (str id "-tab")}
@@ -179,12 +179,12 @@
         :src   (str "https://ucarecdn.com/" (ui/ucare-img-id ucare-id) "/-/format/auto/")}]]]))
 
 (defcomponent picker-accordion-face-open [{:keys [facet-name swatch option-slug option-name]} _ _]
-  [:div.grid
+  [:div.grid.ml2.my2
    {:style {:grid-template-columns "4rem auto"}}
    [:div.shout.bold.content-3 facet-name]
    [:div.flex option-name]])
 (defcomponent picker-accordion-face-closed [{:keys [facet-name swatch option-slug option-name]} _ _]
-  [:div.grid
+  [:div.grid.ml2.my2
    {:style {:grid-template-columns "4rem auto"}}
    [:div.shout.content-3 facet-name]
    [:div.flex option-name]])
@@ -259,12 +259,13 @@
               shipping-and-guarantee)
             (if accordion-v2?
               ;; TODO make helper
-              (component/build accordion-neue/component
-                               (with :product-details-accordion data)
-                               {:opts
-                                {:accordion.drawer.open/face-component   info-face-open
-                                 :accordion.drawer.closed/face-component info-face-closed
-                                 :accordion.drawer/contents-component    info-contents}})
+              [:div.mx2-on-mb
+               (component/build accordion-neue/component
+                                (with :product-details-accordion data)
+                                {:opts
+                                 {:accordion.drawer.open/face-component   info-face-open
+                                  :accordion.drawer.closed/face-component info-face-closed
+                                  :accordion.drawer/contents-component    info-contents}})]
               (component/build tabbed-information/component data))
             (component/build catalog.M/non-hair-product-description data opts)
             [:div.hide-on-tb-dt.m3

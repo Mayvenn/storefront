@@ -32,19 +32,19 @@
     [:div.border-bottom.border-cool-gray
      (cond
        (not opened?)
-       [:a.block.inherit-color.flex.justify-between.p2
+       [:a.block.inherit-color.flex.justify-between.items-center
         ;; Button states: up, down, hidden
         (utils/fake-href accordion--opened
                          {:accordion/id accordion-id
                           :drawer-id    drawer-id})
         (c/build closed-face-component face)
-        [:div.flex.items-center
+        [:div.flex.items-center.p2
          ^:inline (svg/dropdown-arrow {:class  "fill-black"
                                        :height "16px"
                                        :width  "16px"})]]
 
        (and opened? closeable?)
-       [:a.block.inherit-color.flex.justify-between.p2
+       [:a.block.inherit-color.flex.justify-between.items-center
         ;; Button states: up, down, hidden
         (utils/fake-href accordion--closed
                          {:accordion/id accordion-id
@@ -56,7 +56,7 @@
                                        :width  "16px"})]]
 
        :else
-       [:div.p2 (c/build opened-face-component face)])
+       (c/build opened-face-component face))
      [:div
       #?(:cljs
          (when (not opened?)
@@ -78,9 +78,7 @@
          opts                           (c/get-opts this)]
      (when (and id (seq drawers))
        (c/html
-        [:div.mx2-on-mb
-         {:key id}
-         (c/elements drawer-component props :drawers :default opts)])))))
+        (c/elements drawer-component props :drawers :default opts))))))
 
 (defn <-
   [state id]
