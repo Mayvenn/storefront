@@ -152,6 +152,7 @@ exports['cljs-build'] = function cljsBuild(cb) {
 
 exports['copy-release-assets'] = copyReleaseAssets;
 function copyReleaseAssets(){
+  console.log("Copy Release Assets:", __dirname);
   return gulp.src(['./target/release/**'])
     .pipe(gulp.dest('./resources/public/'));
 }
@@ -163,6 +164,7 @@ function cleanHashedAssets() {
 
 exports['fix-source-map'] = fixSourceMap;
 async function fixSourceMap() {
+  console.log("fix source dir:", __dirname);
   var jsRootFiles = await rootJSFiles();
   jsRootFiles = jsRootFiles.map(fn => "resources/public/" + fn + ".map");
   await new Promise((resolve, reject) => {
@@ -180,6 +182,7 @@ async function fixSourceMap() {
 
 exports['save-git-sha-version'] = saveGitShaVersion;
 function saveGitShaVersion(cb) {
+  console.log("save git dir:", __dirname);
   exec('git show --pretty=format:%H -q', function (err, stdout) {
     if (err) {
       cb(err);

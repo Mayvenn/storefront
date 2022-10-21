@@ -48,8 +48,7 @@ RUN lein clean
 
 WORKDIR /app
 
-
-RUN pwd && echo "----\n" && ls
+RUN pwd && echo "----\n" && ls -a && echo "--TARGET--" && ls -a target
 RUN gulp compile-assets --host $CDN_HOST
 
 ############# BEGIN CLOJURE UBERJAR BUILD #####################
