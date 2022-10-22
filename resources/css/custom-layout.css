@@ -52,6 +52,11 @@
     text-overflow: ellipsis;
 }
 
+
+.flip-vertical {
+    transform: scaleY(-1);
+}
+
 :root {
     --error:          #ff004f;
     --yellow:         #ffc520;

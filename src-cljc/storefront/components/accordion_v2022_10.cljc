@@ -50,8 +50,7 @@
                          {:accordion/id accordion-id
                           :drawer-id    drawer-id})
         (c/build opened-face-component face)
-        [:div.flex.items-center
-         {:style {:transform "scaleY(-1)"}}
+        [:div.flex.items-center.p2.flip-vertical
          ^:inline (svg/dropdown-arrow {:class  "fill-black"
                                        :height "16px"
                                        :width  "16px"})]]
