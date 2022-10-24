@@ -126,9 +126,9 @@
       (component/build zip/pdp-component data _))])
 
 (defcomponent info-face-open [{:keys [copy]} _ _]
-  [:div.shout.content-3.p2.bold copy])
+  [:div.shout.content-3.px2.py4.bold copy])
 (defcomponent info-face-closed [{:keys [copy]} _ _]
-  [:div.shout.content-3.p2 copy])
+  [:div.shout.content-3.px2.py4 copy])
 (defcomponent info-contents [{:keys [id primary sections]} _ _]
   [:div.bg-cool-gray.p2
    {:key (str id "-tab")}
@@ -173,39 +173,51 @@
       [:img
        {:key   (str "product-details-" option-name "-" option-slug)
         :style {:transform "rotate(-45deg)"
-                :width     (str container-width "px")
-                :height    (str container-width "px")}
+                :width     (str (inc container-width) "px")
+                :height    (str (inc container-width) "px")}
         :alt   option-name
         :src   (str "https://ucarecdn.com/" (ui/ucare-img-id ucare-id) "/-/format/auto/")}]]]))
 
 (defcomponent picker-accordion-face-open [{:keys [facet-name swatch option-slug option-name]} _ _]
-  [:div.grid.ml2.my2
+  [:div.grid.ml2.py3.items-center
    {:style {:grid-template-columns "4rem auto"}}
-   [:div.shout.bold.content-3 facet-name]
-   [:div.flex option-name]])
+   [:div.shout.content-3.bold facet-name]
+   [:div.flex.items-center.gap-2
+    (when swatch
+      (diamond-swatch swatch option-slug option-name false nil 20))
+    option-name]])
 (defcomponent picker-accordion-face-closed [{:keys [facet-name swatch option-slug option-name]} _ _]
-  [:div.grid.ml2.my2
+  [:div.grid.ml2.py3.items-center
    {:style {:grid-template-columns "4rem auto"}}
    [:div.shout.content-3 facet-name]
-   [:div.flex option-name]])
-(defcomponent picker-accordion-contents [{:keys [swatches? options]} _ _]
-  [:div.flex.flex-wrap.gap-2.p2
-   (if swatches?
-     (for [{:keys [option-slug selected? option-name rectangle-swatch target]} options]
-       (diamond-swatch rectangle-swatch option-slug option-name selected? target 30))
-     (for [{:keys [copy selected target option-swatch]} options]
-       [(if target :a :div)
-        (merge {:style {:width  "2.5rem"
-                        :height "2.5rem"}
-                :class (str "border flex items-center justify-center"
-                            (if selected
-                              " border-p-color"
-                              " border-gray")
-                            (when target
-                              " inherit-color pointer"))}
-               (when target
-                 (apply utils/fake-href target)))
-        copy]))])
+   [:div.flex.items-center.gap-2
+    (when swatch
+      (diamond-swatch swatch option-slug option-name false nil 20))
+    option-name]])
+(defcomponent picker-accordion-contents [{:keys [swatches? options] :as picker-contents} _ _]
+  [:div.p2
+   [:div.flex.flex-wrap.gap-2
+    (if swatches?
+      (for [{:keys [option-slug selected? option-name rectangle-swatch target]} options]
+        (diamond-swatch rectangle-swatch option-slug option-name selected? target 30))
+      (for [{:keys [copy selected target option-swatch]} options]
+        [(if target :a :div)
+         (merge {:style {:width  "2.5rem"
+                         :height "2.5rem"}
+                 :class (str "border flex items-center justify-center"
+                             (if selected
+                               " border-p-color"
+                               " border-gray")
+                             (when target
+                               " inherit-color pointer"))}
+                (when target
+                  (apply utils/fake-href target)))
+         copy]))]
+   (when-let [{:keys [target id content]} (not-empty (with :link picker-contents))]
+     [:div.right-align
+      (ui/button-small-underline-primary
+       (assoc (apply utils/fake-href target) :data-test id)
+       content)])])
 
 (defcomponent component
   [{:keys [carousel-images
