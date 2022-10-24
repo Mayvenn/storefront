@@ -6,8 +6,9 @@ ARG CDN_HOST
 ARG AWS_SECRET_ACCESS_KEY
 ARG AWS_ACCESS_KEY_ID
 
+ENV JAR_FILENAME=storefront.jar
 ENV STANDALONE_JAR=/app/target/storefront-*-standalone.jar
-ENV JAR_PATH=/app/target/storefront.jar
+ENV JAR_PATH=/app/target/$JAR_FILENAME
 ENV NODE_VERSION=16.x
 ENV INSTALL_NODE_FILE=install-node.sh
 
@@ -48,7 +49,7 @@ RUN lein clean
 
 WORKDIR /app
 
-RUN pwd && echo "----\n" && ls -a && echo "--TARGET--" && ls -a target
+RUN pwd && echo "----\n" && ls -a && echo "-- TARGET 1 --"
 RUN gulp compile-assets --host $CDN_HOST
 
 ############# BEGIN CLOJURE UBERJAR BUILD #####################
@@ -63,6 +64,8 @@ RUN lein uberjar
 
 RUN mv $STANDALONE_JAR $JAR_PATH
 
+RUN pwd && echo "----\n" && ls -a && echo "-- TARGET 2 --" && ls -a target
+
 ############# BEGIN POST-BUILD #####################
 FROM amazoncorretto:8 AS runner
 
@@ -70,8 +73,8 @@ WORKDIR /app
 
 RUN curl -LO https://github.com/jmxtrans/jmxtrans-agent/releases/download/jmxtrans-agent-1.2.4/jmxtrans-agent-1.2.4.jar
 
-COPY --from=builder $JAR_PATH $JAR_PATH
+COPY --from=builder $JAR_PATH $JAR_FILENAME
 COPY container_files /
 
 USER nobody
-CMD exec java -javaagent:/jmxtrans-agent-1.2.4.jar=/jmxtrans-agent.xml -server -XX:-OmitStackTraceInFastThrow -Xmx1024m -XX:MaxMetaspaceSize=128m -Xss1m -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -jar storefront.jar
+CMD exec java -javaagent:/jmxtrans-agent-1.2.4.jar=/jmxtrans-agent.xml -server -XX:-OmitStackTraceInFastThrow -Xmx1024m -XX:MaxMetaspaceSize=128m -Xss1m -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -jar $JAR_FILENAME
