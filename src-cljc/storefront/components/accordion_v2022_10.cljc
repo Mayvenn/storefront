@@ -60,7 +60,7 @@
      [:div
       #?(:cljs
          (when (not opened?)
-           {:class "hide"}))
+           {:class "display-none"}))
       (c/build contents-component contents)]]))
 
 (c/defdynamic-component component
