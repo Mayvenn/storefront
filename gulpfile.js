@@ -19,14 +19,17 @@ var jsedn = require('jsedn');
 function run(cmd, cb) {
   var p = exec(cmd);
   p.stdout.on('data', function (data) {
+    // Route child process's (cmd) stdout to parent (this script)
     process.stdout.write(data.toString());
   });
 
   p.stderr.on('data', function (data) {
+    // Route child process's (cmd) stderr to parent (this script)
     process.stderr.write(data.toString());
   });
 
   p.on('exit', function (code) {
+    // Route child process exit sig to parent (this script)
     cb(code === 0 ? null : ('child process exited with code ' + code.toString()));
   });
 }
@@ -180,19 +183,17 @@ async function fixSourceMap() {
   });
 }
 
-function prn (command) {
-  exec(command, function(err, stdout){
-    console.log(stdout);
-  });
-}
+
+function noop(){}
 
 exports['save-git-sha-version'] = saveGitShaVersion;
 function saveGitShaVersion(cb) {
   console.log("save git dir:", __dirname);
-  prn("echo 'Current Dir!'");
-  prn("pwd");
-  prn("cd " + __dirname);
-  prn("echo 'END Current Dir!'");
+
+  run("echo 'Current Dir!'", noop);
+  run("pwd", noop);
+  run("cd " + __dirname, noop);
+  run("echo 'END Current Dir!'", noop);
 
   exec('git show --pretty=format:%H -q', function (err, stdout) {
     if (err) {
