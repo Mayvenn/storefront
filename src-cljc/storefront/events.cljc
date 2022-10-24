@@ -514,6 +514,8 @@
 (defpath navigate-customer-orders)
 
 (defpath initialize-product-details)
+(defpath pdp--picker-options--viewed)
+(defpath pdp--picker-options--selected)
 
 ;; ADVENTURE
 (defpath navigate-adventure)

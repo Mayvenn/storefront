@@ -25,7 +25,7 @@
 (c/defcomponent simple-contents [{:keys [copy]} _ _] [:div.bg-cool-gray.p2 copy])
 
 (c/defcomponent drawer-component
-  [{:keys [face contents opened? closeable? drawer-id accordion-id] :as drawer} _  opts]
+  [{:keys [face open-message contents opened? closeable? drawer-id accordion-id] :as drawer} _  opts]
   (let [{contents-component    :accordion.drawer/contents-component
          opened-face-component :accordion.drawer.open/face-component
          closed-face-component :accordion.drawer.closed/face-component} opts]
@@ -35,8 +35,9 @@
        [:a.block.inherit-color.flex.justify-between.items-center
         ;; Button states: up, down, hidden
         (utils/fake-href accordion--opened
-                         {:accordion/id accordion-id
-                          :drawer-id    drawer-id})
+                         {:accordion/id     accordion-id
+                          :drawer-id        drawer-id
+                          :callback-message open-message})
         (c/build closed-face-component face)
         [:div.flex.items-center.p2
          ^:inline (svg/dropdown-arrow {:class  "fill-black"
@@ -129,8 +130,9 @@
       (assoc-in (conj keypaths/accordion id :accordion/open-drawers)
                 #{drawer-id}))))
 
-;; (defmethod effects/perform-effects accordion--opened)
-;; Close the diff (opened' - opened)
+(defmethod effects/perform-effects accordion--opened
+  [_ _ {:keys [callback-message]} _ _]
+  (apply publish callback-message))
 
 (defmethod transitions/transition-state accordion--closed
   [_ _ {:accordion/keys [id] :keys [drawer-id]} state]
