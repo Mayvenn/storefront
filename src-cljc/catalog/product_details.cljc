@@ -168,7 +168,7 @@
                :height    (str size "px")
                :padding   "0"}
        :key   option-slug
-       :class (when selected? "border border-p-color")}
+       :class (when selected? "border border-width-2 border-s-color")}
       [:img
        {:key   (str "product-details-" option-name "-" option-slug)
         :style {:transform "rotate(-45deg)"
@@ -201,13 +201,13 @@
     (if swatches?
       (for [{:keys [option-slug selected? option-name rectangle-swatch target]} options]
         (diamond-swatch rectangle-swatch option-slug option-name selected? target 30))
-      (for [{:keys [copy selected target]} options]
+      (for [{:keys [copy selected? target]} options]
         [(if target :a :div)
          (merge {:style {:width  "2.5rem"
                          :height "2.5rem"}
                  :class (str "border flex items-center justify-center"
-                             (if selected
-                               " border-p-color"
+                             (if selected?
+                               " border-s-color border-width-2 bg-refresh-gray"
                                " border-gray")
                              (when target
                                " inherit-color pointer"))}
