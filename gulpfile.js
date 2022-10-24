@@ -183,6 +183,10 @@ async function fixSourceMap() {
 exports['save-git-sha-version'] = saveGitShaVersion;
 function saveGitShaVersion(cb) {
   console.log("save git dir:", __dirname);
+  exec("echo 'Current Dir!'");
+  exec("pwd");
+  exec("cd " + __dirname);
+  exec("echo 'END Current Dir!'");
   exec('git show --pretty=format:%H -q', function (err, stdout) {
     if (err) {
       cb(err);
