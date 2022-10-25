@@ -89,12 +89,12 @@
           "or 4 interest-free payments of $" [:span {:data-test "zip-payment-amount"}
                                               (calc-installment-amount sku-price)]
           " with "
-          qp-logo
           [:a.quadpay.mx1 {:href       "#"
                            :data-test  "zip-learn-more"
                            :aria-label "Learn more about Zip payments."
                            :on-click   (fn [e]
                                          (.preventDefault e)
                                          (show-modal))}
-           (ui/ucare-img {:width "14px" :alt ""} "6a84159e-900e-4dc4-8709-f922ec92ffa5")]])
+           [:span qp-logo
+            (ui/ucare-img {:width "14px" :alt ""} "6a84159e-900e-4dc4-8709-f922ec92ffa5")]]])
        [:div.hide (component/build widget-component {:full-amount sku-price} nil)]])))
