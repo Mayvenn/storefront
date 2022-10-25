@@ -595,7 +595,6 @@
          :allow-all-closed? true
          :allow-multi-open? true
          :open-drawers      (-> data (accordion-neue/<- :pdp-picker) :accordion/open-drawers)
-         :initial-open-drawers #{"color" "length"}
          :drawers           (let [{:keys [sku-quantity selected-length selected-color options]} picker-data]
                               [(let [color-options (->> options :hair/color (sort-by :filter/order))]
                                  {:id           "color"
