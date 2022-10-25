@@ -24,45 +24,53 @@
 (c/defcomponent simple-face-closed [{:keys [copy]} _ _] [:div.shout.content-3 copy])
 (c/defcomponent simple-contents [{:keys [copy]} _ _] [:div.bg-cool-gray.p2 copy])
 
-(c/defcomponent drawer-component
-  [{:keys [face open-message contents opened? closeable? drawer-id accordion-id] :as drawer} _  opts]
-  (let [{contents-component    :accordion.drawer/contents-component
-         opened-face-component :accordion.drawer.open/face-component
-         closed-face-component :accordion.drawer.closed/face-component} opts]
-    [:div.border-bottom.border-cool-gray
-     (cond
-       (not opened?)
-       [:a.block.inherit-color.flex.justify-between.items-center
-        ;; Button states: up, down, hidden
-        (utils/fake-href accordion--opened
-                         {:accordion/id     accordion-id
-                          :drawer-id        drawer-id
-                          :callback-message open-message})
-        (c/build closed-face-component face)
-        [:div.flex.items-center.p2
-         ^:inline (svg/dropdown-arrow {:class  "fill-black"
-                                       :height "16px"
-                                       :width  "16px"})]]
+(c/defdynamic-component drawer-component
+  (did-update
+   [this]
+   (let [{:keys [opened? open-message] :as props} (c/get-props this)]
+     (when (and open-message
+                opened?)
+       (apply publish open-message))))
+  (render
+   [this]
+   (let [{:keys [face contents opened? closeable?
+                 drawer-id accordion-id] :as drawer}                     (c/get-props this)
+         {contents-component    :accordion.drawer/contents-component
+          opened-face-component :accordion.drawer.open/face-component
+          closed-face-component :accordion.drawer.closed/face-component} (c/get-opts this)]
+     (c/html [:div.border-bottom.border-cool-gray
+              (cond
+                (not opened?)
+                [:a.block.inherit-color.flex.justify-between.items-center
+                 ;; Button states: up, down, hidden
+                 (utils/fake-href accordion--opened
+                                  {:accordion/id accordion-id
+                                   :drawer-id    drawer-id})
+                 (c/build closed-face-component face)
+                 [:div.flex.items-center.p2
+                  ^:inline (svg/dropdown-arrow {:class  "fill-black"
+                                                :height "16px"
+                                                :width  "16px"})]]
 
-       (and opened? closeable?)
-       [:a.block.inherit-color.flex.justify-between.items-center
-        ;; Button states: up, down, hidden
-        (utils/fake-href accordion--closed
-                         {:accordion/id accordion-id
-                          :drawer-id    drawer-id})
-        (c/build opened-face-component face)
-        [:div.flex.items-center.p2.flip-vertical
-         ^:inline (svg/dropdown-arrow {:class  "fill-black"
-                                       :height "16px"
-                                       :width  "16px"})]]
+                (and opened? closeable?)
+                [:a.block.inherit-color.flex.justify-between.items-center
+                 ;; Button states: up, down, hidden
+                 (utils/fake-href accordion--closed
+                                  {:accordion/id accordion-id
+                                   :drawer-id    drawer-id})
+                 (c/build opened-face-component face)
+                 [:div.flex.items-center.p2.flip-vertical
+                  ^:inline (svg/dropdown-arrow {:class  "fill-black"
+                                                :height "16px"
+                                                :width  "16px"})]]
 
-       :else
-       (c/build opened-face-component face))
-     [:div
-      #?(:cljs
-         (when (not opened?)
-           {:class "display-none"}))
-      (c/build contents-component contents)]]))
+                :else
+                (c/build opened-face-component face))
+              [:div
+               #?(:cljs
+                  (when (not opened?)
+                    {:class "display-none"}))
+               (c/build contents-component contents)]]))))
 
 (c/defdynamic-component component
   (did-mount
@@ -129,10 +137,6 @@
       (not (:accordion/allow-multi-open? accordion))
       (assoc-in (conj keypaths/accordion id :accordion/open-drawers)
                 #{drawer-id}))))
-
-(defmethod effects/perform-effects accordion--opened
-  [_ _ {:keys [callback-message]} _ _]
-  (apply publish callback-message))
 
 (defmethod transitions/transition-state accordion--closed
   [_ _ {:accordion/keys [id] :keys [drawer-id]} state]
