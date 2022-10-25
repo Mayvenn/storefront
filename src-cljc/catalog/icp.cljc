@@ -26,14 +26,6 @@
   (merge {:layer/type :shop-contact}
          layered/shop-contact-query))
 
-(defn ^:private vertical-squiggle-atom
-  [top]
-  (component/html
-   [:div.relative
-    [:div.absolute.col-12.flex.justify-center
-     {:style {:top top}}
-     ^:inline (svg/vertical-squiggle {:style {:height "72px"}})]]))
-
 (defn ^:private category-hero-query
   [category]
   ;; TODO(corey) icp heroes use #:category not #:copy for :description
