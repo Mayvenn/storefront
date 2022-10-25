@@ -118,7 +118,6 @@
 (defpath navigate-checkout-add)
 
 (defpath navigate-landing-page)
-(defpath navigate-stylist-social-media)
 
 ;; Wig Care Guides
 (defpath navigate-wigs-101-guide)
