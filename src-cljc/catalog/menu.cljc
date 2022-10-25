@@ -106,11 +106,11 @@
                                {:key "closures"
                                 :nav-message [events/navigate-category {:page/slug "virgin-closures" :catalog/category-id "0"}]
                                 :new? false
-                                :copy "Virgin Hair Closures"}
+                                :copy "Closures"}
                                {:key "frontals"
                                 :nav-message [events/navigate-category {:page/slug "virgin-frontals" :catalog/category-id "1"}]
                                 :new? false
-                                :copy "Virgin Hair Frontals"}
+                                :copy "Frontals"}
                                {:key "extensions"
                                 :nav-message [events/navigate-category {:page/slug "extensions" :catalog/category-id "28"}]
                                 :new? false

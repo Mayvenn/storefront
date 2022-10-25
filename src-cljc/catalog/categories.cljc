@@ -147,7 +147,7 @@
 
 
            :contentful/faq-id             :category-virgin-closures
-           :desktop-menu/title            "Virgin Hair Closures"
+           :desktop-menu/title            "Closures"
            :desktop-menu/order            2
            :homepage.ui-v2022-09/order    2
            :homepage.ui-v2022-09/image-id "e7d0859d-7e4f-42a5-abf0-12b3713264f7"
@@ -258,7 +258,7 @@
            :catalog/department            #{"hair"}
            :hair/family                   #{"frontals" "360-frontals"}
            :hair/color.process            #{"natural" "dyed"}
-           :desktop-menu/title            "Virgin Hair Frontals"
+           :desktop-menu/title            "Frontals"
            :desktop-menu/order            3
            :homepage.ui-v2022-09/order    3
            :homepage.ui-v2022-09/image-id "aae6c15c-00b3-43d0-be89-f4b9173212dc"
