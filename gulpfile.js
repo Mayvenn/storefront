@@ -29,7 +29,7 @@ function run(cmd, cb) {
   });
 
   p.on('exit', function (code) {
-    // Route child process exit sig to parent (this script)
+    // Route child process exit sig / error code to callback
     cb(code === 0 ? null : ('child process exited with code ' + code.toString()));
   });
 }
@@ -183,25 +183,33 @@ async function fixSourceMap() {
   });
 }
 
-
-function noop(){}
-
 exports['save-git-sha-version'] = saveGitShaVersion;
 function saveGitShaVersion(cb) {
-  console.log("save git dir:", __dirname);
-
-  run("echo 'Current Dir!'", noop);
-  run("pwd", noop);
-  run("cd " + __dirname, noop);
-  run("echo 'END Current Dir!'", noop);
-
-  exec('git show --pretty=format:%H -q', function (err, stdout) {
-    if (err) {
-      cb(err);
-    } else {
-      fs.writeFile('resources/client_version.txt', stdout, function (err) {
+  let git_sha;
+  exec("git rev-parse --git-dir", function (code) {
+    if (code != 0 && !argv.sha)
+    {
+      // We are not in a git directory, therefore, we need to be passed a sha
+      console.error("Current directory is not a git directory nor was a --sha passed.");
+      // If there is no sha, error
+      process.exit(code);
+    }
+    else if (argv.sha){
+      fs.writeFile('resources/client_version.txt', argv.sha, function (err) {
         if (err) return cb(err);
         return cb();
+      });
+    }
+    else {
+      exec('git show --pretty=format:%H -q', function (err, stdout) {
+        if (err) {
+          cb(err);
+        } else {
+          fs.writeFile('resources/client_version.txt', stdout, function (err) {
+            if (err) return cb(err);
+            return cb();
+          });
+        }
       });
     }
   });
@@ -311,5 +319,10 @@ function writeJsStats(cb) {
 }
 
 exports['cdn'] = gulp.series(cleanHashedAssets, fixSourceMap, revAssets, exports['fix-main-js-pointing-to-source-map'], exports['gzip']);
-
-exports['compile-assets'] = gulp.series(css, exports['minify-js'], exports['cljs-build'], copyReleaseAssets, exports['cdn'], saveGitShaVersion, writeJsStats);
+exports['compile-assets'] = gulp.series(exports['css'],
+                                        exports['minify-js'],
+                                        exports['cljs-build'],
+                                        exports['copy-release-assets'],
+                                        exports['cdn'],
+                                        exports['save-git-sha-version'],
+                                        exports['write-js-stats']);

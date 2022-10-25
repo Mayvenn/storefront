@@ -41,6 +41,7 @@ ARG CDN_HOST
 ARG AWS_SECRET_ACCESS_KEY
 ARG AWS_ACCESS_KEY_ID
 
+
 RUN npm install && (which gulp || npm install -g gulp)
 
 RUN lein clean
@@ -49,8 +50,12 @@ RUN lein clean
 
 WORKDIR /app
 
+
 RUN pwd && echo "----\n" && ls -a && echo "-- TARGET 1 --"
-RUN gulp compile-assets --host $CDN_HOST
+
+ARG GIT_SHA
+
+RUN gulp compile-assets --host $CDN_HOST --sha $GIT_SHA
 
 ############# BEGIN CLOJURE UBERJAR BUILD #####################
 FROM lein_deps AS builder
