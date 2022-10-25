@@ -16,32 +16,41 @@
 
 (defn ^:private content-example
   [{:keys [title img-uuid content target]}]
-  [:div.center.mx-auto.px3.py4
+  [:div.center.mx-auto.px3.py4.grid
+   {:style {:grid-template-rows "auto 700px 75px 30px"}}
    [:h3.proxima.title-1 title]
    [:div
     (ui/img {:src   img-uuid
              :alt   ""
-             :class "col-8"})
-    [:div.bg-pale-purple.proxima.content-1.mx-auto
+             :class "col-12"
+             :style {:max-height "100%"
+                     :object-fit "cover"
+                     :width      "100%"}})
+    [:div.bg-pale-purple.proxima.content-1
+     {:style {:grid-row "3 / 4"}}
      content]]
-   (ui/button-small-underline-primary {:href target}
+   (ui/button-small-underline-primary {:href  target
+                                       :class "my3"
+                                       :style {:grid-row "4 / 5"}}
                                       "Link to Post")])
 
 (defn ^:private content-example-desk
   [{:keys [title img-uuid content target]}]
   [:div.center.mx-auto.py4.grid.px1
-   {:style {:grid-template-rows "auto 400px 100px 30px"}}
+   {:style {:grid-template-rows "auto 400px 100px 30px"
+            :max-width          "320px"}}
    [:h3.proxima.title-1.shout
     title]
    (ui/img {:src   img-uuid
             :alt   ""
             :class "col-12"
-            :style {:object-fit "cover"
-                    :grid-row "2 / 3"}})
+            :style {:max-height "100%"
+                    :object-fit "cover"
+                    :width      "100%"}})
    [:div.bg-pale-purple.proxima.content-1.py1
     {:style {:grid-row "3 / 4"}}
     content]
-   (ui/button-small-underline-primary {:href target
+   (ui/button-small-underline-primary {:href  target
                                        :class "my3"
                                        :style {:grid-row "4 / 5"}}
                                       "Link to Post")])
@@ -60,7 +69,7 @@
    [:h2.title-1.canela.my3 "Deliverable Details"]
    [:div.mx3
     [:div.proxima.content-2.m3 "CONTENT MISSING"]
-    [:div.hide-on-mb.flex.mx3
+    [:div.hide-on-mb-tb.flex.mx3
      (ui/img {:src   "55276115-9ba6-4a25-aa9e-b511e5a72186"
               :alt   ""
               :class "col-6 my2"})
@@ -75,7 +84,7 @@
       [:h3.proxima.title-1.bold.my2.shout.left-align.mx3 "Note:"]
       [:div.proxima.content-2.left-align.mx3 "Do not include any text, supers, overlays, watermarks, or heavy filtering on your videos. "
        "We will add any on-crean notes needed during editing. Include (via email) which username you'd like us to credit."]]]
-    [:div.hide-on-tb-dt
+    [:div.hide-on-dt
      (ui/img {:src   "55276115-9ba6-4a25-aa9e-b511e5a72186"
               :alt   ""
               :class "col-8 my2"})
@@ -93,7 +102,7 @@
     [:div.proxima.content-2
      "These notes allow us to showcase both your skillset and the range of capabilities that are possible with Mayvenn products."]]
    [:h2.title-1.canela.my8 "Content Examples"]
-   [:div.hide-on-mb.flex
+   [:div.hide-on-mb-tb.flex
     (content-example-desk {:title    "Timelapse"
                            :img-uuid "8527101d-24a6-4729-ab33-cc808c350118"
                            :content  "Videos that show the entire install and styling process"
@@ -110,7 +119,7 @@
                            :img-uuid "c7fabb3b-2c5a-4351-a93b-8f1d92fbc932"
                            :content  "Videos that focus on the client's experience and reviews"
                            :target   nil})]
-   [:div.hide-on-tb-dt
+   [:div.hide-on-dt
     (content-example {:title    "Timelapse"
                       :img-uuid "8527101d-24a6-4729-ab33-cc808c350118"
                       :content  "Videos that show the entire install and styling process"
