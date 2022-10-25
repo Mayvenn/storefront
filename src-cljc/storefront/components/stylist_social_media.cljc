@@ -16,44 +16,21 @@
 
 (defn ^:private content-example
   [{:keys [title img-uuid content target]}]
-  [:div.center.mx-auto.px3.py4.grid
-   {:style {:grid-template-rows "auto 700px 75px 30px"}}
+  [:div.grid.overflow-hidden
+   {:style {:grid-template-rows "auto 500px 120px 30px"
+            :flex               1}}
    [:h3.proxima.title-1 title]
-   [:div
-    (ui/img {:src   img-uuid
-             :alt   ""
-             :class "col-12"
-             :style {:max-height "100%"
-                     :object-fit "cover"
-                     :width      "100%"}})
-    [:div.bg-pale-purple.proxima.content-1
-     {:style {:grid-row "3 / 4"}}
-     content]]
-   (ui/button-small-underline-primary {:href  target
-                                       :class "my3"
-                                       :style {:grid-row "4 / 5"}}
-                                      "Link to Post")])
-
-(defn ^:private content-example-desk
-  [{:keys [title img-uuid content target]}]
-  [:div.center.mx-auto.py4.grid.px1
-   {:style {:grid-template-rows "auto 400px 100px 30px"
-            :max-width          "320px"}}
-   [:h3.proxima.title-1.shout
-    title]
    (ui/img {:src   img-uuid
             :alt   ""
-            :class "col-12"
-            :style {:max-height "100%"
-                    :object-fit "cover"
-                    :width      "100%"}})
-   [:div.bg-pale-purple.proxima.content-1.py1
+            :class "container-size"
+            :style {:object-fit "cover"}})
+   [:div.bg-pale-purple.proxima.content-1.flex.items-center.justify-around.px3
     {:style {:grid-row "3 / 4"}}
     content]
-   (ui/button-small-underline-primary {:href  target
-                                       :class "my3"
-                                       :style {:grid-row "4 / 5"}}
-                                      "Link to Post")])
+   [:div.container-size.flex.items-center.justify-around
+    {:style {:grid-row "4 / 5"}}
+    (ui/button-small-underline-primary {:href target}
+                                       "Link to Post")]])
 
 (defn query [data] {})
 
@@ -102,24 +79,7 @@
     [:div.proxima.content-2
      "These notes allow us to showcase both your skillset and the range of capabilities that are possible with Mayvenn products."]]
    [:h2.title-1.canela.my8 "Content Examples"]
-   [:div.hide-on-mb-tb.flex
-    (content-example-desk {:title    "Timelapse"
-                           :img-uuid "8527101d-24a6-4729-ab33-cc808c350118"
-                           :content  "Videos that show the entire install and styling process"
-                           :target   nil})
-    (content-example-desk {:title    "Transitional"
-                           :img-uuid "9dda1c3f-6b2b-4c9c-9f81-65c774297655"
-                           :content  "Videos that have fun transitions of before and afters"
-                           :target   nil})
-    (content-example-desk {:title    "Transformational"
-                           :img-uuid "68ca7848-c81f-4adb-b8d0-fe8c03e3d7de"
-                           :content  "Videos that show transformations of the process or a before and after"
-                           :target   nil})
-    (content-example-desk {:title    "Client Focused"
-                           :img-uuid "c7fabb3b-2c5a-4351-a93b-8f1d92fbc932"
-                           :content  "Videos that focus on the client's experience and reviews"
-                           :target   nil})]
-   [:div.hide-on-dt
+   [:div.gap-2.mx2.flex.flex-column-on-mb
     (content-example {:title    "Timelapse"
                       :img-uuid "8527101d-24a6-4729-ab33-cc808c350118"
                       :content  "Videos that show the entire install and styling process"
