@@ -16,6 +16,13 @@
     :component-class accordion/component
     :opts            {:accordion.drawer.open/face-component   accordion/simple-face-open
                       :accordion.drawer.closed/face-component accordion/simple-face-closed
+                      :accordion.drawer/contents-component    accordion/simple-contents}}
+   {:title           "Accordion 2"
+    :id              "accordion2"
+    :query-ns        "example-accordion2"
+    :component-class accordion/component
+    :opts            {:accordion.drawer.open/face-component   accordion/simple-face-open
+                      :accordion.drawer.closed/face-component accordion/simple-face-closed
                       :accordion.drawer/contents-component    accordion/simple-contents}}])
 
 (defn ^:private component-id->component-entry [component-id]
@@ -31,9 +38,8 @@
     {:style {:grid-row "1 / 3"}}
     (map (fn [{:keys [id title]}]
            [:li
-            (merge {:key id}
-                   (when (= id current-component-id)
-                     {:class "bold bg-checkerboard"}))
+            (when (= id current-component-id)
+              {:class "bold bg-checkerboard"})
             [:a.block.inherit-color.p2
              (util/route-to e/navigate-design-system-component-library {:query-params {:id id}})
              title]]) components-list)]
@@ -43,6 +49,7 @@
 
      (when-let [{:keys [title id query-ns component-class]} (component-id->component-entry current-component-id)]
        [:div
+        {:key id}
         [:div title " (" id ")"]
         (c/build component-class (with query-ns props) {:opts opts})])]]])
 
@@ -56,6 +63,17 @@
                                    :allow-all-closed?    false
                                    :allow-multi-open?    false
                                    :initial-open-drawers #{"drawer-1"}
+                                   :drawers              [{:id       "drawer-1"
+                                                           :face     {:copy "foo"}
+                                                           :contents {:copy "bar"}}
+                                                          {:id       "drawer-2"
+                                                           :face     {:copy "food"}
+                                                           :contents {:copy "bard"}}]}))
+     (accordion/accordion-query (let [{:accordion/keys [open-drawers]} (accordion/<- app-state "example-accordion2")]
+                                  {:id                   "example-accordion2"
+                                   :open-drawers         open-drawers
+                                   :allow-all-closed?    true
+                                   :allow-multi-open?    true
                                    :drawers              [{:id       "drawer-1"
                                                            :face     {:copy "foo"}
                                                            :contents {:copy "bar"}}
