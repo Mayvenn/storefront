@@ -62,6 +62,8 @@
     transition: top 0.25s cubic-bezier(0.5, 0, 0.75, 0);
 }
 
+.hide-scroll-bar::-webkit-scrollbar {display: none;}
+
 video.hide-chromecast-icon::-internal-media-controls-overlay-cast-button {
     display: none;
 }

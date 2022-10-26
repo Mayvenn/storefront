@@ -2,6 +2,7 @@
   (:require [storefront.component :as c]
             [storefront.keypaths :as k]
             [storefront.components.accordion-v2022-10 :as accordion]
+            [storefront.components.carousel :as carousel]
             [storefront.platform.component-utils :as util]
             [storefront.events :as e]
             [mayvenn.visual.tools :refer [with within]]
@@ -23,7 +24,12 @@
     :component-class accordion/component
     :opts            {:accordion.drawer.open/face-component   accordion/simple-face-open
                       :accordion.drawer.closed/face-component accordion/simple-face-closed
-                      :accordion.drawer/contents-component    accordion/simple-contents}}])
+                      :accordion.drawer/contents-component    accordion/simple-contents}}
+   {:title           "Carousel"
+    :id              "carousel"
+    :query-ns        "example-carousel"
+    :component-class carousel/component
+    :opts            {:carousel/exhibit-component carousel/example-exhibit-component}}])
 
 (defn ^:private component-id->component-entry [component-id]
   (->> components-list (filter #(= component-id (:id %))) first))
@@ -79,7 +85,12 @@
                                                            :contents {:copy "bar"}}
                                                           {:id       "drawer-2"
                                                            :face     {:copy "food"}
-                                                           :contents {:copy "bard"}}]})))))
+                                                           :contents {:copy "bard"}}]}))
+     (within :example-carousel {:exhibits [{:class "bg-red"}
+                                           {:class "bg-blue"}
+                                           {:class "bg-green"}
+                                           {:class "bg-yellow"}
+                                           {:class "bg-purple"}]}))))
 
 (defn ^:export built-component
   [app-state _opts]
