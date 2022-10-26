@@ -40,7 +40,7 @@
   [_ _ _ _ state]
   #?(:cljs (kustomer/open-conversation)))
 
-(component/defcomponent bug-template [{:live-help-bug/keys [id target]} _opts _owner]
+(component/defcomponent bug-template [{:live-help-bug/keys [id target]} _owner _opts]
   (when id
     [:div.fixed.bottom-0.right-0.m4
      (merge {:data-test id}

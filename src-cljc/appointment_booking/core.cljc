@@ -179,7 +179,7 @@
                       {:state/checked "checked"})))))))
 
 
-(c/defcomponent modal-body [data _opts _owner]
+(c/defcomponent modal-body [data _owner _opts]
   [:div.flex.flex-auto.flex-column.items-center.stretch
    [:div.col-10.py8
     (titles/canela (with :top-third.title data))]
@@ -194,7 +194,7 @@
    [:div.col-6.pt4
     (actions/medium-tertiary (with :skip.action data))]])
 
-(c/defcomponent body [data _opts _owner]
+(c/defcomponent body [data _owner _opts]
   [:div.flex.flex-auto.flex-column.items-center.stretch
    [:div.col-10.py8
     (titles/canela-left (with :top-third.title data))]
