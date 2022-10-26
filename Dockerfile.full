@@ -86,7 +86,6 @@ ENV INSTALL_NODE_FILE=install-node.sh
 ARG AWS_SECRET_ACCESS_KEY
 ARG AWS_ACCESS_KEY_ID
 
-RUN lein clean
 RUN lein deps
 RUN lein uberjar
 
