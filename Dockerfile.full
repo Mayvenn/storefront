@@ -59,8 +59,6 @@ ENV INSTALL_NODE_FILE=install-node.sh
 
 RUN npm install && (which gulp || npm install -g gulp)
 
-RUN lein clean
-
 ############# BEGIN ASSET BUILD #####################
 
 ENV JAR_FILENAME=storefront.jar
@@ -110,7 +108,7 @@ RUN echo $JAR_PATH $JAR_FILENAME
 RUN echo $JAR_PATH $JAR_FILENAME
 RUN echo $JAR_PATH $JAR_FILENAME
 COPY --from=builder $JAR_PATH /$JAR_FILENAME
-COPY container_files /
+COPY --from=builder /app/container_files /
 
 RUN curl -LO https://github.com/jmxtrans/jmxtrans-agent/releases/download/jmxtrans-agent-1.2.4/jmxtrans-agent-1.2.4.jar
 
