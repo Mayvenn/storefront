@@ -257,14 +257,13 @@
             (component/build product-summary-organism data)
             [:div.px2
              (component/build picker/component picker-data opts)]
-            [:div
-             (component/build accordion-neue/component
-                              (with :pdp-picker data)
-                              {:opts
-                               {:accordion.drawer.open/face-component   picker-accordion-face-open
-                                :accordion.drawer.closed/face-component picker-accordion-face-closed
-                                :accordion.drawer/contents-component    picker-accordion-contents}})]
-            [:div
+            (component/build accordion-neue/component
+                             (with :pdp-picker data)
+                             {:opts
+                              {:accordion.drawer.open/face-component   picker-accordion-face-open
+                               :accordion.drawer.closed/face-component picker-accordion-face-closed
+                               :accordion.drawer/contents-component    picker-accordion-contents}})
+            [:div.mt4
              (cond
                unavailable? unavailable-button
                sold-out?    sold-out-button
@@ -272,14 +271,12 @@
             (when (products/stylist-only? product)
               shipping-and-guarantee)
             (if accordion-v2?
-              ;; TODO make helper
-              [:div.mx2-on-mb
-               (component/build accordion-neue/component
-                                (with :product-details-accordion data)
-                                {:opts
-                                 {:accordion.drawer.open/face-component   info-face-open
-                                  :accordion.drawer.closed/face-component info-face-closed
-                                  :accordion.drawer/contents-component    info-contents}})]
+              (component/build accordion-neue/component
+                               (with :product-details-accordion data)
+                               {:opts
+                                {:accordion.drawer.open/face-component   info-face-open
+                                 :accordion.drawer.closed/face-component info-face-closed
+                                 :accordion.drawer/contents-component    info-contents}})
               (component/build tabbed-information/component data))
             (component/build catalog.M/non-hair-product-description data opts)
             [:div.hide-on-tb-dt.m3

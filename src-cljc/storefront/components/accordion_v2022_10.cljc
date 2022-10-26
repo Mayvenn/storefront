@@ -87,7 +87,8 @@
          opts                           (c/get-opts this)]
      (when (and id (seq drawers))
        (c/html
-        (c/elements drawer-component props :drawers :default opts))))))
+        [:div.border-top.border-cool-gray
+         (c/elements drawer-component props :drawers :default opts)])))))
 
 (defn <-
   [state id]
