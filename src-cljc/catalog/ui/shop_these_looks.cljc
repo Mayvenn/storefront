@@ -27,7 +27,7 @@
   [{:shop-these-looks/keys [row-1 row-2]} _ _]
   [:div.my10.max-1080.mx-auto
    [:h2.title-1.canela.center.mb4 "Fresh Looks for Fall"]
-   [:div.shop-these-looks.flex.gap-2
+   [:div.shop-these-looks
     [:div.shop-these-looks-spacer]
     (map-indexed (fn [ix e]
                    (entry ix
