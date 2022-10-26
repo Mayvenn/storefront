@@ -49,9 +49,9 @@
 
      (when-let [{:keys [title id query-ns component-class]} (component-id->component-entry current-component-id)]
        [:div
-        {:key id}
         [:div title " (" id ")"]
-        (c/build component-class (with query-ns props) {:opts opts})])]]])
+        (c/build component-class (with query-ns props) {:opts opts
+                                                        :key  id})])]]])
 
 (defn query [app-state]
   (when-let [component-id (-> app-state (get-in k/navigation-query-params) :id component-id->component-entry :id)]
