@@ -417,6 +417,11 @@
    [:svg opts
     ^:inline (svg-xlink "vertical-squiggle")]))
 
+(defn vertical-blackline [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "blackline")]))
+
 (defn map-pin [opts]
   (component/html
    [:svg opts
