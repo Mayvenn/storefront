@@ -12,6 +12,7 @@
 (def components-list
   [{:title           "Accordion"
     :id              "accordion"
+    :query-ns        "example-accordion"
     :component-class accordion/component
     :opts            {:accordion.drawer.open/face-component   accordion/simple-face-open
                       :accordion.drawer.closed/face-component accordion/simple-face-closed
@@ -26,7 +27,7 @@
    {:style {:grid-template-columns "150px auto"
             :grid-template-rows    "1fr 1fr"
             :min-height            "90vh"}}
-   [:ul.p0
+   [:ul.p0.list-style-none
     {:style {:grid-row "1 / 3"}}
     (map (fn [{:keys [id title]}]
            [:li
@@ -40,11 +41,10 @@
     {:style {:grid-row "1 / 3"}}
     [:div.border-dotted.border-p-color
 
-     (when-let [{:keys [title id component-class]} (component-id->component-entry current-component-id)]
+     (when-let [{:keys [title id query-ns component-class]} (component-id->component-entry current-component-id)]
        [:div
         [:div title " (" id ")"]
-        ;; TODO: don't hard code namespace ("example-accordion")
-        (c/build component-class (with "example-accordion" props) {:opts opts})])]]])
+        (c/build component-class (with query-ns props) {:opts opts})])]]])
 
 (defn query [app-state]
   (when-let [component-id (-> app-state (get-in k/navigation-query-params) :id component-id->component-entry :id)]
