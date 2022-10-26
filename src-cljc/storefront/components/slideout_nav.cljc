@@ -79,21 +79,22 @@
 
 (defn ^:private menu-row
   [{:slide-out-nav-menu-item/keys [target nested? id label-icon new-primary primary]}]
-  (component/html
-   [:li {:key id}
-    [:div.py3
-     [:a.block.inherit-color.flex.items-center.content-1.proxima
-      (merge {:data-test id}
-             (cond
-               (map? target) target
-               nested?       (apply utils/fake-href target)
-               :else         (apply utils/route-to target)))
-      [:div.col-2.px2.flex.items-center.justify-end
-       (when new-primary [:div.title-3.proxima.center.shout new-primary])
-       (when label-icon (svg/symbolic->html [label-icon {:style {:width "1em" :height "1em"}}]))]
-      (if nested?
-        (caretize-content primary)
-        [:span.medium.flex-auto primary])]]]))
+  (when id
+    (component/html
+     [:li {:key id}
+      [:div.py3
+       [:a.block.inherit-color.flex.items-center.content-1.proxima
+        (merge {:data-test id}
+               (cond
+                 (map? target) target
+                 nested?       (apply utils/fake-href target)
+                 :else         (apply utils/route-to target)))
+        [:div.col-2.px2.flex.items-center.justify-end
+         (when new-primary [:div.title-3.proxima.center.shout new-primary])
+         (when label-icon (svg/symbolic->html [label-icon {:style {:width "1em" :height "1em"}}]))]
+        (if nested?
+          (caretize-content primary)
+          [:span.medium.flex-auto primary])]]])))
 
 (defn ^:private content-row
   [{:slide-out-nav-content-item/keys [id primary target]}]
