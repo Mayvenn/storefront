@@ -97,7 +97,7 @@ COPY --from=builder /app/resources/public/cdn /resources/public/cdn
 
 ARG AWS_SECRET_ACCESS_KEY
 ARG AWS_ACCESS_KEY_ID
-ARG ASSET_S3_BUCKET
+ARG ASSETS_S3_BUCKET
 
 RUN aws s3 sync /resources/public/cdn \
                 s3://$ASSETS_S3_BUCKET/cdn \
