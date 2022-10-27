@@ -124,7 +124,7 @@ RUN echo $JAR_PATH $JAR_FILENAME
 RUN echo $JAR_PATH $JAR_FILENAME
 COPY --from=builder $JAR_PATH /$JAR_FILENAME
 COPY --from=builder /app/container_files /
-COPY --from=asset_uploader /app/resources/public/cdn /resources/public/cdn
+# COPY --from=asset_uploader /app/resources/public/cdn /resources/public/cdn
 
 RUN curl -LO https://github.com/jmxtrans/jmxtrans-agent/releases/download/jmxtrans-agent-1.2.4/jmxtrans-agent-1.2.4.jar
 
