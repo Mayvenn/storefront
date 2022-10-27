@@ -89,6 +89,17 @@
         nav-stack   (get-in app-state stack-keypath nil)]
     (take max-nav-stack-depth (conj nav-stack item))))
 
+(defn ^:private str->int [s radix]
+  (js/parseInt s radix))
+
+(defmethod transition-state events/app-start
+  [_ _ _ app-state]
+  (let [session-n (-> (get-in app-state keypaths/session-id) (subs 0 2) (str->int 36))]
+    (cond-> app-state
+      (and (= 1 (mod session-n 2))
+           (not (contains? (set (get-in app-state keypaths/features)) :bundle-sets-in-sub-menu)))
+      (assoc-in (conj keypaths/features :bundle-sets-in-sub-menu) true))))
+
 (defmethod transition-state events/navigation-save [_ _ stack-item app-state]
   ;; Going to a new page; add an element to the undo stack, and discard the redo stack
   (let [nav-undo-stack (push-nav-stack app-state keypaths/navigation-undo-stack stack-item)]
@@ -542,7 +553,8 @@
   (clear-flash app-state))
 
 (defmethod transition-state events/bucketed-for [_ event {:keys [experiment]} app-state]
-  (update-in app-state keypaths/experiments-bucketed conj experiment))
+  (-> app-state
+      (update-in keypaths/experiments-bucketed conj experiment)))
 
 (defmethod transition-state events/enable-feature [_ event {:keys [feature]} app-state]
   (cond-> app-state

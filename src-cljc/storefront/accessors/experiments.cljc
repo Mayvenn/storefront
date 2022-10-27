@@ -133,3 +133,7 @@
 (defn carousel-redesign?
   [data]
   (display-feature? data "carousel-redesign"))
+
+(defn bundle-sets-in-sub-menu?
+  [data]
+  (display-feature? data "bundle-sets-in-sub-menu"))

@@ -10,7 +10,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
             [storefront.transitions :as transitions]
-            [ui.molecules :as ui-molecules]))
+            [ui.molecules :as ui-molecules]
+            [storefront.accessors.experiments :as experiments]))
 
 ;;NOTE Used by slideout-nav
 
@@ -95,26 +96,32 @@
    :return-link/copy          "Back"
    :return-link/id            "back-from-hair-shop"
    :menu/title                "Hair Shop"
-   :menu/options              [{:key "wigs"
-                                :nav-message [events/navigate-category {:page/slug "wigs" :catalog/category-id "13"}]
-                                :new? false
-                                :copy "Wigs"}
-                               {:key "hair-bundles"
-                                :nav-message [events/navigate-category {:page/slug "human-hair-bundles" :catalog/category-id "27"}]
-                                :new? false
-                                :copy "Hair Bundles"}
-                               {:key "closures"
-                                :nav-message [events/navigate-category {:page/slug "virgin-closures" :catalog/category-id "0"}]
-                                :new? false
-                                :copy "Closures"}
-                               {:key "frontals"
-                                :nav-message [events/navigate-category {:page/slug "virgin-frontals" :catalog/category-id "1"}]
-                                :new? false
-                                :copy "Frontals"}
-                               {:key "extensions"
-                                :nav-message [events/navigate-category {:page/slug "extensions" :catalog/category-id "28"}]
-                                :new? false
-                                :copy "Hair Extensions"}]})
+   :menu/options              (concat
+                               [{:key "wigs"
+                                 :nav-message [events/navigate-category {:page/slug "wigs" :catalog/category-id "13"}]
+                                 :new? false
+                                 :copy "Wigs"}
+                                {:key "hair-bundles"
+                                 :nav-message [events/navigate-category {:page/slug "human-hair-bundles" :catalog/category-id "27"}]
+                                 :new? false
+                                 :copy "Hair Bundles"}
+                                {:key "closures"
+                                 :nav-message [events/navigate-category {:page/slug "virgin-closures" :catalog/category-id "0"}]
+                                 :new? false
+                                 :copy "Closures"}
+                                {:key "frontals"
+                                 :nav-message [events/navigate-category {:page/slug "virgin-frontals" :catalog/category-id "1"}]
+                                 :new? false
+                                 :copy "Frontals"}
+                                {:key "extensions"
+                                 :nav-message [events/navigate-category {:page/slug "extensions" :catalog/category-id "28"}]
+                                 :new? false
+                                 :copy "Hair Extensions"}]
+                               (when (experiments/bundle-sets-in-sub-menu? data)
+                                 [{:key "bundle-sets"
+                                   :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]
+                                   :new? false
+                                   :copy "Bundle Sets"}] ))})
 
 (defn wigs-query [data]
   {:return-link/event-message [events/menu-home]

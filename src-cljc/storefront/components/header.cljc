@@ -356,20 +356,25 @@
    :header-menu-item/navigation-target "#" ; needed for tab navigation through menu
    :header-menu-item/content           "Hair Shop"
    :header-menu-item/id                "desktop-hair-shop"
-   :flyout/items                       (->> (get-in data keypaths/categories)
-                                            (filter :desktop-menu/order)
-                                            (filter (fn [category]
-                                                      (or (auth/stylist? (auth/signed-in data))
-                                                          (not (-> category
-                                                                   :catalog/department
-                                                                   (contains? "stylist-exclusives"))))))
-                                            (sort-by :desktop-menu/order)
-                                            (mapv (fn category->icp-flyout-option
-                                                    [{:as category :keys [:page/slug desktop-menu/title category/new?]}]
-                                                    {:key         slug
-                                                     :nav-message [events/navigate-category category]
-                                                     :copy        title
-                                                     :new?        new?})))
+   :flyout/items                       (concat (->> (get-in data keypaths/categories)
+                                                    (filter :desktop-menu/order)
+                                                    (filter (fn [category]
+                                                              (or (auth/stylist? (auth/signed-in data))
+                                                                  (not (-> category
+                                                                           :catalog/department
+                                                                           (contains? "stylist-exclusives"))))))
+                                                    (sort-by :desktop-menu/order)
+                                                    (mapv (fn category->icp-flyout-option
+                                                            [{:as category :keys [:page/slug desktop-menu/title category/new?]}]
+                                                            {:key         slug
+                                                             :nav-message [events/navigate-category category]
+                                                             :copy        title
+                                                             :new?        new?})))
+                                               (when (experiments/bundle-sets-in-sub-menu? data)
+                                                 [{:key         :bundle-sets
+                                                   :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]
+                                                   :copy        "Bundle Sets"
+                                                   :new?        false}]))
    :flyout/id                          (when (get-in data keypaths/shop-a-la-carte-menu-expanded)
                                          "shop-a-la-carte-menu-expanded")})
 
@@ -416,10 +421,11 @@
                                          "shop-wigs-menu-expanded")})
 
 (defn basic-query [data]
-  (let [store         (marquee/query data)
-        site          (sites/determine-site data)
-        signed-in     (auth/signed-in data)
-        bf-2022-sale? (experiments/bf-2022-sale? data)]
+  (let [store                    (marquee/query data)
+        site                     (sites/determine-site data)
+        signed-in                (auth/signed-in data)
+        bf-2022-sale?            (experiments/bf-2022-sale? data)
+        bundle-sets-in-sub-menu? (experiments/bundle-sets-in-sub-menu? data)]
     {:signed-in                   signed-in
      :on-taxon?                   (get-in data keypaths/current-traverse-nav)
      :promo-banner                (promo-banner/query data)
@@ -463,10 +469,11 @@
                                     :slide-out-nav-menu-item/nested? true
                                     :slide-out-nav-menu-item/id      "menu-hair-shop"
                                     :slide-out-nav-menu-item/primary "Hair Shop"}
-                                   {:slide-out-nav-menu-item/target  [events/menu-list {:menu-type :shop-bundle-sets}]
-                                    :slide-out-nav-menu-item/nested? true
-                                    :slide-out-nav-menu-item/id      "menu-shop-by-bundle-sets"
-                                    :slide-out-nav-menu-item/primary "Bundle Sets"}
+                                   (when-not bundle-sets-in-sub-menu?
+                                     {:slide-out-nav-menu-item/target  [events/menu-list {:menu-type :shop-bundle-sets}]
+                                      :slide-out-nav-menu-item/nested? true
+                                      :slide-out-nav-menu-item/id      "menu-shop-by-bundle-sets"
+                                      :slide-out-nav-menu-item/primary "Bundle Sets"})
                                    {:slide-out-nav-menu-item/target  [events/menu-list {:menu-type :wigs}]
                                     :slide-out-nav-menu-item/id      "menu-shop-wigs"
                                     :slide-out-nav-menu-item/nested? true
@@ -500,9 +507,10 @@
      :desktop-menu/items (concat [{:header-menu-item/navigation-target [events/navigate-home]
                                    :header-menu-item/id                "desktop-home"
                                    :header-menu-item/content           "Home"}]
-                                 [(hair-shop-query data)
-                                  (shop-bundle-sets-query data)
-                                  (shop-wigs-query data)]
+                                 [(hair-shop-query data)]
+                                 (when-not bundle-sets-in-sub-menu?
+                                   [(shop-bundle-sets-query data)])
+                                 [(shop-wigs-query data)]
                                  [{:header-menu-item/navigation-target [events/navigate-landing-page {:landing-page-slug "new-arrivals"}]
                                    :header-menu-item/id                "desktop-new-arrivals"
                                    :header-menu-item/content           "New Arrivals!"}]
