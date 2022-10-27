@@ -14,11 +14,10 @@ ENV NODE_VERSION=16.x
 ENV INSTALL_NODE_FILE=install-node.sh
 
 RUN apt-get update;
-RUN curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION > $INSTALL_NODE_FILE
-RUN chmod +x $INSTALL_NODE_FILE
 
-RUN cat $INSTALL_NODE_FILE | bash -
-RUN apt-get install -qqy openssh-client zip unzip curl nodejs git;
+RUN curl -sL https://deb.nodesource.com/setup_$NODE_VERSION | bash -
+RUN apt-get install -qqy openssh-client zip unzip curl git nodejs;
+
 
 RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
 
@@ -96,12 +95,17 @@ FROM amazon/aws-cli AS asset_uploader
 
 COPY --from=builder /app/resources/public/cdn /resources/public/cdn
 
+ARG AWS_SECRET_ACCESS_KEY
+ARG AWS_ACCESS_KEY_ID
+ARG ASSET_S3_BUCKET
+
 RUN aws s3 sync /resources/public/cdn \
-                s3://production-storefrontassetss3bucket-1myr1e5n7cfxh/cdn \
+                $ASSETS_S3_BUCKET/cdn \
+                --debug \
                 --acl public-read \
                 --content-encoding gzip \
                 --cache-control "max-age=315360000" \
-                --expires $(date --rfc-2822 -d "$now + 10 years")
+                --expires $(date --iso-8601 -d "$now + 10 years")
 
 
 ############# BEGIN POST-BUILD #####################
