@@ -166,7 +166,7 @@
                                             (filter sort-key)
                                             (filter (partial auth/permitted-category? data)))))
         non-category-links   (concat (if (and shop?
-                                            (not remove-free-install?))
+                                              (not remove-free-install?))
                                        [{:title       "Start Hair Quiz"
                                          :sort-order  1
                                          :id          "quiz-unified-fi"
@@ -179,15 +179,19 @@
                                          :sort-order  1
                                          :id          "sunset-fi"
                                          :nav-message [events/navigate-landing-page {:landing-page-slug "free-install"}]}])
-                                   (when (not classic?)
-                                     [{:title       "Shop By Look"
-                                       :sort-order  3
-                                       :id          "shop-by-look"
-                                       :nav-message [events/navigate-shop-by-look {:album-keyword :look}]}
-                                      {:title       "Shop Bundle Sets"
-                                       :sort-order  4
-                                       :id          "shop-bundle-sets"
-                                       :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]}]))
+                                     (when (not classic?)
+                                       [{:title       "Shop By Look"
+                                         :sort-order  3
+                                         :id          "shop-by-look"
+                                         :nav-message [events/navigate-shop-by-look {:album-keyword :look}]}])
+                                     [{:title       "Straight Bundle Sets"
+                                       :sort-order  9
+                                       :id          "shop-straight-bundle-sets"
+                                       :nav-message [events/navigate-shop-by-look {:album-keyword :straight-bundle-sets}]}
+                                      {:title       "Wavy Curly Bundle Sets"
+                                       :sort-order  10
+                                       :id          "shop-wavy-curly-bundle-sets"
+                                       :nav-message [events/navigate-shop-by-look {:album-keyword :wavy-curly-bundle-sets}]}])
         links                (->> categories
                                 (mapv (partial category->link))
                                 (concat non-category-links)

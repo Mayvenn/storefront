@@ -982,7 +982,7 @@
 (def the-only-stylist-exclusive
   {:catalog/category-id       "14"
    :auth/requires             #{:stylist}
-   :footer/order              9
+   :footer/order              11
    :footer/title              "Stylist Exclusives"
    :header/title              "Stylist Exclusives"
    :copy/title                "Stylist Exclusives"
