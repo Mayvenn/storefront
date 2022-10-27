@@ -572,6 +572,7 @@
       (assoc _ :accordion-v2 (feature-flags/retrieve-flag ld "accordion-v2" :bool false))
       (assoc _ :bf-2022-sale (feature-flags/retrieve-flag ld "bf-2022-sale" :bool false))
       (assoc _ :pdp-accordion-picker (feature-flags/retrieve-flag ld "pdp-accordion-picker" :bool false))
+      (assoc _ :carousel-redesign (feature-flags/retrieve-flag ld "carousel-redesign" :bool false))
       (assoc-in-req-state req keypaths/features _)
       (h _))))
 

@@ -257,12 +257,8 @@
              (full-bleed-narrow
               (if carousel-redesign?
                 (component/build carousel-neue/component
-                                 {:exhibits [{:class "bg-red"}
-                                             {:class "bg-blue"}
-                                             {:class "bg-green"}
-                                             {:class "bg-yellow"}
-                                             {:class "bg-purple"}]}
-                                 {:opts {:carousel/exhibit-component carousel-neue/example-exhibit-component}})
+                                 (with :product-carousel data)
+                                 {:opts {:carousel/exhibit-component carousel-neue/carousel-image-component}})
                 [:div (carousel carousel-images product)]))]
             (component/build product-summary-organism data)
             [:div.px2
@@ -545,6 +541,7 @@
         shop?                     (or (= "shop" (get-in data keypaths/store-slug))
                                       (= "retail-location" (get-in data keypaths/store-experience)))
         hair?                     (accessors.products/hair? product)
+        wig?                      (->> product vector (select api.catalog/?wig) seq)
         faq                       (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
                                     (get-in data (conj keypaths/cms-faq pdp-faq-id)))
         selected-picker           (get-in data catalog.keypaths/detailed-product-selected-picker)
@@ -555,7 +552,8 @@
                                     (accordion-neue/<- data :product-details-accordion))
         picker-data               (picker/query data length-guide-image)
         bf-2022-sale?             (and (experiments/bf-2022-sale? data)
-                                       (:promo.clearance/eligible selected-sku))]
+                                       (:promo.clearance/eligible selected-sku))
+        carousel-redesign?        (experiments/carousel-redesign? data)]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
@@ -584,11 +582,18 @@
                                                                       :faq/content answer})}))
       :carousel-images                    carousel-images
       :selected-picker                    selected-picker
-      :accordion-v2?                      accordion-v2?
-      :carousel-redesign?                 (and (experiments/carousel-redesign? data)
-;; START HERE I'm using `select` incorrectly, I'm quite sure.
-                                               #_
-                                               (spice.core/spy (select api.catalog/?wig product)))}
+      :accordion-v2?                      accordion-v2?}
+     (when (and carousel-redesign? wig?)
+       {:product-carousel/exhibits (->> product
+                                                 (images/for-skuer images-catalog)
+                                                 (selector/match-all {:selector/strict? true}
+                                                                     {:use-case #{"carousel"}
+                                                                      :image/of #{"model" "product"}})
+                                                 (sort-by :order)
+                                                 (map (fn [{:keys [alt url]}]
+                                                        {:src url
+                                                         :alt alt})))
+        :carousel-redesign?        true})
      (when sku-price
        (if bf-2022-sale?
          {:price-block/primary-struck (mf/as-money sku-price)
@@ -618,22 +623,22 @@
                                   :contents
                                   {:swatches? true
                                    :facet     "color"
-                                   :options (->> color-options
-                                                 (map (fn [{:keys [option/slug option/name option/rectangle-swatch stocked?]}]
-                                                        (merge {:option-slug      slug
-                                                                :option-name      name
-                                                                :rectangle-swatch rectangle-swatch
-                                                                :selected?        (= (:option/slug selected-color) slug)}
-                                                               (when (-> selected-color :option/slug (not= slug))
-                                                                 {:target
-                                                                  [events/pdp|picker-options|selected
-                                                                   {:data             {:facet           "color"
-                                                                                       :options         (map :option/slug color-options)
-                                                                                       :selected-option slug}
-                                                                    :callback-message [events/control-product-detail-picker-option-select
-                                                                                       {:navigation-event events/navigate-product-details
-                                                                                        :selection        :hair/color
-                                                                                        :value            slug}]}]})))))}})
+                                   :options   (->> color-options
+                                                   (map (fn [{:keys [option/slug option/name option/rectangle-swatch stocked?]}]
+                                                          (merge {:option-slug      slug
+                                                                  :option-name      name
+                                                                  :rectangle-swatch rectangle-swatch
+                                                                  :selected?        (= (:option/slug selected-color) slug)}
+                                                                 (when (-> selected-color :option/slug (not= slug))
+                                                                   {:target
+                                                                    [events/pdp|picker-options|selected
+                                                                     {:data             {:facet           "color"
+                                                                                         :options         (map :option/slug color-options)
+                                                                                         :selected-option slug}
+                                                                      :callback-message [events/control-product-detail-picker-option-select
+                                                                                         {:navigation-event events/navigate-product-details
+                                                                                          :selection        :hair/color
+                                                                                          :value            slug}]}]})))))}})
                                (let [length-options (->> options
                                                          :hair/length
                                                          (sort-by :filter/order))]
