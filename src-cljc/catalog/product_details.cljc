@@ -37,6 +37,7 @@
             [storefront.accessors.products :as accessors.products]
             [storefront.accessors.sites :as sites]
             [storefront.component :as component :refer [defcomponent]]
+            [storefront.components.carousel :as carousel-neue]
             [storefront.components.money-formatters :as mf]
             [storefront.components.picker.picker :as picker]
             [storefront.components.tabbed-information :as tabbed-information]
@@ -230,7 +231,8 @@
            ugc
            faq-section
            add-to-cart
-           accordion-v2?] :as data} _ opts]
+           accordion-v2?
+           carousel-redesign?] :as data} _ opts]
   (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
     (if-not product
@@ -253,7 +255,15 @@
            [:div
             [:div
              (full-bleed-narrow
-              [:div (carousel carousel-images product)])]
+              (if carousel-redesign?
+                (component/build carousel-neue/component
+                                 {:exhibits [{:class "bg-red"}
+                                             {:class "bg-blue"}
+                                             {:class "bg-green"}
+                                             {:class "bg-yellow"}
+                                             {:class "bg-purple"}]}
+                                 {:opts {:carousel/exhibit-component carousel-neue/example-exhibit-component}})
+                [:div (carousel carousel-images product)]))]
             (component/build product-summary-organism data)
             [:div.px2
              (component/build picker/component picker-data opts)]
@@ -574,7 +584,11 @@
                                                                       :faq/content answer})}))
       :carousel-images                    carousel-images
       :selected-picker                    selected-picker
-      :accordion-v2?                      accordion-v2?}
+      :accordion-v2?                      accordion-v2?
+      :carousel-redesign?                 (and (experiments/carousel-redesign? data)
+;; START HERE I'm using `select` incorrectly, I'm quite sure.
+                                               #_
+                                               (spice.core/spy (select api.catalog/?wig product)))}
      (when sku-price
        (if bf-2022-sale?
          {:price-block/primary-struck (mf/as-money sku-price)
