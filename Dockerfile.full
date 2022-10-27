@@ -91,6 +91,19 @@ RUN lein uberjar
 
 RUN mv $STANDALONE_JAR $JAR_PATH
 
+############# BEGIN ASSET  #####################
+FROM amazon/aws-cli AS asset_uploader
+
+COPY --from=builder /app/resources/public/cdn /resources/public/cdn
+
+RUN aws s3 sync /resources/public/cdn \
+                s3://production-storefrontassetss3bucket-1myr1e5n7cfxh/cdn \
+                --acl public-read \
+                --content-encoding gzip \
+                --cache-control "max-age=315360000" \
+                --expires $(date --rfc-2822 -d "$now + 10 years")
+
+
 ############# BEGIN POST-BUILD #####################
 FROM amazoncorretto:8 AS runner
 
@@ -101,14 +114,13 @@ ENV JAR_PATH=$TARGET/storefront.jar
 ENV NODE_VERSION=16.x
 ENV INSTALL_NODE_FILE=install-node.sh
 
-
 RUN echo $JAR_PATH $JAR_FILENAME
 RUN echo $JAR_PATH $JAR_FILENAME
 RUN echo $JAR_PATH $JAR_FILENAME
 RUN echo $JAR_PATH $JAR_FILENAME
 COPY --from=builder $JAR_PATH /$JAR_FILENAME
 COPY --from=builder /app/container_files /
-COPY --from=builder /app/resources/public/cdn /resources/public/cdn
+COPY --from=asset_uploader /app/resources/public/cdn /resources/public/cdn
 
 RUN curl -LO https://github.com/jmxtrans/jmxtrans-agent/releases/download/jmxtrans-agent-1.2.4/jmxtrans-agent-1.2.4.jar
 

@@ -185,7 +185,6 @@ async function fixSourceMap() {
 
 exports['save-git-sha-version'] = saveGitShaVersion;
 function saveGitShaVersion(cb) {
-  let git_sha;
   exec("git rev-parse --git-dir", function (code) {
     if (code != 0 && !argv.sha)
     {
@@ -195,6 +194,7 @@ function saveGitShaVersion(cb) {
       process.exit(code);
     }
     else if (argv.sha){
+      console.log(argv.sha);
       fs.writeFile('resources/client_version.txt', argv.sha, function (err) {
         if (err) return cb(err);
         return cb();
