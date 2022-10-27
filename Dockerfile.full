@@ -124,7 +124,9 @@ RUN echo $JAR_PATH $JAR_FILENAME
 RUN echo $JAR_PATH $JAR_FILENAME
 COPY --from=builder $JAR_PATH /$JAR_FILENAME
 COPY --from=builder /app/container_files /
-# COPY --from=asset_uploader /app/resources/public/cdn /resources/public/cdn
+
+# This is not necessary, except to tell docker tha the asset_uploader is actually needed and it should not optimize it out of existing.
+COPY --from=asset_uploader /app/resources/public/cdn /resources/public/cdn
 
 RUN curl -LO https://github.com/jmxtrans/jmxtrans-agent/releases/download/jmxtrans-agent-1.2.4/jmxtrans-agent-1.2.4.jar
 
