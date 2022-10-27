@@ -101,13 +101,13 @@ ARG ASSETS_S3_BUCKET
 
 RUN aws configure set default.max_concurrent_requests 25
 
-# RUN aws s3 sync /resources/public/cdn \
-#                 s3://$ASSETS_S3_BUCKET/cdn \
-#                 --debug \
-#                 --acl public-read \
-#                 --content-encoding gzip \
-#                 --cache-control "max-age=315360000" \
-#                 --expires $(date --iso-8601 -d "$now + 10 years")
+RUN aws s3 sync /resources/public/cdn \
+                s3://$ASSETS_S3_BUCKET/cdn \
+                --debug \
+                --acl public-read \
+                --content-encoding gzip \
+                --cache-control "max-age=315360000" \
+                --expires $(date --iso-8601 -d "$now + 10 years")
 
 RUN touch /.asset-upload-done
 RUN echo "Asset Builder Finished"
