@@ -100,7 +100,7 @@ ARG AWS_ACCESS_KEY_ID
 ARG ASSET_S3_BUCKET
 
 RUN aws s3 sync /resources/public/cdn \
-                $ASSETS_S3_BUCKET/cdn \
+                s3://$ASSETS_S3_BUCKET/cdn \
                 --debug \
                 --acl public-read \
                 --content-encoding gzip \
