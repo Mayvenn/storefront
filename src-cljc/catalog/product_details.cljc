@@ -53,8 +53,7 @@
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
             storefront.ugc
-            [spice.core :as spice]
-            [storefront.components.accordion :as accordion]))
+            [spice.core :as spice]))
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
@@ -153,7 +152,7 @@
            link-content))])
      sections)]])
 
-(defn diamond-swatch [ucare-id option-slug option-name selected? target size]
+(defn diamond-swatch [ucare-id facet-slug option-slug option-name selected? target size]
   (let [container-width #?(:clj (.hypot java.lang.Math size size)
                            :cljs (js/Math.hypot size size))]
     [(if target :a :div)
@@ -161,6 +160,8 @@
                      :height (str container-width "px")}
              :class (str "flex items-center justify-center"
                          (when target " inherit-color pointer"))}
+            (when target
+              {:data-test (str "picker-" facet-slug "-" option-slug)})
             (when target
               (apply utils/fake-href target)))
      [:div.overflow-hidden.flex.items-center.justify-center
@@ -178,32 +179,37 @@
         :alt   option-name
         :src   (str "https://ucarecdn.com/" (ui/ucare-img-id ucare-id) "/-/format/auto/")}]]]))
 
-(defcomponent picker-accordion-face-open [{:keys [facet-name swatch option-slug option-name]} _ _]
+(defcomponent picker-accordion-face-open [{:keys [facet-name facet-slug swatch option-slug option-name]} _ _]
   [:div.grid.ml2.py3.items-center
-   {:style {:grid-template-columns "4rem auto"}}
+   {:data-test (str "picker-" facet-slug "-open")
+    :style {:grid-template-columns "4rem auto"}}
    [:div.shout.content-3.bold facet-name]
    [:div.flex.items-center.gap-2
+    {:data-test (str "picker-selected-" facet-slug "-" option-slug)}
     (when swatch
-      (diamond-swatch swatch option-slug option-name false nil 20))
+      (diamond-swatch swatch facet-slug option-slug option-name false nil 20))
     option-name]])
-(defcomponent picker-accordion-face-closed [{:keys [facet-name swatch option-slug option-name]} _ _]
+(defcomponent picker-accordion-face-closed [{:keys [facet-name facet-slug swatch option-slug option-name]} _ _]
   [:div.grid.ml2.py3.items-center
-   {:style {:grid-template-columns "4rem auto"}}
+   {:data-test (str "picker-" facet-slug "-closed")
+    :style {:grid-template-columns "4rem auto"}}
    [:div.shout.content-3 facet-name]
    [:div.flex.items-center.gap-2
+    {:data-test (str "picker-selected-" facet-slug "-" option-slug)}
     (when swatch
-      (diamond-swatch swatch option-slug option-name false nil 20))
+      (diamond-swatch swatch facet-slug option-slug option-name false nil 20))
     option-name]])
 
 (component/defcomponent picker-accordion-contents
   [{:keys [facet swatches? options] :as picker-contents} _ _]
   [:div.p2
-   {:key (str "picker-" facet)}
+   {:key (str "picker-contents-" facet)
+    :data-test (str "picker-contents-" facet)}
    [:div.flex.flex-wrap.gap-2
     (if swatches?
       (for [{:keys [option-slug selected? option-name rectangle-swatch target]} options]
-        (diamond-swatch rectangle-swatch option-slug option-name selected? target 30))
-      (for [{:keys [copy selected? target]} options]
+        (diamond-swatch rectangle-swatch facet option-slug option-name selected? target 30))
+      (for [{:keys [option-slug copy selected? target]} options]
         [(if target :a :div)
          (merge {:style {:width  "2.5rem"
                          :height "2.5rem"}
@@ -213,6 +219,8 @@
                                " border-gray")
                              (when target
                                " inherit-color pointer"))}
+                (when target
+                  {:data-test (str "picker-" facet "-" option-slug)})
                 (when target
                   (apply utils/fake-href target)))
          copy]))]
@@ -614,9 +622,10 @@
          :drawers           (let [{:keys [sku-quantity selected-length selected-color options]} picker-data]
                               [(let [color-options (->> options :hair/color (sort-by :filter/order))]
                                  {:id           "color"
-                                  :face         {:facet-name  "color"
+                                  :face         {:facet-name  "Color"
+                                                 :facet-slug  "color"
                                                  :option-name (:option/name selected-color)
-                                                 :option-slug (:option/slug selected-color)
+                                                 :option-slug (facets/hacky-fix-of-bad-slugs-on-facets (:option/slug selected-color))
                                                  :swatch      (:option/rectangle-swatch selected-color)}
                                   :open-message [events/pdp|picker-options|viewed {:facet   "color"
                                                                                    :options (map :option/slug color-options)}]
@@ -625,7 +634,7 @@
                                    :facet     "color"
                                    :options   (->> color-options
                                                    (map (fn [{:keys [option/slug option/name option/rectangle-swatch stocked?]}]
-                                                          (merge {:option-slug      slug
+                                                          (merge {:option-slug      (facets/hacky-fix-of-bad-slugs-on-facets slug)
                                                                   :option-name      name
                                                                   :rectangle-swatch rectangle-swatch
                                                                   :selected?        (= (:option/slug selected-color) slug)}
@@ -644,7 +653,9 @@
                                                          (sort-by :filter/order))]
                                  {:id           "length"
                                   :face         {:facet-name  "Length"
-                                                 :option-name (:option/name selected-length)}
+                                                 :facet-slug  "length"
+                                                 :option-name (:option/name selected-length)
+                                                 :option-slug (:option/slug selected-length)}
                                   :open-message [events/pdp|picker-options|viewed {:facet   "length"
                                                                                    :options (map :option/slug length-options)}]
                                   :contents
@@ -652,6 +663,7 @@
                                    :options (->> length-options
                                                  (map (fn [{:keys [option/name option/slug stocked?]}]
                                                         (merge {:copy      name
+                                                                :option-slug slug
                                                                 :selected? (= (:option/slug selected-length) slug)}
                                                                (when (-> selected-length :option/slug (not= slug))
                                                                  {:target [events/pdp|picker-options|selected
@@ -667,7 +679,9 @@
                                                       (map inc))]
                                  {:id           "quantity"
                                   :face         {:facet-name  "Qty"
-                                                 :option-name sku-quantity}
+                                                 :facet-slug  "quantity"
+                                                 :option-name sku-quantity
+                                                 :option-slug sku-quantity}
                                   :open-message [events/pdp|picker-options|viewed {:facet   "quantity"
                                                                                    :options (map str qty-options)}]
                                   :contents
@@ -676,6 +690,7 @@
                                                  (map (fn [qty]
                                                         (merge
                                                          {:copy      (str qty)
+                                                          :option-slug (str qty)
                                                           :selected? (= sku-quantity qty)}
                                                          (when (not (= sku-quantity qty))
                                                            {:target [events/pdp|picker-options|selected
