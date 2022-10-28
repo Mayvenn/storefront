@@ -1,17 +1,12 @@
 # syntax=docker/dockerfile:1.0.0-experimental
 
-FROM clojure:temurin-8-lein AS setup
+############# SET UP LIB/LANG DEPENDENCIES #####################
+FROM clojure:temurin-8-lein AS linux_setup
 
-ARG CDN_HOST
 ARG AWS_SECRET_ACCESS_KEY
 ARG AWS_ACCESS_KEY_ID
 
-ENV JAR_FILENAME=storefront.jar
-ENV STANDALONE_JAR=/app/target/storefront-*-standalone.jar
-ENV TARGET=/app/target
-ENV JAR_PATH=$TARGET/storefront.jar
 ENV NODE_VERSION=16.x
-ENV INSTALL_NODE_FILE=install-node.sh
 
 RUN apt-get update;
 
@@ -22,75 +17,34 @@ RUN apt-get install -qqy openssh-client zip unzip curl git nodejs;
 RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 
-############# BEGIN LEIN CLEAN #####################
-FROM setup AS lein_clean
+############# BEGIN BUILD #####################
+FROM linux_setup AS builder
 
-ARG CDN_HOST
-ARG AWS_SECRET_ACCESS_KEY
 ARG AWS_ACCESS_KEY_ID
+ARG AWS_SECRET_ACCESS_KEY
+ARG CDN_HOST
+ARG GIT_SHA
 
-ENV JAR_FILENAME=storefront.jar
-ENV STANDALONE_JAR=/app/target/storefront-*-standalone.jar
 ENV TARGET=/app/target
 ENV JAR_PATH=$TARGET/storefront.jar
-ENV NODE_VERSION=16.x
-ENV INSTALL_NODE_FILE=install-node.sh
+ENV STANDALONE_JAR=/app/target/storefront-*-standalone.jar
 
 WORKDIR /app
 
 ADD project.clj project.clj
 ADD . .
 
-############# BEGIN LEIN DEPS #####################
-FROM lein_clean AS lein_deps
-
-ARG CDN_HOST
-ARG AWS_SECRET_ACCESS_KEY
-ARG AWS_ACCESS_KEY_ID
-
-ENV JAR_FILENAME=storefront.jar
-ENV STANDALONE_JAR=/app/target/storefront-*-standalone.jar
-ENV TARGET=/app/target
-ENV JAR_PATH=$TARGET/storefront.jar
-ENV NODE_VERSION=16.x
-ENV INSTALL_NODE_FILE=install-node.sh
-
+RUN lein clean
 
 RUN npm install && (which gulp || npm install -g gulp)
-
-############# BEGIN ASSET BUILD #####################
-
-ENV JAR_FILENAME=storefront.jar
-ENV STANDALONE_JAR=/app/target/storefront-*-standalone.jar
-ENV TARGET=/app/target
-ENV JAR_PATH=$TARGET/storefront.jar
-ENV NODE_VERSION=16.x
-ENV INSTALL_NODE_FILE=install-node.sh
-
-
-ARG GIT_SHA
-
 RUN gulp compile-assets --host $CDN_HOST --sha $GIT_SHA
-
-############# BEGIN CLOJURE UBERJAR BUILD #####################
-FROM lein_deps AS builder
-
-ENV JAR_FILENAME=storefront.jar
-ENV STANDALONE_JAR=/app/target/storefront-*-standalone.jar
-ENV TARGET=/app/target
-ENV JAR_PATH=$TARGET/storefront.jar
-ENV NODE_VERSION=16.x
-ENV INSTALL_NODE_FILE=install-node.sh
-
-ARG AWS_SECRET_ACCESS_KEY
-ARG AWS_ACCESS_KEY_ID
 
 RUN lein deps
 RUN lein uberjar
 
 RUN mv $STANDALONE_JAR $JAR_PATH
 
-############# BEGIN ASSET  #####################
+############# BEGIN ASSET UPLOAD #####################
 FROM amazon/aws-cli AS asset_uploader
 
 COPY --from=builder /app/resources/public/cdn /resources/public/cdn
@@ -99,7 +53,7 @@ ARG AWS_SECRET_ACCESS_KEY
 ARG AWS_ACCESS_KEY_ID
 ARG ASSETS_S3_BUCKET
 
-RUN aws configure set default.max_concurrent_requests 25
+RUN aws configure set default.max_concurrent_requests 5
 
 RUN aws s3 sync /resources/public/cdn \
                 s3://$ASSETS_S3_BUCKET/cdn \
@@ -113,20 +67,16 @@ RUN touch /.asset-upload-done
 RUN echo "Asset Builder Finished"
 RUN ls -l /
 
-############# BEGIN POST-BUILD #####################
+############# BEGIN RUNNER #####################
 FROM amazoncorretto:8 AS runner
 
+ARG AWS_SECRET_ACCESS_KEY
+ARG AWS_ACCESS_KEY_ID
+
 ENV JAR_FILENAME=storefront.jar
-ENV STANDALONE_JAR=/app/target/storefront-*-standalone.jar
 ENV TARGET=/app/target
 ENV JAR_PATH=$TARGET/storefront.jar
-ENV NODE_VERSION=16.x
-ENV INSTALL_NODE_FILE=install-node.sh
 
-RUN echo $JAR_PATH $JAR_FILENAME
-RUN echo $JAR_PATH $JAR_FILENAME
-RUN echo $JAR_PATH $JAR_FILENAME
-RUN echo $JAR_PATH $JAR_FILENAME
 COPY --from=builder $JAR_PATH /$JAR_FILENAME
 COPY --from=builder /app/container_files /
 
