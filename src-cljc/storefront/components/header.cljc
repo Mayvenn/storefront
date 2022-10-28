@@ -412,9 +412,8 @@
                                          :new?        false
                                          :copy        "Wigs 101"}
                                         {:key         "ready-to-wear"
-                                         :nav-message [events/navigate-category {:page/slug           "wigs"
-                                                                                 :catalog/category-id "13"
-                                                                                 :query-params        {:family "ready-wigs"}}]
+                                         :nav-message [events/navigate-category {:page/slug           "ready-wear-wigs"
+                                                                                 :catalog/category-id "25"}]
                                          :new?        false
                                          :copy        "Ready to Wear Wigs"}]
    :flyout/id                          (when (get-in data keypaths/shop-wigs-menu-expanded)
