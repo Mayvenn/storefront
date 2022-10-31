@@ -1315,25 +1315,25 @@
 (def sale-clearance
   [{:catalog/category-id  "48"
     :header/title         "Sale"
-    :category/description (copy "MISSING CONTENT")
+    :category/description "Get your favorite wig styles at a fraction of the price."
     :subcategory/image-id "e4266735-42fc-40b1-bd37-ce5a243fa681"
     :copy/title           "Sale"
     :page/slug            "sale"
-    :seo/title            "Sale"
+    :seo/title            "Wig Sale"
     :seo/sitemap          true
 
     :promo.clearance/eligible         #{true}
     :selector/essentials              [:promo.clearance/eligible]
     :selector/electives               [:hair/family :hair/texture :hair/origin :hair/color]
-    :page/title                       "Sale | Mayvenn"
-    :page.meta/description            (copy "Mayvenn’s virgin human hair wigs allow you to achieve a new look in minutes"
-                                    "& come in different variations such as Brazilian, Malaysian, straight,"
-                                    "& deep wave.")
-    :opengraph/title                  (copy "Mayvenn Wigs - Free shipping."
-                                    "Free 30 day returns. Made with 100% virgin human hair.")
+    :page/title                       "Wig Sale | Mayvenn"
+    :page.meta/description            (copy "Mayvenn's virgin human hair wigs are on sale!"
+                                            "These wigs allow you to achieve a new look in minutes"
+                                            "& come in different variations such as Brazilian, Malaysian, straight, & deep wave.")
+    :opengraph/title                  (copy "Wigs on sale - Free shipping."
+                                            "Free 30 day returns. Made with 100% virgin human hair.")
     :opengraph/description            (copy "100% virgin human hair, machine-wefted and backed by our"
-                                    "30 Day Quality Guarantee, our Wigs can be customized to fit"
-                                    "your unique look using the built-in combs and adjustable strap.")
+                                            "30 Day Quality Guarantee, our Wigs on sale can be customized to fit"
+                                            "your unique look using the built-in combs and adjustable strap.")
     :product-list/title               "Shop All Sale Items"
     :subsections/subsection-selectors [{:subsection/title    "Lace Front Wigs"
                                         :subsection/selector {:hair/family #{"lace-front-wigs"}}}
