@@ -15,6 +15,7 @@
                        [storefront.hooks.stringer :as stringer]
                        [storefront.hooks.seo :as seo]
                        [storefront.trackings :as trackings]])
+            [adventure.faq :as adventure.faq]
             [api.catalog :refer [select]]
             api.current
             api.orders
@@ -37,6 +38,7 @@
             [storefront.accessors.products :as accessors.products]
             [storefront.accessors.sites :as sites]
             [storefront.component :as component :refer [defcomponent]]
+            [storefront.components.accordions.product-info :as accordions.product-info]
             [storefront.components.carousel :as carousel-neue]
             [storefront.components.money-formatters :as mf]
             [storefront.components.picker.picker :as picker]
@@ -124,33 +126,6 @@
    #?(:cljs
       (component/build zip/pdp-component data _))])
 
-(defcomponent info-face-open [{:keys [copy]} _ _]
-  [:div.shout.content-3.px2.py4.bold copy])
-(defcomponent info-face-closed [{:keys [copy]} _ _]
-  [:div.shout.content-3.px2.py4 copy])
-(defcomponent info-contents [{:keys [id primary sections]} _ _]
-  [:div.bg-cool-gray.p2
-   {:key (str id "-tab")}
-   [:div primary]
-   [:div.flex.flex-wrap.justify-between
-    (map-indexed
-     (fn sections [idx {:keys [content heading] :as section}]
-       [:div.my2.pr2
-        {:style {:min-width "50%"}
-         :key   idx}
-        [:h3.proxima.title-3.shout heading]
-        [:div
-         (if-not (string? content)
-           (for [block content]
-             [:div block])
-           content)]
-        (when-let [link-content (:link/content section)]
-          (ui/button-small-underline-primary
-           (assoc
-            (apply utils/fake-href (:link/target section))
-            :data-test (:link/id section))
-           link-content))])
-     sections)]])
 
 (defn diamond-swatch [ucare-id facet-slug option-slug option-name selected? target size]
   (let [container-width #?(:clj (.hypot java.lang.Math size size)
@@ -288,9 +263,9 @@
               (component/build accordion-neue/component
                                (with :product-details-accordion data)
                                {:opts
-                                {:accordion.drawer.open/face-component   info-face-open
-                                 :accordion.drawer.closed/face-component info-face-closed
-                                 :accordion.drawer/contents-component    info-contents}})
+                                {:accordion.drawer.open/face-component   accordions.product-info/face-open
+                                 :accordion.drawer.closed/face-component accordions.product-info/face-closed
+                                 :accordion.drawer/contents-component    accordions.product-info/contents}})
               (component/build tabbed-information/component data))
             (component/build catalog.M/non-hair-product-description data opts)
             [:div.hide-on-tb-dt.m3
@@ -452,7 +427,8 @@
     :content-value   "No - Since this hair has already been professionally processed, we don't recommend any lifting (bleaching) or coloring."}])
 
 (defn product-details-accordion<-
-  [{:accordion/keys [id open-drawers]} {:keys [product model-image] :as description-data} length-guide-image]
+  [{:accordion/keys [id open-drawers open-faq-drawers]}
+   {:keys [product model-image faq] :as description-data} length-guide-image]
   (if ((:catalog/department product) "stylist-exclusives")
     (accordion-neue/accordion-query
      {:id                   id
@@ -462,68 +438,87 @@
       :initial-open-drawers #{"description"}
       :drawers              [{:id       "description"
                               :face     {:copy "Description"}
-                              :contents {:primary (map (fn [copy-piece] [:div.my2 copy-piece]) (:copy/description product))}}]})
+                              :contents {:primary (->> product
+                                                       :copy/description
+                                                       (map (fn [copy-piece] [:div.my2 copy-piece])))}}]})
       (accordion-neue/accordion-query
        {:id                   id
         :allow-all-closed?    true
         :allow-multi-open?    false
         :open-drawers         open-drawers
         :initial-open-drawers #{"hair-info"}
-        :drawers              [{:id       "hair-info"
-                                :face     {:copy "Hair Info"}
-                                :contents {:sections (keep (partial tab-section< description-data)
-                                                           [(merge
-                                                             (when (seq (or (:copy/model-wearing model-image)
-                                                                            (:copy/model-wearing product)))
-                                                               {:heading               "Model Wearing"
-                                                                :content-path          [:model-image :copy/model-wearing]
-                                                                :fallback-content-path [:product :copy/model-wearing]})
-                                                             (when length-guide-image
-                                                               {:link/content "Length Guide"
-                                                                :link/target  [events/popup-show-length-guide
-                                                                               {:length-guide-image length-guide-image
-                                                                                :location           "hair-info-tab"}]
-                                                                :link/id      "hair-info-tab-length-guide"}))
-                                                            {:heading               "Unit Weight"
-                                                             :content-path          [:selected-sku :hair/weight]
-                                                             :fallback-content-path [:product :copy/weights]}
-                                                            {:heading      "Hair Quality"
-                                                             :content-path [:product :copy/quality]}
-                                                            {:heading      "Hair Origin"
-                                                             :content-path [:product :copy/origin]}
-                                                            {:heading      "Hair Weft Type"
-                                                             :content-path [:product :copy/weft-type]}
-                                                            {:heading      "Part Design"
-                                                             :content-path [:product :copy/part-design]}
-                                                            {:heading      "Features"
-                                                             :content-path [:product :copy/features]}
-                                                            {:heading      "Available Materials"
-                                                             :content-path [:product :copy/materials]}
-                                                            {:heading      "Lace Size"
-                                                             :content-path [:product :copy/lace-size]}
-                                                            {:heading      "Silk Size"
-                                                             :content-path [:product :copy/silk-size]}
-                                                            {:heading      "Cap Size"
-                                                             :content-path [:product :copy/cap-size]}
-                                                            {:heading      "Wig Density"
-                                                             :content-path [:product :copy/density]}
-                                                            {:heading      "Tape-in Glue Information"
-                                                             :content-path [:product :copy/tape-in-glue]}])}}
-                               {:id       "description"
-                                :face     {:copy "Description"}
-                                :contents {:primary  (:copy/description product)
-                                           :sections (keep (partial tab-section< description-data)
-                                                           [{:heading      "Hair Type"
-                                                             :content-path [:product :copy/hair-type]}
-                                                            {:heading      "What's Included"
-                                                             :content-path [:product :copy/whats-included]}])}}
-                               {:id       "care"
-                                :face     {:copy "Care"}
-                                :contents {:sections (keep (partial tab-section< description-data)
-                                                           [{:heading      "Maintenance Level"
-                                                             :content-path [:product :copy/maintenance-level]}
-                                                            {:heading      "Can it be Colored?"
-                                                             :content-path [:dynamic-content :pdp/colorable]}])}}]})))
+        :drawers              (cond-> [{:id       "hair-info"
+                                        :face     {:copy "Hair Info"}
+                                        :contents {:sections (keep (partial tab-section< description-data)
+                                                                   [(merge
+                                                                     (when (seq (or (:copy/model-wearing model-image)
+                                                                                    (:copy/model-wearing product)))
+                                                                       {:heading               "Model Wearing"
+                                                                        :content-path          [:model-image :copy/model-wearing]
+                                                                        :fallback-content-path [:product :copy/model-wearing]})
+                                                                     (when length-guide-image
+                                                                       {:link/content "Length Guide"
+                                                                        :link/target  [events/popup-show-length-guide
+                                                                                       {:length-guide-image length-guide-image
+                                                                                        :location           "hair-info-tab"}]
+                                                                        :link/id      "hair-info-tab-length-guide"}))
+                                                                    {:heading               "Unit Weight"
+                                                                     :content-path          [:selected-sku :hair/weight]
+                                                                     :fallback-content-path [:product :copy/weights]}
+                                                                    {:heading      "Hair Quality"
+                                                                     :content-path [:product :copy/quality]}
+                                                                    {:heading      "Hair Origin"
+                                                                     :content-path [:product :copy/origin]}
+                                                                    {:heading      "Hair Weft Type"
+                                                                     :content-path [:product :copy/weft-type]}
+                                                                    {:heading      "Part Design"
+                                                                     :content-path [:product :copy/part-design]}
+                                                                    {:heading      "Features"
+                                                                     :content-path [:product :copy/features]}
+                                                                    {:heading      "Available Materials"
+                                                                     :content-path [:product :copy/materials]}
+                                                                    {:heading      "Lace Size"
+                                                                     :content-path [:product :copy/lace-size]}
+                                                                    {:heading      "Silk Size"
+                                                                     :content-path [:product :copy/silk-size]}
+                                                                    {:heading      "Cap Size"
+                                                                     :content-path [:product :copy/cap-size]}
+                                                                    {:heading      "Wig Density"
+                                                                     :content-path [:product :copy/density]}
+                                                                    {:heading      "Tape-in Glue Information"
+                                                                     :content-path [:product :copy/tape-in-glue]}])}}
+                                       {:id       "description"
+                                        :face     {:copy "Description"}
+                                        :contents {:primary  (:copy/description product)
+                                                   :sections (keep (partial tab-section< description-data)
+                                                                   [{:heading      "Hair Type"
+                                                                     :content-path [:product :copy/hair-type]}
+                                                                    {:heading      "What's Included"
+                                                                     :content-path [:product :copy/whats-included]}])}}
+                                       {:id       "care"
+                                        :face     {:copy "Care"}
+                                        :contents {:sections (keep (partial tab-section< description-data)
+                                                                   [{:heading      "Maintenance Level"
+                                                                     :content-path [:product :copy/maintenance-level]}
+                                                                    {:heading      "Can it be Colored?"
+                                                                     :content-path [:dynamic-content :pdp/colorable]}])}}]
+                                faq
+                                (conj
+                                 (let [{:keys [question-answers slug]} faq]
+                                   {:id       "pdp-faq-drawer"
+                                    :face     {:copy "FAQs"}
+                                    :contents {:faq (accordion-neue/accordion-query
+                                                     {:id                   :pdp-faq
+                                                      :allow-all-closed?    true
+                                                      :allow-multi-open?    false
+                                                      :open-drawers         (:open-drawers faq)
+                                                      :initial-open-drawers #{}
+                                                      :drawers
+                                                      (map-indexed (fn [ix {:keys [question answer]}]
+                                                                     {:id       (str "pdp-faq-" ix)
+                                                                      :face     {:copy (:text question)}
+                                                                      :contents {:answer answer}})
+                                                                   question-answers)})}})))})))
 
 (defn query [data]
   (let [selections                (get-in data catalog.keypaths/detailed-product-selections)
@@ -551,7 +546,9 @@
         hair?                     (accessors.products/hair? product)
         wig?                      (->> product vector (select api.catalog/?wig) seq)
         faq                       (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
-                                    (get-in data (conj keypaths/cms-faq pdp-faq-id)))
+                                    (-> data
+                                        (get-in (conj keypaths/cms-faq pdp-faq-id))
+                                        (assoc :open-drawers (:accordion/open-drawers (accordion-neue/<- data :pdp-faq)))))
         selected-picker           (get-in data catalog.keypaths/detailed-product-selected-picker)
         model-image               (first (filter :copy/model-wearing carousel-images))
         pdp-accordion-picker?     (experiments/pdp-accordion-picker? data)
@@ -561,7 +558,8 @@
         picker-data               (picker/query data length-guide-image)
         bf-2022-sale?             (and (experiments/bf-2022-sale? data)
                                        (:promo.clearance/eligible selected-sku))
-        carousel-redesign?        (experiments/carousel-redesign? data)]
+        carousel-redesign?        (experiments/carousel-redesign? data)
+        pdp-faq-in-accordion?     (experiments/pdp-faq-in-accordion? data)]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
@@ -705,6 +703,7 @@
                                     {:product         product
                                      :model-image     model-image
                                      :selected-sku    selected-sku
+                                     :faq             (when (and pdp-faq-in-accordion? faq) faq)
                                      ;; TODO: replace the fake product details below with contentful data from the app-state
                                      :dynamic-content (cms-dynamic-content/derive-product-details fake-contentful-product-details-data
                                                                                                   selected-sku)}

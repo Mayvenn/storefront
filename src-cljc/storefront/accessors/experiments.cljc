@@ -137,3 +137,7 @@
 (defn bundle-sets-in-sub-menu?
   [data]
   (display-feature? data "bundle-sets-in-sub-menu"))
+
+(defn pdp-faq-in-accordion?
+  [data]
+  (display-feature? data "pdp-faq-in-accordion"))
