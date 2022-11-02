@@ -1,10 +1,6 @@
 (ns storefront.components.footer-v2022-11
   (:require [spice.date :as date]
-            [storefront.accessors.auth :as auth]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.nav :as nav]
             [storefront.component :as c]
-            [storefront.components.footer-links :as footer-links]
             [adventure.components.layered :as layered]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -13,11 +9,33 @@
             [storefront.platform.component-utils :as utils]
             [storefront.routes :as routes]
             [mayvenn.visual.tools :as vt]
-            [homepage.ui.email-capture :as email-capture]))
+            [homepage.ui.email-capture :as email-capture]
+            [storefront.components.accordion-v2022-10 :as accordion]
+            [storefront.platform.component-utils :as util]))
 
-(c/defcomponent faq-accordion
-  [{:keys [] :as data} _ _]
-  [:div "faq"])
+(c/defcomponent info-accordion-drawer-links-list [{:keys [links row-count column-count]} _ _]
+  [:div.p4.grid.gap-4
+   {:style {:grid-template-columns (str "repeat(" column-count ", 1fr)")
+            :grid-template-rows    (str "repeat(" row-count ", 1fr)")
+            :grid-auto-flow        "column"}}
+   (map (fn [{:keys [target url copy]}]
+          [:a.inherit-color
+           (merge
+            (when target (apply util/route-to target))
+            (when url {:href url}))
+           copy]) links)])
+
+(c/defcomponent info-accordion-face-open [{:keys [copy]} _ _]
+  [:div.shout.content-3.p4.bold copy])
+(c/defcomponent info-accordion-face-closed [{:keys [copy]} _ _]
+  [:div.shout.content-3.p4 copy])
+(c/defcomponent info-accordion-contents [{:info-accordion.contents/keys [type] :as data} _ _]
+  [:div.bg-pale-purple
+   (case type
+     :faq-accordion [:div "faq accordion, yo!"]#_(c/build accordion/component data)
+     :links-list    (c/build info-accordion-drawer-links-list data)
+     :contact-us    [:div "contacty"]
+     [:div.bg-red "CONTENT MISSING!"])])
 
 (defn- social-link
   ([uri icon] (social-link {:height "20px" :width "20px"} uri icon))
@@ -77,14 +95,50 @@
                  :text-field/email          email
                  :text-field/submitted-text (when submitted? "Thank you for subscribing.")}))
    {:essence-block/copy "Included is a one year subscription to ESSENCE Magazine - a $10 value! Offer and refund details will be included with your confirmation."}
-   #:underfoot{})) ; GROT?
+   #:underfoot{} ; GROT?
+   (accordion/accordion-query
+    {:id                :info-accordion
+     :allow-all-closed? true
+     :allow-multi-open? true
+     :open-drawers      (:accordion/open-drawers (accordion/<- app-state :info-accordion))
+     :drawers           [{:id       "faq"
+                          :face     {:copy "FAQs"}
+                          :contents {:info-accordion.contents/type :faq-accordion}}
+                         {:id       "shop"
+                          :face     {:copy "Shop"}
+                          :contents {:info-accordion.contents/type :links-list}}
+                         {:id       "about"
+                          :face     {:copy "About"}
+                          :contents {:info-accordion.contents/type :links-list
+                                     :row-count                    3
+                                     :column-count                 1
+                                     :links                        [{:target [e/navigate-content-about-us]
+                                                                     :copy   "Our Story"}
+                                                                    {:copy   "Events [LINK TARGET MISSING]"}
+                                                                    {:url  "https://shop.mayvenn.com/blog/"
+                                                                     :copy "Blog"}]}}
+                         {:id       "our-locations"
+                          :face     {:copy "Our Locations"}
+                          :contents {}}
+                         {:id       "contact-us"
+                          :face     {:copy "Contact Us"}
+                          :contents {:info-accordion.contents/type :contact-us}}
+                         {:id       "careers"
+                          :face     {:copy "Carrers"}
+                          :contents {}}]})))
 
 (c/defcomponent component
   [{:keys [] :as data} owner opts]
   [:div
    (c/build email-capture/organism data) ; TODO: use with/within to avoid rerenders?
    (c/build layered/lp-divider-purple-pink)
-   (c/build faq-accordion)
+   (c/build accordion/component
+            (vt/with :info-accordion data)
+            {:opts
+             (vt/within :accordion.drawer
+                        {:open/face-component   info-accordion-face-open
+                         :closed/face-component info-accordion-face-closed
+                         :contents-component    info-accordion-contents})})
    (c/build social-media-block)
    (c/build essence-block (vt/with :essence-block data))
    (c/build underfoot (vt/with :underfoot data) opts)])
