@@ -11,7 +11,8 @@
             [mayvenn.visual.tools :as vt]
             [homepage.ui.email-capture :as email-capture]
             [storefront.components.accordion-v2022-10 :as accordion]
-            [storefront.platform.component-utils :as util]))
+            [storefront.platform.component-utils :as util]
+            [storefront.components.accordions.product-info :as product-info]))
 
 (c/defcomponent info-accordion-drawer-links-list [{:keys [links row-count column-count]} _ _]
   [:div.p4.grid.gap-4
@@ -32,7 +33,10 @@
 (c/defcomponent info-accordion-contents [{:info-accordion.contents/keys [type] :as data} _ _]
   [:div.bg-pale-purple
    (case type
-     :faq-accordion [:div "faq accordion, yo!"]#_(c/build accordion/component data)
+     :faq-accordion (c/build accordion/component (vt/with :footer-faq data) {:opts
+                                                                             {:accordion.drawer.open/face-component   product-info/question-open
+                                                                              :accordion.drawer.closed/face-component product-info/question-closed
+                                                                              :accordion.drawer/contents-component    product-info/answer}})
      :links-list    (c/build info-accordion-drawer-links-list data)
      :contact-us    [:div "contacty"]
      [:div.bg-red "CONTENT MISSING!"])])
@@ -96,77 +100,90 @@
                  :text-field/submitted-text (when submitted? "Thank you for subscribing.")}))
    {:essence-block/copy "Included is a one year subscription to ESSENCE Magazine - a $10 value! Offer and refund details will be included with your confirmation."}
    #:underfoot{} ; GROT?
-   (accordion/accordion-query
-    {:id                :info-accordion
-     :allow-all-closed? true
-     :allow-multi-open? true
-     :open-drawers      (:accordion/open-drawers (accordion/<- app-state :info-accordion))
-     :drawers           [{:id       "faq"
-                          :face     {:copy "FAQs"}
-                          :contents {:info-accordion.contents/type :faq-accordion}}
-                         {:id       "shop"
-                          :face     {:copy "Shop"}
-                          :contents {:info-accordion.contents/type :links-list
-                                     :row-count                    9
-                                     :column-count                 2
-                                     :links                        [{:target [e/navigate-category
-                                                                              {:page/slug "wigs" :catalog/category-id "13"}]
-                                                                     :copy   "Wigs"}
-                                                                    {:target [e/navigate-category
-                                                                              {:page/slug "human-hair-bundles" :catalog/category-id "27"}]
-                                                                     :copy   "Hair Bundles"}
-                                                                    {:target [e/navigate-category
-                                                                              {:page/slug "virgin-body-wave" :catalog/category-id "5"}]
-                                                                     :copy   "Virgin Body Wave"}
-                                                                    {:target [e/navigate-category
-                                                                              {:page/slug "virgin-loose-wave" :catalog/category-id "6"}]
-                                                                     :copy   "Virgin Loose Wave"}
-                                                                    {:target [e/navigate-category
-                                                                              {:page/slug "virgin-deep-wave" :catalog/category-id "8"}]
-                                                                     :copy   "Virgin Deep Wave"}
-                                                                    {:copy   "Dyed Virgin Hair [LINK TARGET MISSING]"}
-                                                                    {:target [e/navigate-category
-                                                                              {:page/slug "hair-extensions" :catalog/category-id "28"}]
-                                                                     :copy   "Hair Extensions"}
-                                                                    {:target [e/navigate-shop-by-look {:album-keyword :straight-bundle-sets}]
-                                                                     :copy   "Straight Bundle Sets"}
-                                                                    {:target [e/navigate-shop-by-look {:album-keyword :wavy-curly-bundle-sets}]
-                                                                     :copy   "Wavy Curly Bundle Sets"}
-                                                                    {:copy   "All Blonde Hair [LINK TARGET MISSING]"}
-                                                                    {:target [e/navigate-category
-                                                                              {:page/slug "360-frontals" :catalog/category-id "10"}]
-                                                                     :copy   "Virgin 360 Frontals"}
-                                                                    {:target [e/navigate-category
-                                                                              {:page/slug "virgin-lace-frontals" :catalog/category-id "29"}]
-                                                                     :copy   "Virgin Frontals"}
-                                                                    {:target [e/navigate-category
-                                                                              {:page/slug "seamless-clip-ins" :catalog/category-id "21"}]
-                                                                     :copy   "Clip-Ins"}
-                                                                    {:target [e/navigate-category
-                                                                              {:page/slug "taps-ins" :catalog/category-id "22"}]
-                                                                     :copy   "Tape-Ins"}
-                                                                    {:target [e/navigate-category
-                                                                              {:page/slug "wigs" :catalog/category-id "48"}]
-                                                                     :copy   "Sale"}]}}
-                         {:id       "about"
-                          :face     {:copy "About"}
-                          :contents {:info-accordion.contents/type :links-list
-                                     :row-count                    3
-                                     :column-count                 1
-                                     :links                        [{:target [e/navigate-content-about-us]
-                                                                     :copy   "Our Story"}
-                                                                    {:copy   "Events [LINK TARGET MISSING]"}
-                                                                    {:url  "https://shop.mayvenn.com/blog/"
-                                                                     :copy "Blog"}]}}
-                         {:id       "our-locations"
-                          :face     {:copy "Our Locations"}
-                          :contents {}}
-                         {:id       "contact-us"
-                          :face     {:copy "Contact Us"}
-                          :contents {:info-accordion.contents/type :contact-us}}
-                         {:id       "careers"
-                          :face     {:copy "Carrers"}
-                          :contents {}}]})))
+   (let [faq-q-and-as     (-> app-state (get-in k/cms-faq) vals first :question-answers) ;; TODO: choose an FAQ intentionally. `first` is placeholder
+         faq-open-drawers (-> app-state (accordion/<- :footer-faq) :accordion/open-drawers)]
+     (accordion/accordion-query
+      {:id                :info-accordion
+       :allow-all-closed? true
+       :allow-multi-open? true
+       :open-drawers      (:accordion/open-drawers (accordion/<- app-state :info-accordion))
+       :drawers           [(when faq-q-and-as
+                             {:id       "faq"
+                              :face     {:copy "FAQs"}
+                              :contents (merge {:info-accordion.contents/type :faq-accordion}
+                                               (accordion/accordion-query
+                                                {:id                :footer-faq
+                                                 :allow-all-closed? true
+                                                 :allow-multi-open? false
+                                                 :open-drawers      faq-open-drawers
+                                                 :drawers           (map-indexed (fn [ix {:keys [question answer]}]
+                                                                                   {:id       (str "footer-faq-" ix)
+                                                                                    :face     {:copy (:text question)}
+                                                                                    :contents {:answer answer}})
+                                                                                 faq-q-and-as)}))})
+                           {:id       "shop"
+                            :face     {:copy "Shop"}
+                            :contents {:info-accordion.contents/type :links-list
+                                       :row-count                    9
+                                       :column-count                 2
+                                       :links                        [{:target [e/navigate-category
+                                                                                {:page/slug "wigs" :catalog/category-id "13"}]
+                                                                       :copy   "Wigs"}
+                                                                      {:target [e/navigate-category
+                                                                                {:page/slug "human-hair-bundles" :catalog/category-id "27"}]
+                                                                       :copy   "Hair Bundles"}
+                                                                      {:target [e/navigate-category
+                                                                                {:page/slug "virgin-body-wave" :catalog/category-id "5"}]
+                                                                       :copy   "Virgin Body Wave"}
+                                                                      {:target [e/navigate-category
+                                                                                {:page/slug "virgin-loose-wave" :catalog/category-id "6"}]
+                                                                       :copy   "Virgin Loose Wave"}
+                                                                      {:target [e/navigate-category
+                                                                                {:page/slug "virgin-deep-wave" :catalog/category-id "8"}]
+                                                                       :copy   "Virgin Deep Wave"}
+                                                                      {:copy   "Dyed Virgin Hair [LINK TARGET MISSING]"}
+                                                                      {:target [e/navigate-category
+                                                                                {:page/slug "hair-extensions" :catalog/category-id "28"}]
+                                                                       :copy   "Hair Extensions"}
+                                                                      {:target [e/navigate-shop-by-look {:album-keyword :straight-bundle-sets}]
+                                                                       :copy   "Straight Bundle Sets"}
+                                                                      {:target [e/navigate-shop-by-look {:album-keyword :wavy-curly-bundle-sets}]
+                                                                       :copy   "Wavy Curly Bundle Sets"}
+                                                                      {:copy   "All Blonde Hair [LINK TARGET MISSING]"}
+                                                                      {:target [e/navigate-category
+                                                                                {:page/slug "360-frontals" :catalog/category-id "10"}]
+                                                                       :copy   "Virgin 360 Frontals"}
+                                                                      {:target [e/navigate-category
+                                                                                {:page/slug "virgin-lace-frontals" :catalog/category-id "29"}]
+                                                                       :copy   "Virgin Frontals"}
+                                                                      {:target [e/navigate-category
+                                                                                {:page/slug "seamless-clip-ins" :catalog/category-id "21"}]
+                                                                       :copy   "Clip-Ins"}
+                                                                      {:target [e/navigate-category
+                                                                                {:page/slug "taps-ins" :catalog/category-id "22"}]
+                                                                       :copy   "Tape-Ins"}
+                                                                      {:target [e/navigate-category
+                                                                                {:page/slug "wigs" :catalog/category-id "48"}]
+                                                                       :copy   "Sale"}]}}
+                           {:id       "about"
+                            :face     {:copy "About"}
+                            :contents {:info-accordion.contents/type :links-list
+                                       :row-count                    3
+                                       :column-count                 1
+                                       :links                        [{:target [e/navigate-content-about-us]
+                                                                       :copy   "Our Story"}
+                                                                      {:copy   "Events [LINK TARGET MISSING]"}
+                                                                      {:url  "https://shop.mayvenn.com/blog/"
+                                                                       :copy "Blog"}]}}
+                           {:id       "our-locations"
+                            :face     {:copy "Our Locations"}
+                            :contents {}}
+                           {:id       "contact-us"
+                            :face     {:copy "Contact Us"}
+                            :contents {:info-accordion.contents/type :contact-us}}
+                           {:id       "careers"
+                            :face     {:copy "Carrers"}
+                            :contents {}}]}))))
 
 (c/defcomponent component
   [{:keys [] :as data} owner opts]
