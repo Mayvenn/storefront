@@ -19,32 +19,47 @@
   [{:keys [] :as data} _ _]
   [:div "faq"])
 
-(c/defcomponent social-media-block
-  [{:keys [] :as data} _ _]
-  [:div "social"])
+(defn- social-link
+  ([uri icon] (social-link {:height "20px" :width "20px"} uri icon))
+  ([{:keys [height width]} uri icon]
+   (c/html
+    ;; https://web.dev/external-anchors-use-rel-noopener/
+    [:a.block.mr4 {:href uri :rel "noopener" :target "_blank"}
+     [:div {:style {:width width :height height}}
+      ^:inline icon]])))
 
-(defn- footer-link [opts label]
+(c/defcomponent social-media-block
+  [_ _ _]
+  [:div.px4.py3.flex.items-center
+   ^:inline (social-link {:height "28px" :width "28px"} "https://twitter.com/MayvennHair" (svg/mayvenn-on-twitter {:class "fill-p-color"}))
+   ^:inline (social-link "http://instagram.com/mayvennhair" (svg/mayvenn-on-instagram {:class "fill-p-color"}))
+   ^:inline (social-link "https://www.facebook.com/MayvennHair" (svg/mayvenn-on-facebook {:class "fill-p-color"}))
+   ^:inline (social-link "http://www.pinterest.com/mayvennhair/" (svg/mayvenn-on-pinterest {:class "fill-p-color"}))])
+
+(c/defcomponent essence-block
+  [{:keys [copy]} owner opts]
+  [:div.px4.pb3.proxima.content-4.dark-gray copy])
+
+(defn- underfoot-link [opts label]
   (c/html [:a.block.inherit-color.my2 opts label]))
 
 (c/defcomponent underfoot
   [{:keys [] :as data} owner opts]
-  [:div.white.bg-black
-   [:div.container.p6
-    ^:inline (svg/mayvenn-text-logo {:height "29px"
-                                     :width  "115px"
-                                     :class  "fill-white"})
-    [:div.flex.justify-between
-     ^:inline (footer-link (assoc (utils/route-to e/navigate-content-privacy)
-                                  :data-test "content-privacy") "Privacy")
-     ^:inline (footer-link {:href (str (routes/path-for e/navigate-content-privacy) "#ca-privacy-rights")}
-                           "CA Privacy Rights")
-     ^:inline (footer-link (assoc (utils/route-to e/navigate-content-tos)
-                                  :data-test "content-tos") "Terms")
-     ;; use traditional page load so anchors work
-     ^:inline (footer-link {:href (str (routes/path-for e/navigate-content-privacy) "#our-ads")} "Our Ads")
-     ]
-    [:div.px3.container.py2.flex.items-center.white {:key "minimal"}
-     "©" (date/year (date/now)) " " "Mayvenn"]]])
+  [:div.white.bg-black.px4.py5.proxima.content-4
+   ^:inline (svg/mayvenn-text-logo {:height "29px"
+                                    :width  "115px"
+                                    :class  "fill-white"})
+   [:div.flex.justify-between.my3
+    ^:inline (underfoot-link (assoc (utils/route-to e/navigate-content-privacy)
+                                    :data-test "content-privacy") "Privacy")
+    ^:inline (underfoot-link {:href (str (routes/path-for e/navigate-content-privacy) "#ca-privacy-rights")}
+                             "CA Privacy Rights")
+    ^:inline (underfoot-link (assoc (utils/route-to e/navigate-content-tos)
+                                    :data-test "content-tos") "Terms")
+    ;; use traditional page load so anchors work
+    ^:inline (underfoot-link {:href (str (routes/path-for e/navigate-content-privacy) "#our-ads")} "Our Ads")]
+   [:div.flex.items-center {:key "minimal"}
+    "©" (date/year (date/now)) " " "Mayvenn"]])
 
 (defn query
   [app-state]
@@ -61,13 +76,15 @@
                  :text-field/errors         (get-in app-state (conj k/field-errors ["email"]))
                  :text-field/email          email
                  :text-field/submitted-text (when submitted? "Thank you for subscribing.")}))
-   #:footer-links{:minimal-footer? (nav/show-minimal-footer? (get-in app-state k/navigation-event))}))
+   {:essence-block/copy "Included is a one year subscription to ESSENCE Magazine - a $10 value! Offer and refund details will be included with your confirmation."}
+   #:underfoot{})) ; GROT?
 
 (c/defcomponent component
   [{:keys [] :as data} owner opts]
   [:div
-   (c/build email-capture/organism data)
+   (c/build email-capture/organism data) ; TODO: use with/within to avoid rerenders?
    (c/build layered/lp-divider-purple-pink)
    (c/build faq-accordion)
    (c/build social-media-block)
-   (c/build underfoot (vt/with :footer-links data) opts)])
+   (c/build essence-block (vt/with :essence-block data))
+   (c/build underfoot (vt/with :underfoot data) opts)])

@@ -189,24 +189,36 @@
 
 ;; Footer
 
-(defn ^:private mayvenn-on-social [title xlink]
+(defn ^:private mayvenn-on-social [title xlink opts]
   (let [title-id (str "social-title-" xlink)]
     (component/html
-     [:svg.container-size {:class "fill-black" :role "img" :aria-labelledby title-id :aria-label title}
+     [:svg.container-size (maps/deep-merge {:class           "fill-black"
+                                            :role            "img"
+                                            :aria-labelledby title-id
+                                            :aria-label      title}
+                                           opts)
       [:title {:id title-id} title]
       ^:inline (svg-xlink {:role "presentation"} xlink)])))
 
-(defn mayvenn-on-facebook []
-  (mayvenn-on-social "Follow Mayvenn on Facebook" "facebook-f"))
+(defn mayvenn-on-facebook
+  ([] (mayvenn-on-facebook {}))
+  ([opts]
+   (mayvenn-on-social "Follow Mayvenn on Facebook" "facebook-f" opts)))
 
-(defn mayvenn-on-instagram []
-  (mayvenn-on-social "Follow Mayvenn on Instagram" "instagram"))
+(defn mayvenn-on-instagram
+  ([] (mayvenn-on-instagram {}))
+  ([opts]
+   (mayvenn-on-social "Follow Mayvenn on Instagram" "instagram" opts)))
 
-(defn mayvenn-on-twitter []
-  (mayvenn-on-social "Follow Mayvenn on Twitter" "twitter"))
+(defn mayvenn-on-twitter
+  ([] (mayvenn-on-twitter {}))
+  ([opts]
+   (mayvenn-on-social "Follow Mayvenn on Twitter" "twitter" opts)))
 
-(defn mayvenn-on-pinterest []
-  (mayvenn-on-social "Follow Mayvenn on Pinterest" "pinterest"))
+(defn mayvenn-on-pinterest
+  ([] (mayvenn-on-pinterest {}))
+  ([opts]
+   (mayvenn-on-social "Follow Mayvenn on Pinterest" "pinterest" opts)))
 
 (defn white-play-video [opts]
   (component/html
