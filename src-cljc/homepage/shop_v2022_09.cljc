@@ -3,7 +3,8 @@
             [storefront.events :as e]
             [storefront.component :as c]
             [mayvenn.concept.email-capture :as email-capture]
-            [storefront.keypaths :as k]))
+            [storefront.keypaths :as k]
+            [storefront.accessors.experiments :as experiments]))
 
 (defn page
   "Binds app-state to template for classic experiences"
@@ -77,4 +78,5 @@
                                    :email-capture.text-field/keypath        textfield-keypath
                                    :email-capture.text-field/errors         (get-in app-state (conj k/field-errors ["email"]))
                                    :email-capture.text-field/email          email
-                                   :email-capture.text-field/submitted-text (when submitted? "Thank you for subscribing.")})))))
+                                   :email-capture.text-field/submitted-text (when submitted? "Thank you for subscribing.")
+                                   :email-capture/show?                     (not (experiments/footer-v22? app-state))})))))

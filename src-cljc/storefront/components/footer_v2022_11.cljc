@@ -12,7 +12,8 @@
             [storefront.keypaths :as k]
             [storefront.platform.component-utils :as utils]
             [storefront.routes :as routes]
-            [mayvenn.visual.tools :as vt]))
+            [mayvenn.visual.tools :as vt]
+            [homepage.ui.email-capture :as email-capture]))
 
 (c/defcomponent faq-accordion
   [{:keys [] :as data} _ _]
@@ -48,14 +49,24 @@
 (defn query
   [app-state]
   (merge
-   #:footer-links{:minimal-footer?                (nav/show-minimal-footer? (get-in app-state k/navigation-event))
-                  :footer-email-input-value       (get-in app-state k/footer-email-value)
-                  :footer-email-submitted?        (get-in app-state k/footer-email-submitted)
-                  :footer-ready-for-email-signup? (get-in app-state k/footer-email-ready)}))
+   (let [textfield-keypath k/footer-email-value
+         email             (get-in app-state textfield-keypath)
+         submitted?        (get-in app-state k/footer-email-submitted)]
+     (vt/within :email-capture
+                {:submit/target             [e/control-footer-email-submit {:email email}]
+                 :text-field/id             "footer-email-capture-input"
+                 :text-field/placeholder    "Enter your Email"
+                 :text-field/focused        (get-in app-state k/ui-focus)
+                 :text-field/keypath        textfield-keypath
+                 :text-field/errors         (get-in app-state (conj k/field-errors ["email"]))
+                 :text-field/email          email
+                 :text-field/submitted-text (when submitted? "Thank you for subscribing.")}))
+   #:footer-links{:minimal-footer? (nav/show-minimal-footer? (get-in app-state k/navigation-event))}))
 
 (c/defcomponent component
   [{:keys [] :as data} owner opts]
   [:div
+   (c/build email-capture/organism data)
    (c/build layered/lp-divider-purple-pink)
    (c/build faq-accordion)
    (c/build social-media-block)

@@ -32,7 +32,8 @@
    (c/build shop-these-looks/organism data)
    (c/build blog/organism blog2)
    (c/build zip-explanation/organism zip-explanation)
-   (c/build email-capture/organism data)])
+   (when (:email-capture/show? data)
+     (c/build email-capture/organism data))])
 
 (defn hero-query
   "TODO homepage hero query is reused and complected
