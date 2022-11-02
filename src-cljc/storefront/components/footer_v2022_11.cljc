@@ -106,7 +106,48 @@
                           :contents {:info-accordion.contents/type :faq-accordion}}
                          {:id       "shop"
                           :face     {:copy "Shop"}
-                          :contents {:info-accordion.contents/type :links-list}}
+                          :contents {:info-accordion.contents/type :links-list
+                                     :row-count                    9
+                                     :column-count                 2
+                                     :links                        [{:target [e/navigate-category
+                                                                              {:page/slug "wigs" :catalog/category-id "13"}]
+                                                                     :copy   "Wigs"}
+                                                                    {:target [e/navigate-category
+                                                                              {:page/slug "human-hair-bundles" :catalog/category-id "27"}]
+                                                                     :copy   "Hair Bundles"}
+                                                                    {:target [e/navigate-category
+                                                                              {:page/slug "virgin-body-wave" :catalog/category-id "5"}]
+                                                                     :copy   "Virgin Body Wave"}
+                                                                    {:target [e/navigate-category
+                                                                              {:page/slug "virgin-loose-wave" :catalog/category-id "6"}]
+                                                                     :copy   "Virgin Loose Wave"}
+                                                                    {:target [e/navigate-category
+                                                                              {:page/slug "virgin-deep-wave" :catalog/category-id "8"}]
+                                                                     :copy   "Virgin Deep Wave"}
+                                                                    {:copy   "Dyed Virgin Hair [LINK TARGET MISSING]"}
+                                                                    {:target [e/navigate-category
+                                                                              {:page/slug "hair-extensions" :catalog/category-id "28"}]
+                                                                     :copy   "Hair Extensions"}
+                                                                    {:target [e/navigate-shop-by-look {:album-keyword :straight-bundle-sets}]
+                                                                     :copy   "Straight Bundle Sets"}
+                                                                    {:target [e/navigate-shop-by-look {:album-keyword :wavy-curly-bundle-sets}]
+                                                                     :copy   "Wavy Curly Bundle Sets"}
+                                                                    {:copy   "All Blonde Hair [LINK TARGET MISSING]"}
+                                                                    {:target [e/navigate-category
+                                                                              {:page/slug "360-frontals" :catalog/category-id "10"}]
+                                                                     :copy   "Virgin 360 Frontals"}
+                                                                    {:target [e/navigate-category
+                                                                              {:page/slug "virgin-lace-frontals" :catalog/category-id "29"}]
+                                                                     :copy   "Virgin Frontals"}
+                                                                    {:target [e/navigate-category
+                                                                              {:page/slug "seamless-clip-ins" :catalog/category-id "21"}]
+                                                                     :copy   "Clip-Ins"}
+                                                                    {:target [e/navigate-category
+                                                                              {:page/slug "taps-ins" :catalog/category-id "22"}]
+                                                                     :copy   "Tape-Ins"}
+                                                                    {:target [e/navigate-category
+                                                                              {:page/slug "wigs" :catalog/category-id "48"}]
+                                                                     :copy   "Sale"}]}}
                          {:id       "about"
                           :face     {:copy "About"}
                           :contents {:info-accordion.contents/type :links-list
