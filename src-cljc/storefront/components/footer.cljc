@@ -5,6 +5,7 @@
             [storefront.accessors.nav :as nav]
             [storefront.accessors.sites :as sites]
             [storefront.component :as component :refer [defcomponent]]
+            storefront.components.footer-v2022-11
             [storefront.components.footer-links :as footer-links]
             [storefront.components.footer-minimal :as footer-minimal]
             [storefront.components.svg :as svg]
@@ -206,13 +207,17 @@
 
 (defn built-component
   [data _]
-  (let [nav-event (get-in data keypaths/navigation-event)]
+  (let [nav-event  (get-in data keypaths/navigation-event)]
     (cond
       (nav/hide-footer? nav-event)
       nil
 
       (nav/show-minimal-footer? nav-event)
       (footer-minimal/built-component data nil)
+
+      (experiments/footer-v22? data)
+      (component/build storefront.components.footer-v2022-11/component
+                       (storefront.components.footer-v2022-11/query data) nil)
 
       (= :shop (sites/determine-site data))
       (component/build dtc-full-component (query data) {:key "dtc-full-footer"})
