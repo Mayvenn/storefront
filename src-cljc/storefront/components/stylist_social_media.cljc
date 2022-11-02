@@ -1,5 +1,6 @@
 (ns storefront.components.stylist-social-media
-  (:require [storefront.component :as component :refer [defcomponent]]
+  (:require [clojure.string :as string]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -13,6 +14,9 @@
             [spice.maps :as maps]
             [storefront.components.homepage-hero :as homepage-hero]
             [ui.molecules :as ui.M]))
+
+(defn ^:private copy [& sentences]
+  (string/join " " sentences))
 
 (defn ^:private vertical-blackline-atom
   [class]
@@ -59,7 +63,10 @@
               :class "my2"
               :style {:max-width "600px"}})
      [:div.m3
-      [:div.proxima.content-2.left-align "CONTENT MISSING"]
+      [:div.proxima.content-2.left-align.center-align-on-mb
+       (copy "With your video submission for each look,"
+             "include short notes via email with any processes and products that you used,"
+             "as well as custom color details (if applicable).")]
       [:h3.proxima.title-1.bold.my2.shout.left-align "Examples of Content"]
       [:ul.content-2.proxima.left-align.my2
        [:li "Lifted hair with 20 volume lightener"]
@@ -67,7 +74,8 @@
        [:li "Toned with Colerance 6B"]
        [:li "Added layers to shape the style and customized the hairline on the closure."]]
       [:h3.proxima.title-1.bold.my2.shout.left-align.mx3 "Note:"]
-      [:div.proxima.content-2.left-align.mx3 "Do not include any text, supers, overlays, watermarks, or heavy filtering on your videos. "
+      [:div.proxima.content-2.left-align.mx3.center-align-on-mb
+       "Do not include any text, supers, overlays, watermarks, or heavy filtering on your videos."
        "We will add any on-crean notes needed during editing. Include (via email) which username you'd like us to credit."]]]
     [:h3.proxima.title-1.bold.my2.shout "Remember"]
     [:div.proxima.content-2.mb8
