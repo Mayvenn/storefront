@@ -427,7 +427,7 @@
     :content-value   "No - Since this hair has already been professionally processed, we don't recommend any lifting (bleaching) or coloring."}])
 
 (defn product-details-accordion<-
-  [{:accordion/keys [id open-drawers open-faq-drawers]}
+  [{:accordion/keys [id open-drawers]}
    {:keys [product model-image faq] :as description-data} length-guide-image]
   (if ((:catalog/department product) "stylist-exclusives")
     (accordion-neue/accordion-query
