@@ -7,6 +7,7 @@
 .p-color      { color: var(--p-color); }
 .s-color      { color: var(--s-color); }
 .red          { color: var(--red); }
+.warning-red  { color: var(--warning-red); }
 .pink         { color: var(--pink); }
 .light-red    { color: var(--light-red); }
 .paypal       { color: var(--paypal); }
@@ -33,6 +34,7 @@
   --p-color:      #4427c1;
   --s-color:      #6bc8ad;
   --red:          #f94941;
+  --warning-red:  #AB010C;
   --pink:         #f4c3d6;
   --light-red:    #fef7fa;
   --paypal:       #00297c;

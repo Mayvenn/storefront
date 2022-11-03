@@ -14,7 +14,7 @@
       (when primary-struck
         [:div
          [:span.proxima.content-2.strike primary-struck]
-         [:div.proxima.title-1.red.right new-primary]])
+         [:div.warning-red.right new-primary]])
       [:div.proxima.content-3 {:class secondary-classes}
        secondary]])])
 

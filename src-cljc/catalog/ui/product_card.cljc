@@ -135,7 +135,7 @@
            :pricing  (let [[price discounted-price] item]
                        (if discounted-price
                          [:span.black "Starting at " [:span.strike (mf/as-money price)] " "
-                          [:span.title-1.proxima.red (mf/as-money discounted-price)]]
+                          [:span.warning-red (mf/as-money discounted-price)]]
                          [:span.black "Starting at " [:span.content-2.proxima (mf/as-money price)]]))
            :swatches [:div.flex.col-10.mx-auto.justify-center
                       {:style {:height "9px"}}
