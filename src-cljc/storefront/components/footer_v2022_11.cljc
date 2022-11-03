@@ -230,22 +230,21 @@
                            {:id       "about"
                             :face     {:copy "About"}
                             :contents {:info-accordion.contents/type :links-list
-                                       :row-count                    3
+                                       :row-count                    4
                                        :column-count                 1
                                        :links                        [{:target [e/navigate-content-about-us]
                                                                        :copy   "Our Story"}
                                                                       {:copy "Events [LINK TARGET MISSING]"}
                                                                       {:url  "https://shop.mayvenn.com/blog/"
-                                                                       :copy "Blog"}]}}
+                                                                       :copy "Blog"}
+                                                                      {:url "https://jobs.mayvenn.com/"
+                                                                       :copy "Careers"}]}}
                            {:id       "our-locations"
                             :face     {:copy "Our Locations"}
                             :contents {:info-accordion.contents/type :our-locations}}
                            {:id       "contact-us"
                             :face     {:copy "Contact Us"}
-                            :contents {:info-accordion.contents/type :contact-us}}
-                           {:id       "careers"
-                            :face     {:copy "Careers"}
-                            :contents {}}]}))))
+                            :contents {:info-accordion.contents/type :contact-us}}]}))))
 
 (c/defcomponent component
   [{:keys [] :as data} owner opts]
