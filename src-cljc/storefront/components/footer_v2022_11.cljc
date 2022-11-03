@@ -63,6 +63,30 @@
     [:a (utils/route-to e/navigate-content-privacy) "privacy policy"]
     "."]])
 
+(c/defcomponent our-locations
+  [{:keys []} _ _]
+  [:div.p4
+   (ui/img {:src             "//ucarecdn.com/9d736154-7ec4-4414-9e60-ca4f515d7e55/"
+            :picture-classes "container-size"})
+   [:div.grid.my5.items-center
+    {:style {:grid-template-columns "1fr auto 1fr"
+             :row-gap               "40px"}}
+    [:div.flex.flex-column
+     [:div.flex-auto.flex.flex-column.items-center.justify-end
+      [:div.proxima.content-4.pt2 "Monday to Friday"]
+      [:div.proxima.content-2 "11am to 7pm ET"]]
+     [:div.flex-auto.flex.flex-column.items-center.justify-end
+      [:div.proxima.content-4.pt2 "Sunday"]
+      [:div.proxima.content-2 "12pm-6pm"]]]
+    [:div.border.container-size]
+    [:div.flex.flex-column.my4.gap-4.items-center
+     [:a.inherit-color (utils/route-to e/navigate-retail-walmart-mansfield) "Mansfield, TX"]
+     [:a.inherit-color (utils/route-to e/navigate-retail-walmart-katy) "Katy, TX"]
+     [:a.inherit-color (utils/route-to e/navigate-retail-walmart-dallas) "Dallas, TX"]
+     [:a.inherit-color (utils/route-to e/navigate-retail-walmart-houston) "Houston, TX"]
+     [:a.inherit-color (utils/route-to e/navigate-retail-walmart-grand-prairie) "Grand Prairie, TX"]
+     [:a.inherit-color (utils/route-to e/navigate-retail-walmart) "See all locations"]]]])
+
 (c/defcomponent info-accordion-face-open [{:keys [copy]} _ _]
   [:div.shout.content-3.p4.bold copy])
 (c/defcomponent info-accordion-face-closed [{:keys [copy]} _ _]
@@ -70,12 +94,14 @@
 (c/defcomponent info-accordion-contents [{:info-accordion.contents/keys [type] :as data} _ _]
   [:div.bg-pale-purple
    (case type
-     :faq-accordion (c/build accordion/component (vt/with :footer-faq data) {:opts
-                                                                             {:accordion.drawer.open/face-component   product-info/question-open
-                                                                              :accordion.drawer.closed/face-component product-info/question-closed
-                                                                              :accordion.drawer/contents-component    product-info/answer}})
+     :faq-accordion (c/build accordion/component
+                             (vt/with :footer-faq data)
+                             {:opts {:accordion.drawer.open/face-component   product-info/question-open
+                                     :accordion.drawer.closed/face-component product-info/question-closed
+                                     :accordion.drawer/contents-component    product-info/answer}})
      :links-list    (c/build info-accordion-drawer-links-list data)
      :contact-us    (c/build contact-block data)
+     :our-locations (c/build our-locations data)
      [:div.bg-red "CONTENT MISSING!"])])
 
 (defn- social-link
@@ -177,7 +203,7 @@
                                                                       {:target [e/navigate-category
                                                                                 {:page/slug "virgin-deep-wave" :catalog/category-id "8"}]
                                                                        :copy   "Virgin Deep Wave"}
-                                                                      {:copy   "Dyed Virgin Hair [LINK TARGET MISSING]"}
+                                                                      {:copy "Dyed Virgin Hair [LINK TARGET MISSING]"}
                                                                       {:target [e/navigate-category
                                                                                 {:page/slug "hair-extensions" :catalog/category-id "28"}]
                                                                        :copy   "Hair Extensions"}
@@ -185,7 +211,7 @@
                                                                        :copy   "Straight Bundle Sets"}
                                                                       {:target [e/navigate-shop-by-look {:album-keyword :wavy-curly-bundle-sets}]
                                                                        :copy   "Wavy Curly Bundle Sets"}
-                                                                      {:copy   "All Blonde Hair [LINK TARGET MISSING]"}
+                                                                      {:copy "All Blonde Hair [LINK TARGET MISSING]"}
                                                                       {:target [e/navigate-category
                                                                                 {:page/slug "360-frontals" :catalog/category-id "10"}]
                                                                        :copy   "Virgin 360 Frontals"}
@@ -208,12 +234,12 @@
                                        :column-count                 1
                                        :links                        [{:target [e/navigate-content-about-us]
                                                                        :copy   "Our Story"}
-                                                                      {:copy   "Events [LINK TARGET MISSING]"}
+                                                                      {:copy "Events [LINK TARGET MISSING]"}
                                                                       {:url  "https://shop.mayvenn.com/blog/"
                                                                        :copy "Blog"}]}}
                            {:id       "our-locations"
                             :face     {:copy "Our Locations"}
-                            :contents {}}
+                            :contents {:info-accordion.contents/type :our-locations}}
                            {:id       "contact-us"
                             :face     {:copy "Contact Us"}
                             :contents {:info-accordion.contents/type :contact-us}}
