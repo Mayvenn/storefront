@@ -83,7 +83,7 @@ COPY --from=builder /app/container_files /
 # This is not necessary, except to tell docker tha the asset_uploader is actually needed and it should not optimize it out of existing.
 COPY --from=asset_uploader /.asset-upload-done /.asset-upload-done
 
-RUN curl -o /dd-java-agent.jar -L https://dtdg.co/latest-java-tracer
+RUN curl -LO https://github.com/jmxtrans/jmxtrans-agent/releases/download/jmxtrans-agent-1.2.4/jmxtrans-agent-1.2.4.jar
 
 USER nobody
-CMD exec java -javaagent:/dd-java-agen.jar -server -XX:-OmitStackTraceInFastThrow -Xmx1024m -XX:MaxMetaspaceSize=128m -Xss1m -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -jar $JAR_FILENAME
+CMD exec java -javaagent:/jmxtrans-agent-1.2.4.jar=/jmxtrans-agent.xml -server -XX:-OmitStackTraceInFastThrow -Xmx1024m -XX:MaxMetaspaceSize=128m -Xss1m -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -jar $JAR_FILENAME
