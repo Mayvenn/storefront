@@ -123,7 +123,7 @@
 
 (c/defcomponent essence-block
   [{:keys [copy]} owner opts]
-  [:div.px4.pb3.proxima.content-4.dark-gray copy])
+  [:div.px4.pb3.proxima.content-4.dark-dark-gray copy])
 
 (defn ^:private underfoot-link [opts label]
   (c/html [:a.block.inherit-color.my2 opts label]))
