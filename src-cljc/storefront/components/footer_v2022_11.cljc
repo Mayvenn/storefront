@@ -26,6 +26,43 @@
             (when url {:href url}))
            copy]) links)])
 
+(defn ^:private contact-item
+  [icon title copy]
+  [:div.flex-auto.flex.flex-column.items-center.justify-end
+   icon
+   [:div.proxima.content-4.pt2 title]
+   [:div.proxima.content-2 copy]])
+
+(c/defcomponent contact-block
+  [{:keys []} _ _]
+  [:div.p4
+   [:div.proxima.content-4
+    "Have a problem? Need advice on a style or product? Here are a few ways to get a hold of us."]
+   [:div.grid.my5
+    {:style {:grid-template-columns "1fr auto 1fr"
+             :grid-template-rows    "1fr 1fr"
+             :row-gap               "40px"}}
+    (contact-item (svg/customer-service-representative {:style {:height "2.0em"}})
+                  "Monday to Friday"
+                  "11am to 8pm ET")
+    [:div.border]
+    (contact-item (svg/phone-ringing {})
+                  "Call Us"
+                  (ui/link :link/phone :a.inherit-color {} "+1 (888) 562-7952"))
+    (contact-item (svg/message-bubble {})
+                  "Text"
+                  (ui/link :link/sms :a.inherit-color {} "34649"))
+    [:div.border]
+    (contact-item (svg/mail-envelope {})
+                  "email"
+                  (ui/link :link/email :a.inherit-color {} "help@mayvenn.com"))]
+   [:div.proxima.content-4.dark-gray
+    "* Message & data rates may apply. Message frequency varies. See "
+    [:a (utils/route-to e/navigate-content-tos) "terms"]
+    " & "
+    [:a (utils/route-to e/navigate-content-privacy) "privacy policy"]
+    "."]])
+
 (c/defcomponent info-accordion-face-open [{:keys [copy]} _ _]
   [:div.shout.content-3.p4.bold copy])
 (c/defcomponent info-accordion-face-closed [{:keys [copy]} _ _]
@@ -38,7 +75,7 @@
                                                                               :accordion.drawer.closed/face-component product-info/question-closed
                                                                               :accordion.drawer/contents-component    product-info/answer}})
      :links-list    (c/build info-accordion-drawer-links-list data)
-     :contact-us    [:div "contacty"]
+     :contact-us    (c/build contact-block data)
      [:div.bg-red "CONTENT MISSING!"])])
 
 (defn- social-link
@@ -62,7 +99,7 @@
   [{:keys [copy]} owner opts]
   [:div.px4.pb3.proxima.content-4.dark-gray copy])
 
-(defn- underfoot-link [opts label]
+(defn ^:private underfoot-link [opts label]
   (c/html [:a.block.inherit-color.my2 opts label]))
 
 (c/defcomponent underfoot
@@ -99,7 +136,6 @@
                  :text-field/email          email
                  :text-field/submitted-text (when submitted? "Thank you for subscribing.")}))
    {:essence-block/copy "Included is a one year subscription to ESSENCE Magazine - a $10 value! Offer and refund details will be included with your confirmation."}
-   #:underfoot{} ; GROT?
    (let [faq-q-and-as     (-> app-state (get-in k/cms-faq) vals first :question-answers) ;; TODO: choose an FAQ intentionally. `first` is placeholder
          faq-open-drawers (-> app-state (accordion/<- :footer-faq) :accordion/open-drawers)]
      (accordion/accordion-query
@@ -182,7 +218,7 @@
                             :face     {:copy "Contact Us"}
                             :contents {:info-accordion.contents/type :contact-us}}
                            {:id       "careers"
-                            :face     {:copy "Carrers"}
+                            :face     {:copy "Careers"}
                             :contents {}}]}))))
 
 (c/defcomponent component
