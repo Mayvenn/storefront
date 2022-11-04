@@ -374,12 +374,13 @@
           normalized-cms-cache @(:normalized-cache contentful)
           update-data          (partial copy-cms-to-data cms-cache)]
       (h (update-in-req-state req keypaths/cms
-                              merge
+                              maps/deep-merge
                               (update-data {} [:advertisedPromo])
                               {:emailModal (into {} (for [modal (filter (comp (partial = "emailModal") :id :sys :contentType :sys) (vals normalized-cms-cache))]
                                                       [(-> modal :sys :id) (->> modal
                                                                                 contentful/extract-fields
                                                                                 (resolve-cms-node normalized-cms-cache))]))}
+
                               (update-data {} [:faq :sitewide-footer])
                               (cond (= events/navigate-home nav-event)
                                     (-> {:homepage (let [id (if shop? :unified-fi :unified)]
