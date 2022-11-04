@@ -121,10 +121,6 @@
    ^:inline (social-link "https://www.facebook.com/MayvennHair" (svg/mayvenn-on-facebook {:class "fill-p-color"}))
    ^:inline (social-link "http://www.pinterest.com/mayvennhair/" (svg/mayvenn-on-pinterest {:class "fill-p-color"}))])
 
-(c/defcomponent essence-block
-  [{:keys [copy]} owner opts]
-  [:div.px4.pb3.proxima.content-4.dark-dark-gray copy])
-
 (defn ^:private underfoot-link [opts label]
   (c/html [:a.block.inherit-color.my2 opts label]))
 
@@ -161,7 +157,6 @@
                  :text-field/errors         (get-in app-state (conj k/field-errors ["email"]))
                  :text-field/email          email
                  :text-field/submitted-text (when submitted? "Thank you for subscribing.")}))
-   {:essence-block/copy "Included is a one year subscription to ESSENCE Magazine - a $10 value! Offer and refund details will be included with your confirmation."}
    (accordion/accordion-query
     {:id                :info-accordion
      :allow-all-closed? true
@@ -228,11 +223,10 @@
                                  {:id       "about"
                                   :face     {:copy "About"}
                                   :contents {:info-accordion.contents/type :links-list
-                                             :row-count                    4
+                                             :row-count                    3
                                              :column-count                 1
                                              :links                        [{:target [e/navigate-content-about-us]
                                                                              :copy   "Our Story"}
-                                                                            {:copy "Events [LINK TARGET MISSING]"}
                                                                             {:url  "https://shop.mayvenn.com/blog/"
                                                                              :copy "Blog"}
                                                                             {:url "https://jobs.mayvenn.com/"
@@ -257,5 +251,4 @@
                          :closed/face-component info-accordion-face-closed
                          :contents-component    info-accordion-contents})})
    (c/build social-media-block)
-   (c/build essence-block (vt/with :essence-block data))
    (c/build underfoot (vt/with :underfoot data) opts)])
