@@ -15,45 +15,45 @@
             [storefront.components.accordions.product-info :as product-info]))
 
 (c/defcomponent info-accordion-drawer-links-list [{:keys [links row-count column-count]} _ _]
-  [:div.p4.grid.gap-4
+  [:div.grid.gap-4.content-3
    {:style {:grid-template-columns (str "repeat(" column-count ", 1fr)")
             :grid-template-rows    (str "repeat(" row-count ", 1fr)")
             :grid-auto-flow        "column"}}
    (map (fn [{:keys [target url copy]}]
-          [:a.inherit-color
+          [:a.inherit-color.nowrap.overflow-hidden
            (merge
             (when target (apply util/route-to target))
-            (when url {:href url}))
+            (when url {:href url})
+            {:style {:text-overflow "ellipsis"}})
            copy]) links)])
 
-(defn ^:private contact-item
+(defn ^:private contact-tile
   [icon title copy]
-  [:div.flex-auto.flex.flex-column.items-center.justify-end
+  [:div.flex.flex-column-on-mb.items-center.gap-2
    icon
-   [:div.proxima.content-4.pt2 title]
-   [:div.proxima.content-2 copy]])
+   [:div.flex.flex-column.items-center-on-mb
+    [:div.proxima.content-4 title]
+    [:div.proxima.content-2-on-mb.content-3-on-tb-dt copy]]])
 
 (c/defcomponent contact-block
   [{:keys []} _ _]
-  [:div.p4
-   [:div.proxima.content-4
+  [:div
+   [:div.proxima.content-4.hide-on-tb-dt
     "Have a problem? Need advice on a style or product? Here are a few ways to get a hold of us."]
-   [:div.grid.my5
-    {:style {:grid-template-columns "1fr auto 1fr"
-             :grid-template-rows    "1fr 1fr"
-             :row-gap               "40px"}}
-    (contact-item (svg/customer-service-representative {:style {:height "2.0em"}})
+   [:div.grid.my5.contact-block-tiles
+    (contact-tile (svg/customer-service-representative {:style {:height "2.0em"
+                                                                :width "2.0em"}})
                   "Monday to Friday"
                   "11am to 8pm ET")
-    [:div.border]
-    (contact-item (svg/phone-ringing {})
+    [:div.border.hide-on-tb-dt]
+    (contact-tile (svg/phone-ringing {})
                   "Call Us"
                   (ui/link :link/phone :a.inherit-color {} "+1 (888) 562-7952"))
-    (contact-item (svg/message-bubble {})
+    (contact-tile (svg/message-bubble {})
                   "Text"
                   (ui/link :link/sms :a.inherit-color {} "34649"))
-    [:div.border]
-    (contact-item (svg/mail-envelope {})
+    [:div.border.hide-on-tb-dt]
+    (contact-tile (svg/mail-envelope {})
                   "email"
                   (ui/link :link/email :a.inherit-color {} "help@mayvenn.com"))]
    [:div.proxima.content-4.dark-gray
@@ -65,34 +65,31 @@
 
 (c/defcomponent our-locations
   [{:keys []} _ _]
-  [:div.p4
+  [:div.grid
    (ui/img {:src             "//ucarecdn.com/9d736154-7ec4-4414-9e60-ca4f515d7e55/"
             :picture-classes "container-size"})
-   [:div.grid.my5.items-center
-    {:style {:grid-template-columns "1fr auto 1fr"
-             :row-gap               "40px"}}
-    [:div.flex.flex-column
-     [:div.flex-auto.flex.flex-column.items-center.justify-end
-      [:div.proxima.content-4.pt2 "Monday to Friday"]
-      [:div.proxima.content-2 "11am to 7pm ET"]]
-     [:div.flex-auto.flex.flex-column.items-center.justify-end
-      [:div.proxima.content-4.pt2 "Sunday"]
-      [:div.proxima.content-2 "12pm-6pm"]]]
-    [:div.border.container-size]
-    [:div.flex.flex-column.my4.gap-4.items-center
-     [:a.inherit-color (utils/route-to e/navigate-retail-walmart-mansfield) "Mansfield, TX"]
-     [:a.inherit-color (utils/route-to e/navigate-retail-walmart-katy) "Katy, TX"]
-     [:a.inherit-color (utils/route-to e/navigate-retail-walmart-dallas) "Dallas, TX"]
-     [:a.inherit-color (utils/route-to e/navigate-retail-walmart-houston) "Houston, TX"]
-     [:a.inherit-color (utils/route-to e/navigate-retail-walmart-grand-prairie) "Grand Prairie, TX"]
-     [:a.inherit-color (utils/route-to e/navigate-retail-walmart) "See all locations"]]]])
+   [:div.grid.my5.items-center-on-mb.overflow-hidden.footer-our-locations
+    [:div.flex.flex-column.items-start-on-tb-dt.items-center-on-mb
+     [:div.proxima.content-3.nowrap "Monday-Saturday"]
+     [:div.proxima.content-2.nowrap "11am - 7pm"]
+     [:div.mt4]
+     [:div.proxima.content-3.nowrap "Sunday"]
+     [:div.proxima.content-2.nowrap "12pm - 6pm"]]
+    [:div.border.container-size.hide-on-tb-dt]
+    [:div.flex.flex-column.gap-4.items-center.overflow-hidden.content-3.items-start-on-tb-dt
+     [:a.inherit-color.nowrap (utils/route-to e/navigate-retail-walmart-mansfield) "Mansfield, TX"]
+     [:a.inherit-color.nowrap (utils/route-to e/navigate-retail-walmart-katy) "Katy, TX"]
+     [:a.inherit-color.nowrap (utils/route-to e/navigate-retail-walmart-dallas) "Dallas, TX"]
+     [:a.inherit-color.nowrap (utils/route-to e/navigate-retail-walmart-houston) "Houston, TX"]
+     [:a.inherit-color.nowrap (utils/route-to e/navigate-retail-walmart-grand-prairie) "Grand Prairie, TX"]
+     [:a.inherit-color.nowrap (utils/route-to e/navigate-retail-walmart) "See all locations"]]]])
 
 (c/defcomponent info-accordion-face-open [{:keys [copy]} _ _]
   [:div.shout.content-3.p4.bold copy])
 (c/defcomponent info-accordion-face-closed [{:keys [copy]} _ _]
   [:div.shout.content-3.p4 copy])
 (c/defcomponent info-accordion-contents [{:info-accordion.contents/keys [type] :as data} _ _]
-  [:div.bg-pale-purple
+  [:div.bg-pale-purple.p4
    (case type
      :faq-accordion (c/build accordion/component
                              (vt/with :footer-faq data)
@@ -127,20 +124,49 @@
 (c/defcomponent underfoot
   [{:keys [] :as data} owner opts]
   [:div.white.bg-black.px4.py5.proxima.content-4
-   ^:inline (svg/mayvenn-text-logo {:height "29px"
-                                    :width  "115px"
-                                    :class  "fill-white"})
-   [:div.flex.justify-between.my3
-    ^:inline (underfoot-link (assoc (utils/route-to e/navigate-content-privacy)
-                                    :data-test "content-privacy") "Privacy")
-    ^:inline (underfoot-link {:href (str (routes/path-for e/navigate-content-privacy) "#ca-privacy-rights")}
-                             "CA Privacy Rights")
-    ^:inline (underfoot-link (assoc (utils/route-to e/navigate-content-tos)
-                                    :data-test "content-tos") "Terms")
-    ;; use traditional page load so anchors work
-    ^:inline (underfoot-link {:href (str (routes/path-for e/navigate-content-privacy) "#our-ads")} "Our Ads")]
-   [:div.flex.items-center {:key "minimal"}
-    "©" (date/year (date/now)) " " "Mayvenn"]])
+   [:div.mx-auto-on-tb-dt.max-960
+    ^:inline (svg/mayvenn-text-logo {:height "29px"
+                                     :width  "115px"
+                                     :class  "fill-white"})
+    [:div.flex.gap-6.my3
+     ^:inline (underfoot-link (assoc (utils/route-to e/navigate-content-privacy)
+                                     :data-test "content-privacy") "Privacy")
+     ^:inline (underfoot-link {:href (str (routes/path-for e/navigate-content-privacy) "#ca-privacy-rights")}
+                              "CA Privacy Rights")
+     ^:inline (underfoot-link (assoc (utils/route-to e/navigate-content-tos)
+                                     :data-test "content-tos") "Terms")
+     ;; use traditional page load so anchors work
+     ^:inline (underfoot-link {:href (str (routes/path-for e/navigate-content-privacy) "#our-ads")} "Our Ads")]
+    [:div.flex.items-center {:key "minimal"}
+     "©" (date/year (date/now)) " " "Mayvenn"]]])
+
+(c/defcomponent desktop-info-block [{:keys [] :as data} owner opts]
+  [:div
+   [:div.bg-pale-purple
+    [:div.container.grid
+     {:style {:grid-template-columns "1fr 4fr 1fr"}}
+     [:div.shout.title-3.proxima.p4 "FAQs"]
+     (c/build accordion/component
+              (->> data :drawers (filter #(= "faq" (:id %))) first :contents (vt/with :footer-faq))
+              {:opts {:accordion.drawer.open/face-component   product-info/question-open
+                      :accordion.drawer.closed/face-component product-info/question-closed
+                      :accordion.drawer/contents-component    product-info/answer}})]]
+   [:div.border-p-color.border.border-width-2]
+   [:div.container.grid.gap-4.mt4
+    {:style {:grid-template-columns "4fr 4fr 2fr 2fr"}}
+    [:div
+     [:div.shout.title-3.proxima "Locations"]
+     (c/build our-locations)]
+    [:div
+     [:div.shout.title-3.proxima "Shop"]
+     (c/build info-accordion-drawer-links-list (->> data :drawers (filter #(= "shop" (:id %))) first :contents))]
+    [:div
+     [:div.shout.title-3.proxima "About"]
+     (c/build info-accordion-drawer-links-list (->> data :drawers (filter #(= "about" (:id %))) first :contents))]
+    [:div
+     [:div.shout.title-3.proxima "Contact Us"]
+     (c/build contact-block)]]
+   ])
 
 (defn query
   [app-state]
@@ -243,12 +269,17 @@
   [:div
    (c/build email-capture/organism data) ; TODO: use with/within to avoid rerenders?
    (c/build layered/lp-divider-purple-pink)
-   (c/build accordion/component
-            (vt/with :info-accordion data)
-            {:opts
-             (vt/within :accordion.drawer
-                        {:open/face-component   info-accordion-face-open
-                         :closed/face-component info-accordion-face-closed
-                         :contents-component    info-accordion-contents})})
-   (c/build social-media-block)
+   [:div.hide-on-tb-dt
+    (c/build accordion/component
+             (vt/with :info-accordion data)
+             {:opts
+              (vt/within :accordion.drawer
+                         {:open/face-component   info-accordion-face-open
+                          :closed/face-component info-accordion-face-closed
+                          :contents-component    info-accordion-contents})})]
+   [:div.hide-on-mb
+    (c/build desktop-info-block
+             (vt/with :info-accordion data))]
+   [:div.mx-auto-on-tb-dt.max-960
+    (c/build social-media-block)]
    (c/build underfoot (vt/with :underfoot data) opts)])

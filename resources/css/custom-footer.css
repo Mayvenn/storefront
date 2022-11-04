@@ -1,0 +1,21 @@
+@media (--on-tablet-and-desktop) {
+    .contact-block-tiles {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr 1fr 1fr;
+        row-gap: 40px;
+    }
+    .footer-our-locations {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (--on-mobile) {
+    .contact-block-tiles {
+        grid-template-columns: 1fr auto 1fr;
+        grid-template-rows: 1fr 1fr;
+        row-gap: 40px;
+    }
+    .footer-our-locations {
+        grid-template-columns: 1fr auto 1fr;
+    }
+}

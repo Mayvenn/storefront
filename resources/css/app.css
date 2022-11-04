@@ -13,6 +13,7 @@
 /* @import 'basscss-addons/modules/forms'; */
 /* Would like to use this, but .input interferes with existing forms */
 @import 'custom-forms.css';
+@import 'custom-footer.css';
 
 /* Basscss Core */
 

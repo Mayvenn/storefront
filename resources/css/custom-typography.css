@@ -127,6 +127,7 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (--on-tablet-and-desktop) {
     .content-1-on-tb-dt { font: var(--content-1-font); }
+    .content-3-on-tb-dt { font: var(--content-3-font); }
 }
 
 @custom-media --on-mobile             (max-width: 749px);
@@ -151,4 +152,5 @@ h1, h2, h3, h4, h5, h6 {
 
     --content-1-font: 20px/30px var(--font-family-proxima);
     --content-2-font: 16px/21px var(--font-family-proxima);
+    --content-3-font: 13px/18px var(--font-family-proxima);
 }
