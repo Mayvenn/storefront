@@ -15,7 +15,7 @@
             [storefront.components.accordions.product-info :as product-info]))
 
 (c/defcomponent info-accordion-drawer-links-list [{:keys [links row-count column-count]} _ _]
-  [:div.grid.gap-4.content-3
+  [:div.grid.gap-4.content-3.p4-on-mb
    {:style {:grid-template-columns (str "repeat(" column-count ", 1fr)")
             :grid-template-rows    (str "repeat(" row-count ", 1fr)")
             :grid-auto-flow        "column"}}
@@ -37,7 +37,7 @@
 
 (c/defcomponent contact-block
   [{:keys []} _ _]
-  [:div
+  [:div.p4-on-mb
    [:div.proxima.content-4.hide-on-tb-dt
     "Have a problem? Need advice on a style or product? Here are a few ways to get a hold of us."]
    [:div.grid.my5.contact-block-tiles
@@ -65,7 +65,7 @@
 
 (c/defcomponent our-locations
   [{:keys []} _ _]
-  [:div.grid
+  [:div.grid.p4-on-mb
    (ui/img {:src             "//ucarecdn.com/9d736154-7ec4-4414-9e60-ca4f515d7e55/"
             :picture-classes "container-size"})
    [:div.grid.my5.items-center-on-mb.overflow-hidden.footer-our-locations
@@ -77,19 +77,21 @@
      [:div.proxima.content-2.nowrap "12pm - 6pm"]]
     [:div.border.container-size.hide-on-tb-dt]
     [:div.flex.flex-column.gap-4.items-center.overflow-hidden.content-3.items-start-on-tb-dt
-     [:a.inherit-color.nowrap (utils/route-to e/navigate-retail-walmart-mansfield) "Mansfield, TX"]
-     [:a.inherit-color.nowrap (utils/route-to e/navigate-retail-walmart-katy) "Katy, TX"]
-     [:a.inherit-color.nowrap (utils/route-to e/navigate-retail-walmart-dallas) "Dallas, TX"]
-     [:a.inherit-color.nowrap (utils/route-to e/navigate-retail-walmart-houston) "Houston, TX"]
-     [:a.inherit-color.nowrap (utils/route-to e/navigate-retail-walmart-grand-prairie) "Grand Prairie, TX"]
-     [:a.inherit-color.nowrap (utils/route-to e/navigate-retail-walmart) "See all locations"]]]])
+     (map (fn [[evt location]]
+            [:a.inherit-color.nowrap (utils/route-to evt) location])
+          [[e/navigate-retail-walmart-mansfield "Mansfield, TX"]
+           [e/navigate-retail-walmart-katy "Katy, TX"]
+           [e/navigate-retail-walmart-dallas "Dallas, TX"]
+           [e/navigate-retail-walmart-houston "Houston, TX"]
+           [e/navigate-retail-walmart-grand-prairie "Grand Prairie, TX"]
+           [e/navigate-retail-walmart [:span.medium "See all locations"]]])]]])
 
 (c/defcomponent info-accordion-face-open [{:keys [copy]} _ _]
   [:div.shout.content-3.p4.bold copy])
 (c/defcomponent info-accordion-face-closed [{:keys [copy]} _ _]
   [:div.shout.content-3.p4 copy])
 (c/defcomponent info-accordion-contents [{:info-accordion.contents/keys [type] :as data} _ _]
-  [:div.bg-pale-purple.p4
+  [:div.bg-pale-purple
    (case type
      :faq-accordion (c/build accordion/component
                              (vt/with :footer-faq data)
@@ -145,7 +147,7 @@
    [:div.bg-pale-purple
     [:div.container.grid
      {:style {:grid-template-columns "1fr 4fr 1fr"}}
-     [:div.shout.title-3.proxima.p4 "FAQs"]
+     [:div.shout.title-2.proxima.py4 "FAQs"]
      (c/build accordion/component
               (->> data :drawers (filter #(= "faq" (:id %))) first :contents (vt/with :footer-faq))
               {:opts {:accordion.drawer.open/face-component   product-info/question-open
@@ -155,16 +157,16 @@
    [:div.container.grid.gap-4.mt4
     {:style {:grid-template-columns "4fr 4fr 2fr 2fr"}}
     [:div
-     [:div.shout.title-3.proxima "Locations"]
+     [:div.shout.title-2.proxima.pb2 "Locations"]
      (c/build our-locations)]
     [:div
-     [:div.shout.title-3.proxima "Shop"]
+     [:div.shout.title-2.proxima.pb2 "Shop"]
      (c/build info-accordion-drawer-links-list (->> data :drawers (filter #(= "shop" (:id %))) first :contents))]
     [:div
-     [:div.shout.title-3.proxima "About"]
+     [:div.shout.title-2.proxima.pb2 "About"]
      (c/build info-accordion-drawer-links-list (->> data :drawers (filter #(= "about" (:id %))) first :contents))]
     [:div
-     [:div.shout.title-3.proxima "Contact Us"]
+     [:div.shout.title-2.proxima.pb2 "Contact Us"]
      (c/build contact-block)]]
    ])
 
