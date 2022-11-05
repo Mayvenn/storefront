@@ -38,7 +38,7 @@
          {contents-component    :accordion.drawer/contents-component
           opened-face-component :accordion.drawer.open/face-component
           closed-face-component :accordion.drawer.closed/face-component} (c/get-opts this)]
-     (c/html [:div.border-bottom.border-cool-gray
+     (c/html [:div.border-bottom.border-gray
               (cond
                 (not opened?)
                 [:a.block.inherit-color.flex.justify-between.items-center
@@ -87,7 +87,7 @@
          opts                           (c/get-opts this)]
      (when (and id (seq drawers))
        (c/html
-        [:div.border-top.border-cool-gray
+        [:div.border-top.border-gray
          (c/elements drawer-component props :drawers :default opts)])))))
 
 (defn <-
