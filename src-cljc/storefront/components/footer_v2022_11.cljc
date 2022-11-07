@@ -12,7 +12,8 @@
             [homepage.ui.email-capture :as email-capture]
             [storefront.components.accordion-v2022-10 :as accordion]
             [storefront.platform.component-utils :as util]
-            [storefront.components.accordions.product-info :as product-info]))
+            [storefront.components.accordions.product-info :as product-info]
+            [storefront.accessors.auth :as auth]))
 
 (c/defcomponent info-accordion-drawer-links-list [{:keys [links row-count column-count]} _ _]
   [:div.grid.gap-4.content-3.p4-on-mb
@@ -178,9 +179,11 @@
   (merge
    (let [textfield-keypath k/footer-email-value
          email             (get-in app-state textfield-keypath)
-         submitted?        (get-in app-state k/footer-email-submitted)]
+         submitted?        (get-in app-state k/footer-email-submitted)
+         signed-in?        (auth/signed-in-or-initiated-guest-checkout? app-state)]
      (vt/within :email-capture
-                {:submit/target             [e/control-footer-email-submit {:email email}]
+                {:id                        (when (not signed-in?) "footer-email-capture")
+                 :submit/target             [e/control-footer-email-submit {:email email}]
                  :text-field/id             "footer-email-capture-input"
                  :text-field/placeholder    "Enter your Email"
                  :text-field/focused        (get-in app-state k/ui-focus)
@@ -260,7 +263,7 @@
                                                                              :copy   "Our Story"}
                                                                             {:url  "https://shop.mayvenn.com/blog/"
                                                                              :copy "Blog"}
-                                                                            {:url "https://jobs.mayvenn.com/"
+                                                                            {:url  "https://jobs.mayvenn.com/"
                                                                              :copy "Careers"}]}}
                                  {:id       "our-locations"
                                   :face     {:copy "Our Locations"}
@@ -272,7 +275,7 @@
 (c/defcomponent component
   [{:keys [] :as data} owner opts]
   [:div
-   (c/build email-capture/organism data) ; TODO: use with/within to avoid rerenders?
+   (c/build email-capture/organism (vt/with :email-capture data))
    (c/build layered/lp-divider-purple-pink)
    [:div.hide-on-tb-dt
     (c/build accordion/component
