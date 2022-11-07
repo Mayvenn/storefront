@@ -154,20 +154,23 @@
                       :accordion.drawer.closed/face-component product-info/question-closed
                       :accordion.drawer/contents-component    product-info/answer}})]]
    [:div.border-p-color.border.border-width-2]
-   [:div.container.grid.gap-4.mt4
-    {:style {:grid-template-columns "4fr 4fr 2fr 2fr"}}
-    [:div
-     [:div.shout.title-2.proxima.pb2 "Locations"]
-     (c/build our-locations)]
-    [:div
-     [:div.shout.title-2.proxima.pb2 "Shop"]
-     (c/build info-accordion-drawer-links-list (->> data :drawers (filter #(= "shop" (:id %))) first :contents))]
-    [:div
-     [:div.shout.title-2.proxima.pb2 "About"]
-     (c/build info-accordion-drawer-links-list (->> data :drawers (filter #(= "about" (:id %))) first :contents))]
-    [:div
-     [:div.shout.title-2.proxima.pb2 "Contact Us"]
-     (c/build contact-block)]]
+   [:div.bg-cool-gray
+    [:div.container.grid.gap-4.pt4
+     {:style {:grid-template-columns "4fr 4fr 2fr 2fr"}}
+     [:div
+      [:div.shout.title-2.proxima.pb2 "Locations"]
+      (c/build our-locations)]
+     [:div
+      [:div.shout.title-2.proxima.pb2 "Shop"]
+      (c/build info-accordion-drawer-links-list (->> data :drawers (filter #(= "shop" (:id %))) first :contents))]
+     [:div
+      [:div.shout.title-2.proxima.pb2 "About"]
+      (c/build info-accordion-drawer-links-list (->> data :drawers (filter #(= "about" (:id %))) first :contents))]
+     [:div
+      [:div.shout.title-2.proxima.pb2 "Contact Us"]
+      (c/build contact-block)]
+     [:div.container
+      (c/build social-media-block)]]]
    ])
 
 (defn query
@@ -278,10 +281,10 @@
               (vt/within :accordion.drawer
                          {:open/face-component   info-accordion-face-open
                           :closed/face-component info-accordion-face-closed
-                          :contents-component    info-accordion-contents})})]
+                          :contents-component    info-accordion-contents})})
+    [:div.container
+     (c/build social-media-block)]]
    [:div.hide-on-mb
     (c/build desktop-info-block
              (vt/with :info-accordion data))]
-   [:div.mx-auto-on-tb-dt.max-960
-    (c/build social-media-block)]
    (c/build underfoot (vt/with :underfoot data) opts)])
