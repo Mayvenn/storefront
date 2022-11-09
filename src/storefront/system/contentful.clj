@@ -280,6 +280,8 @@
                                     :exists         ["fields.faqSection"]
                                     :select         ["fields.faqSection"
                                                      "fields.questionsAnswers"]}
+                                   {:content :filledContentSlot
+                                    :latest? true}
                                    {:content-type :advertisedPromo
                                     :latest?      true}
                                    {:content-type   :ugc-collection

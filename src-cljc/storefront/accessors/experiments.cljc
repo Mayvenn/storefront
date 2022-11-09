@@ -145,3 +145,7 @@
 (defn footer-v22?
   [data]
   (display-feature? data "footer-v22"))
+
+(defn pdp-content-slots?
+  [data]
+  (display-feature? data "pdp-content-slots"))

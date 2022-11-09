@@ -411,7 +411,12 @@
 
                                         album-keyword
                                         (-> (update-data [:ugc-collection (keyword album-keyword)])
-                                            contentful/derive-all-looks)))
+                                            contentful/derive-all-looks)
+
+                                        :always
+                                        (assoc-in [:filledContentSlot]
+                                                  (some->>
+                                                   (assemble-cms-node normalized-cms-cache :filledContentSlot)))))
 
                                     (= events/navigate-landing-page nav-event)
                                     (-> {}
@@ -577,6 +582,7 @@
       (assoc _ :carousel-redesign (feature-flags/retrieve-flag ld "carousel-redesign" :bool false))
       (assoc _ :pdp-faq-in-accordion (feature-flags/retrieve-flag ld "pdp-faq-in-accordion" :bool false))
       (assoc _ :footer-v22 (feature-flags/retrieve-flag ld "footer-v22" :bool false))
+      (assoc _ :pdp-content-slots (feature-flags/retrieve-flag ld "pdp-content-slots" :bool false))
       (assoc-in-req-state req keypaths/features _)
       (h _))))
 
