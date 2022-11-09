@@ -124,7 +124,10 @@
 
 (defn bf-2022-sale?
   [data]
-  (display-feature? data "bf-2022-sale"))
+  (and (display-feature? data "bf-2022-sale")
+       ;; TODO: bring in this line below once we're done testing Black Friday on Acceptance,
+       ;;       so that it's ready for production
+       #_(date/after? (date/now) (date/date-time 2022 11 23 4 59 59 999))))
 
 (defn pdp-accordion-picker?
   [data]
