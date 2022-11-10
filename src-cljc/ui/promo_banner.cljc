@@ -49,17 +49,26 @@
            :advertised  true}
           (promos/default-advertised-promotion promotion-db)))))
 
+(def walmart-retail-pages
+  #{events/navigate-retail-walmart
+    events/navigate-retail-walmart-katy
+    events/navigate-retail-walmart-houston
+    events/navigate-retail-walmart-grand-prairie
+    events/navigate-retail-walmart-dallas
+    events/navigate-retail-walmart-mansfield})
+
 (defn ^:private nav-allowlist-for
   "Promo code banner should only show on these nav-events
 
    Depending on experiments, this allowlist may be modified"
   [no-applied-promos? on-shop?]
-  (cond-> #{events/navigate-home
-            events/navigate-cart
-            events/navigate-shop-by-look
-            events/navigate-shop-by-look-details
-            events/navigate-category
-            events/navigate-product-details}
+  (cond-> (clojure.set/union #{events/navigate-home
+                               events/navigate-cart
+                               events/navigate-shop-by-look
+                               events/navigate-shop-by-look-details
+                               events/navigate-category
+                               events/navigate-product-details}
+                             walmart-retail-pages)
     (and (not no-applied-promos?)
          (not on-shop?))
     (disj events/navigate-cart)))
