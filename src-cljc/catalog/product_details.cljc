@@ -122,10 +122,9 @@
     (titles/proxima-left (with :title data))]
    [:div.flex.justify-between.my2
     (catalog.M/yotpo-reviews-summary data)
-    [:div.col-2 (catalog.M/price-block data)]]
+    [:div.col-3 (catalog.M/price-block data)]]
    #?(:cljs
       (component/build zip/pdp-component data _))])
-
 
 (defn diamond-swatch [ucare-id facet-slug option-slug option-name selected? target size]
   (let [container-width #?(:clj (.hypot java.lang.Math size size)
