@@ -49,7 +49,7 @@
            :advertised  true}
           (promos/default-advertised-promotion promotion-db)))))
 
-(def walmart-retail-pages
+(def ^:private walmart-retail-pages
   #{events/navigate-retail-walmart
     events/navigate-retail-walmart-katy
     events/navigate-retail-walmart-houston
