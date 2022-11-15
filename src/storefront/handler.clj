@@ -652,10 +652,19 @@
       (wrap-fetch-store storeback-config)
       (wrap-known-subdomains-redirect environment)))
 
+
+(def structured-inbound-config
+  {:censor-keys ring-logging/default-censor-keys
+   :txfm-req    ring-logging/txfm-inbound-req
+   :format-req  ring-logging/structured-req
+   :txfm-resp   ring-logging/txfm-resp
+   :format-resp ring-logging/structured-resp})
+
 (defn wrap-logging [handler logger]
   (-> handler
       ring-logging/wrap-request-timing
-      (ring-logging/wrap-logging logger ring-logging/simple-inbound-config)
+      (ring-logging/wrap-logging logger 
+                                 structured-inbound-config)
       ring-logging/wrap-trace-request))
 
 (declare server-render-pages)

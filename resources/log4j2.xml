@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+  <Appenders>
+    <Console name="STDOUT">
+      <JSONLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true" objectMessageAsJsonObject="true" />
+    </Console>
+  </Appenders>
+
+  <Loggers>
+    <Root level="INFO">
+      <AppenderRef ref="STDOUT"/>
+    </Root>
+    <!-- NOTE: this only works if the logging namespace starts with com.mayvenn -->
+    <Logger name="com.mayvenn" level="trace">
+      <AppenderRef ref="STDOUT"/>
+    </Logger>
+  </Loggers>
+</Configuration>

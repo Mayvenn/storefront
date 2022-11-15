@@ -105,7 +105,7 @@
                      :client-version    client-version
                      :contentful-config {:graphql-endpoint           "https://graphql.contentful.com"
                                          :env-id                     "master"}
-                     :logging           {:system-name "storefront.system"}})
+                     :logging           {:logging-namespace "com.mayvenn.storefront"}})
 
 (defn env-config []
   (let [now (date/now)]
@@ -115,14 +115,15 @@
      :contentful-config   {:cache-timeout              #(* (if-dev-else env 60 4) minute)
                            :static-page-fetch-interval (* (if-dev-else env 60 5) minute)
                            :endpoint                   (if-prod-else env
-                                                         "https://cdn.contentful.com"
-                                                         "https://preview.contentful.com")
+                                                                     "https://cdn.contentful.com"
+                                                                     "https://preview.contentful.com")
                            :api-key                    (if-prod-else env
-                                                         (env :contentful-content-delivery-api-key)
-                                                         (env :contentful-content-delivery-preview-api-key))
+                                                                     (env :contentful-content-delivery-api-key)
+                                                                     (env :contentful-content-delivery-preview-api-key))
                            :preview-api-key            (env :contentful-content-delivery-preview-api-key)
                            :space-id                   (env :contentful-space-id)
                            :webhook-secret             (env :contentful-webhook-secret)}
+     :logging             {:environment (env :environment)}
      :launchdarkly-config {:sdk-key (env :launchdarkly-sdk-key)}
      :storeback-config    {:endpoint          (env :storeback-endpoint)
                            :internal-endpoint (or

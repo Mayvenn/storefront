@@ -9,7 +9,7 @@
             [storefront.system.contentful :as contentful]
             [storefront.system.scheduler :as scheduler]
             [storefront.system.contentful.static-page :as static-page]
-            [spice.logger.core :as logger]
+            [spice.logger4j :as logger4j]
             [tocsin.core :as tocsin]))
 
 (defrecord AppHandler [logger exception-handler storeback-config welcome-config environment client-version static-pages-repo]
@@ -31,7 +31,7 @@
 
 (defn system-map [config]
   (component/system-map
-   :logger (logger/create-logger (config :logging))
+   :logger (logger4j/make-logger (config :logging))
    :scheduler (scheduler/->Scheduler nil nil nil)
    :static-pages-repo (static-page/->Repository
                        (merge (:contentful-config config)
