@@ -52,7 +52,7 @@
                   (ui/link :link/phone :a.inherit-color {} "+1 (888) 562-7952"))
     (contact-tile (svg/message-bubble {})
                   "Text"
-                  (ui/link :link/sms :a.inherit-color {} "34649"))
+                  (ui/link :link/sms :a.inherit-color {:aria-label "text us at 34649"} "34649"))
     [:div.border.hide-on-tb-dt]
     (contact-tile (svg/mail-envelope {})
                   "email"
@@ -68,6 +68,7 @@
   [{:keys []} _ _]
   [:div.grid.p4-on-mb
    (ui/img {:src             "//ucarecdn.com/9d736154-7ec4-4414-9e60-ca4f515d7e55/"
+            :alt             ""
             :picture-classes "container-size"})
    [:div.grid.my5.items-center-on-mb.overflow-hidden.footer-our-locations
     [:div.flex.flex-column.items-start-on-tb-dt.items-center-on-mb
