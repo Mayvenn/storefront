@@ -43,9 +43,10 @@
                 (not opened?)
                 [:a.block.inherit-color.flex.justify-between.items-center
                  ;; Button states: up, down, hidden
-                 (utils/fake-href accordion--opened
-                                  {:accordion/id accordion-id
-                                   :drawer-id    drawer-id})
+                 (merge (utils/fake-href accordion--opened
+                                         {:accordion/id accordion-id
+                                          :drawer-id    drawer-id})
+                        {:aria-label (:copy face)})
                  (c/build closed-face-component face)
                  [:div.flex.items-center.p2
                   ^:inline (svg/dropdown-arrow {:class  "fill-black"
@@ -55,9 +56,10 @@
                 (and opened? closeable?)
                 [:a.block.inherit-color.flex.justify-between.items-center
                  ;; Button states: up, down, hidden
-                 (utils/fake-href accordion--closed
-                                  {:accordion/id accordion-id
-                                   :drawer-id    drawer-id})
+                 (merge (utils/fake-href accordion--closed
+                                         {:accordion/id accordion-id
+                                          :drawer-id    drawer-id})
+                        {:aria-label (:copy face)})
                  (c/build opened-face-component face)
                  [:div.flex.items-center.p2.flip-vertical
                   ^:inline (svg/dropdown-arrow {:class  "fill-black"

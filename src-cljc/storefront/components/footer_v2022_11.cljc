@@ -256,7 +256,7 @@
                                                                                       {:page/slug "wigs" :catalog/category-id "48"}]
                                                                              :copy   "Sale"}]}}
                                  {:id       "about"
-                                  :face     {:copy "About"}
+                                  :face     {:copy "About us"}
                                   :contents {:info-accordion.contents/type :links-list
                                              :row-count                    3
                                              :column-count                 1
