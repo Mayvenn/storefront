@@ -57,7 +57,7 @@
     (contact-tile (svg/mail-envelope {})
                   "email"
                   (ui/link :link/email :a.inherit-color {} "help@mayvenn.com"))]
-   [:div.proxima.content-4.dark-gray
+   [:div.proxima.content-4
     "* Message & data rates may apply. Message frequency varies. See "
     [:a (utils/route-to e/navigate-content-tos) "terms"]
     " & "
