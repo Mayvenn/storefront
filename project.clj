@@ -10,7 +10,7 @@
                  [environ "1.1.0"]
                  [tocsin "0.1.4"]
                  [tugboat "0.1.27" :exclusions [ring-logging]]
-                 [ring-logging "0.3.4"]
+                 [ring-logging "0.3.5"]
                  [mayvenn/tracer "0.1.3"]
                  [mayvenn/spice "0.1.73"]
                  [compojure "1.6.1"]
