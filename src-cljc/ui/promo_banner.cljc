@@ -42,28 +42,37 @@
 
 (defn ^:private promotion-to-advertise
   [data]
-  (let [promotion-db (get-in data keypaths/promotions)
-        applied      (get-in data keypaths/order-promotion-codes)
-        pending      (get-in data keypaths/pending-promo-code)
-        bf-2022-retail?   (and (experiments/bf-2022-retail? data)
-                          (contains? walmart-retail-pages (get-in data keypaths/navigation-event)))]
-    (if bf-2022-retail?
-        {:id          -1
-         :code        nil
-         :description "Black Friday Sale! Enjoy 20% off your purchase in-store."
-         :advertised  true}
-        (or (promos/find-promotion-by-code promotion-db (first applied)) ;; on the order
-            (promos/find-promotion-by-code promotion-db pending) ;; on a potential order
-            (if-let [default-advertised-promo-text (get-in data keypaths/cms-advertised-promo-text)]
-              ;; NOTE(jeff, justin): ideally contentful should provide the entire
-              ;; promo object, but it's so much easier to pretend we have a
-              ;; promotion object here.
-              {:id          -1
-               :code        nil
-               :description default-advertised-promo-text
-               :uri         (get-in data keypaths/cms-advertised-promo-uri)
-               :advertised  true}
-              (promos/default-advertised-promotion promotion-db))))))
+  (let [promotion-db    (get-in data keypaths/promotions)
+        applied         (get-in data keypaths/order-promotion-codes)
+        pending         (get-in data keypaths/pending-promo-code)
+        bf-2022-retail? (and (experiments/bf-2022-retail? data)
+                             (contains? walmart-retail-pages (get-in data keypaths/navigation-event)))]
+    (cond
+      bf-2022-retail?
+      {:id          -1
+       :code        nil
+       :description "Black Friday Sale! Enjoy 20% off your purchase in-store."
+       :advertised  true}
+
+      ;; This condition is for when the black friday sale is over in the stores:- show no banner.
+      ;; This is a little wonky UI-wise. Make sure to remove the retail stores from the nav allowlist to
+      ;; prevent this weirdness.
+      (contains? walmart-retail-pages (get-in data keypaths/navigation-event))
+      {}
+
+      :else
+      (or (promos/find-promotion-by-code promotion-db (first applied)) ;; on the order
+          (promos/find-promotion-by-code promotion-db pending) ;; on a potential order
+          (if-let [default-advertised-promo-text (get-in data keypaths/cms-advertised-promo-text)]
+            ;; NOTE(jeff, justin): ideally contentful should provide the entire
+            ;; promo object, but it's so much easier to pretend we have a
+            ;; promotion object here.
+            {:id          -1
+             :code        nil
+             :description default-advertised-promo-text
+             :uri         (get-in data keypaths/cms-advertised-promo-uri)
+             :advertised  true}
+            (promos/default-advertised-promotion promotion-db))))))
 
 (defn ^:private nav-allowlist-for
   "Promo code banner should only show on these nav-events
