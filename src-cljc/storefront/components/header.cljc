@@ -462,8 +462,8 @@
                                      {:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug           "wigs"
                                                                                                   :catalog/category-id "48"}]
                                       :slide-out-nav-menu-item/nested? false
-                                      :slide-out-nav-menu-item/id      "menu-sale"
-                                      :slide-out-nav-menu-item/primary "Sale"})
+                                      :slide-out-nav-menu-item/id      "menu-clearance"
+                                      :slide-out-nav-menu-item/primary "Clearance Wigs"})
                                    {:slide-out-nav-menu-item/target  [events/menu-list {:menu-type :hair-shop}]
                                     :slide-out-nav-menu-item/nested? true
                                     :slide-out-nav-menu-item/id      "menu-hair-shop"
@@ -525,8 +525,8 @@
                                   (when bf-2022-sale?
                                     {:header-menu-item/navigation-target [events/navigate-category {:page/slug           "wigs"
                                                                                                     :catalog/category-id "48"}]
-                                     :header-menu-item/id                "desktop-sale"
-                                     :header-menu-item/content           "Sale"})])}))
+                                     :header-menu-item/id                "desktop-clearance"
+                                     :header-menu-item/content           "Clearance Wigs"})])}))
 
 (defn query [data]
   (-> (basic-query data)

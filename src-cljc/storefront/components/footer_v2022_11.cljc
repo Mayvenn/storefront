@@ -253,8 +253,8 @@
                                                                                       {:page/slug "taps-ins" :catalog/category-id "22"}]
                                                                              :copy   "Tape-Ins"}
                                                                             {:target [e/navigate-category
-                                                                                      {:page/slug "wigs" :catalog/category-id "48"}]
-                                                                             :copy   "Sale"}]}}
+                                                                                      {:page/slug "clearance" :catalog/category-id "48"}]
+                                                                             :copy   "Clearance Wigs"}]}}
                                  {:id       "about"
                                   :face     {:copy "About us"}
                                   :contents {:info-accordion.contents/type :links-list
