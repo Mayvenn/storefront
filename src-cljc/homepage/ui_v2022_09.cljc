@@ -16,6 +16,7 @@
             [homepage.ui.shopping-categories :as shopping-categories]
             [catalog.ui.shop-these-looks :as shop-these-looks]
             [homepage.ui.zip-explanation :as zip-explanation]
+            [mayvenn.visual.tools :as vt]
             [storefront.accessors.contentful :as contentful]
             [storefront.component :as c]
             [storefront.components.homepage-hero :as homepage-hero]
@@ -33,7 +34,7 @@
    (c/build blog/organism blog2)
    (c/build zip-explanation/organism zip-explanation)
    (when (:email-capture/show? data)
-     (c/build email-capture/organism data))])
+     (c/build email-capture/organism (vt/with :email-capture data)))])
 
 (defn hero-query
   "TODO homepage hero query is reused and complected

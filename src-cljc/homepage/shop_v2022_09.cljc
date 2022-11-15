@@ -72,11 +72,11 @@
                                       submitted?        (get-in app-state k/homepage-email-submitted)]
                                   {:email-capture.submit/target             [e/homepage-email-submitted
                                                                              {:values {"email-capture-input" email}}]
-                                   :email-capture.text-field/id             "homepage-email-capture-input"
                                    :email-capture.text-field/placeholder    "Enter your Email"
                                    :email-capture.text-field/focused        (get-in app-state k/ui-focus)
                                    :email-capture.text-field/keypath        textfield-keypath
                                    :email-capture.text-field/errors         (get-in app-state (conj k/field-errors ["email"]))
                                    :email-capture.text-field/email          email
                                    :email-capture.text-field/submitted-text (when submitted? "Thank you for subscribing.")
+                                   :email-capture/id                        "homepage-email-capture-input"
                                    :email-capture/show?                     (not (experiments/footer-v22? app-state))})))))
