@@ -1,5 +1,6 @@
 (ns design-system.component-library
-  (:require [storefront.component :as c]
+  (:require homepage.ui.guarantees-v2022-10
+            [storefront.component :as c]
             [storefront.keypaths :as k]
             [storefront.components.accordion-v2022-10 :as accordion]
             [storefront.components.carousel :as carousel]
@@ -29,7 +30,12 @@
     :id              "carousel"
     :query-ns        "example-carousel"
     :component-class carousel/component
-    :opts            {:carousel/exhibit-component carousel/example-exhibit-component}}])
+    :opts            {:carousel/exhibit-component carousel/example-exhibit-component}}
+   {:title           "Guarantees"
+    :id              "guarantees"
+    :query-ns        "example-guarantees"
+    :component-class homepage.ui.guarantees-v2022-10/organism
+    :opts            {}}])
 
 (defn ^:private component-id->component-entry [component-id]
   (->> components-list (filter #(= component-id (:id %))) first))
@@ -51,13 +57,12 @@
              title]]) components-list)]
    [:div.p4.bg-checkerboard
     {:style {:grid-row "1 / 3"}}
-    [:div.border-dotted.border-p-color
-
-     (when-let [{:keys [title id query-ns component-class]} (component-id->component-entry current-component-id)]
-       [:div
-        [:div title " (" id ")"]
+    (when-let [{:keys [title id query-ns component-class]} (component-id->component-entry current-component-id)]
+      [:div
+       [:div title " (" id ")"]
+       [:div.border-dotted.border-p-color
         (c/build component-class (with query-ns props) {:opts opts
-                                                        :key  id})])]]])
+                                                        :key  id})]])]])
 
 (defn query [app-state]
   (when-let [component-id (-> app-state (get-in k/navigation-query-params) :id component-id->component-entry :id)]
@@ -90,7 +95,22 @@
                                            {:class "bg-blue"}
                                            {:class "bg-green"}
                                            {:class "bg-yellow"}
-                                           {:class "bg-purple"}]}))))
+                                           {:class "bg-purple"}]})
+     (within :example-guarantees
+             {:list/icons
+              [{:guarantees.icon/symbol [:svg/heart {:width "32px", :height "29px"}],
+                :guarantees.icon/title "Top-Notch Customer Service"}
+               {:guarantees.icon/symbol [:svg/calendar
+                                         {:width "30px", :height "33px"}],
+                :guarantees.icon/title "30 Day Guarantee"}
+               {:guarantees.icon/symbol [:svg/worry-free
+                                         {:width "35px", :height "36px"}],
+                :guarantees.icon/title "100% Virgin Hair"}
+               {:guarantees.icon/symbol [:svg/ship-truck
+                                         {:width "30px", :height "34px"}],
+                :guarantees.icon/title "Free Standard Shipping"}]
+              })
+     )))
 
 (defn ^:export built-component
   [app-state _opts]
