@@ -578,6 +578,7 @@
       (assoc _ :new-homepage-2022-09 (feature-flags/retrieve-flag ld "new-homepage-2022-09" :bool true))
       (assoc _ :accordion-v2 (feature-flags/retrieve-flag ld "accordion-v2" :bool false))
       (assoc _ :bf-2022-sale (feature-flags/retrieve-flag ld "bf-2022-sale" :bool false))
+      (assoc _ :bf-2022-retail (feature-flags/retrieve-flag ld "bf-2022-retail" :bool false))
       (assoc _ :pdp-accordion-picker (feature-flags/retrieve-flag ld "pdp-accordion-picker" :bool false))
       (assoc _ :carousel-redesign (feature-flags/retrieve-flag ld "carousel-redesign" :bool false))
       (assoc _ :pdp-faq-in-accordion (feature-flags/retrieve-flag ld "pdp-faq-in-accordion" :bool false))
