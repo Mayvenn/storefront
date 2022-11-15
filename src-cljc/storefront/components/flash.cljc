@@ -19,7 +19,7 @@
     [:div.overflow-hidden body]]])
 
 (defn error-box [box-opts body]
-  [:div.error.bg-error.border.border-error.rounded.light.letter-spacing-1
+  [:div.warning-red.bg-error.border.border-error.rounded.light.letter-spacing-1
    [:div.clearfix.px2.py1.bg-lighten-5.rounded box-opts
     [:div.right.ml1 ^:inline (error-img)]
     [:div.overflow-hidden body]]])
