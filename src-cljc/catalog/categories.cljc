@@ -1314,26 +1314,28 @@
 
 (def sale-clearance
   [{:catalog/category-id  "48"
-    :header/title         "Sale"
-    :category/description "Get your favorite wig styles at a fraction of the price."
+    :header/title         "Clearance Wigs"
+    :category/description "Get your favorite wig styles at a fraction of the price. 30% off while supplies last. Clearance items are available online only and not eligible for additional discounts."
     :subcategory/image-id "e4266735-42fc-40b1-bd37-ce5a243fa681"
-    :copy/title           "Sale"
-    :page/slug            "sale"
+    :copy/title           "Clearance Wigs"
+    :page/slug            "clearance"
     :seo/title            "Wig Sale"
     :seo/sitemap          true
 
     :promo.clearance/eligible         #{true}
     :selector/essentials              [:promo.clearance/eligible]
     :selector/electives               [:hair/family :hair/texture :hair/origin :hair/color]
-    :page/title                       "Wig Sale | Mayvenn"
-    :page.meta/description            (copy "Mayvenn's virgin human hair wigs are on sale!"
-                                            "These wigs allow you to achieve a new look in minutes"
-                                            "& come in different variations such as Brazilian, Malaysian, straight, & deep wave.")
-    :opengraph/title                  (copy "Wigs on sale - Free shipping."
-                                            "Free 30 day returns. Made with 100% virgin human hair.")
-    :opengraph/description            (copy "100% virgin human hair, machine-wefted and backed by our"
-                                            "30 Day Quality Guarantee, our Wigs on sale can be customized to fit"
-                                            "your unique look using the built-in combs and adjustable strap.")
+    :page/title                       "Clearance Wigs | Mayvenn"
+    :page.meta/description            (copy "Mayvenn’s virgin human hair wigs are on clearance! "
+                                            "These wigs allow you to achieve a new look in minutes "
+                                            "& come in different variations such as Brazilian, "
+                                            "Malaysian, straight, & deep wave.")
+    :opengraph/title                  (copy "Mayvenn Wigs on Clearance - Free shipping. Free 30 "
+                                            "day returns. Made with 100% virgin human hair.")
+    :opengraph/description            (copy "100% virgin human hair, machine-wefted and backed by "
+                                            "our 30 Day Quality Guarantee, our Wigs on clearance "
+                                            "can be customized to fit your unique look using the "
+                                            "built-in combs and adjustable strap.")
     :product-list/title               "Shop All Sale Items"
     :subsections/subsection-selectors [{:subsection/title    "Lace Front Wigs"
                                         :subsection/selector {:hair/family #{"lace-front-wigs"}}}
