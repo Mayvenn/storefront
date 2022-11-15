@@ -621,5 +621,7 @@
        :svg/shield                          ^:inline (shield attrs)
        :svg/ship-truck                      ^:inline (ship-truck attrs)
        :svg/market                          ^:inline (market attrs)
+       :svg/hand-heart                      ^:inline (hand-heart attrs)
+       :svg/check-cloud                     ^:inline (check-cloud attrs)
        [:div])
      [:div])))

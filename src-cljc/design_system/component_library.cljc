@@ -98,16 +98,13 @@
                                            {:class "bg-purple"}]})
      (within :example-guarantees
              {:list/icons
-              [{:guarantees.icon/symbol [:svg/heart {:width "32px", :height "29px"}],
-                :guarantees.icon/title "Top-Notch Customer Service"}
-               {:guarantees.icon/symbol [:svg/calendar
-                                         {:width "30px", :height "33px"}],
+              [{:guarantees.icon/symbol :svg/hand-heart,
+                :guarantees.icon/title "Top-Notch Service"}
+               {:guarantees.icon/symbol :svg/shield,
                 :guarantees.icon/title "30 Day Guarantee"}
-               {:guarantees.icon/symbol [:svg/worry-free
-                                         {:width "35px", :height "36px"}],
-                :guarantees.icon/title "100% Virgin Hair"}
-               {:guarantees.icon/symbol [:svg/ship-truck
-                                         {:width "30px", :height "34px"}],
+               {:guarantees.icon/symbol :svg/check-cloud,
+                :guarantees.icon/title "100% Virgin Human Hair"}
+               {:guarantees.icon/symbol :svg/ship-truck,
                 :guarantees.icon/title "Free Standard Shipping"}]
               })
      )))

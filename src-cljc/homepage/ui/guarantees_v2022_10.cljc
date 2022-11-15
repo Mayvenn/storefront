@@ -3,17 +3,16 @@
             [storefront.components.svg :as svg]))
 
 (defn ^:private icon-list-item
-  [id {:guarantees.icon/keys [title body symbol]}]
+  [id {:guarantees.icon/keys [title symbol]}]
   (c/html
-   [:div.mx2.col-3.flex.flex-column-on-mb
+   [:div.flex.flex-column-on-mb.items-center.gap-1
     {:key id}
-    [:div (svg/symbolic->html symbol)]
-    [:div.shout title]
-    #_(when body
-      [:p body])]))
+    (svg/symbolic->html [symbol {:style {:max-width "24px"
+                                         :max-height "24px"}
+                                 #_#_:class "container-size"}])
+    [:div.shout title]]))
 
 (c/defcomponent organism
   [data _ _]
-  [:div.p2.center.bg-cool-gray
-   (into [:div.col-8-on-dt.flex.mx-auto]
-         (map-indexed icon-list-item (:list/icons data)))])
+  (into [:div.flex.p2.center.bg-cool-gray.gap-2.justify-around.content-4-on-mb]
+        (map-indexed icon-list-item (:list/icons data))))

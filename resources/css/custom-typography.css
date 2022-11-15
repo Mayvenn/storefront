@@ -57,12 +57,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 .content-1 { font: var(--content-1-font); }
 .content-2 { font: var(--content-2-font); }
-.content-3 {
-    font: 13px/18px var(--font-family-proxima);
-}
-.content-4 {
-    font: 11px/16px var(--font-family-proxima);
-}
+.content-3 { font: var(--content-3-font); }
+.content-4 { font: var(--content-4-font); }
 .button-font-1 {
     font: 900 15px/18px var(--font-family-proxima);
     letter-spacing: 0.92px;
@@ -123,6 +119,7 @@ h1, h2, h3, h4, h5, h6 {
     .center-align-on-mb  { text-align: center; }
 
     .content-2-on-mb { font: var(--content-2-font); }
+    .content-4-on-mb { font: var(--content-4-font); }
 }
 
 @media (--on-tablet-and-desktop) {
@@ -153,4 +150,5 @@ h1, h2, h3, h4, h5, h6 {
     --content-1-font: 20px/30px var(--font-family-proxima);
     --content-2-font: 16px/21px var(--font-family-proxima);
     --content-3-font: 13px/18px var(--font-family-proxima);
+    --content-4-font: 11px/16px var(--font-family-proxima);
 }
