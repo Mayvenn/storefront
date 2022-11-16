@@ -30,7 +30,7 @@
       ;; Ideally, we should never get here, but at-at halts all polls that throw exceptions silently.
       ;; This simply reports it and lets the polling continue
         (when exception-handler (exception-handler t))
-        (when logger (logger :error t))))))
+        (when logger (logger :error {:throwable t}))))))
 
 (defn every
   "Schedules task-f to be called every interval-ms in milliseconds. The next invocation is interval-ms after task-f completes."
