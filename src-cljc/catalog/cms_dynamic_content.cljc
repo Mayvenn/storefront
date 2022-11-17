@@ -5,6 +5,7 @@
 (defn derive-product-details
   [cms-dynamic-content-data sku]
   (->> cms-dynamic-content-data
+       vals
        (filter #(seq (selector/match-all {} (-> %
                                                 :selector
                                                 clojure.walk/keywordize-keys) [sku])))

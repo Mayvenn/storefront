@@ -331,9 +331,10 @@
            :else                 resolved-node))))
 
 (def content-type->id-path
-  {:landingPageV2  [:slug]
-   :homepage       [:experience]
-   :retailLocation [:slug]})
+  {:landingPageV2     [:slug]
+   :homepage          [:experience]
+   :retailLocation    [:slug]
+   :filledContentSlot [:content/id]})
 
 (defn find-cms-nodes
   ([nodes-db content-type]
@@ -416,7 +417,8 @@
                                         :always
                                         (assoc-in [:filledContentSlot]
                                                   (some->>
-                                                   (assemble-cms-node normalized-cms-cache :filledContentSlot)))))
+                                                   (assemble-cms-node normalized-cms-cache :filledContentSlot)
+                                                   (maps/index-by :content/id)))))
 
                                     (= events/navigate-landing-page nav-event)
                                     (-> {}

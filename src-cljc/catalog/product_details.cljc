@@ -414,16 +414,16 @@
 
 ;; TODO: replace the fake product details below with contentful data from the app-state
 (def ^:private fake-contentful-product-details-data
-  [{:content-slot-id "pdp/colorable"
-    :selector        {"hair/color" #{"black" "1b-soft-black"}}
-    :content-value   "Yes - This virgin human hair can be lifted (bleached) and colored with professional products."}
-   {:content-slot-id "pdp/colorable"
-    :selector        {"hair/color" #{"blonde" "blonde-dark-roots" "dark-blonde" "dark-blonde-dark-roots" "1c-mocha-brown" "#2-chocolate-brown"
-                                     "#4-caramel-brown" "6-hazelnut-brown" "18-chestnut-blonde" "60-golden-ash-blonde" "613-bleach-blonde"}}
-    :content-value   "Yes - Keep in mind pre-lightened blonde should not be lifted (bleached) any further, but can be professionally colored with deposit-only products or toners."}
-   {:content-slot-id "pdp/colorable"
-    :selector        {"hair/color" #{"#1-jet-black" "vibrant-burgundy"}}
-    :content-value   "No - Since this hair has already been professionally processed, we don't recommend any lifting (bleaching) or coloring."}])
+  {:foo {:content-slot-id "pdp/colorable"
+         :selector        {"hair/color" #{"black" "1b-soft-black"}}
+         :content-value   "Yes - This virgin human hair can be lifted (bleached) and colored with professional products."}
+   :bar {:content-slot-id "pdp/colorable"
+         :selector        {"hair/color" #{"blonde" "blonde-dark-roots" "dark-blonde" "dark-blonde-dark-roots" "1c-mocha-brown" "#2-chocolate-brown"
+                                          "#4-caramel-brown" "6-hazelnut-brown" "18-chestnut-blonde" "60-golden-ash-blonde" "613-bleach-blonde"}}
+         :content-value   "Yes - Keep in mind pre-lightened blonde should not be lifted (bleached) any further, but can be professionally colored with deposit-only products or toners."}
+   :baz {:content-slot-id "pdp/colorable"
+         :selector        {"hair/color" #{"#1-jet-black" "vibrant-burgundy"}}
+         :content-value   "No - Since this hair has already been professionally processed, we don't recommend any lifting (bleaching) or coloring."}})
 
 (defn product-details-accordion<-
   [{:accordion/keys [id open-drawers]}
@@ -943,6 +943,8 @@
                              (not= (:catalog/product-id args)
                                    (:catalog/product-id prev-args))
                              (= :first-nav (:navigate/caused-by args)))]
+       (when (experiments/pdp-content-slots? app-state)
+         (effects/fetch-cms2 app-state [:filledContentSlot]))
        (when (nil? product)
          (fetch-product-details app-state product-id))
        (when just-arrived?
