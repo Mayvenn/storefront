@@ -3,6 +3,7 @@
             [storefront.events :as e]
             [storefront.component :as c]
             [mayvenn.concept.email-capture :as email-capture]
+            [mayvenn.visual.tools :as vt]
             [storefront.keypaths :as k]
             [storefront.accessors.experiments :as experiments]))
 
@@ -30,6 +31,15 @@
                                                        :blog/heading   "How to Choose the Right Hairstylist"
                                                        :blog/beginning "Looking for a hairstylist that accommodates your hair needs can be a struggle, but it’s not impossible! There are a couple of key steps that go into finding a great stylist like research, recommendations, pricing, and consultations. Here are a few tips that’ll help you find the right stylist for all of your #hairgoals."
                                                        :blog/ucare-id  "70f4e431-6726-4484-b91f-1a2b294aee00"}}
+                                (vt/within :promises {:list/icons
+                                                      [{:promises.icon/symbol :svg/hand-heart,
+                                                        :promises.icon/title  "Top-Notch Service"}
+                                                       {:promises.icon/symbol :svg/shield,
+                                                        :promises.icon/title  "30 Day Guarantee"}
+                                                       {:promises.icon/symbol :svg/check-cloud,
+                                                        :promises.icon/title  "100% Virgin Human Hair"}
+                                                       {:promises.icon/symbol :svg/ship-truck,
+                                                        :promises.icon/title  "Free Standard Shipping"}]})
                                 {:shop-these-looks/row-1 [{:shop-these-looks.entry.cta/copy   "Wedding Hair"
                                                            :shop-these-looks.entry.cta/target e/navigate-shop-by-look-details
                                                            :shop-these-looks.entry.cta/args   {:album-keyword :look

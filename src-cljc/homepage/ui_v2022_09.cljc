@@ -1,33 +1,22 @@
 (ns homepage.ui-v2022-09
   (:require adventure.keypaths
-            [storefront.accessors.experiments :as experiments]
-            [storefront.keypaths :as k]
-            [adventure.components.layered :as layered]
-            [homepage.ui.atoms :as A]
-            [homepage.ui.contact-us :as contact-us]
-            [homepage.ui.diishan :as diishan]
-            [homepage.ui.faq :as faq]
-            [homepage.ui.guarantees :as guarantees]
-            [homepage.ui.hashtag-mayvenn-hair :as hashtag-mayvenn-hair]
+            [homepage.ui.promises :as promises]
             [homepage.ui.blog :as blog]
             [homepage.ui.hero :as hero]
-            [homepage.ui.promises :as promises]
             [homepage.ui.email-capture :as email-capture]
             [homepage.ui.shopping-categories :as shopping-categories]
             [catalog.ui.shop-these-looks :as shop-these-looks]
             [homepage.ui.zip-explanation :as zip-explanation]
             [mayvenn.visual.tools :as vt]
-            [storefront.accessors.contentful :as contentful]
             [storefront.component :as c]
             [storefront.components.homepage-hero :as homepage-hero]
-            [storefront.components.ui :as ui]
             [storefront.events :as e]))
 
 (c/defcomponent template
   [{:keys [hero shopping-categories blog1 blog2 zip-explanation] :as data} _ _]
   [:div
    (c/build hero/organism-without-shipping-bar hero)
-   (c/build promises/organism {})
+   (c/build promises/organism (vt/with :promises data))
    (c/build shopping-categories/organism shopping-categories)
    (c/build blog/organism blog1)
    (c/build shop-these-looks/organism data)

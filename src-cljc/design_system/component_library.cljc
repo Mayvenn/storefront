@@ -1,5 +1,5 @@
 (ns design-system.component-library
-  (:require homepage.ui.guarantees-v2022-10
+  (:require homepage.ui.promises
             [storefront.component :as c]
             [storefront.keypaths :as k]
             [storefront.components.accordion-v2022-10 :as accordion]
@@ -31,10 +31,10 @@
     :query-ns        "example-carousel"
     :component-class carousel/component
     :opts            {:carousel/exhibit-component carousel/example-exhibit-component}}
-   {:title           "Guarantees"
-    :id              "guarantees"
-    :query-ns        "example-guarantees"
-    :component-class homepage.ui.guarantees-v2022-10/organism
+   {:title           "Promises"
+    :id              "promises"
+    :query-ns        "example-promises"
+    :component-class homepage.ui.promises/organism
     :opts            {}}])
 
 (defn ^:private component-id->component-entry [component-id]
@@ -96,16 +96,16 @@
                                            {:class "bg-green"}
                                            {:class "bg-yellow"}
                                            {:class "bg-purple"}]})
-     (within :example-guarantees
+     (within :example-promises
              {:list/icons
-              [{:guarantees.icon/symbol :svg/hand-heart,
-                :guarantees.icon/title "Top-Notch Service"}
-               {:guarantees.icon/symbol :svg/shield,
-                :guarantees.icon/title "30 Day Guarantee"}
-               {:guarantees.icon/symbol :svg/check-cloud,
-                :guarantees.icon/title "100% Virgin Human Hair"}
-               {:guarantees.icon/symbol :svg/ship-truck,
-                :guarantees.icon/title "Free Standard Shipping"}]
+              [{:promises.icon/symbol :svg/hand-heart,
+                :promises.icon/title "Top-Notch Service"}
+               {:promises.icon/symbol :svg/shield,
+                :promises.icon/title "30 Day Guarantee"}
+               {:promises.icon/symbol :svg/check-cloud,
+                :promises.icon/title "100% Virgin Human Hair"}
+               {:promises.icon/symbol :svg/ship-truck,
+                :promises.icon/title "Free Standard Shipping"}]
               })
      )))
 
