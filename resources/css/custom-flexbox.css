@@ -35,6 +35,7 @@
 
 @media (--on-desktop) {
   .flex-on-dt { display: flex }
+  .justify-center-on-dt { justify-content: center;}
 }
 
 
