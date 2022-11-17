@@ -1,5 +1,7 @@
 (ns retail.stores
   (:require #?@(:cljs [[goog.string]])
+            [mayvenn.visual.tools :as vt]
+            [mayvenn.visual.ui.dividers :as dividers]
             [storefront.component :as component]
             [storefront.effects :as effects]
             [storefront.components.svg :as svg]
@@ -85,12 +87,31 @@
        [:h3.title-3.proxima.py1.shout
         text]])]])
 
+(defn wig-customization-spotlight-section
+  [ix {:keys [title copy url]}]
+  [:div.flex.flex-column.items-center.pb4
+   (ui/circle-ucare-img {:width "160" :alt ""} url)
+   [:div.pt2.canela (->> ix inc (str "0"))]
+   [:div.proxima.content-2.bold.shout title]
+   [:div copy]])
+
+(defn wig-customization-spotlights
+  [{:header/keys [title subtitle] :as data}]
+  [:div.wig-customization.flex.flex-column.items-center.center.p8.gap-4.bg-cool-gray
+   [:div.canela.title-1.shout title]
+   [:div.proxima.title-1.bold.shout subtitle]
+   (into [:div.grid.gap-4] (map-indexed wig-customization-spotlight-section (:sections data)))])
+
 (component/defcomponent template
   [data _ _]
-  [:div.p3
-   header
-   (store-locations data)
-   why-mayvenn])
+  [:div
+   [:div.p3
+    header
+    (store-locations data)]
+   why-mayvenn
+   dividers/green
+   (wig-customization-spotlights (vt/with :wig-customization data))
+   dividers/purple])
 
 (def navigate-show-page
   {"katy"          events/navigate-retail-walmart-katy
@@ -101,23 +122,37 @@
 
 (defn query [app-state]
   (let [locations (get-in app-state keypaths/cms-retail-location)]
-    {:locations (mapv (fn [[_ {:keys [email facebook hero state hours name phone-number instagram tiktok
-                                      location address-1 address-2 address-zipcode address-city slug]}]]
-                        (when (and name slug)
-                          {:name             (str name ", " state)
-                           :img-url          (-> hero :file :url)
-                           :address1-2       (when address-1 (str address-1 (when address-2 (str ", " address-2))))
-                           :city-state-zip   (when address-city (str address-city ", " state " " address-zipcode))
-                           :phone            phone-number
-                           :mon-sat-hours    (first hours)
-                           :sun-hours        (last hours)
-                           :show-page-target (get navigate-show-page slug)
-                           :directions       #?(:cljs (when (:lat location ) (str "https://www.google.com/maps/search/?api=1&query=" (goog.string/urlEncode (str "Mayvenn Beauty Lounge " address-1 (when address-2 address-2)) "," (:lat location)"," (:lon location))))
-                                                :clj "")
-                           :instagram        (when instagram (str "https://www.instagram.com/" instagram))
-                           :facebook         (when facebook (str "https://business.facebook.com/" facebook))
-                           :tiktok           (when tiktok (str "https://www.tiktok.com/@" tiktok))
-                           :email            email})) locations)}))
+    (merge
+     (vt/within :wig-customization
+                {:header/title    "Wig Customization"
+                 :header/subtitle "Here's how it works:"
+                 :sections        [{:title "Select your wig"
+                                    :copy  "Choose a pre-customized, factory-made, or tailor-made unit."
+                                    :url   "https://ucarecdn.com/e57d9a5c-5600-4e48-9ffd-7fd7cb4b8be6/-/format/auto/mayvenn_curly_hair_extensions.png"}
+
+                                   {:title "We customize it"
+                                    :copy  "Choose from ten different customization services— we'll make your dream look come to life."
+                                    :url   "https://ucarecdn.com/e57d9a5c-5600-4e48-9ffd-7fd7cb4b8be6/-/format/auto/mayvenn_curly_hair_extensions.png"}
+                                   {:title "Take it home"
+                                    :copy  "Rock your new unit the same day or pick it up within 2-5 days."
+                                    :url   "https://ucarecdn.com/e57d9a5c-5600-4e48-9ffd-7fd7cb4b8be6/-/format/auto/mayvenn_curly_hair_extensions.png"}]})
+     {:locations (mapv (fn [[_ {:keys [email facebook hero state hours name phone-number instagram tiktok
+                                       location address-1 address-2 address-zipcode address-city slug]}]]
+                         (when (and name slug)
+                           {:name             (str name ", " state)
+                            :img-url          (-> hero :file :url)
+                            :address1-2       (when address-1 (str address-1 (when address-2 (str ", " address-2))))
+                            :city-state-zip   (when address-city (str address-city ", " state " " address-zipcode))
+                            :phone            phone-number
+                            :mon-sat-hours    (first hours)
+                            :sun-hours        (last hours)
+                            :show-page-target (get navigate-show-page slug)
+                            :directions       #?(:cljs (when (:lat location ) (str "https://www.google.com/maps/search/?api=1&query=" (goog.string/urlEncode (str "Mayvenn Beauty Lounge " address-1 (when address-2 address-2)) "," (:lat location)"," (:lon location))))
+                                                 :clj "")
+                            :instagram        (when instagram (str "https://www.instagram.com/" instagram))
+                            :facebook         (when facebook (str "https://business.facebook.com/" facebook))
+                            :tiktok           (when tiktok (str "https://www.tiktok.com/@" tiktok))
+                            :email            email})) locations)})))
 
 (defn built-component
   [data opts]

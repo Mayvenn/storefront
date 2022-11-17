@@ -8,3 +8,11 @@
              :background-position "center center"
              :background-repeat   "repeat-x"
              :height              "24px"}}]))
+
+(def purple
+  (c/html
+   [:div
+    {:style {:background-image    "url('//ucarecdn.com/73db5b08-860e-4e6c-b052-31ed6d951f00/-/resize/x24/')"
+             :background-position "center center"
+             :background-repeat   "repeat-x"
+             :height              "24px"}}]))

@@ -1,0 +1,5 @@
+@media (--on-tablet-and-desktop) {
+    .wig-customization > .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

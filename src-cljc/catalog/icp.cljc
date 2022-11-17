@@ -11,6 +11,7 @@
             [catalog.ui.spotlighting :as spotlighting]
             [catalog.ui.return-address-labels :as return-address-labels]
             [homepage.ui.faq :as faq]
+            [mayvenn.visual.ui.dividers :as dividers]
             [spice.maps :as maps]
             [storefront.accessors.categories :as accessors.categories]
             [storefront.accessors.experiments :as experiments]
@@ -147,23 +148,6 @@
                                                                  {:query-params {:SKU sku-id}}))]
                              [events/navigate-category category])})
 
-(def ^:private purple-divider-atom
-  (component/html
-   [:div
-    {:style {:background-image    "url('//ucarecdn.com/73db5b08-860e-4e6c-b052-31ed6d951f00/-/resize/x24/')"
-             :background-position "center center"
-             :background-repeat   "repeat-x"
-             :height              "24px"}}]))
-
-(def ^:private green-divider-atom
-  (component/html
-   [:div
-    {:style {:background-image  "url('//ucarecdn.com/7e91271e-874c-4303-bc8a-00c8babb0d77/-/resize/x24/')"
-             :background-position "center center"
-             :background-repeat   "repeat-x"
-             :height              "24px"}}]))
-
-
 (defcomponent ^:private product-list
   [{:keys [product-card-listing]} _ _]
   [:div.plj3-on-dt
@@ -187,16 +171,16 @@
     (component/build drill-category-list-organism drill-category-list)
     (component/build drill-category-grid-organism drill-category-grid)]
 
-   [:div.mb10 purple-divider-atom]
+   [:div.mb10 dividers/purple]
    [:div.py5
     (when title [:div.canela.title-1.center.mb2 title])
     (component/build facet-filters/organism queried-data {:opts {:child-component product-list}})]
 
    (when content-box
-     [:div green-divider-atom
+     [:div dividers/green
       (component/build content-box/organism content-box)])
    (when expanding-content-box
-     [:div green-divider-atom
+     [:div dividers/green
       (component/build faq/organism expanding-content-box)])
    (component/build layered/shop-contact contact-query)])
 
