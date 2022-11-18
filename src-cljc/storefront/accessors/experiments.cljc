@@ -125,7 +125,7 @@
 (defn bf-2022-sale?
   [data]
   (and (display-feature? data "bf-2022-sale")
-       (date/after? (date/now) (date/date-time 2022 11 21 5 00 00 000))))
+       (date/after? (date/now) (date/date-time 2022 11 22 5 00 00 000))))
 
 (defn pdp-accordion-picker?
   [data]
