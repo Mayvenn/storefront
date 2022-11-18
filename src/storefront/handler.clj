@@ -383,6 +383,7 @@
                                                                                 (resolve-cms-node normalized-cms-cache))]))}
 
                               (update-data {} [:faq :sitewide-footer])
+
                               (cond (= events/navigate-home nav-event)
                                     (-> {:homepage (let [id (if shop? :unified-fi :unified)]
                                                      {id (-> normalized-cms-cache (assemble-cms-node :homepage id) first)})}
@@ -435,8 +436,9 @@
                                        events/navigate-retail-walmart-mansfield
                                        events/navigate-retail-walmart-dallas
                                        events/navigate-retail-walmart-houston}  nav-event)
-                                    {:retailLocation (maps/index-by (comp keyword :slug)
-                                                                    (assemble-cms-node normalized-cms-cache :retailLocation))}
+                                    (-> {:retailLocation (maps/index-by (comp keyword :slug)
+                                                                        (assemble-cms-node normalized-cms-cache :retailLocation))}
+                                        (update-data [:faq :wig-customization]))
                                     :else nil))))))
 
 (defn wrap-set-welcome-url [h welcome-config]

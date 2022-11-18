@@ -9,10 +9,12 @@
             [storefront.keypaths :as keypaths]
             [storefront.effects :as effects]
             [storefront.events :as events]
+            [storefront.components.accordion-v2022-10 :as accordion]
+            [mayvenn.visual.tools :refer [with within]]
             [storefront.platform.component-utils :as utils]))
 
 (def header
-  [:div.center
+  [:div.center.p3
    [:div.max-960.mx-auto
     (ui/defer-ucare-img {:class "col-12"
                          :smart-crop "1000x400"
@@ -102,6 +104,32 @@
    [:div.proxima.title-1.bold.shout subtitle]
    (into [:div.grid.gap-4] (map-indexed wig-customization-spotlight-section (:sections data)))])
 
+(component/defcomponent question-open [{:keys [copy]} _ _]
+  [:div.content-3.px2.py4.bold copy])
+(component/defcomponent question-closed [{:keys [copy]} _ _]
+  [:div.content-3.px2.py4 copy])
+(component/defcomponent answer [{:keys [answer]} _ _]
+  (map-indexed (fn [i {blocks :paragraph}]
+                 [:div.p2.bg-cool-gray {:key (str "paragraph-" i)}
+                  (map-indexed (fn [j {:keys [text url]}]
+                                 (if url
+                                   [:a.p-color {:href url :key (str "text-" j)} text]
+                                   [:span {:key (str "text-" j)} text]))
+                               blocks)])
+               answer))
+
+(defn wig-customization-faq [data]
+  [:div.bg-pale-purple
+   [:h1.canela.title-1.center.py6
+    "Frequently Asked Questions"]
+   [:div.container
+    (component/build accordion/component
+                     (with :wig-customization-faq data)
+                     {:opts
+                      {:accordion.drawer.open/face-component   question-open
+                       :accordion.drawer.closed/face-component question-closed
+                       :accordion.drawer/contents-component    answer}})]])
+
 (component/defcomponent template
   [data _ _]
   [:div
@@ -111,7 +139,8 @@
    why-mayvenn
    dividers/green
    (wig-customization-spotlights (vt/with :wig-customization data))
-   dividers/purple])
+   dividers/purple
+   (wig-customization-faq data)])
 
 (def navigate-show-page
   {"katy"          events/navigate-retail-walmart-katy
@@ -152,7 +181,19 @@
                             :instagram        (when instagram (str "https://www.instagram.com/" instagram))
                             :facebook         (when facebook (str "https://business.facebook.com/" facebook))
                             :tiktok           (when tiktok (str "https://www.tiktok.com/@" tiktok))
-                            :email            email})) locations)})))
+                            :email            email})) locations)}
+     (accordion/accordion-query
+      {:id                   :wig-customization-faq
+       :allow-all-closed?    true
+       :allow-multi-open?    true
+       :open-drawers         (:accordion/open-drawers (accordion/<- app-state :wig-customization-faq))
+       :drawers              (map-indexed (fn [ix {:keys [question answer]}]
+                                            {:id       (str "wig-customization-faq-" ix)
+                                             :face     {:copy (:text question)}
+                                             :contents {:answer answer}})
+                                          (-> app-state
+                                              (get-in (conj keypaths/cms-faq :wig-customization))
+                                              :question-answers))}))))
 
 (defn built-component
   [data opts]
@@ -160,4 +201,5 @@
 
 (defmethod effects/perform-effects events/navigate-retail-walmart
   [_ _ _ _ app-state]
-  (effects/fetch-cms2 app-state [:retailLocation]))
+  (effects/fetch-cms2 app-state [:retailLocation])
+  (effects/fetch-cms-keypath app-state [:faq :wig-customization]))
