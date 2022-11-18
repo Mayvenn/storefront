@@ -459,7 +459,7 @@
                                     :slide-out-nav-menu-item/id      "menu-home"
                                     :slide-out-nav-menu-item/primary "Home"}
                                    (when bf-2022-sale?
-                                     {:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug           "wigs"
+                                     {:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug           "clearance"
                                                                                                   :catalog/category-id "48"}]
                                       :slide-out-nav-menu-item/nested? false
                                       :slide-out-nav-menu-item/id      "menu-clearance"
@@ -523,7 +523,7 @@
                                    :header-menu-item/id      "desktop-blog"
                                    :header-menu-item/content "Blog"}
                                   (when bf-2022-sale?
-                                    {:header-menu-item/navigation-target [events/navigate-category {:page/slug           "wigs"
+                                    {:header-menu-item/navigation-target [events/navigate-category {:page/slug           "clearance"
                                                                                                     :catalog/category-id "48"}]
                                      :header-menu-item/id                "desktop-clearance"
                                      :header-menu-item/content           "Clearance Wigs"})])}))
