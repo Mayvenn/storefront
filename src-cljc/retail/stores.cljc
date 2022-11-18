@@ -128,14 +128,14 @@
                  :header/subtitle "Here's how it works:"
                  :sections        [{:title "Select your wig"
                                     :copy  "Choose a pre-customized, factory-made, or tailor-made unit."
-                                    :url   "https://ucarecdn.com/e57d9a5c-5600-4e48-9ffd-7fd7cb4b8be6/-/format/auto/mayvenn_curly_hair_extensions.png"}
+                                    :url   "https://ucarecdn.com/1596ef7a-8ea8-4e2d-b98f-0e2083998cce/select_your_wig.png"}
 
                                    {:title "We customize it"
                                     :copy  "Choose from ten different customization services— we'll make your dream look come to life."
-                                    :url   "https://ucarecdn.com/e57d9a5c-5600-4e48-9ffd-7fd7cb4b8be6/-/format/auto/mayvenn_curly_hair_extensions.png"}
+                                    :url   "https://ucarecdn.com/b8902af1-9262-4369-ab88-35e82fd2f3b7/we_customize_it.png"}
                                    {:title "Take it home"
                                     :copy  "Rock your new unit the same day or pick it up within 2-5 days."
-                                    :url   "https://ucarecdn.com/e57d9a5c-5600-4e48-9ffd-7fd7cb4b8be6/-/format/auto/mayvenn_curly_hair_extensions.png"}]})
+                                    :url   "https://ucarecdn.com/8d4b8e12-48a7-4e90-8a41-3f1ef1267a93/take_it_home.png"}]})
      {:locations (mapv (fn [[_ {:keys [email facebook hero state hours name phone-number instagram tiktok
                                        location address-1 address-2 address-zipcode address-city slug]}]]
                          (when (and name slug)
