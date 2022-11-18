@@ -118,7 +118,8 @@
 (defn wig-services-menu
   [{:keys [header/title sections]}]
   [:div.bg-pale-purple.p6
-   [:div.max-580.flex.flex-column.mx-auto.col-8-on-tb-dt
+   [:div.flex.flex-column.mx-auto.col-8-on-tb-dt
+    {:style {:max-width "375px"}}
     [:div.center.canela.title-1 title]
     (map-indexed wig-services-menu-section sections)]])
 
