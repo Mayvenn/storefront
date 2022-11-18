@@ -588,6 +588,7 @@
       (assoc _ :pdp-faq-in-accordion (feature-flags/retrieve-flag ld "pdp-faq-in-accordion" :bool false))
       (assoc _ :footer-v22 (feature-flags/retrieve-flag ld "footer-v22" :bool false))
       (assoc _ :pdp-content-slots (feature-flags/retrieve-flag ld "pdp-content-slots" :bool false))
+      (assoc _ :retail-stores-more-info (feature-flags/retrieve-flag ld "retail-stores-more-info" :bool false))
       (assoc-in-req-state req keypaths/features _)
       (h _))))
 

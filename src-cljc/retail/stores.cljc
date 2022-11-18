@@ -150,18 +150,24 @@
                        :accordion.drawer/contents-component    answer}})]])
 
 (component/defcomponent template
-  [data _ _]
+  [{:keys [retail-stores-more-info?] :as data} _ _]
   [:div
    [:div.p3
     header
     (store-locations data)]
    why-mayvenn
-   dividers/green
-   (wig-customization-spotlights (vt/with :wig-customization-guide data))
-   dividers/purple
-   (wig-services-menu (vt/with :wig-services-menu data))
-   dividers/green
-   (wig-customization-faq data)])
+   (when retail-stores-more-info?
+     dividers/green)
+   (when retail-stores-more-info?
+     (wig-customization-spotlights (vt/with :wig-customization-guide data)))
+   (when retail-stores-more-info?
+     dividers/purple)
+   (when retail-stores-more-info?
+     (wig-services-menu (vt/with :wig-services-menu data)))
+   (when retail-stores-more-info?
+     dividers/green)
+   (when retail-stores-more-info?
+     (wig-customization-faq data))])
 
 (def navigate-show-page
   {"katy"          events/navigate-retail-walmart-katy
@@ -173,23 +179,24 @@
 (defn query [app-state]
   (let [locations (get-in app-state keypaths/cms-retail-location)]
     (merge
-     {:locations (mapv (fn [[_ {:keys [email facebook hero state hours name phone-number instagram tiktok
-                                       location address-1 address-2 address-zipcode address-city slug]}]]
-                         (when (and name slug)
-                           {:name             (str name ", " state)
-                            :img-url          (-> hero :file :url)
-                            :address1-2       (when address-1 (str address-1 (when address-2 (str ", " address-2))))
-                            :city-state-zip   (when address-city (str address-city ", " state " " address-zipcode))
-                            :phone            phone-number
-                            :mon-sat-hours    (first hours)
-                            :sun-hours        (last hours)
-                            :show-page-target (get navigate-show-page slug)
-                            :directions       #?(:cljs (when (:lat location ) (str "https://www.google.com/maps/search/?api=1&query=" (goog.string/urlEncode (str "Mayvenn Beauty Lounge " address-1 (when address-2 address-2)) "," (:lat location)"," (:lon location))))
-                                                 :clj "")
-                            :instagram        (when instagram (str "https://www.instagram.com/" instagram))
-                            :facebook         (when facebook (str "https://business.facebook.com/" facebook))
-                            :tiktok           (when tiktok (str "https://www.tiktok.com/@" tiktok))
-                            :email            email})) locations)}
+     {:retail-stores-more-info? (experiments/retail-stores-more-info? app-state)
+      :locations                (mapv (fn [[_ {:keys [email facebook hero state hours name phone-number instagram tiktok
+                                                      location address-1 address-2 address-zipcode address-city slug]}]]
+                                        (when (and name slug)
+                                          {:name             (str name ", " state)
+                                           :img-url          (-> hero :file :url)
+                                           :address1-2       (when address-1 (str address-1 (when address-2 (str ", " address-2))))
+                                           :city-state-zip   (when address-city (str address-city ", " state " " address-zipcode))
+                                           :phone            phone-number
+                                           :mon-sat-hours    (first hours)
+                                           :sun-hours        (last hours)
+                                           :show-page-target (get navigate-show-page slug)
+                                           :directions       #?(:cljs (when (:lat location ) (str "https://www.google.com/maps/search/?api=1&query=" (goog.string/urlEncode (str "Mayvenn Beauty Lounge " address-1 (when address-2 address-2)) "," (:lat location)"," (:lon location))))
+                                                                :clj "")
+                                           :instagram        (when instagram (str "https://www.instagram.com/" instagram))
+                                           :facebook         (when facebook (str "https://business.facebook.com/" facebook))
+                                           :tiktok           (when tiktok (str "https://www.tiktok.com/@" tiktok))
+                                           :email            email})) locations)}
      (vt/within :wig-customization-guide
                 {:header/title    "Wig Customization"
                  :header/subtitle "Here's how it works:"
@@ -224,17 +231,17 @@
                                                 {:title "Advanced Wig Styling"
                                                  :price 50}]}]})
      (accordion/accordion-query
-      {:id                   :wig-customization-faq
-       :allow-all-closed?    true
-       :allow-multi-open?    true
-       :open-drawers         (:accordion/open-drawers (accordion/<- app-state :wig-customization-faq))
-       :drawers              (map-indexed (fn [ix {:keys [question answer]}]
-                                            {:id       (str "wig-customization-faq-" ix)
-                                             :face     {:copy (:text question)}
-                                             :contents {:answer answer}})
-                                          (-> app-state
-                                              (get-in (conj keypaths/cms-faq :wig-customization))
-                                              :question-answers))}))))
+      {:id                :wig-customization-faq
+       :allow-all-closed? true
+       :allow-multi-open? true
+       :open-drawers      (:accordion/open-drawers (accordion/<- app-state :wig-customization-faq))
+       :drawers           (map-indexed (fn [ix {:keys [question answer]}]
+                                         {:id       (str "wig-customization-faq-" ix)
+                                          :face     {:copy (:text question)}
+                                          :contents {:answer answer}})
+                                       (-> app-state
+                                           (get-in (conj keypaths/cms-faq :wig-customization))
+                                           :question-answers))}))))
 
 (defn built-component
   [data opts]
