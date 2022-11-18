@@ -91,6 +91,7 @@
 (defn wig-customization-spotlight-section
   [ix {:keys [title copy url]}]
   [:div.flex.flex-column.items-center.pb4
+   {:style {:max-width "250px"}}
    (ui/circle-ucare-img {:width "160" :alt ""} url)
    [:div.col-12.pt2.canela (->> ix inc (str "0"))]
    [:div.col-12.proxima.content-2.bold.shout title]
