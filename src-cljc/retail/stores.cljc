@@ -9,7 +9,6 @@
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            [storefront.components.accordion-v2022-10 :as accordion]
             [storefront.platform.component-utils :as utils]
             [storefront.accessors.experiments :as experiments]))
 
@@ -123,32 +122,6 @@
     [:div.center.canela.title-1 title]
     (map-indexed wig-services-menu-section sections)]])
 
-(component/defcomponent question-open [{:keys [copy]} _ _]
-  [:div.content-3.px2.py4.bold copy])
-(component/defcomponent question-closed [{:keys [copy]} _ _]
-  [:div.content-3.px2.py4 copy])
-(component/defcomponent answer [{:keys [answer]} _ _]
-  (map-indexed (fn [i {blocks :paragraph}]
-                 [:div.p2.bg-cool-gray {:key (str "paragraph-" i)}
-                  (map-indexed (fn [j {:keys [text url]}]
-                                 (if url
-                                   [:a.p-color {:href url :key (str "text-" j)} text]
-                                   [:span {:key (str "text-" j)} text]))
-                               blocks)])
-               answer))
-
-(defn wig-customization-faq [data]
-  [:div.bg-pale-purple
-   [:h1.canela.title-1.center.py6
-    "Frequently Asked Questions"]
-   [:div.container
-    (component/build accordion/component
-                     (vt/with :wig-customization-faq data)
-                     {:opts
-                      {:accordion.drawer.open/face-component   question-open
-                       :accordion.drawer.closed/face-component question-closed
-                       :accordion.drawer/contents-component    answer}})]])
-
 (component/defcomponent template
   [{:keys [retail-stores-more-info?] :as data} _ _]
   [:div
@@ -163,11 +136,7 @@
    (when retail-stores-more-info?
      dividers/purple)
    (when retail-stores-more-info?
-     (wig-services-menu (vt/with :wig-services-menu data)))
-   (when retail-stores-more-info?
-     dividers/green)
-   (when retail-stores-more-info?
-     (wig-customization-faq data))])
+     (wig-services-menu (vt/with :wig-services-menu data)))])
 
 (def navigate-show-page
   {"katy"          events/navigate-retail-walmart-katy
@@ -229,19 +198,7 @@
                                  :items        [{:title "Basic Wig Styling"
                                                  :price 35}
                                                 {:title "Advanced Wig Styling"
-                                                 :price 50}]}]})
-     (accordion/accordion-query
-      {:id                :wig-customization-faq
-       :allow-all-closed? true
-       :allow-multi-open? true
-       :open-drawers      (:accordion/open-drawers (accordion/<- app-state :wig-customization-faq))
-       :drawers           (map-indexed (fn [ix {:keys [question answer]}]
-                                         {:id       (str "wig-customization-faq-" ix)
-                                          :face     {:copy (:text question)}
-                                          :contents {:answer answer}})
-                                       (-> app-state
-                                           (get-in (conj keypaths/cms-faq :wig-customization))
-                                           :question-answers))}))))
+                                                 :price 50}]}]}))))
 
 (defn built-component
   [data opts]
@@ -249,5 +206,4 @@
 
 (defmethod effects/perform-effects events/navigate-retail-walmart
   [_ _ _ _ app-state]
-  (effects/fetch-cms2 app-state [:retailLocation])
-  (effects/fetch-cms-keypath app-state [:faq :wig-customization]))
+  (effects/fetch-cms2 app-state [:retailLocation]))

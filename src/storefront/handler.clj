@@ -437,8 +437,7 @@
                                        events/navigate-retail-walmart-dallas
                                        events/navigate-retail-walmart-houston}  nav-event)
                                     (-> {:retailLocation (maps/index-by (comp keyword :slug)
-                                                                        (assemble-cms-node normalized-cms-cache :retailLocation))}
-                                        (update-data [:faq :wig-customization]))
+                                                                        (assemble-cms-node normalized-cms-cache :retailLocation))})
                                     :else nil))))))
 
 (defn wrap-set-welcome-url [h welcome-config]
