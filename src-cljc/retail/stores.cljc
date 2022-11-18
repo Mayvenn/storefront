@@ -128,15 +128,15 @@
    [:div.p3
     header
     (store-locations data)]
-   why-mayvenn
-   (when retail-stores-more-info?
-     dividers/green)
    (when retail-stores-more-info?
      (wig-customization-spotlights (vt/with :wig-customization-guide data)))
    (when retail-stores-more-info?
      dividers/purple)
    (when retail-stores-more-info?
-     (wig-services-menu (vt/with :wig-services-menu data)))])
+     (wig-services-menu (vt/with :wig-services-menu data)))
+   (when retail-stores-more-info?
+     dividers/green)
+   why-mayvenn])
 
 (def navigate-show-page
   {"katy"          events/navigate-retail-walmart-katy
