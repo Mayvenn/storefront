@@ -521,12 +521,12 @@
                                    :header-menu-item/content           "Stores"}
                                   {:header-menu-item/href    blog-url
                                    :header-menu-item/id      "desktop-blog"
-                                   :header-menu-item/content "Blog"}
-                                  (when bf-2022-sale?
-                                    {:header-menu-item/navigation-target [events/navigate-category {:page/slug           "clearance"
+                                   :header-menu-item/content "Blog"}]
+                                 (when bf-2022-sale?
+                                   [{:header-menu-item/navigation-target [events/navigate-category {:page/slug           "clearance"
                                                                                                     :catalog/category-id "48"}]
                                      :header-menu-item/id                "desktop-clearance"
-                                     :header-menu-item/content           "Clearance Wigs"})])}))
+                                     :header-menu-item/content           "Clearance Wigs"}]))}))
 
 (defn query [data]
   (-> (basic-query data)
