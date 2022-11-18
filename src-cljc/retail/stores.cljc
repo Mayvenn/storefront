@@ -5,13 +5,13 @@
             [storefront.component :as component]
             [storefront.effects :as effects]
             [storefront.components.svg :as svg]
+            [storefront.components.money-formatters :as mf]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
-            [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.components.accordion-v2022-10 :as accordion]
-            [mayvenn.visual.tools :refer [with within]]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.accessors.experiments :as experiments]))
 
 (def header
   [:div.center.p3
@@ -104,6 +104,25 @@
    [:div.proxima.title-1.bold.shout subtitle]
    (into [:div.grid.gap-4] (map-indexed wig-customization-spotlight-section (:sections data)))])
 
+(defn wig-services-menu-item
+  [ix {:keys [title price]}]
+  [:div.flex.justify-between {:key ix}
+   [:div title]
+   [:div (mf/as-money-without-cents price)]])
+
+(defn wig-services-menu-section
+  [ix {:keys [header/title items]}]
+  [:div.pt5 {:key ix}
+   [:div.proxima.content-2.bold.shout title]
+   (map-indexed wig-services-menu-item items)])
+
+(defn wig-services-menu
+  [{:keys [header/title sections]}]
+  [:div.bg-pale-purple.p6
+   [:div.max-580.flex.flex-column.mx-auto.col-8-on-tb-dt
+    [:div.center.canela.title-1 title]
+    (map-indexed wig-services-menu-section sections)]])
+
 (component/defcomponent question-open [{:keys [copy]} _ _]
   [:div.content-3.px2.py4.bold copy])
 (component/defcomponent question-closed [{:keys [copy]} _ _]
@@ -124,7 +143,7 @@
     "Frequently Asked Questions"]
    [:div.container
     (component/build accordion/component
-                     (with :wig-customization-faq data)
+                     (vt/with :wig-customization-faq data)
                      {:opts
                       {:accordion.drawer.open/face-component   question-open
                        :accordion.drawer.closed/face-component question-closed
@@ -140,6 +159,8 @@
    dividers/green
    (wig-customization-spotlights (vt/with :wig-customization-guide data))
    dividers/purple
+   (wig-services-menu (vt/with :wig-services-menu data))
+   dividers/green
    (wig-customization-faq data)])
 
 (def navigate-show-page
@@ -152,18 +173,6 @@
 (defn query [app-state]
   (let [locations (get-in app-state keypaths/cms-retail-location)]
     (merge
-     (vt/within :wig-customization-guide
-                {:header/title    "Wig Customization"
-                 :header/subtitle "Here's how it works:"
-                 :sections        [{:title "Select your wig"
-                                    :copy  "Choose a pre-customized, factory-made, or tailor-made unit."
-                                    :url   "https://ucarecdn.com/1596ef7a-8ea8-4e2d-b98f-0e2083998cce/select_your_wig.png"}
-                                   {:title "We customize it"
-                                    :copy  "Choose from ten different customization services— we'll make your dream look come to life."
-                                    :url   "https://ucarecdn.com/b8902af1-9262-4369-ab88-35e82fd2f3b7/we_customize_it.png"}
-                                   {:title "Take it home"
-                                    :copy  "Rock your new unit the same day or pick it up within 2-5 days."
-                                    :url   "https://ucarecdn.com/8d4b8e12-48a7-4e90-8a41-3f1ef1267a93/take_it_home.png"}]})
      {:locations (mapv (fn [[_ {:keys [email facebook hero state hours name phone-number instagram tiktok
                                        location address-1 address-2 address-zipcode address-city slug]}]]
                          (when (and name slug)
@@ -181,6 +190,39 @@
                             :facebook         (when facebook (str "https://business.facebook.com/" facebook))
                             :tiktok           (when tiktok (str "https://www.tiktok.com/@" tiktok))
                             :email            email})) locations)}
+     (vt/within :wig-customization-guide
+                {:header/title    "Wig Customization"
+                 :header/subtitle "Here's how it works:"
+                 :sections        [{:title "Select your wig"
+                                    :copy  "Choose a pre-customized, factory-made, or tailor-made unit."
+                                    :url   "https://ucarecdn.com/1596ef7a-8ea8-4e2d-b98f-0e2083998cce/select_your_wig.png"}
+                                   {:title "We customize it"
+                                    :copy  "Choose from ten different customization services— we'll make your dream look come to life."
+                                    :url   "https://ucarecdn.com/b8902af1-9262-4369-ab88-35e82fd2f3b7/we_customize_it.png"}
+                                   {:title "Take it home"
+                                    :copy  "Rock your new unit the same day or pick it up within 2-5 days."
+                                    :url   "https://ucarecdn.com/8d4b8e12-48a7-4e90-8a41-3f1ef1267a93/take_it_home.png"}]})
+     (vt/within :wig-services-menu
+                {:header/title "Wig Services"
+                 :sections     [{:header/title "Customization"
+                                 :items        [{:title "Basic Lace Customization"
+                                                 :price 25}
+                                                {:title "Wig Customization"
+                                                 :price 60}
+                                                {:title "Basic Wig Coloring"
+                                                 :price 95}
+                                                {:title "Advanced Wig Coloring"
+                                                 :price 25}]}
+                                {:header/title "Cut"
+                                 :items        [{:title "Basic Wig Cut"
+                                                 :price 35}
+                                                {:title "Advanced Wig Cut"
+                                                 :price 50}]}
+                                {:header/title "Stylist"
+                                 :items        [{:title "Basic Wig Styling"
+                                                 :price 35}
+                                                {:title "Advanced Wig Styling"
+                                                 :price 50}]}]})
      (accordion/accordion-query
       {:id                   :wig-customization-faq
        :allow-all-closed?    true
