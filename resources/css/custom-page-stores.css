@@ -3,3 +3,9 @@
         grid-template-columns: repeat(3, 1fr);
     }
 }
+
+@media (--on-mobile) {
+    .wig-customization {
+        text-align: center;
+    }
+}
