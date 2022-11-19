@@ -58,7 +58,7 @@
 
 (def ^:private dns-url "https://mayvenn.wirewheel.io/privacy-page/5f22b71054ee7d0012420211")
 
-(defcomponent component [{:keys [minimal?] :as data} owner opts]
+(defcomponent component [{:keys [minimal? footer-email-capture?] :as data} owner opts]
   (if minimal?
     [:div.content-3.proxima.center
      ^:inline (minimal-footer-link (assoc (utils/route-to events/navigate-content-privacy)
@@ -99,10 +99,12 @@
         ^:inline (footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#ca-privacy-rights")}
                               "CA Privacy Rights")
         ^:inline (footer-link {:href dns-url} "Do Not Sell My Personal Information")]]]
-       [:div.px3.col-6-on-tb-dt.hide-on-mb
-        (signup-molecule data "on-tb-dt")]]]
-     [:div.px3.hide-on-tb-dt
-      (signup-molecule data "on-mb")]
+       (when footer-email-capture?
+         [:div.px3.col-6-on-tb-dt.hide-on-mb
+          (signup-molecule data "on-tb-dt")])]]
+     (when footer-email-capture?
+       [:div.px3.hide-on-tb-dt
+        (signup-molecule data "on-mb")])
      [:div
       [:div.px3.container
        [:span.py2.flex.items-center.white {:key "minimal"}
@@ -116,7 +118,8 @@
 
 (defn query
   [{:keys [minimal-footer? footer-email-input-value
-           footer-email-submitted? footer-field-errors footer-ready-for-email-signup?]}]
+           footer-email-submitted? footer-field-errors footer-ready-for-email-signup?
+           footer-email-capture?]}]
   (merge
    {:minimal?     minimal-footer?
     :email        nil
@@ -135,7 +138,8 @@
                                                   (invalid-email? footer-email-input-value))
     :footer.email-signup.input/errors        footer-field-errors
     :footer.email-signup.input/value         footer-email-input-value
-    :footer.email-signup.submitted/text      (when footer-email-submitted? "You have successfully subscribed to our mailing list.")}))
+    :footer.email-signup.submitted/text      (when footer-email-submitted? "You have successfully subscribed to our mailing list.")
+    :footer-email-capture?                   footer-email-capture?}))
 
 (defn built-component
   [data opts]

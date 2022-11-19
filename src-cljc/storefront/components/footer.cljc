@@ -203,7 +203,8 @@
      :footer-links {:minimal-footer?                (nav/show-minimal-footer? (get-in data keypaths/navigation-event))
                     :footer-email-input-value       (get-in data keypaths/footer-email-value)
                     :footer-email-submitted?        (get-in data keypaths/footer-email-submitted)
-                    :footer-ready-for-email-signup? (get-in data keypaths/footer-email-ready)}}))
+                    :footer-ready-for-email-signup? (get-in data keypaths/footer-email-ready)
+                    :footer-email-capture?          (experiments/footer-email-capture? data)}}))
 
 (defn built-component
   [data _]

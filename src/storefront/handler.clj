@@ -588,6 +588,7 @@
       (assoc _ :footer-v22 (feature-flags/retrieve-flag ld "footer-v22" :bool false))
       (assoc _ :pdp-content-slots (feature-flags/retrieve-flag ld "pdp-content-slots" :bool false))
       (assoc _ :retail-stores-more-info (feature-flags/retrieve-flag ld "retail-stores-more-info" :bool false))
+      (assoc _ :footer-email-capture (feature-flags/retrieve-flag ld "footer-email-capture" :bool false))
       (assoc-in-req-state req keypaths/features _)
       (h _))))
 
