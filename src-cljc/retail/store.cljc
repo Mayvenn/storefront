@@ -65,13 +65,14 @@
    [:div.flex.flex-wrap.pt3
     (for [{:keys [file description]} photos]
       [:a.col-6.col-3-on-tb-dt
-       {:key  file
-        :href (str "https://www.instagram.com/" instagram)}
-       (ui/aspect-ratio 1 1 (ui/img {:src      (:url file)
-                                     :style    {:object-fit "cover"
-                                                :min-height "100%"}
-                                     :class    "flex-auto col-12"
-                                     :alt      description}))])]])
+       {:key        file
+        :aria-label "Instagram"
+        :href       (str "https://www.instagram.com/" instagram)}
+       (ui/aspect-ratio 1 1 (ui/img {:src   (:url file)
+                                     :style {:object-fit "cover"
+                                             :min-height "100%"}
+                                     :class "flex-auto col-12"
+                                     :alt   description}))])]])
 
 (def why-mayvenn-icons-text
   [{:icon svg/heart
@@ -138,7 +139,6 @@
   [:div
    (video data)
    (store-info data)
-   (follow-us data)
    (when retail-stores-more-info?
      (wig-customization-spotlights (vt/with :wig-customization-guide data)))
    (when retail-stores-more-info?
@@ -147,7 +147,8 @@
      (wig-services-menu (vt/with :wig-services-menu data)))
    (when retail-stores-more-info?
      dividers/green)
-   why-mayvenn])
+   why-mayvenn
+   (follow-us data)])
 
 (defn query-all [{:keys [email facebook hero state hours name phone-number instagram tiktok location address-1 address-2
                          address-zipcode address-city store-tour-you-tube-video-id instagram-photos]}
