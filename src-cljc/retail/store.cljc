@@ -87,9 +87,9 @@
 (def why-mayvenn
   [:div.bg-cool-gray.mx-auto.center.py6
    [:h2.canela.title-1.my6 "Why Mayvenn"]
-   [:div.flex.max-580.mx-auto.center
+   [:div.flex.max-580.mx-auto.center.justify-center
     (for [{:keys [icon text]} why-mayvenn-icons-text]
-      [:div.pb1.pt6
+      [:div.pb1.pt6.col-2
        [:div
         {:width "32px"}
         (icon {:class  "fill-p-color"
