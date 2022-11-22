@@ -12,14 +12,14 @@
 
 
 (def components-list
-  [{:title           "Accordion"
+  [{:title           "Accordion: One open at a time"
     :id              "accordion"
     :query-ns        "example-accordion"
     :component-class accordion/component
     :opts            {:accordion.drawer.open/face-component   accordion/simple-face-open
                       :accordion.drawer.closed/face-component accordion/simple-face-closed
                       :accordion.drawer/contents-component    accordion/simple-contents}}
-   {:title           "Accordion 2"
+   {:title           "Accordion: Fully closable/openable"
     :id              "accordion2"
     :query-ns        "example-accordion2"
     :component-class accordion/component
@@ -59,7 +59,7 @@
     {:style {:grid-row "1 / 3"}}
     (when-let [{:keys [title id query-ns component-class]} (component-id->component-entry current-component-id)]
       [:div
-       [:div title " (" id ")"]
+       [:div title]
        [:div.border-dotted.border-p-color
         (c/build component-class (with query-ns props) {:opts opts
                                                         :key  id})]])]])
@@ -92,8 +92,8 @@
                                                            :face     {:copy "food"}
                                                            :contents {:copy "bard"}}]}))
      (within :example-carousel {:exhibits [{:class "bg-red"}
-                                           {:class "bg-blue"}
                                            {:class "bg-green"}
+                                           {:class "bg-blue"}
                                            {:class "bg-yellow"}
                                            {:class "bg-purple"}]})
      (within :example-promises
