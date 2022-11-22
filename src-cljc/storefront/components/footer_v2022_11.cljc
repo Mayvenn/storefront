@@ -146,7 +146,7 @@
 
 (c/defcomponent desktop-info-block [{:keys [] :as data} owner opts]
   [:div
-   [:div.bg-pale-purple
+   #_[:div.bg-pale-purple
     [:div.container.grid
      {:style {:grid-template-columns "1fr 4fr 1fr"}}
      [:div.shout.title-2.proxima.py4 "FAQs"]
@@ -155,7 +155,7 @@
               {:opts {:accordion.drawer.open/face-component   product-info/question-open
                       :accordion.drawer.closed/face-component product-info/question-closed
                       :accordion.drawer/contents-component    product-info/answer}})]]
-   [:div.border-p-color.border.border-width-2]
+   #_[:div.border-p-color.border.border-width-2]
    [:div.bg-cool-gray
     [:div.container.grid.gap-4.pt4
      {:style {:grid-template-columns "4fr 4fr 2fr 2fr"}}
@@ -198,7 +198,7 @@
      :allow-multi-open? true
      :open-drawers      (:accordion/open-drawers (accordion/<- app-state :info-accordion))
      :drawers           (remove nil?
-                                [{:id       "faq"
+                                [#_{:id       "faq"
                                   :face     {:copy "FAQs"}
                                   :contents (merge {:info-accordion.contents/type :faq-accordion}
                                                    (accordion/accordion-query

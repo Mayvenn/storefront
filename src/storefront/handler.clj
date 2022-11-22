@@ -382,7 +382,7 @@
                                                                                 contentful/extract-fields
                                                                                 (resolve-cms-node normalized-cms-cache))]))}
 
-                              (update-data {} [:faq :sitewide-footer])
+                              #_(update-data {} [:faq :sitewide-footer])
 
                               (cond (= events/navigate-home nav-event)
                                     (-> {:homepage (let [id (if shop? :unified-fi :unified)]
