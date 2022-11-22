@@ -214,47 +214,36 @@
                                  {:id       "shop"
                                   :face     {:copy "Shop"}
                                   :contents {:info-accordion.contents/type :links-list
-                                             :row-count                    9
+                                             :row-count                    5
                                              :column-count                 2
                                              :links                        [{:target [e/navigate-category
+                                                                                      {:page/slug "clearance" :catalog/category-id "48"}]
+                                                                             :copy   "Clearance Wigs"}
+                                                                            {:target [e/navigate-category
                                                                                       {:page/slug "wigs" :catalog/category-id "13"}]
                                                                              :copy   "Wigs"}
                                                                             {:target [e/navigate-category
                                                                                       {:page/slug "human-hair-bundles" :catalog/category-id "27"}]
                                                                              :copy   "Hair Bundles"}
                                                                             {:target [e/navigate-category
-                                                                                      {:page/slug "virgin-body-wave" :catalog/category-id "5"}]
-                                                                             :copy   "Virgin Body Wave"}
+                                                                                      {:page/slug "closures" :catalog/category-id "0"}]
+                                                                             :copy   "Closures"}
                                                                             {:target [e/navigate-category
-                                                                                      {:page/slug "virgin-loose-wave" :catalog/category-id "6"}]
-                                                                             :copy   "Virgin Loose Wave"}
-                                                                            {:target [e/navigate-category
-                                                                                      {:page/slug "virgin-deep-wave" :catalog/category-id "8"}]
-                                                                             :copy   "Virgin Deep Wave"}
-                                                                            {:copy "Dyed Virgin Hair [LINK TARGET MISSING]"}
+                                                                                      {:page/slug "frontals" :catalog/category-id "1"}]
+                                                                             :copy   "Frontals"}
                                                                             {:target [e/navigate-category
                                                                                       {:page/slug "hair-extensions" :catalog/category-id "28"}]
                                                                              :copy   "Hair Extensions"}
-                                                                            {:target [e/navigate-shop-by-look {:album-keyword :straight-bundle-sets}]
-                                                                             :copy   "Straight Bundle Sets"}
-                                                                            {:target [e/navigate-shop-by-look {:album-keyword :wavy-curly-bundle-sets}]
-                                                                             :copy   "Wavy Curly Bundle Sets"}
-                                                                            {:copy "All Blonde Hair [LINK TARGET MISSING]"}
-                                                                            {:target [e/navigate-category
-                                                                                      {:page/slug "360-frontals" :catalog/category-id "10"}]
-                                                                             :copy   "Virgin 360 Frontals"}
-                                                                            {:target [e/navigate-category
-                                                                                      {:page/slug "virgin-lace-frontals" :catalog/category-id "29"}]
-                                                                             :copy   "Virgin Frontals"}
-                                                                            {:target [e/navigate-category
-                                                                                      {:page/slug "seamless-clip-ins" :catalog/category-id "21"}]
-                                                                             :copy   "Clip-Ins"}
-                                                                            {:target [e/navigate-category
-                                                                                      {:page/slug "taps-ins" :catalog/category-id "22"}]
-                                                                             :copy   "Tape-Ins"}
-                                                                            {:target [e/navigate-category
-                                                                                      {:page/slug "clearance" :catalog/category-id "48"}]
-                                                                             :copy   "Clearance Wigs"}]}}
+                                                                            {:target [e/navigate-wigs-101-guide]
+                                                                             :copy   "Wigs 101"}
+                                                                            {:target [e/navigate-category {:page/slug           "ready-wear-wigs"
+                                                                                                           :catalog/category-id "25"}]
+                                                                             :copy   "Ready To Wear Wigs"}
+                                                                            {:target [e/navigate-landing-page
+                                                                                      {:landing-page-slug "new-arrivals"}]
+                                                                             :copy   "New Arrivals"}
+                                                                            {:target [e/navigate-shop-by-look {:album-keyword :look}]
+                                                                             :copy   "Shop by Look"}]}}
                                  {:id       "about"
                                   :face     {:copy "About us"}
                                   :contents {:info-accordion.contents/type :links-list
