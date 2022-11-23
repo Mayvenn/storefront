@@ -31,6 +31,11 @@
     :query-ns        "example-carousel"
     :component-class carousel/component
     :opts            {:carousel/exhibit-component carousel/example-exhibit-component}}
+   {:title           "Image Carousel"
+    :id              "image-carousel"
+    :query-ns        "example-image-carousel"
+    :component-class carousel/component
+    :opts            {:carousel/exhibit-component carousel/carousel-image-component}}
    {:title           "Promises"
     :id              "promises"
     :query-ns        "example-promises"
@@ -96,6 +101,13 @@
                                            {:class "bg-blue"}
                                            {:class "bg-yellow"}
                                            {:class "bg-purple"}]})
+     (within :example-image-carousel {:exhibits [{:src        "http://placekitten.com/400/600"
+                                                  :alt        "image 0"}
+                                                 {:src        "http://ucarecdn.com/89a0181c-cbbe-4a66-bed5-cc90e6a886e5/"
+                                                  :type       "video"
+                                                  :alt        "video 1"}
+                                                 {:src        "http://placekitten.com/402/602"
+                                                  :alt        "image 2"}]})
      (within :example-promises
              {:list/icons
               [{:promises.icon/symbol :svg/hand-heart,
@@ -105,9 +117,7 @@
                {:promises.icon/symbol :svg/check-cloud,
                 :promises.icon/title "100% Virgin Human Hair"}
                {:promises.icon/symbol :svg/ship-truck,
-                :promises.icon/title "Free Standard Shipping"}]
-              })
-     )))
+                :promises.icon/title "Free Standard Shipping"}]}))))
 
 (defn ^:export built-component
   [app-state _opts]

@@ -1,5 +1,6 @@
 (ns storefront.components.carousel
-  (:require [storefront.component :as c]
+  (:require [clojure.string :as string]
+            [storefront.component :as c]
             [storefront.components.ui :as ui]))
 
 (def spacer
@@ -11,21 +12,33 @@
          :style {:height "500px"}}])
 
 (c/defcomponent carousel-image-component
-  [{:keys [src alt]} _ _]
-  (ui/img {:src      src
-           :alt      alt
-           :class    "container-size"
-           :style    {:object-fit "cover"}
-           :max-size 800}))
+  [{:keys [src type alt]} _ _]
+  (c/html
+   (cond
+     (= "video" type)
+     [:video.container-size
+      {:autoplay    "autoplay"
+       :loop        "loop"
+       :muted       "muted"
+       :playsinline "playsinline"
+       :src         src
+       :style       {:object-fit "cover"}}]
+
+     :else
+     (ui/img {:src      src
+              :alt      alt
+              :class    "container-size"
+              :style    {:object-fit "cover"}
+              :max-size 800}))))
 
 (c/defcomponent component
-  [{:keys [exhibits] :as props} _ {:carousel/keys [exhibit-component] :as opts}]
+  [{:keys [exhibits]} _ {:carousel/keys [exhibit-component]}]
   [:div.hide-scroll-bar
    {:style {:display "flex"
             :gap "0.5rem"
             :scroll-snap-type "x mandatory"
             :overflow-x "auto"
-            :overflow-y "clip"}}
+            :overflow-y "hidden"}}
    spacer
    (map-indexed (fn [index exhibit]
                   [:div
