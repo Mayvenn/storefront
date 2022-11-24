@@ -8,7 +8,7 @@
   [{:price-block/keys [primary primary-struck secondary secondary-classes new-primary]}]
   [:div.right-align
    (when (or primary primary-struck)
-     [:div
+     [:div.flex
       (when primary
         [:span.proxima.content-2 primary])
       (when primary-struck
