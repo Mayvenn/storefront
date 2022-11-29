@@ -192,7 +192,7 @@
                                                 {:title "Basic Wig Coloring"
                                                  :price 95}
                                                 {:title "Advanced Wig Coloring"
-                                                 :price 25}]}
+                                                 :price 150}]}
                                 {:header/title "Cut"
                                  :items        [{:title "Basic Wig Cut"
                                                  :price 35}
