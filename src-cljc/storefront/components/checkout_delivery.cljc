@@ -163,22 +163,17 @@
                 max-delivery
                 saturday-delivery?]} (shipping-method-rules sku drop-shipping?)
 
-        ;; GROT FOR Thanksgiving DAY DELAYS, remove after Nov 24, 2022
-        additional-holiday-delay-days 1
+        revised-min (number-of-days-to-ship
+                     east-coast-weekday
+                     in-window?
+                     saturday-delivery?
+                     min-delivery)
 
-        revised-min (+ (number-of-days-to-ship
-                        east-coast-weekday
-                        in-window?
-                        saturday-delivery?
-                        min-delivery)
-                       additional-holiday-delay-days)
-
-        revised-max (+ (number-of-days-to-ship
-                        east-coast-weekday
-                        in-window?
-                        saturday-delivery?
-                        max-delivery)
-                       additional-holiday-delay-days)
+        revised-max (number-of-days-to-ship
+                     east-coast-weekday
+                     in-window?
+                     saturday-delivery?
+                     max-delivery)
         selected?   (= selected-shipping-method-sku-id sku)
         disabled?   (and (not= sku "WAITER-SHIPPING-1") drop-shipping?)]
     (merge
