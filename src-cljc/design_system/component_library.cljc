@@ -102,12 +102,12 @@
                                             :index 1}
                                            {:class "bg-blue"
                                             :index 2}]})
-     (within :example-image-carousel {:exhibits [{:src "http://placekitten.com/400/600"
+     (within :example-image-carousel {:exhibits [{:src "http://placekitten.com/400/600?image=1"
                                                   :alt "image 0"}
                                                  {:src  "http://ucarecdn.com/89a0181c-cbbe-4a66-bed5-cc90e6a886e5/"
                                                   :type "video"
                                                   :alt  "video 1"}
-                                                 {:src "https://picsum.photos/400/600"
+                                                 {:src "http://placekitten.com/400/600?image=2"
                                                   :alt "image 2"}]})
      (within :example-promises
              {:list/icons
