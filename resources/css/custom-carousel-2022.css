@@ -1,0 +1,23 @@
+@media (--on-mobile) {
+    .carousel-2022 {
+        display: flex;
+        gap: 0.5rem;
+        scroll-snap-type: x mandatory;
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    .carousel-2022 > .exhibit {
+        width: 90%;
+        scroll-snap-align: center;
+        flex-shrink: 0;
+    }
+
+    .carousel-2022 > .exhibit .contents {
+        object-fit: cover;
+    }
+
+    .carousel-2022 > .spacer {
+        min-width: calc(5% - 0.5rem);
+    }
+}
