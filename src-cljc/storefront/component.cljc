@@ -173,7 +173,7 @@
            state                 (get-state this)
            next-props            (.-props next-props)]
        (or (not= props next-props)
-           (and state (not= state (.-state next-state)))))))
+           (and (or state next-state) (not= state (.-state next-state)))))))
 
 (defn create* [name f]
   #?(:clj (f)
