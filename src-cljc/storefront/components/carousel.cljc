@@ -17,10 +17,10 @@
    (cond
      (= "video" type)
      [:video.container-size
-      {:autoplay    "autoplay"
+      {:autoplay    "autoPlay"
        :loop        "loop"
        :muted       "muted"
-       :playsinline "playsinline"
+       :playsinline "playsInline"
        :src         src
        :style       {:object-fit "cover"}}]
 
