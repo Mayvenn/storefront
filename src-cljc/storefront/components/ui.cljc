@@ -726,8 +726,7 @@
                                                        :picture-classes
                                                        :retina?
                                                        :square-size
-                                                       :preserve-url-transformations?
-                                                       :max-size)]))
+                                                       :preserve-url-transformations?)]))
 
 (defn ucare-img ;; TODO(jeff): for legacy callers, we should remove this call and use img function instead
   ;; WARN(jeff): it is strongly recommended to specify max-size to minimize srcSet sizes!!

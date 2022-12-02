@@ -55,10 +55,8 @@
     {:style {:grid-row "1 / 3"}}
     (map (fn [{:keys [id title]}]
            [:li
-            (merge
-             {:key (str id title)}
-             (when (= id current-component-id)
-               {:class "bold bg-checkerboard"}))
+            (when (= id current-component-id)
+              {:class "bold bg-checkerboard"})
             [:a.block.inherit-color.p2
              (util/route-to e/navigate-design-system-component-library {:query-params {:id id}})
              title]]) components-list)]
@@ -67,7 +65,7 @@
     (when-let [{:keys [title id query-ns component-class]} (component-id->component-entry current-component-id)]
       [:div
        [:div title]
-       [:div.border-dotted.border-p-color.overflow-hidden
+       [:div.border-dotted.border-p-color
         (c/build component-class (with query-ns props) {:opts opts
                                                         :key  id})]])]])
 
@@ -98,19 +96,18 @@
                                                           {:id       "drawer-2"
                                                            :face     {:copy "food"}
                                                            :contents {:copy "bard"}}]}))
-     (within :example-carousel {:exhibits [{:class "bg-red"
-                                            :index 0}
-                                           {:class "bg-green"
-                                            :index 1}
-                                           {:class "bg-blue"
-                                            :index 2}]})
-     (within :example-image-carousel {:exhibits [{:src "http://placekitten.com/400/600?image=1"
-                                                  :alt "image 0"}
-                                                 {:src  "http://ucarecdn.com/89a0181c-cbbe-4a66-bed5-cc90e6a886e5/"
-                                                  :type "video"
-                                                  :alt  "video 1"}
-                                                 {:src "http://placekitten.com/400/600?image=2"
-                                                  :alt "image 2"}]})
+     (within :example-carousel {:exhibits [{:class "bg-red"}
+                                           {:class "bg-green"}
+                                           {:class "bg-blue"}
+                                           {:class "bg-yellow"}
+                                           {:class "bg-purple"}]})
+     (within :example-image-carousel {:exhibits [{:src        "http://placekitten.com/400/600"
+                                                  :alt        "image 0"}
+                                                 {:src        "http://ucarecdn.com/89a0181c-cbbe-4a66-bed5-cc90e6a886e5/"
+                                                  :type       "video"
+                                                  :alt        "video 1"}
+                                                 {:src        "http://placekitten.com/402/602"
+                                                  :alt        "image 2"}]})
      (within :example-promises
              {:list/icons
               [{:promises.icon/symbol :svg/hand-heart,
