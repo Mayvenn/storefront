@@ -95,12 +95,13 @@
    [this]
    #?(:clj nil
       :cljs
-      (let [carousel-el (c/get-ref this "carousel")]
-        (gobj/set this "intersectionObserver" (js/IntersectionObserver.
-                                               (partial intersection-handler this)
-                                               #js {:root      carousel-el
-                                                    :threshold 0.9}))
-        (attach-intersection-observers carousel-el (.-intersectionObserver this))
+      (let [carousel-el (c/get-ref this "carousel")
+            observer    (js/IntersectionObserver.
+                         (partial intersection-handler this)
+                         #js {:root      carousel-el
+                              :threshold 0.9})]
+        (attach-intersection-observers carousel-el observer)
+        (gobj/set this "intersectionObserver" observer)
 
         ;; The Scroll Observer will fire after a scroll (debounced), scrolling the user back to the "home" exhibit group
         ;; TODO: In other places, we use goog.events/listen. Is there an advantage?
