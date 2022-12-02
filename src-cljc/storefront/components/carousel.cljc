@@ -73,7 +73,7 @@
 
 (defn attach-intersection-observers [carousel-el observer]
   #?(:cljs
-     (do
+     (when observer ;; WARNING: it should be impossible for observer to be nil, but it's confusingly showing up nil on acceptance
        (.disconnect observer)
        (doseq [exhibit-el (some->> carousel-el
                                    .-children
