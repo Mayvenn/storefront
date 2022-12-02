@@ -55,8 +55,10 @@
     {:style {:grid-row "1 / 3"}}
     (map (fn [{:keys [id title]}]
            [:li
-            (when (= id current-component-id)
-              {:class "bold bg-checkerboard"})
+            (merge
+             {:key (str id title)}
+             (when (= id current-component-id)
+               {:class "bold bg-checkerboard"}))
             [:a.block.inherit-color.p2
              (util/route-to e/navigate-design-system-component-library {:query-params {:id id}})
              title]]) components-list)]
