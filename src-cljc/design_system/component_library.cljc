@@ -98,12 +98,9 @@
                                                        {:id       "drawer-2"
                                                         :face     {:copy "food"}
                                                         :contents {:copy "bard"}}]}))
-     (within :example-carousel {:exhibits [{:class "bg-red"
-                                            :index 0}
-                                           {:class "bg-green"
-                                            :index 1}
-                                           {:class "bg-blue"
-                                            :index 2}]})
+     (within :example-carousel {:exhibits [{:class "bg-red"}
+                                           {:class "bg-green"}
+                                           {:class "bg-blue"}]})
      (within :example-image-carousel {:exhibits [{:src "http://placekitten.com/400/600?image=1"
                                                   :alt "image 0"}
                                                  {:src  "http://ucarecdn.com/89a0181c-cbbe-4a66-bed5-cc90e6a886e5/"

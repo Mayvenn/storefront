@@ -21,3 +21,39 @@
         min-width: calc(5% - 0.5rem);
     }
 }
+
+@media (--on-tablet-and-desktop) {
+    .carousel-2022 {
+        display: grid;
+        grid-template-columns: 6fr 1fr;
+    }
+
+    .carousel-2022 > .selected-exhibit {
+        aspect-ratio: 3 / 4;
+    }
+
+    .carousel-2022 > .exhibits {
+        display: flex;
+        flex-flow: column nowrap;
+        gap: 0.5rem;
+        scroll-snap-type: x mandatory;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    .carousel-2022 > .exhibits > .exhibit {
+        scroll-snap-align: start;
+    }
+
+    .carousel-2022 > .exhibits > .exhibit > * > * {
+        aspect-ratio: 3 / 4;
+        height: 100%;
+    }
+    .carousel-2022 > .exhibits > .exhibit .contents {
+        object-fit: cover;
+    }
+
+    .carousel-2022 > .exhibits > .spacer {
+        /* min-width: calc(5% - 0.5rem); */
+    }
+}
