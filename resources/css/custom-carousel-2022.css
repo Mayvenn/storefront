@@ -4,7 +4,6 @@
         gap: 0.5rem;
         scroll-snap-type: x mandatory;
         overflow-x: auto;
-        overflow-y: hidden;
     }
 
     .carousel-2022 > .exhibit {
@@ -25,35 +24,28 @@
 @media (--on-tablet-and-desktop) {
     .carousel-2022 {
         display: grid;
-        grid-template-columns: 6fr 1fr;
-    }
-
-    .carousel-2022 > .selected-exhibit {
-        aspect-ratio: 3 / 4;
+        grid-template-columns: 7fr 1fr;
+        column-gap: 0.5rem;
     }
 
     .carousel-2022 > .exhibits {
         display: flex;
         flex-flow: column nowrap;
-        gap: 0.5rem;
+        row-gap: 0.5rem;
         scroll-snap-type: x mandatory;
-        overflow-x: hidden;
-        overflow-y: auto;
+        /* max-height here restrains the exhibits column from expanding the carousel container. It's
+           not actually going to display at 0 height, as the grid asks the exhibits column for as
+           much vertical content as the exhibits div will give it (given that the row is taller than
+           its contents), the exhibits div just won't ask for more height than is called for by its
+           grid row. */
+        max-height: 0;
     }
 
     .carousel-2022 > .exhibits > .exhibit {
         scroll-snap-align: start;
     }
 
-    .carousel-2022 > .exhibits > .exhibit > * > * {
-        aspect-ratio: 3 / 4;
-        height: 100%;
-    }
     .carousel-2022 > .exhibits > .exhibit .contents {
         object-fit: cover;
-    }
-
-    .carousel-2022 > .exhibits > .spacer {
-        /* min-width: calc(5% - 0.5rem); */
     }
 }

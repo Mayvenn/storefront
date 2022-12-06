@@ -240,7 +240,8 @@
               (if carousel-redesign?
                 (component/build carousel-neue/component
                                  (with :product-carousel data)
-                                 {:opts {:carousel/exhibit-component carousel-neue/carousel-image-component}})
+                                 {:opts {:carousel/exhibit-thumbnail-component carousel-neue/product-carousel-thumbnail
+                                         :carousel/exhibit-highlight-component carousel-neue/product-carousel-highlight}})
                 [:div (carousel carousel-images product)]))]
             (component/build product-summary-organism data)
             [:div.px2

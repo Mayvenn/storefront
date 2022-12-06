@@ -30,12 +30,13 @@
     :id              "carousel"
     :query-ns        "example-carousel"
     :component-class carousel/component
-    :opts            {:carousel/exhibit-component carousel/example-exhibit-component}}
+    :opts            {:carousel/exhibit-highlight-component carousel/example-exhibit-component}}
    {:title           "Image Carousel"
     :id              "image-carousel"
     :query-ns        "example-image-carousel"
     :component-class carousel/component
-    :opts            {:carousel/exhibit-component carousel/carousel-image-component}}
+    :opts            {:carousel/exhibit-thumbnail-component carousel/product-carousel-thumbnail
+                      :carousel/exhibit-highlight-component carousel/product-carousel-highlight}}
    {:title           "Promises"
     :id              "promises"
     :query-ns        "example-promises"
@@ -100,7 +101,13 @@
                                                         :contents {:copy "bard"}}]}))
      (within :example-carousel {:exhibits [{:class "bg-red"}
                                            {:class "bg-green"}
-                                           {:class "bg-blue"}]})
+                                           {:class "bg-blue"}
+                                           {:class "bg-aqua"}
+                                           {:class "bg-purple"}
+                                           {:class "bg-orange"}
+                                           {:class "bg-lime"}
+                                           {:class "bg-maroon"}
+                                           {:class "bg-pink"}]})
      (within :example-image-carousel {:exhibits [{:src "http://placekitten.com/400/600?image=1"
                                                   :alt "image 0"}
                                                  {:src  "http://ucarecdn.com/89a0181c-cbbe-4a66-bed5-cc90e6a886e5/"
