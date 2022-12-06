@@ -78,7 +78,6 @@ ENV TARGET=/app/target
 ENV JAR_PATH=$TARGET/storefront.jar
 
 COPY --from=builder $JAR_PATH /$JAR_FILENAME
-COPY --from=builder /app/container_files /
 
 # This is not necessary, except to tell docker tha the asset_uploader is actually needed and it should not optimize it out of existing.
 COPY --from=asset_uploader /.asset-upload-done /.asset-upload-done
