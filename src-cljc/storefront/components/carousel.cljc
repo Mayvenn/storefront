@@ -82,10 +82,10 @@
            exhibits-els (-> exhibits-el .-children array-seq)]
        (when (< -1 target-id (count exhibits-els))
          (.scrollTo exhibits-el
-                    0
-                    (-> exhibits-els
-                        (nth target-id)
-                        .-offsetTop))
+                    #js{:top      (-> exhibits-els
+                                      (nth target-id)
+                                      .-offsetTop)
+                        :behavior "smooth"})
          (c/set-state! this :selected-exhibit-idx target-id)))))
 
 (defn increment-selected-exhibit [this]
