@@ -52,6 +52,7 @@
          }]
        (svg/white-play-video {:class "absolute"
                               :style {:width     "50px"
+                                      :height    "50px"
                                       :left      "50%"
                                       :top       "50%"
                                       :transform "translate(-50%, -50%)"
@@ -133,12 +134,18 @@
                   :gap        "0.5rem"
                   :position   "relative"}}
          (map-indexed (fn [index exhibit]
-                        [:div.exhibit.relative
-                         (merge {:key      index
-                                 :on-click (partial select-exhibit this index)}
-                                (when (= index selected-exhibit-idx)
-                                  {:class "border border-p-color"}))
-                         (c/build (or exhibit-thumbnail-component exhibit-highlight-component) exhibit)])
+                        [:a.exhibit.relative.grid.pointer
+                         {:key      index
+                          :on-click (partial select-exhibit this index)
+                          :style    {:grid-template-areas "\"thumbnail\""}}
+                         [:div
+                          (when (= index selected-exhibit-idx)
+                                {:style {:grid-area "thumbnail"
+                                         :transform "translate3d(0, 0, 10px)"}
+                                 :class "border border-width-3 border-s-color"})]
+                         [:div
+                          {:style {:grid-area "thumbnail"}}
+                          (c/build (or exhibit-thumbnail-component exhibit-highlight-component) exhibit)]])
                       exhibits)]
         [:a.center
          (merge {:on-click (partial increment-selected-exhibit this)}
