@@ -29,19 +29,10 @@
     }
 
     .carousel-2022 > .exhibits {
-        display: flex;
-        flex-flow: column nowrap;
         row-gap: 0.5rem;
-        scroll-snap-type: x mandatory;
-        /* max-height here restrains the exhibits column from expanding the carousel container. It's
-           not actually going to display at 0 height, as the grid asks the exhibits column for as
-           much vertical content as the exhibits div will give it (given that the row is taller than
-           its contents), the exhibits div just won't ask for more height than is called for by its
-           grid row. */
-        max-height: 0;
     }
 
-    .carousel-2022 > .exhibits > .exhibit {
+    .carousel-2022 .exhibits .exhibit {
         scroll-snap-align: start;
     }
 

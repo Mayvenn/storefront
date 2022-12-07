@@ -109,12 +109,24 @@
                                            {:class "bg-maroon"}
                                            {:class "bg-pink"}]})
      (within :example-image-carousel {:exhibits [{:src "http://placekitten.com/400/600?image=1"
-                                                  :alt "image 0"}
+                                                  :alt "image 1"}
                                                  {:src  "http://ucarecdn.com/89a0181c-cbbe-4a66-bed5-cc90e6a886e5/"
                                                   :type "video"
                                                   :alt  "video 1"}
                                                  {:src "http://placekitten.com/400/600?image=2"
-                                                  :alt "image 2"}]})
+                                                  :alt "image 2"}
+                                                 {:src "http://placekitten.com/400/600?image=3"
+                                                  :alt "image 3"}
+                                                 {:src "http://placekitten.com/400/600?image=4"
+                                                  :alt "image 4"}
+                                                 {:src "http://placekitten.com/400/600?image=5"
+                                                  :alt "image 5"}
+                                                 {:src "http://placekitten.com/400/600?image=6"
+                                                  :alt "image 6"}
+                                                 {:src "http://placekitten.com/400/600?image=7"
+                                                  :alt "image 7"}
+                                                 {:src "http://placekitten.com/400/600?image=8"
+                                                  :alt "image 8"}]})
      (within :example-promises
              {:list/icons
               [{:promises.icon/symbol :svg/hand-heart,

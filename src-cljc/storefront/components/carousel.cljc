@@ -99,15 +99,29 @@
       [:div.carousel-2022.hide-on-mb
        [:div.exhibit-highlight
         (c/build exhibit-highlight-component (get exhibits selected-exhibit-idx))]
-       [:div.exhibits
-        (map-indexed (fn [index exhibit]
-                       [:div.exhibit.relative
-                        (merge {:key      index
-                                :on-click (partial select-exhibit this index)}
-                               (when (= index selected-exhibit-idx)
-                                 {:class "border border-p-color"}))
-                        (c/build (or exhibit-thumbnail-component exhibit-highlight-component) exhibit)])
-                     exhibits)]]))))
+       [:div.exhibits.flex.flex-column
+        [:div.mx-auto.flip-vertical
+         (svg/dropdown-arrow {:class  "fill-black"
+                              :height "16px"
+                              :width  "16px"})]
+        [:div.flex.flex-column
+         {:style {:flex-basis       0
+                  :flex-grow        1
+                  :overflow         "hidden"
+                  :gap              "0.5rem"
+                  :scroll-snap-type "y mandatory"}}
+         (map-indexed (fn [index exhibit]
+                        [:div.exhibit.relative
+                         (merge {:key      index
+                                 :on-click (partial select-exhibit this index)}
+                                (when (= index selected-exhibit-idx)
+                                  {:class "border border-p-color"}))
+                         (c/build (or exhibit-thumbnail-component exhibit-highlight-component) exhibit)])
+                      exhibits)]
+        [:div.mx-auto
+         (svg/dropdown-arrow {:class  "fill-black"
+                              :height "16px"
+                              :width  "16px"})]]]))))
 
 (c/defcomponent component
   [props _ opts]
