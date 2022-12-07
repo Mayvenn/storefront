@@ -62,8 +62,9 @@
       (ui/img {:src      src
                :alt      alt
                :class    "container-size contents"
-               :style    {:object-fit "cover"}
-               :max-size 800}))]))
+               :style    {:object-fit          "cover"
+                          :backface-visibility "hidden"}
+               :max-size 200}))]))
 
 (c/defcomponent mobile-component
   [{:keys [exhibits]} _ {:carousel/keys [exhibit-highlight-component]}]
@@ -116,7 +117,7 @@
      (c/html
       [:div.carousel-2022.hide-on-mb
        [:div.exhibit-highlight
-        (c/build exhibit-highlight-component (get exhibits selected-exhibit-idx))]
+        (c/build exhibit-highlight-component (nth exhibits selected-exhibit-idx))]
        [:div.exhibits.flex.flex-column
         [:a.center.flip-vertical
          (merge {:on-click (partial decrement-selected-exhibit this)}
