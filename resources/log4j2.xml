@@ -4,6 +4,9 @@
     <Console name="STDOUT">
       <JSONLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true" objectMessageAsJsonObject="true" />
     </Console>
+    <Console name="LOCAL">
+      <JSONLayout compact="false" eventEol="true" properties="true" stacktraceAsString="true" objectMessageAsJsonObject="true" />
+    </Console>
   </Appenders>
 
   <Loggers>
