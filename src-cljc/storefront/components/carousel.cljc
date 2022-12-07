@@ -55,12 +55,7 @@
                                       :left      "50%"
                                       :top       "50%"
                                       :transform "translate(-50%, -50%)"
-                                      :opacity   "80%"}})
-       #_[:div.absolute
-          {:style {:left      "50%"
-                   :top       "50%"
-                   :transform "translate(-50%, -50%)"}}
-          "foo"]]
+                                      :opacity   "80%"}})]
 
       :else
       (ui/img {:src      src
@@ -81,11 +76,33 @@
    [:div.spacer]])
 
 (defn select-exhibit [this target-id]
-  (c/set-state! this :selected-exhibit-idx target-id))
+  #?(:cljs
+     (let [exhibits-el  (c/get-ref this "exhibits")
+           exhibits-els (-> exhibits-el .-children array-seq)]
+       (when (< -1 target-id (count exhibits-els))
+         (.scrollTo exhibits-el
+                    0
+                    (-> exhibits-els
+                        (nth target-id)
+                        .-offsetTop))
+         (c/set-state! this :selected-exhibit-idx target-id)))))
+
+(defn increment-selected-exhibit [this]
+  (->> (c/get-state this)
+       :selected-exhibit-idx
+       inc
+       (select-exhibit this)))
+
+(defn decrement-selected-exhibit [this]
+  (->> (c/get-state this)
+       :selected-exhibit-idx
+       dec
+       (select-exhibit this)))
 
 (c/defdynamic-component desktop-component
   (constructor
    [this props]
+   (c/create-ref! this "exhibits")
    {:selected-exhibit-idx 0})
 
   (render
@@ -100,16 +117,21 @@
        [:div.exhibit-highlight
         (c/build exhibit-highlight-component (get exhibits selected-exhibit-idx))]
        [:div.exhibits.flex.flex-column
-        [:div.mx-auto.flip-vertical
+        [:a.center.flip-vertical
+         (merge {:on-click (partial decrement-selected-exhibit this)}
+                (if (= 0 selected-exhibit-idx)
+                  {:style {:filter "opacity(0.25)"}}
+                  {:class "pointer"}))
          (svg/dropdown-arrow {:class  "fill-black"
                               :height "16px"
                               :width  "16px"})]
         [:div.flex.flex-column
-         {:style {:flex-basis       0
-                  :flex-grow        1
-                  :overflow         "hidden"
-                  :gap              "0.5rem"
-                  :scroll-snap-type "y mandatory"}}
+         {:ref   (c/use-ref this "exhibits")
+          :style {:flex-basis 0
+                  :flex-grow  1
+                  :overflow   "hidden"
+                  :gap        "0.5rem"
+                  :position   "relative"}}
          (map-indexed (fn [index exhibit]
                         [:div.exhibit.relative
                          (merge {:key      index
@@ -118,7 +140,11 @@
                                   {:class "border border-p-color"}))
                          (c/build (or exhibit-thumbnail-component exhibit-highlight-component) exhibit)])
                       exhibits)]
-        [:div.mx-auto
+        [:a.center
+         (merge {:on-click (partial increment-selected-exhibit this)}
+                (if (= (count exhibits) (inc selected-exhibit-idx))
+                  {:style {:filter "opacity(0.25)"}}
+                  {:class "pointer"}))
          (svg/dropdown-arrow {:class  "fill-black"
                               :height "16px"
                               :width  "16px"})]]]))))
