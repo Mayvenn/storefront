@@ -60,11 +60,8 @@
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
    [:div.col-on-tb-dt.col-7-on-tb-dt.px2
-    [:div.hide-on-mb wide-left]]
+    wide-left]
    [:div.col-on-tb-dt.col-5-on-tb-dt.px2 wide-right-and-narrow]])
-
-(defn full-bleed-narrow [body]
-  [:div.hide-on-tb-dt body])
 
 (def sold-out-button
   [:div.pt1.pb3.px3
@@ -231,18 +228,16 @@
          {:key "page"}
          (page
           (component/html
-           [:div ^:inline (carousel carousel-images product)
+           (if carousel-redesign?
+               (component/build carousel-neue/component
+                                (with :product-carousel data)
+                                {:opts {:carousel/exhibit-thumbnail-component carousel-neue/product-carousel-thumbnail
+                                        :carousel/exhibit-highlight-component carousel-neue/product-carousel-highlight}})
+               [:div (carousel carousel-images product)])
+           #_[:div ^:inline (carousel carousel-images product)
             (component/build ugc/component (assoc ugc :id "ugc-dt") opts)])
           (component/html
            [:div
-            [:div
-             (full-bleed-narrow
-              (if carousel-redesign?
-                (component/build carousel-neue/component
-                                 (with :product-carousel data)
-                                 {:opts {:carousel/exhibit-thumbnail-component carousel-neue/product-carousel-thumbnail
-                                         :carousel/exhibit-highlight-component carousel-neue/product-carousel-highlight}})
-                [:div (carousel carousel-images product)]))]
             (component/build product-summary-organism data)
             [:div.px2
              (component/build picker/component picker-data opts)]

@@ -83,7 +83,12 @@
            exhibits-els (-> exhibits-el .-children array-seq)]
        (when (< -1 target-id (count exhibits-els))
          (.scrollTo exhibits-el
-                    #js{:top      (-> exhibits-els
+                    0
+                    (-> exhibits-els
+                        (nth target-id)
+                        .-offsetTop)
+                    ;; This is a better scrolling behavior, but it breaks Safari
+                    #_#js{:top      (-> exhibits-els
                                       (nth target-id)
                                       .-offsetTop)
                         :behavior "smooth"})
@@ -140,10 +145,11 @@
                           :on-click (partial select-exhibit this index)
                           :style    {:grid-template-areas "\"thumbnail\""}}
                          [:div
-                          (when (= index selected-exhibit-idx)
-                                {:style {:grid-area "thumbnail"
-                                         :transform "translate3d(0, 0, 10px)"}
-                                 :class "border border-width-3 border-s-color"})]
+                          (merge
+                           {:style {:grid-area "thumbnail"
+                                    :z-index   1}}
+                           (when (= index selected-exhibit-idx)
+                             {:class "border border-width-3 border-s-color"}))]
                          [:div
                           {:style {:grid-area "thumbnail"}}
                           (c/build (or exhibit-thumbnail-component exhibit-highlight-component) exhibit)]])
