@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
+  <CustomLevels>
+    <CustomLevel name="EVENT" intLevel="401" />
+    <CustomLevel name="ERROR-EVENT" intLevel="201" />
+    <CustomLevel name="VERBOSE" intLevel="550" />
+  </CustomLevels>
+
   <Appenders>
     <Console name="STDOUT">
       <JSONLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true" objectMessageAsJsonObject="true" />
@@ -13,8 +19,19 @@
     <Root level="INFO">
       <AppenderRef ref="STDOUT"/>
     </Root>
-    <!-- NOTE: this only works if the logging namespace starts with com.mayvenn -->
-    <Logger name="com.mayvenn" level="trace">
+    <!--
+         NOTE #1: this only works if `name` is a prefix of the :logging-namespace (see spice.logger4j.clj/make-logger)
+         starts with com.mayvenn
+
+         NOTE #2: Setting `additivity="false"` is required when the `com.mayvenn` logger
+         is of a level which includes the level specified in the `root` logger.
+         Otherwise we get duplicate log messages.
+
+         This is because by default any logger which applies will output a seperate log entry.
+    -->
+    <Logger name="com.mayvenn"
+            level="TRACE"
+            additivity="false">
       <AppenderRef ref="STDOUT"/>
     </Logger>
   </Loggers>
