@@ -49,7 +49,7 @@
 ;; NOTE: this differs from wig-rule for free install
 (def ?wig
   (merge ?hair
-         {:hair/family #{"ready-wigs" "360-wigs" "lace-front-wigs"}}))
+         {:hair/family #{"ready-wigs" "360-wigs" "lace-front-wigs" "closure-wigs" "headband-wigs"}}))
 
 (def ?physical
   {:catalog/department #{"hair" "stylist-exclusives"}})
