@@ -66,17 +66,6 @@
                           :backface-visibility "hidden"}
                :max-size 200}))]))
 
-(c/defcomponent mobile-component
-  [{:keys [exhibits]} _ {:carousel/keys [exhibit-highlight-component]}]
-  [:div.carousel-2022.hide-scroll-bar.hide-on-tb-dt
-   [:div.spacer]
-   (map-indexed (fn [index exhibit]
-                  [:div.exhibit
-                   {:key index}
-                   (c/build exhibit-highlight-component exhibit)])
-                exhibits)
-   [:div.spacer]])
-
 (defn select-exhibit [this target-id]
   #?(:cljs
      (let [exhibits-el  (c/get-ref this "exhibits")
@@ -106,12 +95,11 @@
        dec
        (select-exhibit this)))
 
-(c/defdynamic-component desktop-component
+(c/defdynamic-component component
   (constructor
    [this props]
    (c/create-ref! this "exhibits")
    {:selected-exhibit-idx 0})
-
   (render
    [this]
    (let [{:keys [exhibits]}              (c/get-props this)
@@ -120,51 +108,54 @@
            exhibit-thumbnail-component]} (c/get-opts this)
          {:keys [selected-exhibit-idx]}  (c/get-state this)]
      (c/html
-      [:div.carousel-2022.hide-on-mb
-       [:div.exhibit-highlight
-        (c/build exhibit-highlight-component (nth exhibits selected-exhibit-idx))]
-       [:div.exhibits.flex.flex-column
-        [:a.center.flip-vertical
-         (merge {:on-click (partial decrement-selected-exhibit this)}
-                (if (= 0 selected-exhibit-idx)
-                  {:style {:filter "opacity(0.25)"}}
-                  {:class "pointer"}))
-         (svg/dropdown-arrow {:class  "fill-black"
-                              :height "16px"
-                              :width  "16px"})]
-        [:div.flex.flex-column
-         {:ref   (c/use-ref this "exhibits")
-          :style {:flex-basis 0
-                  :flex-grow  1
-                  :overflow   "hidden"
-                  :gap        "0.5rem"
-                  :position   "relative"}}
-         (map-indexed (fn [index exhibit]
-                        [:a.exhibit.relative.grid.pointer
-                         {:key      index
-                          :on-click (partial select-exhibit this index)
-                          :style    {:grid-template-areas "\"thumbnail\""}}
-                         [:div
-                          (merge
-                           {:style {:grid-area "thumbnail"
-                                    :z-index   1}}
-                           (when (= index selected-exhibit-idx)
-                             {:class "border border-width-3 border-s-color"}))]
-                         [:div
-                          {:style {:grid-area "thumbnail"}}
-                          (c/build (or exhibit-thumbnail-component exhibit-highlight-component) exhibit)]])
-                      exhibits)]
-        [:a.center
-         (merge {:on-click (partial increment-selected-exhibit this)}
-                (if (= (count exhibits) (inc selected-exhibit-idx))
-                  {:style {:filter "opacity(0.25)"}}
-                  {:class "pointer"}))
-         (svg/dropdown-arrow {:class  "fill-black"
-                              :height "16px"
-                              :width  "16px"})]]]))))
-
-(c/defcomponent component
-  [props _ opts]
-  [:div
-   (c/build desktop-component props {:opts opts})
-   (c/build mobile-component props {:opts opts})])
+      [:div
+       [:div.carousel-2022.hide-on-mb
+        [:div.exhibit-highlight
+         (c/build exhibit-highlight-component (nth exhibits selected-exhibit-idx))]
+        [:div.exhibits.flex.flex-column
+         [:a.center.flip-vertical
+          (merge {:on-click (partial decrement-selected-exhibit this)}
+                 (if (= 0 selected-exhibit-idx)
+                   {:style {:filter "opacity(0.25)"}}
+                   {:class "pointer"}))
+          (svg/dropdown-arrow {:class  "fill-black"
+                               :height "16px"
+                               :width  "16px"})]
+         [:div.flex.flex-column
+          {:ref   (c/use-ref this "exhibits")
+           :style {:flex-basis 0
+                   :flex-grow  1
+                   :overflow   "hidden"
+                   :gap        "0.5rem"
+                   :position   "relative"}}
+          (map-indexed (fn [index exhibit]
+                         [:a.exhibit.relative.grid.pointer
+                          {:key      index
+                           :on-click (partial select-exhibit this index)
+                           :style    {:grid-template-areas "\"thumbnail\""}}
+                          [:div
+                           (merge
+                            {:style {:grid-area "thumbnail"
+                                     :z-index   1}}
+                            (when (= index selected-exhibit-idx)
+                              {:class "border border-width-3 border-s-color"}))]
+                          [:div
+                           {:style {:grid-area "thumbnail"}}
+                           (c/build (or exhibit-thumbnail-component exhibit-highlight-component) exhibit)]])
+                       exhibits)]
+         [:a.center
+          (merge {:on-click (partial increment-selected-exhibit this)}
+                 (if (= (count exhibits) (inc selected-exhibit-idx))
+                   {:style {:filter "opacity(0.25)"}}
+                   {:class "pointer"}))
+          (svg/dropdown-arrow {:class  "fill-black"
+                               :height "16px"
+                               :width  "16px"})]]]
+       [:div.carousel-2022.hide-scroll-bar.hide-on-tb-dt
+        [:div.spacer]
+        (map-indexed (fn [index exhibit]
+                       [:div.exhibit
+                        {:key index}
+                        (c/build exhibit-highlight-component exhibit)])
+                     exhibits)
+        [:div.spacer]]]))))
