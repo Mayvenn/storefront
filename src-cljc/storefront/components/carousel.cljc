@@ -68,45 +68,100 @@
 
 (defn select-exhibit [this target-id]
   #?(:cljs
-     (let [exhibits-el  (c/get-ref this "exhibits")
-           exhibits-els (-> exhibits-el .-children array-seq)]
-       (when (< -1 target-id (count exhibits-els))
-         (.scrollTo exhibits-el
+     (let [dt-exhibits-el                              (c/get-ref this "dt-exhibits")
+           dt-exhibits-els                             (-> dt-exhibits-el .-children array-seq)
+           mb-exhibits-el                              (c/get-ref this "mb-exhibits")
+           mb-exhibits-els                             (->> mb-exhibits-el
+                                                            .-children
+                                                            array-seq
+                                                            (filter #(-> %
+                                                                         .-classList
+                                                                         (.contains "exhibit"))))
+           {:keys [selected-exhibit-changed-callback]} (c/get-opts this)]
+       (when (< -1 target-id (count dt-exhibits-els))
+         (.scrollTo dt-exhibits-el
                     0
-                    (-> exhibits-els
+                    (-> dt-exhibits-els
                         (nth target-id)
                         .-offsetTop)
                     ;; This is a better scrolling behavior, but it breaks Safari
                     #_#js{:top      (-> exhibits-els
-                                      (nth target-id)
-                                      .-offsetTop)
-                        :behavior "smooth"})
+                                        (nth target-id)
+                                        .-offsetTop)
+                          :behavior "smooth"})
+         (.scrollTo mb-exhibits-el
+                    (-> mb-exhibits-els
+                        (nth target-id)
+                        .-offsetLeft)
+                    0)
          (c/set-state! this :selected-exhibit-idx target-id)))))
 
 (defn increment-selected-exhibit [this]
-  (->> (c/get-state this)
-       :selected-exhibit-idx
-       inc
-       (select-exhibit this)))
+  (let [{:keys [selected-exhibit-changed-callback]} (c/get-opts this)
+        current-selected-exhibit-idx                (->>  this
+                                                          c/get-props
+                                                          :selected-exhibit-idx)
+        target-selected-exhibit-idx                 (inc current-selected-exhibit-idx)
+        exhibits-count                              (-> this c/get-props :exhibits count)]
+    (when (< target-selected-exhibit-idx exhibits-count)
+      (selected-exhibit-changed-callback target-selected-exhibit-idx))))
 
 (defn decrement-selected-exhibit [this]
-  (->> (c/get-state this)
-       :selected-exhibit-idx
-       dec
-       (select-exhibit this)))
+  (let [{:keys [selected-exhibit-changed-callback]} (c/get-opts this)
+        current-selected-exhibit-idx                (->>  this
+                                                          c/get-props
+                                                          :selected-exhibit-idx)
+        target-selected-exhibit-idx                 (dec current-selected-exhibit-idx)]
+    (when (>= target-selected-exhibit-idx 0)
+      (selected-exhibit-changed-callback target-selected-exhibit-idx))))
+
+(defn attach-intersection-observers [carousel-el observer]
+  #?(:cljs
+     (when observer ;; WARNING: it should be impossible for observer to be nil, but it's confusingly showing up nil on acceptance
+       (doseq [exhibit-el (some->> carousel-el
+                                   .-children
+                                   array-seq
+                                   (filter #(-> % .-classList (.contains "exhibit"))))]
+         (.observe observer exhibit-el)))))
+
+(def intersection-debounce-timer (atom nil))
 
 (c/defdynamic-component component
   (constructor
    [this props]
-   (c/create-ref! this "exhibits")
-   {:selected-exhibit-idx 0})
+   (c/create-ref! this "dt-exhibits")
+   (c/create-ref! this "mb-exhibits"))
+  (did-mount
+   [this]
+   #?(:cljs
+      (let [mb-exhibits-el (c/get-ref this "mb-exhibits")
+            observer       (js/IntersectionObserver.
+                            (fn [entries]
+                              (js/clearTimeout @intersection-debounce-timer)
+                              (reset! intersection-debounce-timer
+                                      (js/setTimeout
+                                       (fn []
+                                         (some->> entries
+                                                  (filter #(.-isIntersecting %))
+                                                  first
+                                                  .-target
+                                                  .-dataset
+                                                  .-index
+                                                  spice.core/parse-int
+                                                  ((:selected-exhibit-changed-callback (c/get-opts this)))))
+                                       400)))
+                            #js {:root      mb-exhibits-el
+                                 :threshold 0.9})]
+        (attach-intersection-observers mb-exhibits-el observer))))
+  (did-update
+   [this]
+   (select-exhibit this (:selected-exhibit-idx (c/get-props this))))
   (render
    [this]
-   (let [{:keys [exhibits]}              (c/get-props this)
-         {:carousel/keys
-          [exhibit-highlight-component
-           exhibit-thumbnail-component]} (c/get-opts this)
-         {:keys [selected-exhibit-idx]}  (c/get-state this)]
+   (let [{:keys [exhibits selected-exhibit-idx]}              (c/get-props this)
+         {:carousel/keys [exhibit-highlight-component
+                          exhibit-thumbnail-component]
+          :keys          [selected-exhibit-changed-callback]} (c/get-opts this)]
      (c/html
       [:div
        [:div.carousel-2022.hide-on-mb
@@ -122,7 +177,7 @@
                                :height "16px"
                                :width  "16px"})]
          [:div.flex.flex-column
-          {:ref   (c/use-ref this "exhibits")
+          {:ref   (c/use-ref this "dt-exhibits")
            :style {:flex-basis 0
                    :flex-grow  1
                    :overflow   "hidden"
@@ -131,7 +186,7 @@
           (map-indexed (fn [index exhibit]
                          [:a.exhibit.relative.grid.pointer
                           {:key      index
-                           :on-click (partial select-exhibit this index)
+                           :on-click (partial selected-exhibit-changed-callback index)
                            :style    {:grid-template-areas "\"thumbnail\""}}
                           [:div
                            (merge
@@ -152,10 +207,12 @@
                                :height "16px"
                                :width  "16px"})]]]
        [:div.carousel-2022.hide-scroll-bar.hide-on-tb-dt
+        {:ref (c/use-ref this "mb-exhibits")}
         [:div.spacer]
         (map-indexed (fn [index exhibit]
                        [:div.exhibit
-                        {:key index}
+                        {:key        index
+                         :data-index index}
                         (c/build exhibit-highlight-component exhibit)])
                      exhibits)
         [:div.spacer]]]))))
