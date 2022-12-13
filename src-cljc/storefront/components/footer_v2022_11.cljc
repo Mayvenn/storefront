@@ -20,12 +20,14 @@
    {:style {:grid-template-columns (str "repeat(" column-count ", 1fr)")
             :grid-template-rows    (str "repeat(" row-count ", 1fr)")
             :grid-auto-flow        "column"}}
-   (map (fn [{:keys [target url copy]}]
+   (map-indexed
+    (fn [ix {:keys [target url copy] :as x}]
           [:a.inherit-color.nowrap.overflow-hidden
            (merge
             (when target (apply util/route-to target))
             (when url {:href url})
-            {:style {:text-overflow "ellipsis"}})
+            {:key   ix
+             :style {:text-overflow "ellipsis"}})
            copy]) links)])
 
 (defn ^:private contact-tile
@@ -79,14 +81,16 @@
      [:div.proxima.content-2.nowrap "12pm - 6pm"]]
     [:div.border.container-size.hide-on-tb-dt]
     [:div.flex.flex-column.gap-4.items-center.overflow-hidden.content-3.items-start-on-tb-dt
-     (map (fn [[evt location]]
-            [:a.inherit-color.nowrap (utils/route-to evt) location])
-          [[e/navigate-retail-walmart-mansfield "Mansfield, TX"]
-           [e/navigate-retail-walmart-katy "Katy, TX"]
-           [e/navigate-retail-walmart-dallas "Dallas, TX"]
-           [e/navigate-retail-walmart-houston "Houston, TX"]
-           [e/navigate-retail-walmart-grand-prairie "Grand Prairie, TX"]
-           [e/navigate-retail-walmart [:span.medium "See all locations"]]])]]])
+     (map-indexed
+      (fn [ix [evt location]]
+        [:a.inherit-color.nowrap (merge (utils/route-to evt)
+                                        {:key ix}) location])
+      [[e/navigate-retail-walmart-mansfield "Mansfield, TX"]
+       [e/navigate-retail-walmart-katy "Katy, TX"]
+       [e/navigate-retail-walmart-dallas "Dallas, TX"]
+       [e/navigate-retail-walmart-houston "Houston, TX"]
+       [e/navigate-retail-walmart-grand-prairie "Grand Prairie, TX"]
+       [e/navigate-retail-walmart [:span.medium "See all locations"]]])]]])
 
 (c/defcomponent info-accordion-face-open [{:keys [copy]} _ _]
   [:div.shout.content-3.p4.bold copy])

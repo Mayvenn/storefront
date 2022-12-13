@@ -130,7 +130,8 @@
      (merge {:style {:width (str container-width "px")
                      :height (str container-width "px")}
              :class (str "flex items-center justify-center"
-                         (when target " inherit-color pointer"))}
+                         (when target " inherit-color pointer"))
+             :key   option-slug}
             (when target
               {:data-test (str "picker-" facet-slug "-" option-slug)})
             (when target
@@ -140,7 +141,6 @@
                :width     (str size "px")
                :height    (str size "px")
                :padding   "0"}
-       :key   option-slug
        :class (when selected? "border border-width-2 border-s-color")}
       [:img
        {:key   (str "product-details-" option-name "-" option-slug)
@@ -182,7 +182,8 @@
         (diamond-swatch rectangle-swatch facet option-slug option-name selected? target 30))
       (for [{:keys [option-slug copy selected? target]} options]
         [(if target :a :div)
-         (merge {:style {:width  "2.5rem"
+         (merge {:key   option-slug
+                 :style {:width  "2.5rem"
                          :height "2.5rem"}
                  :class (str "border flex items-center justify-center"
                              (if selected?

@@ -25,13 +25,17 @@
   [:div.grid.gap-3.my6
    {:style {:grid-template-columns "25px auto"}}
    (concat
-    (for [{:keys [icon copy]} promises]
-      [(svg/symbolic->html [icon {:style {:grid-column "1 / 2"
-                                          :height      "20px"}
-                                  :class "fill-p-color col-12"}])
-       [:div
-        {:style {:grid-column "2 / 3"}}
-        copy]]))
+    (map-indexed
+     (fn [ix {:keys [icon copy]}]
+       [(svg/symbolic->html [icon {:key   (str "icon-" ix)
+                                   :style {:grid-column "1 / 2"
+                                           :height      "20px"}
+                                   :class "fill-p-color col-12"}])
+        [:div
+         {:key   (str "copy-" ix)
+          :style {:grid-column "2 / 3"}}
+         copy]])
+     promises))
    (ui/button-small-underline-primary
     (merge
      (apply utils/route-to learn-more-target)
