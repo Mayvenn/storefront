@@ -16,7 +16,7 @@
                        [storefront.hooks.seo :as seo]
                        [storefront.trackings :as trackings]])
             [adventure.faq :as adventure.faq]
-            [api.catalog :refer [select]]
+            [api.catalog :refer [select ?wig]]
             api.current
             api.orders
             api.products
@@ -214,8 +214,7 @@
                         ugc
                         faq-section
                         add-to-cart
-                        accordion-v2?
-                        carousel-redesign?] :as data}      (component/get-props this)
+                        accordion-v2?] :as data}      (component/get-props this)
                 opts                                       (component/get-opts this)
                 unavailable?                               (not (seq selected-sku))
                 sold-out?                                  (not (:inventory/in-stock? selected-sku))
@@ -235,7 +234,7 @@
                   {:key "page"}
                   (page
                    (component/html
-                    (if carousel-redesign?
+                    (if (seq (with :product-carousel data))
                       (component/build carousel-neue/component
                                        (merge (with :product-carousel data)
                                               {:selected-exhibit-idx carousel-selected-exhibit-idx})
@@ -552,7 +551,6 @@
         shop?                     (or (= "shop" (get-in data keypaths/store-slug))
                                       (= "retail-location" (get-in data keypaths/store-experience)))
         hair?                     (accessors.products/hair? product)
-        wig?                      (->> product vector (select api.catalog/?wig) seq)
         faq                       (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
                                     (-> data
                                         (get-in (conj keypaths/cms-faq pdp-faq-id))
@@ -566,7 +564,6 @@
         picker-data               (picker/query data length-guide-image)
         bf-2022-sale?             (and (experiments/bf-2022-sale? data)
                                        (:promo.clearance/eligible selected-sku))
-        carousel-redesign?        (experiments/carousel-redesign? data)
         pdp-faq-in-accordion?     (experiments/pdp-faq-in-accordion? data)
         pdp-content-slots?        (experiments/pdp-content-slots? data)
         cms-dynamic-content       (if pdp-content-slots? ; true = using contentful data, false = faked out content
@@ -603,17 +600,6 @@
       :carousel-images                    carousel-images
       :selected-picker                    selected-picker
       :accordion-v2?                      accordion-v2?}
-     (when (and carousel-redesign? wig?)
-       {:product-carousel/exhibits (->> product
-                                        (images/for-skuer images-catalog)
-                                        (selector/match-all {:selector/strict? true}
-                                                            {:use-case #{"carousel"}
-                                                             :image/of #{"model" "product"}})
-                                        (sort-by :order)
-                                        (map (fn [{:keys [alt url]}]
-                                               {:src url
-                                                :alt alt})))
-        :carousel-redesign?        true})
      (when sku-price
        (if bf-2022-sale?
          {:price-block/primary-struck (mf/as-money sku-price)
@@ -817,12 +803,35 @@
                                       :learn-more-nav-event (when-not (contains? (:stylist-exclusives/family product) "kits")
                                                               events/navigate-content-our-hair)})))))
 
+(defn ^:private product-carousel<-
+  [images-catalog detailed-product carousel-redesign?]
+  (when (and carousel-redesign?
+             (select ?wig [detailed-product]))
+    #:product-carousel 
+    {:exhibits
+      (->> detailed-product
+           (images/for-skuer images-catalog)
+           (selector/match-all {:selector/strict? true}
+                               {:use-case #{"carousel"}
+                                :image/of #{"model" "product"}})
+           (sort-by :order)
+           (map (fn [{:keys [alt url]}]
+                  {:src url
+                   :alt alt})))}))
+
 (defn ^:export built-component
   [state opts]
+  (let [;; Databases
+        images-db          (get-in state keypaths/v2-images)
+        ;; Flags
+        carousel-redesign? (experiments/carousel-redesign? state)
+        ;; Focus
+        detailed-product   (products/current-product state)]
   (component/build template
                    (merge (query state)
-                          {:add-to-cart (add-to-cart-query state)})
-                   opts))
+                            {:add-to-cart (add-to-cart-query state)}
+                            (product-carousel<- images-db detailed-product carousel-redesign?))
+                     opts)))
 
 (defn url-points-to-invalid-sku? [selected-sku query-params]
   (boolean
