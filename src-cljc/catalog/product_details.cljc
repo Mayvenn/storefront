@@ -204,7 +204,7 @@
        (assoc (apply utils/fake-href target) :data-test id)
        content)])])
 
-(defcomponent template
+(defcomponent component
   [{:keys [carousel-images
            product
            reviews
@@ -906,7 +906,7 @@
 
 (defn ^:export built-component
   [state opts]
-  (component/build template
+  (component/build component
                    (merge (query state)
                           {:add-to-cart (add-to-cart-query state)})
                    opts))
