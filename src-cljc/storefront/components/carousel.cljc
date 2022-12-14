@@ -76,8 +76,8 @@
                                                             array-seq
                                                             (filter #(-> %
                                                                          .-classList
-                                                                         (.contains "exhibit"))))
-           {:keys [selected-exhibit-changed-callback]} (c/get-opts this)]
+                                                                         (.contains "exhibit"))))]
+
        (when (< -1 target-id (count dt-exhibits-els))
          (.scrollTo dt-exhibits-el
                     0
@@ -93,14 +93,12 @@
                     (-> mb-exhibits-els
                         (nth target-id)
                         .-offsetLeft)
-                    0)
-         (c/set-state! this :selected-exhibit-idx target-id)))))
+                    0)))))
 
 (defn increment-selected-exhibit [this]
   (let [{:keys [selected-exhibit-changed-callback]} (c/get-opts this)
-        current-selected-exhibit-idx                (->>  this
-                                                          c/get-props
-                                                          :selected-exhibit-idx)
+        current-selected-exhibit-idx                (or (:selected-exhibit-idx (c/get-props this))
+                                                        (:selected-exhibit-idx (c/get-state this)))
         target-selected-exhibit-idx                 (inc current-selected-exhibit-idx)
         exhibits-count                              (-> this c/get-props :exhibits count)]
     (when (< target-selected-exhibit-idx exhibits-count)
@@ -108,9 +106,8 @@
 
 (defn decrement-selected-exhibit [this]
   (let [{:keys [selected-exhibit-changed-callback]} (c/get-opts this)
-        current-selected-exhibit-idx                (->>  this
-                                                          c/get-props
-                                                          :selected-exhibit-idx)
+        current-selected-exhibit-idx                (or (:selected-exhibit-idx (c/get-props this))
+                                                        (:selected-exhibit-idx (c/get-state this)))
         target-selected-exhibit-idx                 (dec current-selected-exhibit-idx)]
     (when (>= target-selected-exhibit-idx 0)
       (selected-exhibit-changed-callback target-selected-exhibit-idx))))
@@ -130,38 +127,48 @@
   (constructor
    [this props]
    (c/create-ref! this "dt-exhibits")
-   (c/create-ref! this "mb-exhibits"))
+   (c/create-ref! this "mb-exhibits")
+   ;; Local state here is used as a fallback to the lifted state used in the PDP. Other carousels
+   ;; will not have a need for the lifted state so this is in place as an easy fallback.
+   (when (nil? (:selected-exhibit-idx (c/get-props this)))
+     {:selected-exhibit-idx 0}))
   (did-mount
    [this]
-   #?(:cljs
-      (let [mb-exhibits-el (c/get-ref this "mb-exhibits")
-            observer       (js/IntersectionObserver.
-                            (fn [entries]
-                              (js/clearTimeout @intersection-debounce-timer)
-                              (reset! intersection-debounce-timer
-                                      (js/setTimeout
-                                       (fn []
-                                         (some->> entries
-                                                  (filter #(.-isIntersecting %))
-                                                  first
-                                                  .-target
-                                                  .-dataset
-                                                  .-index
-                                                  spice.core/parse-int
-                                                  ((:selected-exhibit-changed-callback (c/get-opts this)))))
-                                       400)))
-                            #js {:root      mb-exhibits-el
-                                 :threshold 0.9})]
-        (attach-intersection-observers mb-exhibits-el observer))))
+   (let [selected-exhibit-changed-callback (or (:selected-exhibit-changed-callback (c/get-opts this))
+                                               (fn [index] (c/set-state! this :selected-exhibit-idx index)))]
+     #?(:cljs
+        (let [mb-exhibits-el (c/get-ref this "mb-exhibits")
+              observer       (js/IntersectionObserver.
+                              (fn [entries]
+                                (js/clearTimeout @intersection-debounce-timer)
+                                (reset! intersection-debounce-timer
+                                        (js/setTimeout
+                                         (fn []
+                                           (some->> entries
+                                                    (filter #(.-isIntersecting %))
+                                                    first
+                                                    .-target
+                                                    .-dataset
+                                                    .-index
+                                                    spice.core/parse-int
+                                                    selected-exhibit-changed-callback))
+                                         400)))
+                              #js {:root      mb-exhibits-el
+                                   :threshold 0.9})]
+          (attach-intersection-observers mb-exhibits-el observer)))))
   (did-update
    [this]
-   (select-exhibit this (:selected-exhibit-idx (c/get-props this))))
+   (select-exhibit this (or (:selected-exhibit-idx (c/get-props this))
+                            (:selected-exhibit-idx (c/get-state this)))))
   (render
    [this]
-   (let [{:keys [exhibits selected-exhibit-idx]}              (c/get-props this)
+   (let [{:keys [exhibits selected-exhibit-idx]
+          :or   {selected-exhibit-idx (:selected-exhibit-idx (c/get-state this))}}       (c/get-props this)
          {:carousel/keys [exhibit-highlight-component
                           exhibit-thumbnail-component]
-          :keys          [selected-exhibit-changed-callback]} (c/get-opts this)]
+          :keys          [selected-exhibit-changed-callback]
+          :or            {selected-exhibit-changed-callback
+                          (fn [index] (c/set-state! this :selected-exhibit-idx index))}} (c/get-opts this)]
      (c/html
       [:div
        [:div.carousel-2022.hide-on-mb
