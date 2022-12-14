@@ -202,7 +202,7 @@
        (assoc (apply utils/fake-href target) :data-test id)
        content)])])
 
-(component/defdynamic-component component
+(component/defdynamic-component template
   (constructor [this props]
                {:carousel-selected-exhibit-idx 0})
   (render [this]
@@ -819,7 +819,7 @@
 
 (defn ^:export built-component
   [state opts]
-  (component/build component
+  (component/build template
                    (merge (query state)
                           {:add-to-cart (add-to-cart-query state)})
                    opts))
