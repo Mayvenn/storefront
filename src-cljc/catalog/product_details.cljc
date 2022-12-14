@@ -8,14 +8,12 @@
                        [storefront.components.popup :as popup]
                        [storefront.components.svg :as svg]
                        [storefront.history :as history]
-                       [storefront.hooks.exception-handler :as exception-handler]
                        [storefront.hooks.facebook-analytics :as facebook-analytics]
                        [storefront.hooks.quadpay :as zip]
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.hooks.stringer :as stringer]
                        [storefront.hooks.seo :as seo]
                        [storefront.trackings :as trackings]])
-            [adventure.faq :as adventure.faq]
             [api.catalog :refer [select]]
             api.current
             api.orders
@@ -28,6 +26,7 @@
             [catalog.selector.sku :as sku-selector]
             [catalog.ui.add-to-cart :as add-to-cart]
             [catalog.ui.molecules :as catalog.M]
+            [clojure.string]
             [homepage.ui.faq :as faq]
             [mayvenn.visual.tools :refer [with within]]
             [mayvenn.visual.ui.titles :as titles]
@@ -60,8 +59,11 @@
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
    [:div.col-on-tb-dt.col-7-on-tb-dt.px2
-    wide-left]
+    [:div.hide-on-mb wide-left]]
    [:div.col-on-tb-dt.col-5-on-tb-dt.px2 wide-right-and-narrow]])
+
+(defn full-bleed-narrow [body]
+  [:div.hide-on-tb-dt body])
 
 (def sold-out-button
   [:div.pt1.pb3.px3
@@ -202,88 +204,77 @@
        (assoc (apply utils/fake-href target) :data-test id)
        content)])])
 
-(component/defdynamic-component component
-  (constructor [this props]
-               {:carousel-selected-exhibit-idx 0})
-  (render [this]
-          (let [{:keys [carousel-images
-                        product
-                        reviews
-                        selected-sku
-                        picker-data
-                        ugc
-                        faq-section
-                        add-to-cart
-                        accordion-v2?
-                        carousel-redesign?] :as data}      (component/get-props this)
-                opts                                       (component/get-opts this)
-                unavailable?                               (not (seq selected-sku))
-                sold-out?                                  (not (:inventory/in-stock? selected-sku))
-                {:keys [carousel-selected-exhibit-idx]}    (component/get-state this)]
-            (component/html
-             (if-not product
-               [:div.flex.h2.p1.m1.items-center.justify-center
-                {:style {:height "25em"}}
-                (ui/large-spinner {:style {:height "4em"}})]
-               [:div
-                [:div.container.pdp-on-tb
-                 (when (:offset ugc)
-                   [:div.absolute.overlay.z4.overflow-auto
-                    {:key "popup-ugc"}
-                    (component/build ugc/popup-component (assoc ugc :id "popup-ugc") opts)])
-                 [:div
-                  {:key "page"}
-                  (page
-                   (component/html
-                    (if carousel-redesign?
-                      (component/build carousel-neue/component
-                                       (merge (with :product-carousel data)
-                                              {:selected-exhibit-idx carousel-selected-exhibit-idx})
-                                       {:opts {:carousel/exhibit-thumbnail-component carousel-neue/product-carousel-thumbnail
-                                               :carousel/exhibit-highlight-component carousel-neue/product-carousel-highlight
-                                               :selected-exhibit-changed-callback    (fn carousel-selected-exhibit-changed-callback
-                                                                                       [exhibit-index]
-                                                                                       (component/set-state! this
-                                                                                                             :carousel-selected-exhibit-idx
-                                                                                                             exhibit-index))}})
-                      [:div (carousel carousel-images product)])
-                    #_[:div ^:inline (carousel carousel-images product)
-                       (component/build ugc/component (assoc ugc :id "ugc-dt") opts)])
-                   (component/html
-                    [:div
-                     (component/build product-summary-organism data)
-                     [:div.px2
-                      (component/build picker/component picker-data opts)]
-                     (component/build accordion-neue/component
-                                      (with :pdp-picker data)
-                                      {:opts
-                                       {:accordion.drawer.open/face-component   picker-accordion-face-open
-                                        :accordion.drawer.closed/face-component picker-accordion-face-closed
-                                        :accordion.drawer/contents-component    picker-accordion-contents}})
-                     [:div.mt4
-                      (cond
-                        unavailable? unavailable-button
-                        sold-out?    sold-out-button
-                        :else        (component/build add-to-cart/organism add-to-cart))]
-                     (when (products/stylist-only? product)
-                       shipping-and-guarantee)
-                     (if accordion-v2?
-                       (component/build accordion-neue/component
-                                        (with :product-details-accordion data)
-                                        {:opts
-                                         {:accordion.drawer.open/face-component   accordions.product-info/face-open
-                                          :accordion.drawer.closed/face-component accordions.product-info/face-closed
-                                          :accordion.drawer/contents-component    accordions.product-info/contents}})
-                       (component/build tabbed-information/component data))
-                     (component/build catalog.M/non-hair-product-description data opts)
-                     [:div.hide-on-tb-dt.m3
-                      [:div.mxn2.mb3 (component/build ugc/component (assoc ugc :id "ugc-mb") opts)]]]))]]
-                (when (seq reviews)
-                  [:div.container.col-7-on-tb-dt.px2
-                   (component/build review-component/reviews-component reviews opts)])
-                (when faq-section
-                  [:div.container
-                   (component/build faq/organism faq-section opts)])])))))
+(defcomponent component
+  [{:keys [carousel-images
+           product
+           reviews
+           selected-sku
+           picker-data
+           ugc
+           faq-section
+           add-to-cart
+           accordion-v2?
+           carousel-redesign?] :as data} _ opts]
+  (let [unavailable? (not (seq selected-sku))
+        sold-out?    (not (:inventory/in-stock? selected-sku))]
+    (if-not product
+      [:div.flex.h2.p1.m1.items-center.justify-center
+       {:style {:height "25em"}}
+       (ui/large-spinner {:style {:height "4em"}})]
+      [:div
+       [:div.container.pdp-on-tb
+        (when (:offset ugc)
+          [:div.absolute.overlay.z4.overflow-auto
+           {:key "popup-ugc"}
+           (component/build ugc/popup-component (assoc ugc :id "popup-ugc") opts)])
+        [:div
+         {:key "page"}
+         (page
+          (component/html
+           [:div ^:inline (carousel carousel-images product)
+            (component/build ugc/component (assoc ugc :id "ugc-dt") opts)])
+          (component/html
+           [:div
+            [:div
+             (full-bleed-narrow
+              (if carousel-redesign?
+                (component/build carousel-neue/component
+                                 (with :product-carousel data)
+                                 {:opts {:carousel/exhibit-component carousel-neue/carousel-image-component}})
+                [:div (carousel carousel-images product)]))]
+            (component/build product-summary-organism data)
+            [:div.px2
+             (component/build picker/component picker-data opts)]
+            (component/build accordion-neue/component
+                             (with :pdp-picker data)
+                             {:opts
+                              {:accordion.drawer.open/face-component   picker-accordion-face-open
+                               :accordion.drawer.closed/face-component picker-accordion-face-closed
+                               :accordion.drawer/contents-component    picker-accordion-contents}})
+            [:div.mt4
+             (cond
+               unavailable? unavailable-button
+               sold-out?    sold-out-button
+               :else        (component/build add-to-cart/organism add-to-cart))]
+            (when (products/stylist-only? product)
+              shipping-and-guarantee)
+            (if accordion-v2?
+              (component/build accordion-neue/component
+                               (with :product-details-accordion data)
+                               {:opts
+                                {:accordion.drawer.open/face-component   accordions.product-info/face-open
+                                 :accordion.drawer.closed/face-component accordions.product-info/face-closed
+                                 :accordion.drawer/contents-component    accordions.product-info/contents}})
+              (component/build tabbed-information/component data))
+            (component/build catalog.M/non-hair-product-description data opts)
+            [:div.hide-on-tb-dt.m3
+             [:div.mxn2.mb3 (component/build ugc/component (assoc ugc :id "ugc-mb") opts)]]]))]]
+       (when (seq reviews)
+         [:div.container.col-7-on-tb-dt.px2
+          (component/build review-component/reviews-component reviews opts)])
+       (when faq-section
+         [:div.container
+          (component/build faq/organism faq-section opts)])])))
 
 (defn ugc-query [product sku data]
   (let [shop?              (= :shop (sites/determine-site data))
@@ -434,10 +425,103 @@
          :selector        {"hair/color" #{"#1-jet-black" "vibrant-burgundy"}}
          :content-value   "No - Since this hair has already been professionally processed, we don't recommend any lifting (bleaching) or coloring."}})
 
+(def details-template-slots
+  [{:pdp.details/overview
+    [:pdp.details.overview/description
+     :pdp.details.overview/whats-included
+     :pdp.details.overview/model-wearing]}
+   {:pdp.details/product-details
+    [:pdp.details.product-details/unit-weight
+     :pdp.details.product-details/wig-density
+     :pdp.details.product-details/hair-origin
+     :pdp.details.product-details/hair-weft
+     :pdp.details.product-details/hair-type
+     :pdp.details.product-details/hair-quality
+     :pdp.details.product-details/part-design
+     :pdp.details.product-details/materials
+     :pdp.details.product-details/features
+     :pdp.details.product-details/tape-in-glue-info
+     :pdp.details.product-details/lace-size
+     :pdp.details.product-details/silk-size
+     :pdp.details.product-details/cap-size]}
+   {:pdp.details/hair-info
+    [:pdp.details.hair-info/maintenance-level
+     :pdp.details.hair-info/colorable
+     :pdp.details.hair-info/care-guide]}])
+
+(defn legacy-content-from-cellar
+  "Converts cellar SKU and cellar Product to template-slots"
+  [current-product selected-sku model-image]
+  (if (contains? (some-> current-product :catalog/department) "stylist-exclusives")
+    {:pdp.details.overview/description (->> current-product :copy/description
+                                            (map (fn [copy-piece] [:div.my2 copy-piece])))}
+    {:pdp.details.overview/whats-included           (->> current-product :copy/hair-type)
+     :pdp.details.overview/model-wearing            (or (:copy/model-wearing model-image)
+                                                        (:copy/model-wearing current-product))
+     :pdp.details.product-details/unit-weight       (or (->> selected-sku :hair/weight
+                                                             (map (fn [copy-piece] [:div.my2 copy-piece])))
+                                                        (->> current-product :copy/weights))
+     :pdp.details.product-details/hair-quality      (->> current-product :copy/quality)
+     :pdp.details.product-details/wig-density       (->> current-product :copy/density)
+     :pdp.details.product-details/hair-origin       (->> current-product :copy/origin)
+     :pdp.details.product-details/hair-weft         (->> current-product :copy/weft-type)
+     :pdp.details.product-details/part-design       (->> current-product :copy/part-design)
+     :pdp.details.product-details/features          (->> current-product :copy/features)
+     :pdp.details.product-details/materials         (->> current-product :copy/materials)
+     :pdp.details.product-details/lace-size         (->> current-product :copy/lace-size)
+     :pdp.details.product-details/silk-size         (->> current-product :copy/silk-size)
+     :pdp.details.product-details/cap-size          (->> current-product :copy/cap-size)
+     :pdp.details.product-details/tape-in-glue-info (->> current-product :copy/tape-in-glue)
+     :pdp.details.product-details/hair-type             (->> current-product :copy/hair-type)
+     :pdp.details.hair-info/maintenance-level       (->> current-product :copy/maintenance-level)}))
+
+(defn content-slots
+  [current-product selected-sku model-image cms-pdp-content fake-cms-content]
+  (merge (legacy-content-from-cellar current-product selected-sku model-image)
+         (cms-dynamic-content/derive-product-details fake-cms-content selected-sku)
+         (cms-dynamic-content/derive-product-details cms-pdp-content selected-sku)))
+
+(defn product-details-content-slot-data
+  [content-slot-data]
+  {:product-details-accordion/allow-all-closed?    true
+   :product-details-accordion/allow-multi-open?    false,
+   :product-details-accordion/drawers              (map (fn [drawer]
+                                                          (let [drawer-id (first (keys drawer))
+                                                                slots     (first (vals drawer))]
+                                                            {:accordion-id "product-details-accordion"
+                                                             :closeable?   true
+                                                             :contents     {:sections (map (fn [slot]
+                                                                                             {:heading (-> slot
+                                                                                                           (clojure.string/split #"/")
+                                                                                                           last
+                                                                                                           (clojure.string/replace #"-" " "))
+                                                                                              :content (get content-slot-data slot)})
+                                                                                           slots)}
+                                                             :drawer-id    drawer-id
+                                                             :id           drawer-id
+                                                             :opened? true
+                                                             :face         {:copy (-> drawer-id
+                                                                                      (clojure.string/split #"/")
+                                                                                      last
+                                                                                      (clojure.string/replace #"-" " "))}}))
+                                                     details-template-slots)
+   :product-details-accordion/id                   "product-details-accordion"
+   :product-details-accordion/initial-open-drawers ["hair-info"]
+   :product-details-accordion/open-drawers         ["hair-info"]})
+
 (defn product-details-accordion<-
-  [{:accordion/keys [id open-drawers]}
-   {:keys [product model-image faq] :as description-data} length-guide-image]
-  (if ((:catalog/department product) "stylist-exclusives")
+  "Construct data (from cellar, contentful) for PDP Details accordion
+
+  Merges content from Contentful over content from cellar
+
+  Args:
+   - Active accordion tate
+   - Cellar Data
+     - current product
+
+  "
+  [{:accordion/keys [id open-drawers]} {:keys [product model-image faq] :as description-data} length-guide-image]
+(if ((:catalog/department product) "stylist-exclusives")
     (accordion-neue/accordion-query
      {:id                   id
       :allow-all-closed?    false
@@ -509,7 +593,7 @@
                                                                    [{:heading      "Maintenance Level"
                                                                      :content-path [:product :copy/maintenance-level]}
                                                                     {:heading      "Can it be Colored?"
-                                                                     :content-path [:dynamic-content :pdp/colorable]}])}}]
+                                                                     :content-path [:dynamic-content :pdp.details.hair-info/colorable]}])}}]
                                 faq
                                 (conj
                                  (let [{:keys [question-answers slug]} faq]
@@ -561,6 +645,7 @@
         model-image               (first (filter :copy/model-wearing carousel-images))
         pdp-accordion-picker?     (experiments/pdp-accordion-picker? data)
         accordion-v2?             (experiments/accordion-v2? data)
+        ;; State for accordion -- open or not, etc
         product-details-accordion (when accordion-v2?
                                     (accordion-neue/<- data :product-details-accordion))
         picker-data               (picker/query data length-guide-image)
@@ -573,7 +658,8 @@
                                     (cms-dynamic-content/derive-product-details (get-in data keypaths/cms-pdp-content)
                                                                                 selected-sku)
                                     (cms-dynamic-content/derive-product-details fake-contentful-product-details-data
-                                                                                selected-sku))]
+                                                                                selected-sku))
+        content-slot-data         (content-slots product selected-sku model-image (get-in data keypaths/cms-pdp-content) fake-contentful-product-details-data)]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
@@ -714,6 +800,7 @@
 
      (cond
        (and product accordion-v2?)
+       #_ (spice.core/spy (product-details-content-slot-data content-slot-data))
        (product-details-accordion<- product-details-accordion
                                     {:product         product
                                      :model-image     model-image
@@ -796,7 +883,7 @@
                                                          [{:heading      "Maintenance Level"
                                                            :content-path [:product :copy/maintenance-level]}
                                                           {:heading      "Can it be Colored?"
-                                                           :content-path [:dynamic-content :pdp/colorable]}])}]})
+                                                           :content-path [:dynamic-content :pdp.details.hair-info/colorable]}])}]})
        :else (let [{:keys [copy/description
                            copy/colors
                            copy/weights
