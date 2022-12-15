@@ -834,13 +834,16 @@
   [images-catalog product-carousel detailed-product carousel-redesign?]
   (when (and carousel-redesign?
              (select ?wig [detailed-product]))
-    #:product-carousel
-    {:selected-exhibit-idx (:idx product-carousel)
-     :exhibits             (->> detailed-product
-                                (detailed-product-media images-catalog)
-                                (map (fn [{:keys [alt url]}]
-                                       {:src url
-                                        :alt alt})))}))
+    (let [index    (:idx product-carousel)
+          exhibits (->> detailed-product
+                        (detailed-product-media images-catalog)
+                        (map (fn [{:keys [alt url]}]
+                               {:src url
+                                :alt alt})))]
+      #:product-carousel
+      {:selected-exhibit-idx (if (< -1 index (count exhibits))
+                               index 0)
+       :exhibits             exhibits})))
 
 (defn ^:export built-component
   [state opts]
