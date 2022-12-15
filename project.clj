@@ -12,7 +12,6 @@
                  [tugboat "0.2.1" :exclusions [ring-logging]]
                  [ring-logging "0.3.7"]
                  [mayvenn/spice "0.2.4"]
-                 [mayvenn/tracer "0.1.3"]
                  [compojure "1.6.1"]
                  [noir-exception "0.2.3"]
                  [ring "1.9.4"]

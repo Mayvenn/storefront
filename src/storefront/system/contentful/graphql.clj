@@ -2,7 +2,6 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
             [environ.core :refer [env]]
-            [mayvenn.tracer :as tracer]
             [tugboat.core :as tugboat]
             [cheshire.core :as json]))
 
@@ -26,10 +25,7 @@
 
 (defn query [contentful-ctx file variables]
   (if-not (= (env :environment) "development")
-    (tracer/trace
-     "query"
-     ^{::tracer/metadata {:file file :variables variables}}
-     (request contentful-ctx (slurp (io/resource (str "gql/" file))) variables))
+    (request contentful-ctx (slurp (io/resource (str "gql/" file))) variables)
     (request contentful-ctx (slurp (io/resource (str "gql/" file))) variables)))
 
 
