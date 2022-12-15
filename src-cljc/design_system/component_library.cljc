@@ -8,7 +8,11 @@
             [storefront.events :as e]
             [mayvenn.visual.tools :refer [with within]]
             clojure.edn
-            clojure.pprint))
+            clojure.pprint
+            [storefront.platform.messages
+             :as messages
+             :refer [handle-message] :rename {handle-message publish}]
+            [storefront.events :as events]))
 
 
 (def components-list
@@ -30,13 +34,19 @@
     :id              "carousel"
     :query-ns        "example-carousel"
     :component-class carousel/component
-    :opts            {:carousel/exhibit-highlight-component carousel/example-exhibit-component}}
+    :opts            {:carousel/exhibit-highlight-component carousel/example-exhibit-component
+                      :selected-exhibit-changed-callback    (fn [index]
+                                                              (publish events/carousel|jumped {:id :example-carousel
+                                                                                               :idx index}))}}
    {:title           "Image Carousel"
     :id              "image-carousel"
     :query-ns        "example-image-carousel"
     :component-class carousel/component
     :opts            {:carousel/exhibit-thumbnail-component carousel/product-carousel-thumbnail
-                      :carousel/exhibit-highlight-component carousel/product-carousel-highlight}}
+                      :carousel/exhibit-highlight-component carousel/product-carousel-highlight
+                      :selected-exhibit-changed-callback    (fn [index]
+                                                              (publish events/carousel|jumped {:id :example-image-carousel
+                                                                                               :idx index}))}}
    {:title           "Promises"
     :id              "promises"
     :query-ns        "example-promises"
@@ -99,34 +109,36 @@
                                                        {:id       "drawer-2"
                                                         :face     {:copy "food"}
                                                         :contents {:copy "bard"}}]}))
-     (within :example-carousel {:exhibits [{:class "bg-red"}
-                                           {:class "bg-green"}
-                                           {:class "bg-blue"}
-                                           {:class "bg-aqua"}
-                                           {:class "bg-purple"}
-                                           {:class "bg-orange"}
-                                           {:class "bg-lime"}
-                                           {:class "bg-maroon"}
-                                           {:class "bg-pink"}]})
-     (within :example-image-carousel {:exhibits [{:src "http://placekitten.com/400/600?image=1"
-                                                  :alt "image 1"}
-                                                 {:src  "http://ucarecdn.com/89a0181c-cbbe-4a66-bed5-cc90e6a886e5/"
-                                                  :type "video"
-                                                  :alt  "video 1"}
-                                                 {:src "http://placekitten.com/400/600?image=2"
-                                                  :alt "image 2"}
-                                                 {:src "http://placekitten.com/400/600?image=3"
-                                                  :alt "image 3"}
-                                                 {:src "http://placekitten.com/400/600?image=4"
-                                                  :alt "image 4"}
-                                                 {:src "http://placekitten.com/400/600?image=5"
-                                                  :alt "image 5"}
-                                                 {:src "http://placekitten.com/400/600?image=6"
-                                                  :alt "image 6"}
-                                                 {:src "http://placekitten.com/400/600?image=7"
-                                                  :alt "image 7"}
-                                                 {:src "http://placekitten.com/400/600?image=8"
-                                                  :alt "image 8"}]})
+     (within :example-carousel {:selected-exhibit-idx (:idx (carousel/<- app-state :example-carousel))
+                                :exhibits             [{:class "bg-red"}
+                                                       {:class "bg-green"}
+                                                       {:class "bg-blue"}
+                                                       {:class "bg-aqua"}
+                                                       {:class "bg-purple"}
+                                                       {:class "bg-orange"}
+                                                       {:class "bg-lime"}
+                                                       {:class "bg-maroon"}
+                                                       {:class "bg-pink"}]})
+     (within :example-image-carousel {:selected-exhibit-idx (:idx (carousel/<- app-state :example-image-carousel))
+                                      :exhibits             [{:src "http://placekitten.com/400/600?image=1"
+                                                              :alt "image 1"}
+                                                             {:src  "http://ucarecdn.com/89a0181c-cbbe-4a66-bed5-cc90e6a886e5/"
+                                                              :type "video"
+                                                              :alt  "video 1"}
+                                                             {:src "http://placekitten.com/400/600?image=2"
+                                                              :alt "image 2"}
+                                                             {:src "http://placekitten.com/400/600?image=3"
+                                                              :alt "image 3"}
+                                                             {:src "http://placekitten.com/400/600?image=4"
+                                                              :alt "image 4"}
+                                                             {:src "http://placekitten.com/400/600?image=5"
+                                                              :alt "image 5"}
+                                                             {:src "http://placekitten.com/400/600?image=6"
+                                                              :alt "image 6"}
+                                                             {:src "http://placekitten.com/400/600?image=7"
+                                                              :alt "image 7"}
+                                                             {:src "http://placekitten.com/400/600?image=8"
+                                                              :alt "image 8"}]})
      (within :example-promises
              {:list/icons
               [{:promises.icon/symbol :svg/hand-heart,
