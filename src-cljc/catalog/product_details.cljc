@@ -240,9 +240,7 @@
                                (with :product-carousel data)
                                {:opts {:carousel/exhibit-thumbnail-component carousel-neue/product-carousel-thumbnail
                                        :carousel/exhibit-highlight-component carousel-neue/product-carousel-highlight
-                                       :selected-exhibit-changed-callback    (fn [index]
-                                                                               (publish events/carousel|jumped {:id :product-carousel
-                                                                                                                :idx index}))}})
+                                       :carousel/id                          :product-carousel}})
               [:div (carousel carousel-images product)])
             #_[:div ^:inline (carousel carousel-images product)
                (component/build ugc/component (assoc ugc :id "ugc-dt") opts)])

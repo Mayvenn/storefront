@@ -5,7 +5,11 @@
             [storefront.transitions :as t]
             [storefront.platform.component-utils :as utils]
             [storefront.components.svg :as svg]
-            [storefront.events :as e]))
+            [storefront.events :as e]
+            [storefront.platform.messages
+             :as messages
+             :refer [handle-message] :rename {handle-message publish}]
+            [storefront.events :as events]))
 
 ;; ---- Behavior
 
@@ -116,19 +120,21 @@
                     0)))))
 
 (defn increment-selected-exhibit [this]
-  (let [{:keys [selected-exhibit-changed-callback]} (c/get-opts this)
-        current-selected-exhibit-idx                (:selected-exhibit-idx (c/get-props this))
-        target-selected-exhibit-idx                 (inc current-selected-exhibit-idx)
-        exhibits-count                              (-> this c/get-props :exhibits count)]
+  (let [{:carousel/keys [id]}        (c/get-opts this)
+        current-selected-exhibit-idx (:selected-exhibit-idx (c/get-props this))
+        target-selected-exhibit-idx  (inc current-selected-exhibit-idx)
+        exhibits-count               (-> this c/get-props :exhibits count)]
     (when (< target-selected-exhibit-idx exhibits-count)
-      (selected-exhibit-changed-callback target-selected-exhibit-idx))))
+      (publish events/carousel|jumped {:id  id
+                                       :idx target-selected-exhibit-idx}))))
 
 (defn decrement-selected-exhibit [this]
-  (let [{:keys [selected-exhibit-changed-callback]} (c/get-opts this)
-        current-selected-exhibit-idx                (:selected-exhibit-idx (c/get-props this))
-        target-selected-exhibit-idx                 (dec current-selected-exhibit-idx)]
+  (let [{:carousel/keys [id]}        (c/get-opts this)
+        current-selected-exhibit-idx (:selected-exhibit-idx (c/get-props this))
+        target-selected-exhibit-idx  (dec current-selected-exhibit-idx)]
     (when (>= target-selected-exhibit-idx 0)
-      (selected-exhibit-changed-callback target-selected-exhibit-idx))))
+      (publish events/carousel|jumped {:id  id
+                                       :idx target-selected-exhibit-idx}))))
 
 (defn attach-intersection-observers [carousel-el observer]
   #?(:cljs
@@ -148,7 +154,7 @@
    (c/create-ref! this "mb-exhibits"))
   (did-mount
    [this]
-   (let [selected-exhibit-changed-callback (:selected-exhibit-changed-callback (c/get-opts this))]
+   (let [{:carousel/keys [id]} (c/get-opts this)]
      #?(:cljs
         (let [mb-exhibits-el (c/get-ref this "mb-exhibits")
               observer       (js/IntersectionObserver.
@@ -164,7 +170,9 @@
                                                     .-dataset
                                                     .-index
                                                     spice.core/parse-int
-                                                    selected-exhibit-changed-callback))
+                                                    ((fn [index]
+                                                       (publish events/carousel|jumped {:id  id
+                                                                                        :idx index})))))
                                          400)))
                               #js {:root      mb-exhibits-el
                                    :threshold 0.9})]
@@ -174,10 +182,12 @@
    (select-exhibit this (:selected-exhibit-idx (c/get-props this))))
   (render
    [this]
-   (let [{:keys [exhibits selected-exhibit-idx]}              (c/get-props this)
-         {:carousel/keys [exhibit-highlight-component
-                          exhibit-thumbnail-component]
-          :keys          [selected-exhibit-changed-callback]} (c/get-opts this)]
+   (let [{:keys [exhibits
+                 selected-exhibit-idx]} (c/get-props this)
+         {:carousel/keys
+          [exhibit-highlight-component
+           exhibit-thumbnail-component
+           id]}                         (c/get-opts this)]
      (c/html
       [:div
        [:div.carousel-2022.hide-on-mb
@@ -202,7 +212,8 @@
           (map-indexed (fn [index exhibit]
                          [:a.exhibit.relative.grid.pointer
                           {:key      index
-                           :on-click #(selected-exhibit-changed-callback index)
+                           :on-click #(publish events/carousel|jumped {:id  id
+                                                                       :idx index})
                            :style    {:grid-template-areas "\"thumbnail\""}}
                           [:div
                            (merge

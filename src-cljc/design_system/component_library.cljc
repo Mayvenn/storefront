@@ -7,12 +7,7 @@
             [storefront.platform.component-utils :as util]
             [storefront.events :as e]
             [mayvenn.visual.tools :refer [with within]]
-            clojure.edn
-            clojure.pprint
-            [storefront.platform.messages
-             :as messages
-             :refer [handle-message] :rename {handle-message publish}]
-            [storefront.events :as events]))
+            clojure.edn))
 
 
 (def components-list
@@ -35,18 +30,14 @@
     :query-ns        "example-carousel"
     :component-class carousel/component
     :opts            {:carousel/exhibit-highlight-component carousel/example-exhibit-component
-                      :selected-exhibit-changed-callback    (fn [index]
-                                                              (publish events/carousel|jumped {:id :example-carousel
-                                                                                               :idx index}))}}
+                      :carousel/id                          :example-carousel}}
    {:title           "Image Carousel"
     :id              "image-carousel"
     :query-ns        "example-image-carousel"
     :component-class carousel/component
     :opts            {:carousel/exhibit-thumbnail-component carousel/product-carousel-thumbnail
                       :carousel/exhibit-highlight-component carousel/product-carousel-highlight
-                      :selected-exhibit-changed-callback    (fn [index]
-                                                              (publish events/carousel|jumped {:id :example-image-carousel
-                                                                                               :idx index}))}}
+                      :carousel/id                          :example-image-carousel}}
    {:title           "Promises"
     :id              "promises"
     :query-ns        "example-promises"
