@@ -239,7 +239,9 @@
                                (with :product-carousel data)
                                {:opts {:carousel/exhibit-thumbnail-component carousel-neue/product-carousel-thumbnail
                                        :carousel/exhibit-highlight-component carousel-neue/product-carousel-highlight
-                                       :selected-exhibit-changed-callback    (partial publish events/carousel|jumped)}})
+                                       :selected-exhibit-changed-callback    (fn [index]
+                                                                               (publish events/carousel|jumped {:id :product-carousel
+                                                                                                                :idx index}))}})
               [:div (carousel carousel-images product)])
             #_[:div ^:inline (carousel carousel-images product)
                (component/build ugc/component (assoc ugc :id "ugc-dt") opts)])
@@ -1222,4 +1224,5 @@
                            (filter (fn [[_ item]] (= (:hair/color item) color)))
                            ffirst)]
       (when-not idx-synced?
-        (publish events/carousel|jumped target-idx)))))
+        (publish events/carousel|jumped {:id  :product-carousel
+                                         :idx target-idx})))))

@@ -11,8 +11,8 @@
 
 ;; TODO(corey) assumes that the carousel is a product carousel
 (defmethod t/transition-state e/carousel|jumped
-  [_ _ idx state]
-  (assoc-in state [:models :carousels :product-carousel :idx] idx))
+  [_ _ {:keys [id idx]} state]
+  (assoc-in state [:models :carousels id :idx] idx))
 
 ;; ---- Read Model
 
@@ -115,8 +115,7 @@
 
 (defn increment-selected-exhibit [this]
   (let [{:keys [selected-exhibit-changed-callback]} (c/get-opts this)
-        current-selected-exhibit-idx                (or (:selected-exhibit-idx (c/get-props this))
-                                                        (:selected-exhibit-idx (c/get-state this)))
+        current-selected-exhibit-idx                (:selected-exhibit-idx (c/get-props this))
         target-selected-exhibit-idx                 (inc current-selected-exhibit-idx)
         exhibits-count                              (-> this c/get-props :exhibits count)]
     (when (< target-selected-exhibit-idx exhibits-count)
@@ -124,8 +123,7 @@
 
 (defn decrement-selected-exhibit [this]
   (let [{:keys [selected-exhibit-changed-callback]} (c/get-opts this)
-        current-selected-exhibit-idx                (or (:selected-exhibit-idx (c/get-props this))
-                                                        (:selected-exhibit-idx (c/get-state this)))
+        current-selected-exhibit-idx                (:selected-exhibit-idx (c/get-props this))
         target-selected-exhibit-idx                 (dec current-selected-exhibit-idx)]
     (when (>= target-selected-exhibit-idx 0)
       (selected-exhibit-changed-callback target-selected-exhibit-idx))))
@@ -145,15 +143,10 @@
   (constructor
    [this props]
    (c/create-ref! this "dt-exhibits")
-   (c/create-ref! this "mb-exhibits")
-   ;; Local state here is used as a fallback to the lifted state used in the PDP. Other carousels
-   ;; will not have a need for the lifted state so this is in place as an easy fallback.
-   (when (nil? (:selected-exhibit-idx (c/get-props this)))
-     {:selected-exhibit-idx 0}))
+   (c/create-ref! this "mb-exhibits"))
   (did-mount
    [this]
-   (let [selected-exhibit-changed-callback (or (:selected-exhibit-changed-callback (c/get-opts this))
-                                               (fn [index] (c/set-state! this :selected-exhibit-idx index)))]
+   (let [selected-exhibit-changed-callback (:selected-exhibit-changed-callback (c/get-opts this))]
      #?(:cljs
         (let [mb-exhibits-el (c/get-ref this "mb-exhibits")
               observer       (js/IntersectionObserver.
@@ -176,17 +169,13 @@
           (attach-intersection-observers mb-exhibits-el observer)))))
   (did-update
    [this]
-   (select-exhibit this (or (:selected-exhibit-idx (c/get-props this))
-                            (:selected-exhibit-idx (c/get-state this)))))
+   (select-exhibit this (:selected-exhibit-idx (c/get-props this))))
   (render
    [this]
-   (let [{:keys [exhibits selected-exhibit-idx]
-          :or   {selected-exhibit-idx (:selected-exhibit-idx (c/get-state this))}}       (c/get-props this)
+   (let [{:keys [exhibits selected-exhibit-idx]}              (c/get-props this)
          {:carousel/keys [exhibit-highlight-component
                           exhibit-thumbnail-component]
-          :keys          [selected-exhibit-changed-callback]
-          :or            {selected-exhibit-changed-callback
-                          (fn [index] (c/set-state! this :selected-exhibit-idx index))}} (c/get-opts this)]
+          :keys          [selected-exhibit-changed-callback]} (c/get-opts this)]
      (c/html
       [:div
        [:div.carousel-2022.hide-on-mb
