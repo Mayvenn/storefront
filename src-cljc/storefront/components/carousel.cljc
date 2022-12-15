@@ -2,8 +2,27 @@
   (:require [clojure.string :as string]
             [storefront.component :as c]
             [storefront.components.ui :as ui]
+            [storefront.transitions :as t]
             [storefront.platform.component-utils :as utils]
-            [storefront.components.svg :as svg]))
+            [storefront.components.svg :as svg]
+            [storefront.events :as e]))
+
+;; ---- Behavior
+
+;; TODO(corey) assumes that the carousel is a product carousel
+(defmethod t/transition-state e/carousel|jumped
+  [_ _ idx state]
+  (assoc-in state [:models :carousels :product-carousel :idx] idx))
+
+;; ---- Read Model
+
+(defn <-
+  [state id]
+  (or
+   (get-in state [:models :carousels id])
+   {:idx 0}))
+
+;; ---- Stock Components
 
 (c/defcomponent example-exhibit-component
   [{:keys [class]} _ _]
@@ -66,18 +85,17 @@
                           :backface-visibility "hidden"}
                :max-size 200}))]))
 
-(defn select-exhibit [this target-id]
+(defn- select-exhibit [this target-id]
   #?(:cljs
-     (let [dt-exhibits-el                              (c/get-ref this "dt-exhibits")
-           dt-exhibits-els                             (-> dt-exhibits-el .-children array-seq)
-           mb-exhibits-el                              (c/get-ref this "mb-exhibits")
-           mb-exhibits-els                             (->> mb-exhibits-el
-                                                            .-children
-                                                            array-seq
-                                                            (filter #(-> %
-                                                                         .-classList
-                                                                         (.contains "exhibit"))))]
-
+     (let [dt-exhibits-el  (c/get-ref this "dt-exhibits")
+           dt-exhibits-els (-> dt-exhibits-el .-children array-seq)
+           mb-exhibits-el  (c/get-ref this "mb-exhibits")
+           mb-exhibits-els (->> mb-exhibits-el
+                                .-children
+                                array-seq
+                                (filter #(-> %
+                                             .-classList
+                                             (.contains "exhibit"))))]
        (when (< -1 target-id (count dt-exhibits-els))
          (.scrollTo dt-exhibits-el
                     0
@@ -193,7 +211,7 @@
           (map-indexed (fn [index exhibit]
                          [:a.exhibit.relative.grid.pointer
                           {:key      index
-                           :on-click (partial selected-exhibit-changed-callback index)
+                           :on-click #(selected-exhibit-changed-callback index)
                            :style    {:grid-template-areas "\"thumbnail\""}}
                           [:div
                            (merge

@@ -51,7 +51,9 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :as messages]
+            [storefront.platform.messages
+             :as messages
+             :refer [handle-message] :rename {handle-message publish}]
             [storefront.platform.reviews :as review-component]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
@@ -203,87 +205,77 @@
        (assoc (apply utils/fake-href target) :data-test id)
        content)])])
 
-(component/defdynamic-component template
-  (constructor [this props]
-               {:carousel-selected-exhibit-idx 0})
-  (render [this]
-          (let [{:keys [carousel-images
-                        product
-                        reviews
-                        selected-sku
-                        picker-data
-                        ugc
-                        faq-section
-                        add-to-cart
-                        accordion-v2?] :as data}      (component/get-props this)
-                opts                                       (component/get-opts this)
-                unavailable?                               (not (seq selected-sku))
-                sold-out?                                  (not (:inventory/in-stock? selected-sku))
-                {:keys [carousel-selected-exhibit-idx]}    (component/get-state this)]
-            (component/html
-             (if-not product
-               [:div.flex.h2.p1.m1.items-center.justify-center
-                {:style {:height "25em"}}
-                (ui/large-spinner {:style {:height "4em"}})]
-               [:div
-                [:div.container.pdp-on-tb
-                 (when (:offset ugc)
-                   [:div.absolute.overlay.z4.overflow-auto
-                    {:key "popup-ugc"}
-                    (component/build ugc/popup-component (assoc ugc :id "popup-ugc") opts)])
-                 [:div
-                  {:key "page"}
-                  (page
-                   (component/html
-                    (if (seq (with :product-carousel data))
-                      (component/build carousel-neue/component
-                                       (merge (with :product-carousel data)
-                                              {:selected-exhibit-idx carousel-selected-exhibit-idx})
-                                       {:opts {:carousel/exhibit-thumbnail-component carousel-neue/product-carousel-thumbnail
-                                               :carousel/exhibit-highlight-component carousel-neue/product-carousel-highlight
-                                               :selected-exhibit-changed-callback    (fn carousel-selected-exhibit-changed-callback
-                                                                                       [exhibit-index]
-                                                                                       (component/set-state! this
-                                                                                                             :carousel-selected-exhibit-idx
-                                                                                                             exhibit-index))}})
-                      [:div (carousel carousel-images product)])
-                    #_[:div ^:inline (carousel carousel-images product)
-                       (component/build ugc/component (assoc ugc :id "ugc-dt") opts)])
-                   (component/html
-                    [:div
-                     (component/build product-summary-organism data)
-                     [:div.px2
-                      (component/build picker/component picker-data opts)]
-                     (component/build accordion-neue/component
-                                      (with :pdp-picker data)
-                                      {:opts
-                                       {:accordion.drawer.open/face-component   picker-accordion-face-open
-                                        :accordion.drawer.closed/face-component picker-accordion-face-closed
-                                        :accordion.drawer/contents-component    picker-accordion-contents}})
-                     [:div.mt4
-                      (cond
-                        unavailable? unavailable-button
-                        sold-out?    sold-out-button
-                        :else        (component/build add-to-cart/organism add-to-cart))]
-                     (when (products/stylist-only? product)
-                       shipping-and-guarantee)
-                     (if accordion-v2?
-                       (component/build accordion-neue/component
-                                        (with :product-details-accordion data)
-                                        {:opts
-                                         {:accordion.drawer.open/face-component   accordions.product-info/face-open
-                                          :accordion.drawer.closed/face-component accordions.product-info/face-closed
-                                          :accordion.drawer/contents-component    accordions.product-info/contents}})
-                       (component/build tabbed-information/component data))
-                     (component/build catalog.M/non-hair-product-description data opts)
-                     [:div.hide-on-tb-dt.m3
-                      [:div.mxn2.mb3 (component/build ugc/component (assoc ugc :id "ugc-mb") opts)]]]))]]
-                (when (seq reviews)
-                  [:div.container.col-7-on-tb-dt.px2
-                   (component/build review-component/reviews-component reviews opts)])
-                (when faq-section
-                  [:div.container
-                   (component/build faq/organism faq-section opts)])])))))
+(component/defcomponent template
+  [{:keys [carousel-images
+           product
+           reviews
+           selected-sku
+           picker-data
+           ugc
+           faq-section
+           add-to-cart
+           accordion-v2?] :as data}
+   _
+   opts]
+  (let [unavailable? (not (seq selected-sku))
+        sold-out?    (not (:inventory/in-stock? selected-sku))]
+    (component/html
+     (if-not product
+       [:div.flex.h2.p1.m1.items-center.justify-center
+        {:style {:height "25em"}}
+        (ui/large-spinner {:style {:height "4em"}})]
+       [:div
+        [:div.container.pdp-on-tb
+         (when (:offset ugc)
+           [:div.absolute.overlay.z4.overflow-auto
+            {:key "popup-ugc"}
+            (component/build ugc/popup-component (assoc ugc :id "popup-ugc") opts)])
+         [:div
+          {:key "page"}
+          (page
+           (component/html
+            (if (seq (with :product-carousel data))
+              (component/build carousel-neue/component
+                               (with :product-carousel data)
+                               {:opts {:carousel/exhibit-thumbnail-component carousel-neue/product-carousel-thumbnail
+                                       :carousel/exhibit-highlight-component carousel-neue/product-carousel-highlight
+                                       :selected-exhibit-changed-callback    (partial publish events/carousel|jumped)}})
+              [:div (carousel carousel-images product)])
+            #_[:div ^:inline (carousel carousel-images product)
+               (component/build ugc/component (assoc ugc :id "ugc-dt") opts)])
+           (component/html
+            [:div
+             (component/build product-summary-organism data)
+             [:div.px2
+              (component/build picker/component picker-data opts)]
+             (component/build accordion-neue/component
+                              (with :pdp-picker data)
+                              {:opts {:accordion.drawer.open/face-component   picker-accordion-face-open
+                                      :accordion.drawer.closed/face-component picker-accordion-face-closed
+                                      :accordion.drawer/contents-component    picker-accordion-contents}})
+             [:div.mt4
+              (cond
+                unavailable? unavailable-button
+                sold-out?    sold-out-button
+                :else        (component/build add-to-cart/organism add-to-cart))]
+             (when (products/stylist-only? product)
+               shipping-and-guarantee)
+             (if accordion-v2?
+               (component/build accordion-neue/component
+                                (with :product-details-accordion data)
+                                {:opts {:accordion.drawer.open/face-component   accordions.product-info/face-open
+                                        :accordion.drawer.closed/face-component accordions.product-info/face-closed
+                                        :accordion.drawer/contents-component    accordions.product-info/contents}})
+               (component/build tabbed-information/component data))
+             (component/build catalog.M/non-hair-product-description data opts)
+             [:div.hide-on-tb-dt.m3
+              [:div.mxn2.mb3 (component/build ugc/component (assoc ugc :id "ugc-mb") opts)]]]))]]
+        (when (seq reviews)
+          [:div.container.col-7-on-tb-dt.px2
+           (component/build review-component/reviews-component reviews opts)])
+        (when faq-section
+          [:div.container
+           (component/build faq/organism faq-section opts)])]))))
 
 (defn ugc-query [product sku data]
   (let [shop?              (= :shop (sites/determine-site data))
@@ -902,34 +894,43 @@
                                       :learn-more-nav-event (when-not (contains? (:stylist-exclusives/family product) "kits")
                                                               events/navigate-content-our-hair)})))))
 
+;; A requirement of the product carousel is that it needs to have the media
+;; for a detailed product. That should probably be included on the product
+;; itself, but for now we'll just use the product carousel query to get the media
+(defn- detailed-product-media
+  [images-catalog product]
+  (->> product
+       (images/for-skuer images-catalog)
+       (selector/match-all {:selector/strict? true}
+                           {:use-case #{"carousel"}
+                            :image/of #{"model" "product"}})
+       (sort-by :order)))
+
 (defn ^:private product-carousel<-
-  [images-catalog detailed-product carousel-redesign?]
+  [images-catalog product-carousel detailed-product carousel-redesign?]
   (when (and carousel-redesign?
              (select ?wig [detailed-product]))
-    #:product-carousel 
-    {:exhibits
-      (->> detailed-product
-           (images/for-skuer images-catalog)
-           (selector/match-all {:selector/strict? true}
-                               {:use-case #{"carousel"}
-                                :image/of #{"model" "product"}})
-           (sort-by :order)
-           (map (fn [{:keys [alt url]}]
-                  {:src url
-                   :alt alt})))}))
+    #:product-carousel
+    {:selected-exhibit-idx (:idx product-carousel)
+     :exhibits             (->> detailed-product
+                                (detailed-product-media images-catalog)
+                                (map (fn [{:keys [alt url]}]
+                                       {:src url
+                                        :alt alt})))}))
 
 (defn ^:export built-component
   [state opts]
   (let [;; Databases
         images-db          (get-in state keypaths/v2-images)
+        product-carousel   (carousel-neue/<- state :product-carousel)
         ;; Flags
         carousel-redesign? (experiments/carousel-redesign? state)
         ;; Focus
         detailed-product   (products/current-product state)]
-  (component/build template
-                   (merge (query state)
+    (component/build template
+                     (merge (query state)
                             {:add-to-cart (add-to-cart-query state)}
-                            (product-carousel<- images-db detailed-product carousel-redesign?))
+                            (product-carousel<- images-db product-carousel detailed-product carousel-redesign?))
                      opts)))
 
 (defn url-points-to-invalid-sku? [selected-sku query-params]
@@ -1190,10 +1191,30 @@
 
 #?(:cljs
    (defmethod effects/perform-effects events/pdp|picker-options|selected
-     [_ _ {:keys [callback-message]} _ _]
+     [_ _ {:keys [data callback-message]} _ _]
+     (when (= (:facet data) "color")
+       (publish events/pdp|carousel|color-synced
+                {:color (:selected-option data)}))
      (apply messages/handle-message callback-message)))
 
 #?(:cljs
    (defmethod trackings/perform-track events/pdp|picker-options|selected
      [_ event {:keys [data]} app-state]
      (stringer/track-event "pdp.picker-options/selected" data)))
+
+;; Syncs the carousel to the color selected in the picker
+(defmethod effects/perform-effects events/pdp|carousel|color-synced
+  [_ _ {:keys [color]} _ state]
+  (let [images-db        (get-in state keypaths/v2-images)
+        {:keys [idx]}    (carousel-neue/<- state :product-carousel)
+        detailed-product (products/current-product state)]
+    (let [idx-synced? (-> (detailed-product-media images-db detailed-product)
+                          (get idx)
+                          :hair/color
+                          (= color))
+          target-idx  (->> (detailed-product-media images-db detailed-product)
+                           (map-indexed (fn [i item] [i item]))
+                           (filter (fn [[_ item]] (= (:hair/color item) color)))
+                           ffirst)]
+      (when-not idx-synced?
+        (publish events/carousel|jumped target-idx)))))

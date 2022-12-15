@@ -823,3 +823,8 @@
 (defpath funnel|acquisition|prompted)
 (defpath funnel|acquisition|succeeded)
 (defpath funnel|acquisition|failed)
+
+(defpath carousel|reset)
+(defpath carousel|jumped)
+
+(defpath pdp|carousel|color-synced)
