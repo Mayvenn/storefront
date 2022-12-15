@@ -58,7 +58,8 @@
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
             storefront.ugc
-            [spice.core :as spice]))
+            [spice.core :as spice]
+            [spice.maps]))
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
@@ -721,10 +722,15 @@
                                :model-image     model-image
                                :selected-sku    selected-sku
                                :dynamic-content (if (experiments/pdp-content-slots? data) ; true = using contentful data, false = faked out content
-                                                  (cms-dynamic-content/derive-product-details (get-in data keypaths/cms-pdp-content)
-                                                                                              selected-sku)
-                                                  (cms-dynamic-content/derive-product-details fake-contentful-product-details-data
-                                                                                              selected-sku))}]
+                                                  (->> selected-sku
+                                                       (cms-dynamic-content/derive-product-details (get-in data keypaths/cms-pdp-content)))
+                                                  (->> selected-sku
+                                                       (cms-dynamic-content/derive-product-details fake-contentful-product-details-data)
+                                                       ;; The old accordion expects strings (to which it attaches hard-coded titles)
+                                                       ;; The new accordion expects hiccup data containing the title
+                                                       ;; The "fake" data must be useable by both old and new accordions, so we must
+                                                       ;; update the content to consist only of the string.
+                                                       (spice.maps/map-values #(-> % first (nth 2) (nth 1)))))}]
          #:tabbed-information{:id      "product-description-tabs"
                               :keypath keypaths/product-details-information-tab
                               :tabs    [{:title    "Hair Info"
