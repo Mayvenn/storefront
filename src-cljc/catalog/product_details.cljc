@@ -667,11 +667,11 @@
                                                                                 selected-sku)
                                     (cms-dynamic-content/derive-product-details fake-contentful-product-details-data
                                                                                 selected-sku))
-        content-slot-data         (spice.core/spy (content-slots< product
-                                                                  selected-sku
-                                                                  model-image
-                                                                  (get-in data keypaths/cms-pdp-content)
-                                                                  fake-contentful-product-details-data))]
+        content-slot-data         (content-slots< product
+                                                  selected-sku
+                                                  model-image
+                                                  (get-in data keypaths/cms-pdp-content)
+                                                  fake-contentful-product-details-data)]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
