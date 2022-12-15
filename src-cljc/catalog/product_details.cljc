@@ -1214,7 +1214,7 @@
         {:keys [idx]}    (carousel-neue/<- state :product-carousel)
         detailed-product (products/current-product state)]
     (let [idx-synced? (-> (detailed-product-media images-db detailed-product)
-                          (get idx)
+                          (nth idx)
                           :hair/color
                           (= color))
           target-idx  (->> (detailed-product-media images-db detailed-product)
