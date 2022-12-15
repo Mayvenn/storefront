@@ -1,0 +1,16 @@
+/* This data comes in as markdown, so we can't style it with classes. */
+
+.pdp-details-accordion-section p {
+    font: var(--content-2-font);
+}
+
+.pdp-details-accordion-section h3 {
+    font: 900 12px/27px var(--font-family-proxima);
+    letter-spacing: 0.92px;
+    text-transform: uppercase;
+}
+
+:root {
+    --font-family-proxima: 'Proxima Nova', Arial, sans-serif;
+    --content-2-font: 16px/21px var(--font-family-proxima);
+}

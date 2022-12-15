@@ -440,75 +440,85 @@
 (defn legacy-content-from-cellar
   "Converts cellar SKU and cellar Product to template-slots"
   [current-product selected-sku model-image]
-  {:pdp.details.description/description             (->> current-product :copy/description)
-   :pdp.details.description/whats-included          (->> current-product :copy/hair-type)
-   :pdp.details.hair-info/model-wearing             (or (:copy/model-wearing model-image)
-                                                        (:copy/model-wearing current-product))
-   :pdp.details.hair-info/unit-weight               (or (->> selected-sku :hair/weight)
-                                                        (->> current-product :copy/weights))
-   :pdp.details.hair-info/hair-quality              (->> current-product :copy/quality)
-   :pdp.details.hair-info/density                   (->> current-product :copy/density)
-   :pdp.details.hair-info/hair-origin               (->> current-product :copy/origin)
-   :pdp.details.hair-info/hair-weft-type            (->> current-product :copy/weft-type)
-   :pdp.details.hair-info/part-design               (->> current-product :copy/part-design)
-   :pdp.details.hair-info/features                  (->> current-product :copy/features)
-   :pdp.details.hair-info/available-materials       (->> current-product :copy/materials)
-   :pdp.details.hair-info/lace-size                 (->> current-product :copy/lace-size)
-   :pdp.details.hair-info/silk-size                 (->> current-product :copy/silk-size)
-   :pdp.details.hair-info/cap-size                  (->> current-product :copy/cap-size)
-   :pdp.details.hair-info/tape--in-glue-information (->> current-product :copy/tape-in-glue)
-   :pdp.details.description/hair-type               (->> current-product :copy/hair-type)
-   :pdp.details.care/maintenance-level              (->> current-product :copy/maintenance-level)})
+  (->> [:pdp.details.description/description             nil                        (->> current-product :copy/description)
+        :pdp.details.description/whats-included          "Hair Type"                (->> current-product :copy/hair-type)
+        :pdp.details.hair-info/model-wearing             "Model Wearing"            (or (:copy/model-wearing model-image)
+                                                                                        (:copy/model-wearing current-product))
+        :pdp.details.hair-info/unit-weight               "Unit Weight"              (or (->> selected-sku :hair/weight)
+                                                                                        (->> current-product :copy/weights))
+        :pdp.details.hair-info/hair-quality              "Hair Quality"             (->> current-product :copy/quality)
+        :pdp.details.hair-info/density                   "Density"                  (->> current-product :copy/density)
+        :pdp.details.hair-info/hair-origin               "Hair Origin"              (->> current-product :copy/origin)
+        :pdp.details.hair-info/hair-weft-type            "Hair Weft Type"           (->> current-product :copy/weft-type)
+        :pdp.details.hair-info/part-design               "Part Design"              (->> current-product :copy/part-design)
+        :pdp.details.hair-info/features                  "Features"                 (->> current-product :copy/features)
+        :pdp.details.hair-info/available-materials       "Available Materials"      (->> current-product :copy/materials)
+        :pdp.details.hair-info/lace-size                 "Lace Size"                (->> current-product :copy/lace-size)
+        :pdp.details.hair-info/silk-size                 "Silk Size"                (->> current-product :copy/silk-size)
+        :pdp.details.hair-info/cap-size                  "Cap Size"                 (->> current-product :copy/cap-size)
+        :pdp.details.hair-info/tape--in-glue-information "Tape-in Glue Information" (->> current-product :copy/tape-in-glue)
+        :pdp.details.description/hair-type               "Hair Type"                (->> current-product :copy/hair-type)
+        :pdp.details.care/maintenance-level              "Maintenance Level"        (->> current-product :copy/maintenance-level)]
+       (partition 3)
+       (keep (fn [[k heading content]]
+               (when content
+                 [k [:div (when heading [:h3 heading])
+                     [:p content]]])))
+       (into {})))
 
-(defn content-slots
+(defn content-slots<
   [current-product selected-sku model-image cms-pdp-content fake-cms-content]
   (merge (legacy-content-from-cellar current-product selected-sku model-image)
          (cms-dynamic-content/derive-product-details fake-cms-content selected-sku)
-         (cms-dynamic-content/derive-product-details cms-pdp-content selected-sku)))
+         #_(cms-dynamic-content/derive-product-details cms-pdp-content selected-sku)))
 
 (defn content-slots->accordion-slots
-  [content-slot-data open-drawers]
-  ;; TODO: treat stylist-exclusives differently:
-  ;; :allow-all-closed?    false
-  ;; :allow-multi-open?    false
-  ;; :initial-open-drawers #{"description"}
-(prn open-drawers)
-  {:allow-all-closed?    true
-   :allow-multi-open?    false
-   :drawers (map (fn [drawer]
-                   ;; TODO destructure smarter
-                   (let [drawer-id (first (keys drawer))
-                         slots     (first (vals drawer))]
-                     {:contents     {:sections (keep (fn [slot]
-                                                       (when-let [content (get content-slot-data slot)]
-                                                         {:heading (-> slot
-                                                                       (clojure.string/split #"/")
-                                                                       last
-                                                                       (clojure.string/replace #"-" " "))
-                                                          :content content}))
-                                                     slots)}
-                      :id           drawer-id
-                      :face         {:copy (-> drawer-id
-                                               (clojure.string/split #"/")
-                                               last
-                                               (clojure.string/replace #"-" " "))}}))
-                                           details-render-slots)
-   :id                   "product-details-accordion"
-   :initial-open-drawers #{:pdp.details/hair-info}
-   :open-drawers         open-drawers})
+  [content-slot-data product open-drawers]
+  (merge
+   ;; TODO drive initial-open-drawers off of Contentful Data?
+   (if (contains? (:catalog/department product) "stylist-exclusives")
+     {:allow-all-closed?    false
+      :initial-open-drawers #{:pdp.details/description}}
+     {:allow-all-closed?    true
+      :initial-open-drawers #{:pdp.details/hair-info}})
+   {:allow-multi-open?    false
+    :drawers (->> details-render-slots
+                  (keep (fn [drawer]
+                          (let [[drawer-id slot-ids] (first drawer)
+                                sections             (keep (fn [slot-id]
+                                                             (when-let [content (get content-slot-data slot-id)]
+                                                               {:content content}))
+                                               slot-ids)]
+                           (when (seq sections)
+                             {:contents {:sections sections}
+                              :id       drawer-id
+                              ;; TODO: drive drawer face copy from Contentful data?
+                              :face     {:copy (-> drawer-id
+                                                   (clojure.string/split #"/")
+                                                   last
+                                                   (clojure.string/replace #"-" " "))}})))))
+    :id                   "product-details-accordion"
+    :open-drawers         open-drawers}))
 
-;; TODO: replace the fake product details below with contentful data from the app-state
+;; TODO: Change content-value to markup. cms-dynamic-content/derive-product-details
+;; will need to include a markup->hiccup layer
 (def ^:private fake-contentful-product-details-data
-  {:foo {:content-slot-id "pdp/colorable"
-         :selector        {"hair/color" #{"black" "1b-soft-black"}}
-         :content-value   "Yes - This virgin human hair can be lifted (bleached) and colored with professional products."}
-   :bar {:content-slot-id "pdp/colorable"
-         :selector        {"hair/color" #{"blonde" "blonde-dark-roots" "dark-blonde" "dark-blonde-dark-roots" "1c-mocha-brown" "#2-chocolate-brown"
-                                          "#4-caramel-brown" "6-hazelnut-brown" "18-chestnut-blonde" "60-golden-ash-blonde" "613-bleach-blonde"}}
-         :content-value   "Yes - Keep in mind pre-lightened blonde should not be lifted (bleached) any further, but can be professionally colored with deposit-only products or toners."}
-   :baz {:content-slot-id "pdp/colorable"
-         :selector        {"hair/color" #{"#1-jet-black" "vibrant-burgundy"}}
-         :content-value   "No - Since this hair has already been professionally processed, we don't recommend any lifting (bleaching) or coloring."}})
+  {:ctf-id-1
+   {:content-slot-id "pdp/colorable"
+    :selector        {"hair/color" #{"black" "1b-soft-black"}}
+    :content-value   [:div [:h3 "Can It Be Colored?"]
+                      [:p "Yes - This virgin human hair can be lifted (bleached) and colored with professional products."]]}
+   :ctf-id-2
+   {:content-slot-id "pdp/colorable"
+    :selector        {"hair/color" #{"blonde" "blonde-dark-roots" "dark-blonde" "dark-blonde-dark-roots" "1c-mocha-brown" "#2-chocolate-brown"
+                                     "#4-caramel-brown" "6-hazelnut-brown" "18-chestnut-blonde" "60-golden-ash-blonde" "613-bleach-blonde"}}
+    :content-value   [:div [:h3 "Can It Be Colored?"]
+                      [:p "Yes - Keep in mind pre-lightened blonde should not be lifted (bleached) any further, but can be professionally colored with deposit-only products or toners."]]}
+   :ctf-id-3
+   {:content-slot-id "pdp/colorable"
+    :selector        {"hair/color" #{"#1-jet-black" "vibrant-burgundy"}}
+    :content-value   [:div [:h3 "Can It Be Colored?"]
+                      [:p "No - Since this hair has already been professionally processed, we don't recommend any lifting (bleaching) or coloring."]]}})
 
 
 ;; OLD mine it for scrap
@@ -657,7 +667,11 @@
                                                                                 selected-sku)
                                     (cms-dynamic-content/derive-product-details fake-contentful-product-details-data
                                                                                 selected-sku))
-        content-slot-data         (spice.core/spy (content-slots product selected-sku model-image (get-in data keypaths/cms-pdp-content) fake-contentful-product-details-data))]
+        content-slot-data         (spice.core/spy (content-slots< product
+                                                                  selected-sku
+                                                                  model-image
+                                                                  (get-in data keypaths/cms-pdp-content)
+                                                                  fake-contentful-product-details-data))]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
@@ -787,17 +801,8 @@
 
      (cond
        (and product accordion-v2?)
-       ;; Content slots
-       #_(accordion-neue/accordion-query (let [{:accordion/keys [open-drawers]} (accordion-neue/<- data "product-details-accordion")]
-                                         (spice.core/spy (content-slots->accordion-slots content-slot-data open-drawers))))
-       ;; Pre content slot work
-       (product-details-accordion<- product-details-accordion
-                                    {:product         product
-                                     :model-image     model-image
-                                     :selected-sku    selected-sku
-                                     :faq             (when (and pdp-faq-in-accordion? faq) faq)
-                                     :dynamic-content cms-dynamic-content}
-                                    length-guide-image)
+       (accordion-neue/accordion-query (let [{:accordion/keys [open-drawers]} (accordion-neue/<- data "product-details-accordion")]
+                                         (content-slots->accordion-slots content-slot-data product open-drawers)))
 
        hair?
        (let [active-tab-name  (get-in data keypaths/product-details-information-tab)

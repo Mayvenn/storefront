@@ -28,19 +28,15 @@
    {:key (str id "-tab")}
    [:div primary]
    (when (seq sections)
-     [:div.flex.flex-wrap.justify-between.p2
+     [:div.flex.flex-wrap.justify-between.p2.pdp-details-accordion-section
       (map-indexed
-       (fn sections [idx {:keys [content heading] :as section}]
+       (fn section [idx {:keys [content]}]
          [:div.my2.pr2
           {:style {:min-width "50%"}
            :key   idx}
-          [:h3.proxima.title-3.shout heading]
-          [:div
-           (if-not (string? content)
-             (for [block content]
-               [:div block])
-             content)]
-          (when-let [link-content (:link/content section)]
+          ;; We expect the content to come in as hiccup
+          content
+          #_(when-let [link-content (:link/content section)]
             (ui/button-small-underline-primary
              (assoc
               (apply utils/fake-href (:link/target section))
