@@ -28,6 +28,7 @@
             [catalog.selector.sku :as sku-selector]
             [catalog.ui.add-to-cart :as add-to-cart]
             [catalog.ui.molecules :as catalog.M]
+            [clojure.string]
             [homepage.ui.faq :as faq]
             [mayvenn.visual.tools :refer [with within]]
             [mayvenn.visual.ui.titles :as titles]
@@ -420,6 +421,90 @@
         (select-keys [:heading :link/content :link/target :link/id])
         (assoc :content content))))
 
+(def details-render-slots
+  [{:pdp.details/hair-info
+    [:pdp.details.hair-info/model-wearing
+     ;; TODO: length guide
+     :pdp.details.hair-info/unit-weight
+     :pdp.details.hair-info/hair-quality
+     :pdp.details.hair-info/hair-origin
+     :pdp.details.hair-info/hair-weft-type
+     :pdp.details.hair-info/part-design
+     :pdp.details.hair-info/features
+     :pdp.details.hair-info/available-materials
+     :pdp.details.hair-info/lace-size
+     :pdp.details.hair-info/silk-size
+     :pdp.details.hair-info/cap-size
+     :pdp.details.hair-info/density
+     :pdp.details.hair-info/tape--in-glue-information]}
+   {:pdp.details/description
+    [:pdp.details.description/description
+     :pdp.details.description/hair-type
+     :pdp.details.description/what's-included]}
+   {:pdp.details/care
+    [:pdp.details.care/maintenance-level
+     :pdp.details.care/can-it-be-colored?]}])
+
+(defn legacy-content-from-cellar
+  "Converts cellar SKU and cellar Product to template-slots"
+  [current-product selected-sku model-image]
+  {:pdp.details.description/description             (->> current-product :copy/description)
+   :pdp.details.description/whats-included          (->> current-product :copy/hair-type)
+   :pdp.details.hair-info/model-wearing             (or (:copy/model-wearing model-image)
+                                                        (:copy/model-wearing current-product))
+   :pdp.details.hair-info/unit-weight               (or (->> selected-sku :hair/weight)
+                                                        (->> current-product :copy/weights))
+   :pdp.details.hair-info/hair-quality              (->> current-product :copy/quality)
+   :pdp.details.hair-info/density                   (->> current-product :copy/density)
+   :pdp.details.hair-info/hair-origin               (->> current-product :copy/origin)
+   :pdp.details.hair-info/hair-weft-type            (->> current-product :copy/weft-type)
+   :pdp.details.hair-info/part-design               (->> current-product :copy/part-design)
+   :pdp.details.hair-info/features                  (->> current-product :copy/features)
+   :pdp.details.hair-info/available-materials       (->> current-product :copy/materials)
+   :pdp.details.hair-info/lace-size                 (->> current-product :copy/lace-size)
+   :pdp.details.hair-info/silk-size                 (->> current-product :copy/silk-size)
+   :pdp.details.hair-info/cap-size                  (->> current-product :copy/cap-size)
+   :pdp.details.hair-info/tape--in-glue-information (->> current-product :copy/tape-in-glue)
+   :pdp.details.description/hair-type               (->> current-product :copy/hair-type)
+   :pdp.details.care/maintenance-level              (->> current-product :copy/maintenance-level)})
+
+(defn content-slots
+  [current-product selected-sku model-image cms-pdp-content fake-cms-content]
+  (merge (legacy-content-from-cellar current-product selected-sku model-image)
+         (cms-dynamic-content/derive-product-details fake-cms-content selected-sku)
+         (cms-dynamic-content/derive-product-details cms-pdp-content selected-sku)))
+
+(defn content-slots->accordion-slots
+  [content-slot-data open-drawers]
+  ;; TODO: treat stylist-exclusives differently:
+  ;; :allow-all-closed?    false
+  ;; :allow-multi-open?    false
+  ;; :initial-open-drawers #{"description"}
+(prn open-drawers)
+  {:allow-all-closed?    true
+   :allow-multi-open?    false
+   :drawers (map (fn [drawer]
+                   ;; TODO destructure smarter
+                   (let [drawer-id (first (keys drawer))
+                         slots     (first (vals drawer))]
+                     {:contents     {:sections (keep (fn [slot]
+                                                       (when-let [content (get content-slot-data slot)]
+                                                         {:heading (-> slot
+                                                                       (clojure.string/split #"/")
+                                                                       last
+                                                                       (clojure.string/replace #"-" " "))
+                                                          :content content}))
+                                                     slots)}
+                      :id           drawer-id
+                      :face         {:copy (-> drawer-id
+                                               (clojure.string/split #"/")
+                                               last
+                                               (clojure.string/replace #"-" " "))}}))
+                                           details-render-slots)
+   :id                   "product-details-accordion"
+   :initial-open-drawers #{:pdp.details/hair-info}
+   :open-drawers         open-drawers})
+
 ;; TODO: replace the fake product details below with contentful data from the app-state
 (def ^:private fake-contentful-product-details-data
   {:foo {:content-slot-id "pdp/colorable"
@@ -433,7 +518,16 @@
          :selector        {"hair/color" #{"#1-jet-black" "vibrant-burgundy"}}
          :content-value   "No - Since this hair has already been professionally processed, we don't recommend any lifting (bleaching) or coloring."}})
 
+
+;; OLD mine it for scrap
 (defn product-details-accordion<-
+  "Construct data (from cellar, contentful) for PDP Details accordion
+  Merges content from Contentful over content from cellar
+  Args:
+   - Active accordion tate
+   - Cellar Data
+     - current product
+  "
   [{:accordion/keys [id open-drawers]}
    {:keys [product model-image faq] :as description-data} length-guide-image]
   (if ((:catalog/department product) "stylist-exclusives")
@@ -508,7 +602,7 @@
                                                                    [{:heading      "Maintenance Level"
                                                                      :content-path [:product :copy/maintenance-level]}
                                                                     {:heading      "Can it be Colored?"
-                                                                     :content-path [:dynamic-content :pdp/colorable]}])}}]
+                                                                     :content-path [:dynamic-content :pdp.details.care/can-it-be-colored?]}])}}]
                                 faq
                                 (conj
                                  (let [{:keys [question-answers slug]} faq]
@@ -570,7 +664,8 @@
                                     (cms-dynamic-content/derive-product-details (get-in data keypaths/cms-pdp-content)
                                                                                 selected-sku)
                                     (cms-dynamic-content/derive-product-details fake-contentful-product-details-data
-                                                                                selected-sku))]
+                                                                                selected-sku))
+        content-slot-data         (spice.core/spy (content-slots product selected-sku model-image (get-in data keypaths/cms-pdp-content) fake-contentful-product-details-data))]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
@@ -700,6 +795,10 @@
 
      (cond
        (and product accordion-v2?)
+       ;; Content slots
+       #_(accordion-neue/accordion-query (let [{:accordion/keys [open-drawers]} (accordion-neue/<- data "product-details-accordion")]
+                                         (spice.core/spy (content-slots->accordion-slots content-slot-data open-drawers))))
+       ;; Pre content slot work
        (product-details-accordion<- product-details-accordion
                                     {:product         product
                                      :model-image     model-image
@@ -782,7 +881,7 @@
                                                          [{:heading      "Maintenance Level"
                                                            :content-path [:product :copy/maintenance-level]}
                                                           {:heading      "Can it be Colored?"
-                                                           :content-path [:dynamic-content :pdp/colorable]}])}]})
+                                                           :content-path [:dynamic-content :pdp.details.care/can-it-be-colored?]}])}]})
        :else (let [{:keys [copy/description
                            copy/colors
                            copy/weights
