@@ -108,9 +108,11 @@
                                         .-offsetTop)
                           :behavior "smooth"})
          (.scrollTo mb-exhibits-el
-                    (-> mb-exhibits-els
-                        (nth target-id)
-                        .-offsetLeft)
+                    (- (-> mb-exhibits-els
+                           (nth target-id)
+                           .-offsetLeft)
+                       (-> mb-exhibits-el
+                           .-offsetLeft))
                     0)))))
 
 (defn increment-selected-exhibit [this]
