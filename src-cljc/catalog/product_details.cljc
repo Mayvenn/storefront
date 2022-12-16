@@ -1152,6 +1152,7 @@
                            (map-indexed (fn [i item] [i item]))
                            (filter (fn [[_ item]] (= (:hair/color item) color)))
                            ffirst)]
-      (when-not idx-synced?
+      (when (and (not idx-synced?)
+                 (int? target-idx))
         (publish events/carousel|jumped {:id  :product-carousel
                                          :idx target-idx})))))
