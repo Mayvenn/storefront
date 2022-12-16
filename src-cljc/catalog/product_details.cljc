@@ -114,7 +114,7 @@
    {}
    (keys selections)))
 
-(defcomponent product-summary-organism
+(c/defcomponent product-summary-organism
   "Displays basic information about a particular product"
   [data _ _]
   [:div.mt3.mx3
