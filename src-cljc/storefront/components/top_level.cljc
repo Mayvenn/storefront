@@ -84,7 +84,7 @@
    events/navigate-shop-by-look-details         #(ui/lazy-load-component :catalog 'catalog.look-details-v202105/built-component
                                                                          events/navigate-shop-by-look-details)
    events/navigate-category                     #(ui/lazy-load-component :catalog  'catalog.category/built-component events/navigate-category)
-   events/navigate-product-details              #(ui/lazy-load-component :catalog  'catalog.product-details/built-component events/navigate-product-details)
+   events/navigate-product-details              #(ui/lazy-load-component :catalog  'catalog.product-details/page events/navigate-product-details)
    events/navigate-shared-cart                  #(ui/lazy-load-component :catalog  'storefront.components.shared-cart/built-component events/navigate-shared-cart)
    events/navigate-checkout-processing          #(ui/lazy-load-component :checkout 'checkout.processing/built-component events/navigate-checkout-processing)
    events/navigate-cart                         #(ui/lazy-load-component :catalog  'checkout.classic-cart/built-component events/navigate-cart)
