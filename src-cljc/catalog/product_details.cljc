@@ -241,9 +241,9 @@
                                {:opts {:carousel/exhibit-thumbnail-component carousel-neue/product-carousel-thumbnail
                                        :carousel/exhibit-highlight-component carousel-neue/product-carousel-highlight
                                        :carousel/id                          :product-carousel}})
-              [:div (carousel carousel-images product)])
-            #_[:div ^:inline (carousel carousel-images product)
-               (component/build ugc/component (assoc ugc :id "ugc-dt") opts)])
+              [:div ^:inline
+               (carousel carousel-images product)
+               (component/build ugc/component (assoc ugc :id "ugc-dt") opts)]))
            (component/html
             [:div
              (component/build product-summary-organism data)
