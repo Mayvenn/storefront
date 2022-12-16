@@ -208,6 +208,12 @@
        (assoc (apply utils/fake-href target) :data-test id)
        content)])])
 
+(c/defcomponent loading-template
+  [_ _ _]
+  [:div.flex.h2.p1.m1.items-center.justify-center
+   {:style {:height "25em"}}
+   (ui/large-spinner {:style {:height "4em"}})])
+
 (c/defcomponent template
   [{:keys [carousel-images
            product
@@ -223,62 +229,58 @@
   (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
     (c/html
-     (if-not product
-       [:div.flex.h2.p1.m1.items-center.justify-center
-        {:style {:height "25em"}}
-        (ui/large-spinner {:style {:height "4em"}})]
+     [:div
+      [:div.container.pdp-on-tb
+       (when (:offset ugc)
+         [:div.absolute.overlay.z4.overflow-auto
+          {:key "popup-ugc"}
+          (c/build ugc/popup-component (assoc ugc :id "popup-ugc") opts)])
        [:div
-        [:div.container.pdp-on-tb
-         (when (:offset ugc)
-           [:div.absolute.overlay.z4.overflow-auto
-            {:key "popup-ugc"}
-            (c/build ugc/popup-component (assoc ugc :id "popup-ugc") opts)])
-         [:div
-          {:key "page"}
-          (two-column-layout
-           (c/html
-            (if (seq (with :product-carousel data))
-              (c/build carousel-neue/component
-                       (with :product-carousel data)
-                       {:opts {:carousel/exhibit-thumbnail-component carousel-neue/product-carousel-thumbnail
-                               :carousel/exhibit-highlight-component carousel-neue/product-carousel-highlight
-                               :carousel/id                          :product-carousel}})
-              [:div ^:inline
-               (carousel carousel-images product)
-               (c/build ugc/component (assoc ugc :id "ugc-dt") opts)]))
-           (c/html
-            [:div
-             (c/build product-summary-organism data)
-             [:div.px2
-              (c/build picker/component picker-data opts)]
+        {:key "page"}
+        (two-column-layout
+         (c/html
+          (if (seq (with :product-carousel data))
+            (c/build carousel-neue/component
+                     (with :product-carousel data)
+                     {:opts {:carousel/exhibit-thumbnail-component carousel-neue/product-carousel-thumbnail
+                             :carousel/exhibit-highlight-component carousel-neue/product-carousel-highlight
+                             :carousel/id                          :product-carousel}})
+            [:div ^:inline
+             (carousel carousel-images product)
+             (c/build ugc/component (assoc ugc :id "ugc-dt") opts)]))
+         (c/html
+          [:div
+           (c/build product-summary-organism data)
+           [:div.px2
+            (c/build picker/component picker-data opts)]
+           (c/build accordion-neue/component
+                    (with :pdp-picker data)
+                    {:opts {:accordion.drawer.open/face-component   picker-accordion-face-open
+                            :accordion.drawer.closed/face-component picker-accordion-face-closed
+                            :accordion.drawer/contents-component    picker-accordion-contents}})
+           [:div.mt4
+            (cond
+              unavailable? unavailable-button
+              sold-out?    sold-out-button
+              :else        (c/build add-to-cart/organism add-to-cart))]
+           (when (products/stylist-only? product)
+             shipping-and-guarantee)
+           (if accordion-v2?
              (c/build accordion-neue/component
-                      (with :pdp-picker data)
-                      {:opts {:accordion.drawer.open/face-component   picker-accordion-face-open
-                              :accordion.drawer.closed/face-component picker-accordion-face-closed
-                              :accordion.drawer/contents-component    picker-accordion-contents}})
-             [:div.mt4
-              (cond
-                unavailable? unavailable-button
-                sold-out?    sold-out-button
-                :else        (c/build add-to-cart/organism add-to-cart))]
-             (when (products/stylist-only? product)
-               shipping-and-guarantee)
-             (if accordion-v2?
-               (c/build accordion-neue/component
-                        (with :product-details-accordion data)
-                        {:opts {:accordion.drawer.open/face-component   accordions.product-info/face-open
-                                :accordion.drawer.closed/face-component accordions.product-info/face-closed
-                                :accordion.drawer/contents-component    accordions.product-info/contents}})
-               (c/build tabbed-information/component data))
-             (c/build catalog.M/non-hair-product-description data opts)
-             [:div.hide-on-tb-dt.m3
-              [:div.mxn2.mb3 (c/build ugc/component (assoc ugc :id "ugc-mb") opts)]]]))]]
-        (when (seq reviews)
-          [:div.container.col-7-on-tb-dt.px2
-           (c/build review-component/reviews-component reviews opts)])
-        (when faq-section
-          [:div.container
-           (c/build faq/organism faq-section opts)])]))))
+                      (with :product-details-accordion data)
+                      {:opts {:accordion.drawer.open/face-component   accordions.product-info/face-open
+                              :accordion.drawer.closed/face-component accordions.product-info/face-closed
+                              :accordion.drawer/contents-component    accordions.product-info/contents}})
+             (c/build tabbed-information/component data))
+           (c/build catalog.M/non-hair-product-description data opts)
+           [:div.hide-on-tb-dt.m3
+            [:div.mxn2.mb3 (c/build ugc/component (assoc ugc :id "ugc-mb") opts)]]]))]]
+      (when (seq reviews)
+        [:div.container.col-7-on-tb-dt.px2
+         (c/build review-component/reviews-component reviews opts)])
+      (when faq-section
+        [:div.container
+         (c/build faq/organism faq-section opts)])])))
 
 (defn ugc-query [product sku data]
   (let [shop?              (= :shop (sites/determine-site data))
@@ -865,7 +867,7 @@
         carousel-redesign? (experiments/carousel-redesign? state)
         ;; Focus
         detailed-product   (products/current-product state)]
-    (c/build template
+    (c/build (if detailed-product template loading-template)
              (merge (query state)
                     {:add-to-cart (add-to-cart-query state)}
                     (product-carousel<- images-db product-carousel detailed-product carousel-redesign?))
