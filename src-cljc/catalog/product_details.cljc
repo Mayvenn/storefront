@@ -60,7 +60,7 @@
             [spice.core :as spice]
             [spice.maps]))
 
-(defn page [wide-left wide-right-and-narrow]
+(defn two-column-layout [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
    [:div.col-on-tb-dt.col-7-on-tb-dt.px2
     wide-left]
@@ -232,7 +232,7 @@
             (component/build ugc/popup-component (assoc ugc :id "popup-ugc") opts)])
          [:div
           {:key "page"}
-          (page
+          (two-column-layout
            (component/html
             (if (seq (with :product-carousel data))
               (component/build carousel-neue/component
