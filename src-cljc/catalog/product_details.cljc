@@ -15,7 +15,6 @@
                        [storefront.hooks.stringer :as stringer]
                        [storefront.hooks.seo :as seo]
                        [storefront.trackings :as trackings]])
-            [adventure.faq :as adventure.faq]
             [api.catalog :refer [select ?wig]]
             api.current
             api.orders
@@ -30,7 +29,7 @@
             [catalog.ui.molecules :as catalog.M]
             [clojure.string]
             [homepage.ui.faq :as faq]
-            [mayvenn.visual.tools :refer [with within]]
+            [mayvenn.visual.tools :refer [with]]
             [mayvenn.visual.ui.titles :as titles]
             [spice.selector :as selector]
             [storefront.accessors.contentful :as contentful]
