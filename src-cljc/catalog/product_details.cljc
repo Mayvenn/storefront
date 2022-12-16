@@ -475,7 +475,7 @@
          #_(cms-dynamic-content/derive-product-details cms-pdp-content selected-sku)))
 
 (defn content-slots->accordion-slots
-  [content-slot-data product open-drawers]
+  [content-slot-data product length-guide-image open-drawers]
   (merge
    ;; TODO drive initial-open-drawers off of Contentful Data?
    (if (contains? (:catalog/department product) "stylist-exclusives")
@@ -488,8 +488,16 @@
                   (keep (fn [drawer]
                           (let [[drawer-id slot-ids] (first drawer)
                                 sections             (keep (fn [slot-id]
-                                                             (when-let [content (get content-slot-data slot-id)]
-                                                               {:content content}))
+                                                             (merge
+                                                              (when-let [content (get content-slot-data slot-id)]
+                                                                {:content content})
+                                                              (when (and (= slot-id :pdp.details.hair-info/model-wearing)
+                                                                         length-guide-image)
+                                                                {:link/content "Length Guide"
+                                                                 :link/target  [events/popup-show-length-guide
+                                                                                {:length-guide-image length-guide-image
+                                                                                 :location           "hair-info-tab"}]
+                                                                 :link/id      "hair-info-tab-length-guide"})))
                                                            slot-ids)]
                            (when (seq sections)
                              {:contents {:sections sections}
@@ -694,7 +702,7 @@
      (cond
        (and product accordion-v2?)
        (accordion-neue/accordion-query (let [{:accordion/keys [open-drawers]} (accordion-neue/<- data "product-details-accordion")]
-                                         (cond-> (content-slots->accordion-slots content-slot-data product open-drawers)
+                                         (cond-> (content-slots->accordion-slots content-slot-data product length-guide-image open-drawers)
                                            ;; In a perfect world the FAQ would be modeled with Filled Content Slots.
                                            ;; Instead, we shoehorn it into the accordion if we can find the data.
                                            (and (experiments/pdp-faq-in-accordion? data) faq)

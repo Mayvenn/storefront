@@ -30,13 +30,12 @@
    (when (seq sections)
      [:div.flex.flex-wrap.justify-between.p2.pdp-details-accordion-section
       (map-indexed
-       (fn section [idx {:keys [content]}]
+       (fn section [idx {:keys [content] :as section}]
          [:div.my2.pr2
           {:style {:min-width "50%"}
            :key   idx}
-          ;; We expect the content to come in as hiccup
           content
-          #_(when-let [link-content (:link/content section)]
+          (when-let [link-content (:link/content section)]
             (ui/button-small-underline-primary
              (assoc
               (apply utils/fake-href (:link/target section))
