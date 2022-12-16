@@ -1094,28 +1094,6 @@
            (when (not (or (= events/navigate-cart nav-event) stay-on-page?))
              (history/enqueue-navigate events/navigate-cart)))))))
 
-(defmethod effects/perform-effects events/add-servicing-stylist-and-sku
-  [_ _ {:keys [sku quantity servicing-stylist]} _ state]
-  (let [token  (get-in state keypaths/order-token)
-        number (get-in state keypaths/order-number)]
-    #?(:cljs
-       (api/add-servicing-stylist-and-sku
-        (get-in state keypaths/session-id)
-        (cond-> {:sku                sku
-                 :servicing-stylist  servicing-stylist
-                 :quantity           quantity
-                 :stylist-id         (get-in state keypaths/store-stylist-id)
-                 :user-id            (get-in state keypaths/user-id)
-                 :user-token         (get-in state keypaths/user-token)
-                 :heat-feature-flags (keys (get-in state keypaths/features))}
-          (and token number)
-          (merge {:token  token
-                  :number number}))
-        #(messages/handle-message events/api-success-add-sku-to-bag
-                                  {:order    %
-                                   :quantity quantity
-                                   :sku      sku})))))
-
 (defmethod transitions/transition-state events/api-success-add-sku-to-bag
   [_ event {:keys [quantity sku]} app-state]
   (assoc-in app-state keypaths/browse-sku-quantity 1))
