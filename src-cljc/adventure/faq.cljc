@@ -4,14 +4,6 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
-(defn free-install-query
-  [data]
-  (when-let [faq (get-in data (conj keypaths/cms-faq :free-mayvenn-services))]
-    {:expanded-index (get-in data keypaths/faq-expanded-section)
-     :sections       (for [{:keys [question answer]} (:question-answers faq)]
-                       {:title   (:text question)
-                        :content answer})}))
-
 (defn format-answer [{:as answer :keys [content]}]
   (mapv (fn [paragraph]
           {:paragraph
