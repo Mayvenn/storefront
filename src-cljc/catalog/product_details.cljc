@@ -490,12 +490,13 @@
                                 sections             (keep (fn [slot-id]
                                                              (when-let [content (get content-slot-data slot-id)]
                                                                {:content content}))
-                                               slot-ids)]
+                                                           slot-ids)]
                            (when (seq sections)
                              {:contents {:sections sections}
                               :id       drawer-id
                               ;; TODO: drive drawer face copy from Contentful data?
                               :face     {:copy (-> drawer-id
+                                                   str
                                                    (clojure.string/split #"/")
                                                    last
                                                    (clojure.string/replace #"-" " "))}}))))
