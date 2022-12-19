@@ -467,16 +467,14 @@
        (partition 3)
        (keep (fn [[k heading content]]
                (when content
-                 [k [:div (when heading [:h3 heading])
-                     [:p content]]])))
+                 [k (str "<div>" (when heading (str "<h3>" heading "</h3>")) "<p>" (apply str content) "</p></div>")])))
        (into {})))
 
 (defn content-slots<
   [current-product selected-sku model-image cms-pdp-content fake-cms-content]
   (merge (legacy-content-from-cellar current-product selected-sku model-image)
          (cms-dynamic-content/derive-product-details fake-cms-content selected-sku)
-         ;; TODO: Uncomment this out to allow Contentful data
-         #_(cms-dynamic-content/derive-product-details cms-pdp-content selected-sku)))
+         (cms-dynamic-content/derive-product-details cms-pdp-content selected-sku)))
 
 (defn content-slots->accordion-slots
   [content-slot-data product length-guide-image open-drawers]
@@ -516,25 +514,20 @@
     :id                   "product-details-accordion"
     :open-drawers         open-drawers}))
 
-;; TODO: Change content-value to markup. cms-dynamic-content/derive-product-details
-;; will need to include a markup->hiccup layer
 (def ^:private fake-contentful-product-details-data
   {:ctf-id-1
    {:content-slot-id "pdp/colorable"
     :selector        {"hair/color" #{"black" "1b-soft-black"}}
-    :content-value   [:div [:h3 "Can It Be Colored?"]
-                      [:p "Yes - This virgin human hair can be lifted (bleached) and colored with professional products."]]}
+    :content-value   "<h3>Can It Be Colored?</h3><p>Yes - This virgin human hair can be lifted (bleached) and colored with professional products.</p>"}
    :ctf-id-2
    {:content-slot-id "pdp/colorable"
     :selector        {"hair/color" #{"blonde" "blonde-dark-roots" "dark-blonde" "dark-blonde-dark-roots" "1c-mocha-brown" "#2-chocolate-brown"
                                      "#4-caramel-brown" "6-hazelnut-brown" "18-chestnut-blonde" "60-golden-ash-blonde" "613-bleach-blonde"}}
-    :content-value   [:div [:h3 "Can It Be Colored?"]
-                      [:p "Yes - Keep in mind pre-lightened blonde should not be lifted (bleached) any further, but can be professionally colored with deposit-only products or toners."]]}
+    :content-value "<h3>Can It Be Colored?</h3><p>Yes - Keep in mind pre-lightened blonde should not be lifted (bleached) any further, but can be professionally colored with deposit-only products or toners.</p>"}
    :ctf-id-3
    {:content-slot-id "pdp/colorable"
     :selector        {"hair/color" #{"#1-jet-black" "vibrant-burgundy"}}
-    :content-value   [:div [:h3 "Can It Be Colored?"]
-                      [:p "No - Since this hair has already been professionally processed, we don't recommend any lifting (bleaching) or coloring."]]}})
+    :content-value   "<h3>Can It Be Colored?</h3><p>No - Since this hair has already been professionally processed, we don't recommend any lifting (bleaching) or coloring.</p>"}})
 
 (defn query [data]
   (let [selections                (get-in data catalog.keypaths/detailed-product-selections)

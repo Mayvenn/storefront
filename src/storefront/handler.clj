@@ -17,6 +17,7 @@
             [compojure.route :as route]
             [environ.core :refer [env]]
             [lambdaisland.uri :as uri]
+            [markdown.core :as markdown]
             [noir-exception.core :refer [wrap-exceptions wrap-internal-error]]
             [ring-logging.core :as ring-logging]
             [ring.middleware.content-type :refer [wrap-content-type]]
@@ -418,6 +419,8 @@
                                         (assoc-in [:filledContentSlot]
                                                   (some->>
                                                    (assemble-cms-node normalized-cms-cache :filledContentSlot)
+                                                   (mapv (fn [filled-content-slot]
+                                                           (update filled-content-slot :content-value markdown/md-to-html-string)))
                                                    (maps/index-by :content/id)))))
 
                                     (= events/navigate-landing-page nav-event)
