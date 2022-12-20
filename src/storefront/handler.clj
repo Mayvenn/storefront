@@ -382,8 +382,6 @@
                                                                                 contentful/extract-fields
                                                                                 (resolve-cms-node normalized-cms-cache))]))}
 
-                              #_(update-data {} [:faq :sitewide-footer])
-
                               (cond (= events/navigate-home nav-event)
                                     (-> {:homepage (let [id (if shop? :unified-fi :unified)]
                                                      {id (-> normalized-cms-cache (assemble-cms-node :homepage id) first)})}
