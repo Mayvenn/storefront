@@ -118,10 +118,6 @@
   [data]
   (display-feature? data "looks-tags"))
 
-(defn accordion-v2?
-  [data]
-  (display-feature? data "accordion-v2"))
-
 (defn bf-2022-sale?
   [data]
   (and (display-feature? data "bf-2022-sale")

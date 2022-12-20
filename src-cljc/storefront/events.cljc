@@ -476,7 +476,6 @@
 (defpath api-success-v2-skus-for-related-addons)
 
 (defpath faq-section-selected)
-(defpath tabbed-information-tab-selected)
 
 (defpath voucher-camera-permission-denied)
 
