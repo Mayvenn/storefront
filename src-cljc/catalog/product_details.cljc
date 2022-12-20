@@ -731,10 +731,11 @@
                                                   (->> selected-sku
                                                        (cms-dynamic-content/derive-product-details fake-contentful-product-details-data)
                                                        ;; The old accordion expects strings (to which it attaches hard-coded titles)
-                                                       ;; The new accordion expects hiccup data containing the title
                                                        ;; The "fake" data must be useable by both old and new accordions, so we must
-                                                       ;; update the content to consist only of the string.
-                                                       (spice.maps/map-values #(-> % first (nth 2) (nth 1)))))}]
+                                                       ;; update the content to consist only of the string. HACKY HACK
+                                                       (spice.maps/map-values #(subs %
+                                                                                     (+ 3 (clojure.string/index-of % "<p>"))
+                                                                                     (- (count %) 4)))))}]
          #:tabbed-information{:id      "product-description-tabs"
                               :keypath keypaths/product-details-information-tab
                               :tabs    [{:title    "Hair Info"
