@@ -356,47 +356,23 @@
    :header-menu-item/navigation-target "#" ; needed for tab navigation through menu
    :header-menu-item/content           "Hair Shop"
    :header-menu-item/id                "desktop-hair-shop"
-   :flyout/items                       (concat (->> (get-in data keypaths/categories)
-                                                    (filter :desktop-menu/order)
-                                                    (filter (fn [category]
-                                                              (or (auth/stylist? (auth/signed-in data))
-                                                                  (not (-> category
-                                                                           :catalog/department
-                                                                           (contains? "stylist-exclusives"))))))
-                                                    (sort-by :desktop-menu/order)
-                                                    (mapv (fn category->icp-flyout-option
-                                                            [{:as category :keys [:page/slug desktop-menu/title category/new?]}]
-                                                            {:key         slug
-                                                             :nav-message [events/navigate-category category]
-                                                             :copy        title
-                                                             :new?        new?})))
-                                               (when (experiments/bundle-sets-in-sub-menu? data)
-                                                 [{:key         :bundle-sets
-                                                   :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]
-                                                   :copy        "Bundle Sets"
-                                                   :new?        false}]))
+   :flyout/items                       (->> (get-in data keypaths/categories)
+                                            (filter :desktop-menu/order)
+                                            (filter (fn [category]
+                                                      (or (auth/stylist? (auth/signed-in data))
+                                                          (not (-> category
+                                                                   :catalog/department
+                                                                   (contains? "stylist-exclusives"))))))
+                                            (sort-by :desktop-menu/order)
+                                            (mapv (fn category->icp-flyout-option
+                                                    [{:as   category
+                                                      :keys [:page/slug desktop-menu/title category/new?]}]
+                                                    {:key         slug
+                                                     :nav-message [events/navigate-category category]
+                                                     :copy        title
+                                                     :new?        new?})))
    :flyout/id                          (when (get-in data keypaths/shop-a-la-carte-menu-expanded)
                                          "shop-a-la-carte-menu-expanded")})
-
-(defn shop-bundle-sets-query [data]
-  {:header-menu-item/flyout-menu-path  keypaths/shop-bundle-sets-menu-expanded
-   :header-menu-item/id                "desktop-shop-bundle-sets"
-   :header-menu-item/content           "Bundle Sets"
-   :header-menu-item/navigation-target "#" ; needed for tab navigation through menu
-   :flyout/items                       [{:key         "all"
-                                         :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]
-                                         :new?        false
-                                         :copy        "All Bundle Sets"}
-                                        {:key         "straight"
-                                         :nav-message [events/navigate-shop-by-look {:album-keyword :straight-bundle-sets}]
-                                         :new?        false
-                                         :copy        "Straight Bundle Sets"}
-                                        {:key         "curly"
-                                         :nav-message [events/navigate-shop-by-look {:album-keyword :wavy-curly-bundle-sets}]
-                                         :new?        false
-                                         :copy        "Wavy & Curly Bundle Sets"}]
-   :flyout/id                          (when (get-in data keypaths/shop-bundle-sets-menu-expanded)
-                                         "shop-bundle-sets-menu-expanded")})
 
 (defn shop-wigs-query [data]
   {:header-menu-item/flyout-menu-path  keypaths/shop-wigs-menu-expanded
@@ -420,11 +396,10 @@
                                          "shop-wigs-menu-expanded")})
 
 (defn basic-query [data]
-  (let [store                    (marquee/query data)
-        site                     (sites/determine-site data)
-        signed-in                (auth/signed-in data)
-        bf-2022-sale?            (experiments/bf-2022-sale? data)
-        bundle-sets-in-sub-menu? (experiments/bundle-sets-in-sub-menu? data)]
+  (let [store         (marquee/query data)
+        site          (sites/determine-site data)
+        signed-in     (auth/signed-in data)
+        bf-2022-sale? (experiments/bf-2022-sale? data)]
     {:signed-in                   signed-in
      :on-taxon?                   (get-in data keypaths/current-traverse-nav)
      :promo-banner                (promo-banner/query data)
@@ -451,82 +426,75 @@
                                     :slide-out-nav-content-item/id      "content-help"
                                     :slide-out-nav-content-item/primary "Contact Us"}]
 
-     :slide-out-nav/menu-items (cond-> []
-                                 :always
-                                 (concat
-                                  [{:slide-out-nav-menu-item/target  [events/navigate-home]
-                                    :slide-out-nav-menu-item/nested? false
-                                    :slide-out-nav-menu-item/id      "menu-home"
-                                    :slide-out-nav-menu-item/primary "Home"}
-                                   (when bf-2022-sale?
-                                     {:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug           "clearance"
-                                                                                                  :catalog/category-id "48"}]
-                                      :slide-out-nav-menu-item/nested? false
-                                      :slide-out-nav-menu-item/id      "menu-clearance"
-                                      :slide-out-nav-menu-item/primary "Clearance Wigs"})
-                                   {:slide-out-nav-menu-item/target  [events/menu-list {:menu-type :hair-shop}]
-                                    :slide-out-nav-menu-item/nested? true
-                                    :slide-out-nav-menu-item/id      "menu-hair-shop"
-                                    :slide-out-nav-menu-item/primary "Hair Shop"}
-                                   (when-not bundle-sets-in-sub-menu?
-                                     {:slide-out-nav-menu-item/target  [events/menu-list {:menu-type :shop-bundle-sets}]
-                                      :slide-out-nav-menu-item/nested? true
-                                      :slide-out-nav-menu-item/id      "menu-shop-by-bundle-sets"
-                                      :slide-out-nav-menu-item/primary "Bundle Sets"})
-                                   {:slide-out-nav-menu-item/target  [events/menu-list {:menu-type :wigs}]
-                                    :slide-out-nav-menu-item/id      "menu-shop-wigs"
-                                    :slide-out-nav-menu-item/nested? true
-                                    :slide-out-nav-menu-item/primary "Wigs"}
-                                   {:slide-out-nav-menu-item/target  [events/navigate-landing-page {:landing-page-slug "new-arrivals"}]
-                                    :slide-out-nav-menu-item/nested? false
-                                    :slide-out-nav-menu-item/id      "menu-new-arrivals"
-                                    :slide-out-nav-menu-item/primary "New Arrivals!"}
-                                   {:slide-out-nav-menu-item/target  [events/navigate-shop-by-look {:album-keyword :look}]
-                                    :slide-out-nav-menu-item/nested? false
-                                    :slide-out-nav-menu-item/id      "menu-shop-by-look"
-                                    :slide-out-nav-menu-item/primary "Shop by Look"}
-                                   {:slide-out-nav-menu-item/target  [events/navigate-retail-walmart]
-                                    :slide-out-nav-menu-item/nested? false
-                                    :slide-out-nav-menu-item/id      "menu-stores"
-                                    :slide-out-nav-menu-item/primary "Stores"}
-                                   {:slide-out-nav-menu-item/target  {:href blog-url}
-                                    :slide-out-nav-menu-item/nested? false
-                                    :slide-out-nav-menu-item/id      "menu-blog"
-                                    :slide-out-nav-menu-item/primary "Blog"}])
+     :slide-out-nav/menu-items    (cond-> []
+                                    :always
+                                    (concat
+                                     [{:slide-out-nav-menu-item/target  [events/navigate-home]
+                                       :slide-out-nav-menu-item/nested? false
+                                       :slide-out-nav-menu-item/id      "menu-home"
+                                       :slide-out-nav-menu-item/primary "Home"}
+                                      (when bf-2022-sale?
+                                        {:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug           "clearance"
+                                                                                                     :catalog/category-id "48"}]
+                                         :slide-out-nav-menu-item/nested? false
+                                         :slide-out-nav-menu-item/id      "menu-clearance"
+                                         :slide-out-nav-menu-item/primary "Clearance Wigs"})
+                                      {:slide-out-nav-menu-item/target  [events/menu-list {:menu-type :hair-shop}]
+                                       :slide-out-nav-menu-item/nested? true
+                                       :slide-out-nav-menu-item/id      "menu-hair-shop"
+                                       :slide-out-nav-menu-item/primary "Hair Shop"}
+                                      {:slide-out-nav-menu-item/target  [events/menu-list {:menu-type :wigs}]
+                                       :slide-out-nav-menu-item/id      "menu-shop-wigs"
+                                       :slide-out-nav-menu-item/nested? true
+                                       :slide-out-nav-menu-item/primary "Wigs"}
+                                      {:slide-out-nav-menu-item/target  [events/navigate-landing-page {:landing-page-slug "new-arrivals"}]
+                                       :slide-out-nav-menu-item/nested? false
+                                       :slide-out-nav-menu-item/id      "menu-new-arrivals"
+                                       :slide-out-nav-menu-item/primary "New Arrivals!"}
+                                      {:slide-out-nav-menu-item/target  [events/navigate-shop-by-look {:album-keyword :look}]
+                                       :slide-out-nav-menu-item/nested? false
+                                       :slide-out-nav-menu-item/id      "menu-shop-by-look"
+                                       :slide-out-nav-menu-item/primary "Shop by Look"}
+                                      {:slide-out-nav-menu-item/target  [events/navigate-retail-walmart]
+                                       :slide-out-nav-menu-item/nested? false
+                                       :slide-out-nav-menu-item/id      "menu-stores"
+                                       :slide-out-nav-menu-item/primary "Stores"}
+                                      {:slide-out-nav-menu-item/target  {:href blog-url}
+                                       :slide-out-nav-menu-item/nested? false
+                                       :slide-out-nav-menu-item/id      "menu-blog"
+                                       :slide-out-nav-menu-item/primary "Blog"}])
 
-                                 (-> signed-in ::auth/as (= :stylist))
-                                 (concat
-                                  [{:slide-out-nav-menu-item/target  [events/navigate-product-details
-                                                                      {:page/slug          "rings-kits"
-                                                                       :catalog/product-id "49"
-                                                                       :query-params       {:SKU (:direct-to-details/sku-id categories/the-only-stylist-exclusive)}}]
-                                    :slide-out-nav-menu-item/nested? false
-                                    :slide-out-nav-menu-item/id      "menu-stylist-products"
-                                    :slide-out-nav-menu-item/primary "Stylist Exclusives"}]))
-     :desktop-menu/items (concat [{:header-menu-item/navigation-target [events/navigate-home]
-                                   :header-menu-item/id                "desktop-home"
-                                   :header-menu-item/content           "Home"}]
-                                 [(hair-shop-query data)]
-                                 (when-not bundle-sets-in-sub-menu?
-                                   [(shop-bundle-sets-query data)])
-                                 [(shop-wigs-query data)]
-                                 [{:header-menu-item/navigation-target [events/navigate-landing-page {:landing-page-slug "new-arrivals"}]
-                                   :header-menu-item/id                "desktop-new-arrivals"
-                                   :header-menu-item/content           "New Arrivals!"}]
-                                 [{:header-menu-item/navigation-target [events/navigate-shop-by-look {:album-keyword :look}]
-                                   :header-menu-item/id                "desktop-shop-by-look"
-                                   :header-menu-item/content           "Shop by Look"}
-                                  {:header-menu-item/navigation-target [events/navigate-retail-walmart]
-                                   :header-menu-item/id                "menu-stores"
-                                   :header-menu-item/content           "Stores"}
-                                  {:header-menu-item/href    blog-url
-                                   :header-menu-item/id      "desktop-blog"
-                                   :header-menu-item/content "Blog"}]
-                                 (when bf-2022-sale?
-                                   [{:header-menu-item/navigation-target [events/navigate-category {:page/slug           "clearance"
-                                                                                                    :catalog/category-id "48"}]
-                                     :header-menu-item/id                "desktop-clearance"
-                                     :header-menu-item/content           "Clearance Wigs"}]))}))
+                                    (-> signed-in ::auth/as (= :stylist))
+                                    (concat
+                                     [{:slide-out-nav-menu-item/target  [events/navigate-product-details
+                                                                         {:page/slug          "rings-kits"
+                                                                          :catalog/product-id "49"
+                                                                          :query-params       {:SKU (:direct-to-details/sku-id categories/the-only-stylist-exclusive)}}]
+                                       :slide-out-nav-menu-item/nested? false
+                                       :slide-out-nav-menu-item/id      "menu-stylist-products"
+                                       :slide-out-nav-menu-item/primary "Stylist Exclusives"}]))
+     :desktop-menu/items          (concat [{:header-menu-item/navigation-target [events/navigate-home]
+                                            :header-menu-item/id                "desktop-home"
+                                            :header-menu-item/content           "Home"}]
+                                          [(hair-shop-query data)]
+                                          [(shop-wigs-query data)]
+                                          [{:header-menu-item/navigation-target [events/navigate-landing-page {:landing-page-slug "new-arrivals"}]
+                                            :header-menu-item/id                "desktop-new-arrivals"
+                                            :header-menu-item/content           "New Arrivals!"}]
+                                          [{:header-menu-item/navigation-target [events/navigate-shop-by-look {:album-keyword :look}]
+                                            :header-menu-item/id                "desktop-shop-by-look"
+                                            :header-menu-item/content           "Shop by Look"}
+                                           {:header-menu-item/navigation-target [events/navigate-retail-walmart]
+                                            :header-menu-item/id                "menu-stores"
+                                            :header-menu-item/content           "Stores"}
+                                           {:header-menu-item/href    blog-url
+                                            :header-menu-item/id      "desktop-blog"
+                                            :header-menu-item/content "Blog"}]
+                                          (when bf-2022-sale?
+                                            [{:header-menu-item/navigation-target [events/navigate-category {:page/slug           "clearance"
+                                                                                                             :catalog/category-id "48"}]
+                                              :header-menu-item/id                "desktop-clearance"
+                                              :header-menu-item/content           "Clearance Wigs"}]))}))
 
 (defn query [data]
   (-> (basic-query data)

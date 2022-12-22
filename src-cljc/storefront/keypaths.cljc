@@ -142,7 +142,6 @@
 (def store-info-expanded (conj ui :store-info-expanded))
 (def shop-a-la-carte-menu-expanded (conj ui :shop-a-la-carte-menu-expanded))
 (def shop-looks-menu-expanded (conj ui :shop-looks-menu-expanded))
-(def shop-bundle-sets-menu-expanded (conj ui :shop-bundle-sets-menu-expanded))
 (def shop-wigs-menu-expanded (conj ui :shop-wigs-menu-expanded))
 (def checkout-shipping (conj ui :checkout-shipping))
 (def flyout-stuck-open? (conj ui :flyout-stuck-open?))
@@ -151,7 +150,6 @@
                     shop-a-la-carte-menu-expanded
                     shop-looks-menu-expanded
                     store-info-expanded
-                    shop-bundle-sets-menu-expanded
                     shop-wigs-menu-expanded})
 (def menus (conj header-menus menu-expanded))
 

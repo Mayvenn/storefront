@@ -763,11 +763,6 @@
                    :shopping-method-choice.button/target   [e/navigate-shop-by-look
                                                             {:album-keyword :look}]
                    :shopping-method-choice.button/ucare-id "a9009728-efd3-4917-9541-b4514b8e4776"}
-                  {:shopping-method-choice.button/id       "button-bundle-sets"
-                   :shopping-method-choice.button/label    "Pre-made bundle sets"
-                   :shopping-method-choice.button/target   [e/navigate-shop-by-look
-                                                            {:album-keyword :all-bundle-sets}]
-                   :shopping-method-choice.button/ucare-id "87b46db7-4c70-4d3a-8fd0-6e99e78d3c96"}
                   {:shopping-method-choice.button/id       "button-a-la-carte"
                    :shopping-method-choice.button/label    "Choose individual bundles"
                    :shopping-method-choice.button/target   [e/navigate-category

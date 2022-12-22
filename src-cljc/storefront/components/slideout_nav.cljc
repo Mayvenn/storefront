@@ -200,7 +200,6 @@
          (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))
          (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))
          (assoc-in [:menu-data] (case (get-in data keypaths/current-traverse-nav-menu-type)
-                                  :shop-bundle-sets (menu/shop-bundle-sets-query data)
                                   :hair-shop        (menu/hair-shop-query data)
                                   :wigs             (menu/wigs-query data)
                                   nil)))

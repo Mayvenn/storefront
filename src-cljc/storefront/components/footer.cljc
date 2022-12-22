@@ -184,15 +184,7 @@
                                        [{:title       "Shop By Look"
                                          :sort-order  3
                                          :id          "shop-by-look"
-                                         :nav-message [events/navigate-shop-by-look {:album-keyword :look}]}])
-                                     [{:title       "Straight Bundle Sets"
-                                       :sort-order  9
-                                       :id          "shop-straight-bundle-sets"
-                                       :nav-message [events/navigate-shop-by-look {:album-keyword :straight-bundle-sets}]}
-                                      {:title       "Wavy Curly Bundle Sets"
-                                       :sort-order  10
-                                       :id          "shop-wavy-curly-bundle-sets"
-                                       :nav-message [events/navigate-shop-by-look {:album-keyword :wavy-curly-bundle-sets}]}])
+                                         :nav-message [events/navigate-shop-by-look {:album-keyword :look}]}]))
         links                (->> categories
                                 (mapv (partial category->link))
                                 (concat non-category-links)

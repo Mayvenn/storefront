@@ -1018,10 +1018,7 @@
                                                 ["https://shop.mayvenn.com/signup"                         "0.60"]
                                                 ["https://shop.mayvenn.com/shop/look"                      "0.80"]
                                                 ["https://shop.mayvenn.com/shop/straight-looks"            "0.80"]
-                                                ["https://shop.mayvenn.com/shop/wavy-curly-looks"          "0.80"]
-                                                ["https://shop.mayvenn.com/shop/all-bundle-sets"           "0.80"]
-                                                ["https://shop.mayvenn.com/shop/straight-bundle-sets"      "0.80"]
-                                                ["https://shop.mayvenn.com/shop/wavy-curly-bundle-sets"    "0.80"]]
+                                                ["https://shop.mayvenn.com/shop/wavy-curly-looks"          "0.80"]]
 
                                                (concat
                                                 (canonical-category-sitemap initial-categories launched-products)

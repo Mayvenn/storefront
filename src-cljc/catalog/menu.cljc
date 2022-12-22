@@ -73,24 +73,6 @@
                                 :new? false
                                 :copy "Wavy & Curly Looks"}]})
 
-(defn shop-bundle-sets-query [data]
-  {:return-link/event-message [events/menu-home]
-   :return-link/copy          "Back"
-   :return-link/id            "back-from-shop-bundle-sets"
-   :menu/title                "By Bundle Sets"
-   :menu/options              [{:key "all"
-                                :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]
-                                :new? false
-                                :copy "All Bundle Sets"}
-                               {:key "straight"
-                                :nav-message [events/navigate-shop-by-look {:album-keyword :straight-bundle-sets}]
-                                :new? false
-                                :copy "Straight Bundle Sets"}
-                               {:key "curly"
-                                :nav-message [events/navigate-shop-by-look {:album-keyword :wavy-curly-bundle-sets}]
-                                :new? false
-                                :copy "Wavy & Curly Bundle Sets"}]})
-
 (defn hair-shop-query [data]
   {:return-link/event-message [events/menu-home]
    :return-link/copy          "Back"
@@ -116,12 +98,7 @@
                                 {:key "extensions"
                                  :nav-message [events/navigate-category {:page/slug "extensions" :catalog/category-id "28"}]
                                  :new? false
-                                 :copy "Hair Extensions"}]
-                               (when (experiments/bundle-sets-in-sub-menu? data)
-                                 [{:key "bundle-sets"
-                                   :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]
-                                   :new? false
-                                   :copy "Bundle Sets"}] ))})
+                                 :copy "Hair Extensions"}])})
 
 (defn wigs-query [data]
   {:return-link/event-message [events/menu-home]
