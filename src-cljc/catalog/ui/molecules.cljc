@@ -18,7 +18,9 @@
       [:div.proxima.content-3 {:class secondary-classes}
        secondary]])])
 
+;; FIXME(corey) The product details page uses a fork of this component
 (defn yotpo-reviews-summary
+  "Renders the yotpo reviews summary"
   [{:yotpo-reviews-summary/keys [product-title product-id data-url]}]
   (when product-id
     [:div.h6

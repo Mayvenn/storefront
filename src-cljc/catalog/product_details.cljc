@@ -11,7 +11,6 @@
                        [storefront.hooks.exception-handler :as exception-handler]
                        [storefront.hooks.facebook-analytics :as facebook-analytics]
                        [storefront.hooks.quadpay :as zip]
-                       [storefront.hooks.reviews :as review-hooks]
                        [storefront.hooks.stringer :as stringer]
                        [storefront.hooks.seo :as seo]
                        [storefront.trackings :as trackings]])
@@ -27,9 +26,10 @@
             [catalog.selector.sku :as sku-selector]
             [catalog.ui.add-to-cart :as add-to-cart]
             [catalog.ui.molecules :as catalog.M]
+            [catalog.reviews :as reviews]
             [clojure.string]
             [homepage.ui.faq :as faq]
-            [mayvenn.visual.tools :refer [with]]
+            [mayvenn.visual.tools :refer [with within]]
             [mayvenn.visual.ui.titles :as titles]
             [spice.selector :as selector]
             [storefront.accessors.contentful :as contentful]
@@ -51,8 +51,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages
              :as messages
-             :refer [handle-message] :rename {handle-message publish}]
-            [storefront.platform.reviews :as review-component]
+             :refer [handle-message] :rename {handle-message publish}] 
+            [storefront.routes :as routes]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
             storefront.ugc
@@ -113,14 +113,14 @@
    {}
    (keys selections)))
 
-(c/defcomponent product-summary-organism
+(c/defcomponent product-summary
   "Displays basic information about a particular product"
   [data _ _]
   [:div.mt3.mx3
    [:h1.flex-auto
     (titles/proxima-left (with :title data))]
    [:div.flex.justify-between.my2
-    (catalog.M/yotpo-reviews-summary data)
+    (c/build reviews/summary (with :reviews.summary data))
     [:div.col-3 (catalog.M/price-block data)]]
    #?(:cljs
       (c/build zip/pdp-component data _))])
@@ -216,7 +216,6 @@
 (c/defcomponent template
   [{:keys [carousel-images
            product
-           reviews
            selected-sku
            picker-data
            ugc
@@ -248,7 +247,7 @@
              (c/build ugc/component (assoc ugc :id "ugc-dt") opts)]))
          (c/html
           [:div
-           (c/build product-summary-organism data)
+           (c/build product-summary data)
            [:div.px2
             (c/build picker/component picker-data opts)]
            (c/build accordion-neue/component
@@ -271,9 +270,9 @@
            (c/build catalog.M/non-hair-product-description data opts)
            [:div.hide-on-tb-dt.m3
             [:div.mxn2.mb3 (c/build ugc/component (assoc ugc :id "ugc-mb") opts)]]]))]]
-      (when (seq reviews)
+      (when (seq (with :reviews.browser data))
         [:div.container.col-7-on-tb-dt.px2
-         (c/build review-component/reviews-component reviews opts)])
+         (c/build reviews/browser (with :reviews.browser data))])
       (when faq-section
         [:div.container
          (c/build faq/organism faq-section opts)])])))
@@ -545,7 +544,6 @@
         ugc                       (ugc-query product selected-sku data)
         sku-price                 (or (:product/essential-price selected-sku)
                                       (:sku/price selected-sku))
-        review-data               (review-component/query data)
         shop?                     (or (= "shop" (get-in data keypaths/store-slug))
                                       (= "retail-location" (get-in data keypaths/store-experience)))
         hair?                     (accessors.products/hair? product)
@@ -565,11 +563,7 @@
                                                   (get-in data keypaths/cms-pdp-content)
                                                   fake-contentful-product-details-data)]
     (merge
-     {:reviews                            review-data
-      :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
-      :yotpo-reviews-summary/product-id   (some-> review-data :yotpo-data-attributes :data-product-id)
-      :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
-      :zip-payments/sku-price             (if bf-2022-sale? (* 0.7 (:sku/price selected-sku)) (:sku/price selected-sku))
+     {:zip-payments/sku-price             (if bf-2022-sale? (* 0.7 (:sku/price selected-sku)) (:sku/price selected-sku))
       :zip-payments/loaded?               (get-in data keypaths/loaded-quadpay)
       :title/primary                      (:copy/title product)
       :ugc                                ugc
@@ -760,10 +754,27 @@
                                index 0)
        :exhibits             exhibits})))
 
+(defn reviews<
+  [skus-db detailed-product]
+  (when (products/eligible-for-reviews? detailed-product) ;; FIXME(corey) our product model is too anemic
+    (let [;; HACK use the first variant's id as the product id for yotpo
+          {:keys [legacy/variant-id]} (some->> detailed-product
+                                               :selector/skus
+                                               first
+                                               (get skus-db))
+          yotpo-data-attributes       {:data-name       (:copy/title detailed-product)
+                                       :data-product-id variant-id
+                                       :data-url        (routes/path-for events/navigate-product-details
+                                                                         detailed-product)}]
+      (merge
+       (within :reviews.browser yotpo-data-attributes)
+       (within :reviews.summary yotpo-data-attributes)))))
+
 (defn ^:export page
   [state opts]
   (let [;; Databases
         images-db          (get-in state keypaths/v2-images)
+        skus-db            (get-in state keypaths/v2-skus)
         product-carousel   (carousel-neue/<- state :product-carousel)
         ;; Flags
         carousel-redesign? (experiments/carousel-redesign? state)
@@ -772,8 +783,9 @@
     (c/build (if detailed-product template loading-template)
              (merge (query state)
                     {:add-to-cart (add-to-cart-query state)}
-                    (product-carousel<- images-db product-carousel detailed-product carousel-redesign?))
-             opts)))
+                    (product-carousel<- images-db product-carousel detailed-product carousel-redesign?)
+                    (reviews< skus-db detailed-product)
+                    opts))))
 
 (defn url-points-to-invalid-sku? [selected-sku query-params]
   (boolean
@@ -959,10 +971,9 @@
                             (when selected-sku
                               {:query-params {:SKU (:catalog/sku-id selected-sku)}})))
          (let [product (get-in app-state (conj keypaths/v2-products product-id))]
-           (if (auth/permitted-product? app-state product)
-             (review-hooks/insert-reviews)
+           (when-not (auth/permitted-product? app-state product)
              (effects/redirect events/navigate-home))
-           (review-hooks/start)
+           (publish events/reviews|reset)
            (seo/set-tags app-state)
            (when-let [album-keyword (storefront.ugc/product->album-keyword shop? product)]
              (effects/fetch-cms-keypath app-state [:ugc-collection album-keyword]))

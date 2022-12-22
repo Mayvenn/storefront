@@ -826,3 +826,5 @@
 (defpath carousel|jumped)
 
 (defpath pdp|carousel|color-synced)
+
+(defpath reviews|reset)
