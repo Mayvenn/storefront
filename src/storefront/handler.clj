@@ -1225,6 +1225,7 @@
                (GET "/account/referrals" req (redirect-to-home environment req :found))
                (GET "/stylist/referrals" req (redirect-to-home environment req :found))
                (GET "/adv/match-stylist" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/adv/find-your-stylist")) :moved-permanently))
+               (GET "/info/mayvenn-hair-care-guide" req (util.response/redirect "https://ucarecdn.com/dab8e356-8df2-47b8-904e-955ed1389b81/" :moved-permanently))
                (GET "/cms/*" {uri :uri} ;; GROT: Deprecated in favor of CMS2 below
                     (let [keypath (->> #"/" (clojure.string/split uri) (drop 2) (map keyword))]
                       (-> (get-in (contentful/read-cache contentful) keypath)
