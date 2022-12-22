@@ -96,9 +96,11 @@
   [_ _ _ app-state]
   (let [session-n (-> (get-in app-state keypaths/session-id) (subs 0 2) (str->int 36))]
     (cond-> app-state
-      (and (= 1 (mod session-n 2))
-           (not (contains? (set (get-in app-state keypaths/features)) :bundle-sets-in-sub-menu)))
-      (assoc-in (conj keypaths/features :bundle-sets-in-sub-menu) true))))
+      ;; FIXME(corey): abstract this a/b test bucketer
+      ;; (and (= 1 (mod session-n 2))
+      ;;     (not (contains? (set (get-in app-state keypaths/features)) :feature-slug)))
+      ;; (assoc-in (conj keypaths/features :feature-slug) true)
+      )))
 
 (defmethod transition-state events/navigation-save [_ _ stack-item app-state]
   ;; Going to a new page; add an element to the undo stack, and discard the redo stack
