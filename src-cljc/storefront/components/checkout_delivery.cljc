@@ -77,6 +77,8 @@
     "Sun" 1
     0))
 
+(def additional-holiday-delay-days 1)
+
 (defn number-of-days-to-ship
   ;; Key:
   ;; o - day ordered
@@ -147,7 +149,8 @@
                                 (apply max))]
     (+ days-until-shipped
        transit-delay
-       transit-days)))
+       transit-days
+       additional-holiday-delay-days)))
 
 (defn format-delivery-date [date]
   (str (formatters/day->day-abbr date) "(" (formatters/month+day date) ")"))
