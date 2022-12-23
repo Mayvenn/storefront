@@ -756,7 +756,8 @@
 
 (defn reviews<
   [skus-db detailed-product]
-  (when (products/eligible-for-reviews? detailed-product) ;; FIXME(corey) our product model is too anemic
+  (when (and (seq detailed-product)
+             (products/eligible-for-reviews? detailed-product)) ;; FIXME(corey) our product model is too anemic
     (let [;; HACK use the first variant's id as the product id for yotpo
           {:keys [legacy/variant-id]} (some->> detailed-product
                                                :selector/skus
