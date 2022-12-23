@@ -244,6 +244,7 @@
                              :carousel/id                          :product-carousel}})
             [:div ^:inline
              (carousel carousel-images product)
+             #_
              (c/build ugc/component (assoc ugc :id "ugc-dt") opts)]))
          (c/html
           [:div
