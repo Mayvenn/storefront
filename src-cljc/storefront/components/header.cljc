@@ -396,10 +396,9 @@
                                          "shop-wigs-menu-expanded")})
 
 (defn basic-query [data]
-  (let [store         (marquee/query data)
-        site          (sites/determine-site data)
-        signed-in     (auth/signed-in data)
-        bf-2022-sale? (experiments/bf-2022-sale? data)]
+  (let [store     (marquee/query data)
+        site      (sites/determine-site data)
+        signed-in (auth/signed-in data)]
     {:signed-in                   signed-in
      :on-taxon?                   (get-in data keypaths/current-traverse-nav)
      :promo-banner                (promo-banner/query data)
@@ -433,12 +432,11 @@
                                        :slide-out-nav-menu-item/nested? false
                                        :slide-out-nav-menu-item/id      "menu-home"
                                        :slide-out-nav-menu-item/primary "Home"}
-                                      (when bf-2022-sale?
-                                        {:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug           "clearance"
-                                                                                                     :catalog/category-id "48"}]
-                                         :slide-out-nav-menu-item/nested? false
-                                         :slide-out-nav-menu-item/id      "menu-clearance"
-                                         :slide-out-nav-menu-item/primary "Clearance Wigs"})
+                                      {:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug           "clearance"
+                                                                                                   :catalog/category-id "48"}]
+                                       :slide-out-nav-menu-item/nested? false
+                                       :slide-out-nav-menu-item/id      "menu-clearance"
+                                       :slide-out-nav-menu-item/primary "Clearance Wigs"}
                                       {:slide-out-nav-menu-item/target  [events/menu-list {:menu-type :hair-shop}]
                                        :slide-out-nav-menu-item/nested? true
                                        :slide-out-nav-menu-item/id      "menu-hair-shop"
@@ -490,11 +488,10 @@
                                            {:header-menu-item/href    blog-url
                                             :header-menu-item/id      "desktop-blog"
                                             :header-menu-item/content "Blog"}]
-                                          (when bf-2022-sale?
-                                            [{:header-menu-item/navigation-target [events/navigate-category {:page/slug           "clearance"
-                                                                                                             :catalog/category-id "48"}]
-                                              :header-menu-item/id                "desktop-clearance"
-                                              :header-menu-item/content           "Clearance Wigs"}]))}))
+                                          [{:header-menu-item/navigation-target [events/navigate-category {:page/slug           "clearance"
+                                                                                                           :catalog/category-id "48"}]
+                                            :header-menu-item/id                "desktop-clearance"
+                                            :header-menu-item/content           "Clearance Wigs"}])}))
 
 (defn query [data]
   (-> (basic-query data)

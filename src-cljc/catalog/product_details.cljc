@@ -749,7 +749,7 @@
 (defn zip-payment<
   [selected-sku loaded-quadpay?]
   (when (and loaded-quadpay? (seq selected-sku))
-    {:zip-payments/sku-price (if (:promo.clearance/eligible selected-sku)
+    {:zip-payments/sku-price (if (some-> selected-sku :promo.clearance/eligible first)
                                (* 0.7 (:sku/price selected-sku))
                                (:sku/price selected-sku))
      :zip-payments/loaded?   loaded-quadpay?}))
@@ -759,7 +759,7 @@
   (when selected-sku
     (let [price (or (:product/essential-price selected-sku)
                     (:sku/price selected-sku))]
-      (if (:promo.clearance/eligible selected-sku)
+      (if (some-> selected-sku :promo.clearance/eligible first)
         {:price-block/primary-struck (mf/as-money price)
          :price-block/new-primary    (mf/as-money (* 0.7 price))
          :price-block/secondary      "each"}

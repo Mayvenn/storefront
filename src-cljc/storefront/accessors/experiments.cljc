@@ -118,11 +118,6 @@
   [data]
   (display-feature? data "looks-tags"))
 
-(defn bf-2022-sale?
-  [data]
-  (and (display-feature? data "bf-2022-sale")
-       (date/after? (date/now) (date/date-time 2022 11 22 5 00 00 000))))
-
 (defn pdp-accordion-picker?
   [data]
   (display-feature? data "pdp-accordion-picker"))
@@ -142,13 +137,6 @@
 (defn pdp-content-slots?
   [data]
   (display-feature? data "pdp-content-slots"))
-
-(defn bf-2022-retail?
-  [data]
-  (or
-   (display-feature? data "bf-2022-retail")
-   (and (date/after? (date/now) (date/date-time 2022 11 18 4 59 59 999))
-        (date/after? (date/date-time 2022 11 29 5 0 0 0) (date/now)))))
 
 (defn footer-email-capture?
   [data]
