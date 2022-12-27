@@ -8,7 +8,6 @@
                        [storefront.components.popup :as popup]
                        [storefront.components.svg :as svg]
                        [storefront.history :as history]
-                       [storefront.hooks.exception-handler :as exception-handler]
                        [storefront.hooks.facebook-analytics :as facebook-analytics]
                        [storefront.hooks.quadpay :as zip]
                        [storefront.hooks.stringer :as stringer]
@@ -361,7 +360,7 @@
 
 #?(:cljs
    (defmethod trackings/perform-track events/popup-show-length-guide
-     [_ event {:keys [location] :as args} state]
+     [_ _ {:keys [location]} _]
      (stringer/track-event "length_guide_link_pressed"
                            {:location location})))
 
@@ -401,18 +400,6 @@
                                    :copy "Come visit our Texas locations"}]
       :sub-cta/learn-more-copy   "Find my store"
       :sub-cta/learn-more-target [events/navigate-retail-walmart {}]})))
-
-(defn ^:private tab-section<
-  [data
-   {:keys [content-path fallback-content-path]
-    :as   section}]
-  (when-let [content (or (and content-path
-                              (get-in data content-path))
-                         (and fallback-content-path
-                              (get-in data fallback-content-path)))]
-    (-> section
-        (select-keys [:heading :link/content :link/target :link/id])
-        (assoc :content content))))
 
 (def details-render-slots
   [{:pdp.details/hair-info
@@ -547,7 +534,6 @@
                                       (:sku/price selected-sku))
         shop?                     (or (= "shop" (get-in data keypaths/store-slug))
                                       (= "retail-location" (get-in data keypaths/store-experience)))
-        hair?                     (accessors.products/hair? product)
         faq                       (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
                                     (-> data
                                         (get-in (conj keypaths/cms-faq pdp-faq-id))
@@ -618,7 +604,7 @@
                                   {:swatches? true
                                    :facet     "color"
                                    :options   (->> color-options
-                                                   (map (fn [{:keys [option/slug option/name option/rectangle-swatch stocked?]}]
+                                                   (map (fn [{:keys [option/slug option/name option/rectangle-swatch]}]
                                                           (merge {:option-slug      (facets/hacky-fix-of-bad-slugs-on-facets slug)
                                                                   :option-name      name
                                                                   :rectangle-swatch rectangle-swatch
@@ -646,7 +632,7 @@
                                   :contents
                                   {:facet   "length"
                                    :options (->> length-options
-                                                 (map (fn [{:keys [option/name option/slug stocked?]}]
+                                                 (map (fn [{:keys [option/name option/slug]}]
                                                         (merge {:copy        name
                                                                 :option-slug slug
                                                                 :selected?   (= (:option/slug selected-length) slug)}
@@ -692,7 +678,7 @@
                                            ;; In a perfect world the FAQ would be modeled with Filled Content Slots.
                                            ;; Instead, we shoehorn it into the accordion if we can find the data.
                                            (and (experiments/pdp-faq-in-accordion? data) faq)
-                                           (update :drawers conj (let [{:keys [question-answers slug]} faq]
+                                           (update :drawers conj (let [{:keys [question-answers]} faq]
                                                                    {:id       "pdp-faq-drawer"
                                                                     :face     {:copy "FAQs"}
                                                                     :contents {:faq (accordion-neue/accordion-query
@@ -843,7 +829,7 @@
                               (select-keys sku (:selector/electives product))))))))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-option-select
-  [_ event {:keys [selection value]} app-state]
+  [_ _ {:keys [selection value]} app-state]
   ;; HACK [#179260091]
   (let [switching-to-short-hd-lace? (and (= [selection value] [:hair/base-material "hd-lace"])
                                          (-> app-state
@@ -866,7 +852,7 @@
         (assoc-in catalog.keypaths/detailed-product-options options))))
 
 (defmethod effects/perform-effects events/control-product-detail-picker-option-select
-  [_ event {:keys [navigation-event]} _ app-state]
+  [_ _ {:keys [navigation-event]} _ app-state]
   (let [sku-id-for-selection (-> app-state
                                  (get-in catalog.keypaths/detailed-product-selected-sku)
                                  :catalog/sku-id)
@@ -878,20 +864,20 @@
     #?(:cljs (scroll/enable-body-scrolling))))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-open
-  [_ event {:keys [facet-slug length-index]} app-state]
+  [_ _ {:keys [facet-slug length-index]} app-state]
   (-> app-state
       (assoc-in catalog.keypaths/detailed-product-selected-picker facet-slug)
       (assoc-in catalog.keypaths/detailed-product-picker-visible? true)
       (assoc-in catalog.keypaths/detailed-product-lengths-index length-index)))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-option-quantity-select
-  [_ event {:keys [value]} app-state]
+  [_ _ {:keys [value]} app-state]
   (-> app-state
       (assoc-in keypaths/browse-sku-quantity value)
       (assoc-in catalog.keypaths/detailed-product-picker-visible? false)))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-close
-  [_ event _ app-state]
+  [_ _ _ app-state]
   (-> app-state
       (assoc-in catalog.keypaths/detailed-product-picker-visible? false)
       (assoc-in catalog.keypaths/detailed-product-lengths-index nil)
@@ -926,7 +912,7 @@
 
 #?(:cljs
    (defmethod trackings/perform-track events/navigate-product-details
-     [_ event {:keys [catalog/product-id]} app-state]
+     [_ _ {:keys [catalog/product-id]} app-state]
      (when (-> product-id
                ((get-in app-state keypaths/v2-products))
                accessors.products/wig-product?)
@@ -934,11 +920,11 @@
 
 #?(:cljs
    (defmethod effects/perform-effects events/api-success-v3-products-for-details
-     [_ event _ _ app-state]
+     [_ _ _ _ app-state]
      (messages/handle-message events/initialize-product-details (get-in app-state keypaths/navigation-args))))
 
 (defmethod transitions/transition-state events/initialize-product-details
-  [_ event {:as args :keys [catalog/product-id query-params]} app-state]
+  [_ _ {:as args :keys [catalog/product-id query-params]} app-state]
   (let [product-options   (generate-product-options product-id app-state)
         product           (products/product-by-id app-state product-id)
         product-skus      (products/extract-product-skus app-state product)
@@ -1013,13 +999,14 @@
            (when (not (or (= events/navigate-cart nav-event) stay-on-page?))
              (history/enqueue-navigate events/navigate-cart)))))))
 
+;; FIXME(corey) This seems broken and pretty far from the original intent
 (defmethod transitions/transition-state events/api-success-add-sku-to-bag
-  [_ event {:keys [quantity sku]} app-state]
+  [_ _ {:keys [quantity sku]} app-state]
   (assoc-in app-state keypaths/browse-sku-quantity 1))
 
 #?(:cljs
    (defmethod trackings/perform-track events/pdp|picker-options|viewed
-     [_ event data app-state]
+     [_ _ data _]
      (stringer/track-event "pdp.picker-options/viewed" data)))
 
 #?(:cljs
@@ -1032,7 +1019,7 @@
 
 #?(:cljs
    (defmethod trackings/perform-track events/pdp|picker-options|selected
-     [_ event {:keys [data]} app-state]
+     [_ _ {:keys [data]} _]
      (stringer/track-event "pdp.picker-options/selected" data)))
 
 ;; Syncs the carousel to the color selected in the picker
