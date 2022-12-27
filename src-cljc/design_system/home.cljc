@@ -9,8 +9,7 @@
             [storefront.platform.messages :refer [handle-message]]
             [storefront.keypaths :as keypaths]
             [clojure.string :as string]
-            [storefront.components.svg :as svg]
-            [storefront.components.picker.picker :as picker]))
+            [storefront.components.svg :as svg]))
 
 (defn- header
   ([name] (header name nil))
@@ -291,17 +290,6 @@
      [:div.mt4
       [:div color-class]
       [:div "#" hex]]]]])
-
-(defn color-gradient-swatch [color-class light-hex dark-hex]
-  [:div.col-6.col-4-on-tb.col-2-on-dt
-   [:div.p1
-    [:div.p4
-     {:style {:background (str "linear-gradient(#" light-hex ", #" dark-hex ")")
-              :height "8em"}}
-     [:div.mt4
-      [:div color-class]
-      [:div "#" light-hex]
-      [:div "#" dark-hex]]]]])
 
 (def ^:private colors
   [:section
@@ -601,92 +589,6 @@
                                  :dots true}}
                      {:opts {:slides (for [i (range 12)]
                                        [:img.mx-auto {:src (str "http://lorempixel.com/200/200/animals/" i)}])}})]])
-
-(def model-img
-  "http://ucarecdn.com/1a3ce0a2-d8a4-4c72-b20b-62b5ff445096/-/format/auto/-/resize/110x/")
-
-(def swatch-img
-  "http://ucarecdn.com/cf2e6d44-4e93-4792-801b-1e2aacdac408/-/format/auto/swatchnatural.png")
-
-(defn simple-option
-  [{:keys [on-click primary-label secondary-label selected? sold-out?]}]
-  (let [label-style (cond
-                      sold-out? "gray"
-                      selected? "medium"
-                      :else     nil)]
-    (ui/option {:key      primary-label
-                :height   "4em"
-                :on-click on-click}
-               (picker/simple-content-layer
-                (list
-                 [:div.col-2
-                  (when label-style
-                    {:class label-style})
-                  primary-label]
-                 [:div.gray.flex-auto secondary-label]))
-               (cond
-                 sold-out? (picker/simple-sold-out-layer "Sold Out")
-                 selected? (picker/simple-selected-layer)
-                 :else     nil))))
-
-(def simple-custom-options
-  [:section.flex.flex-column
-   [:div.col-5
-    (simple-option
-     {:primary-label  "10″"
-      :secondary-labe "$100"
-      :selected?      true
-      :sold-out?      false})]
-
-   [:div.col-5
-    (simple-option
-     {:primary-label  "10″"
-      :secondary-labe "$100"
-      :selected?      false
-      :sold-out?      false})]
-
-   [:div.col-5
-    (simple-option
-     {:primary-label  "10″"
-      :secondary-labe "$100"
-      :selected?      false
-      :sold-out?      true})]
-   [:div.col-5
-    (simple-option
-     {:primary-label "1"
-      :selected?     false})]
-
-   [:div.col-5
-    (simple-option
-     {:primary-label "2"
-      :selected?     true})]])
-
-(def swatch-custom-options
-  [:section.flex.flex-column
-   [:div.col-5
-    (picker/color-option-drop-down-item
-     {:color     {:option/name             "Natural Black"
-                  :option/rectangle-swatch swatch-img}
-      :model-img model-img
-      :selected? true
-      :sold-out? false})]
-
-   [:div.col-5
-    (picker/color-option-drop-down-item
-     {:color     {:option/name             "Natural Black"
-                  :option/rectangle-swatch swatch-img}
-      :model-img model-img
-      :selected? false
-      :sold-out? false})]
-
-   [:div.col-5
-    (picker/color-option-drop-down-item
-     {:color
-      {:option/name             "Natural Black"
-       :option/rectangle-swatch swatch-img}
-      :model-img model-img
-      :selected? false
-      :sold-out? true})]])
 
 (def alerts
   (let [content

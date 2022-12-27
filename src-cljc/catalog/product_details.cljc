@@ -40,7 +40,6 @@
             [storefront.components.accordions.product-info :as accordions.product-info]
             [storefront.components.carousel :as carousel-neue]
             [storefront.components.money-formatters :as mf]
-            [storefront.components.picker.picker :as picker]
             [storefront.components.accordion-v2022-10 :as accordion-neue]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
@@ -216,7 +215,6 @@
   [{:keys [carousel-images
            product
            selected-sku
-           picker-data
            ugc
            faq-section
            add-to-cart] :as data}
@@ -248,8 +246,6 @@
          (c/html
           [:div
            (c/build product-summary data)
-           [:div.px2
-            (c/build picker/component picker-data opts)]
            (c/build accordion-neue/component
                     (with :pdp-picker data)
                     {:opts {:accordion.drawer.open/face-component   picker-accordion-face-open
@@ -538,8 +534,6 @@
                                         (assoc :open-drawers (:accordion/open-drawers (accordion-neue/<- data :pdp-faq)))))
         selected-picker           (get-in data catalog.keypaths/detailed-product-selected-picker)
         model-image               (first (filter :copy/model-wearing carousel-images))
-        pdp-accordion-picker?     (experiments/pdp-accordion-picker? data)
-        picker-data               (picker/query data length-guide-image)
         content-slot-data         (content-slots< product
                                                   selected-sku
                                                   model-image
@@ -568,96 +562,6 @@
       :carousel-images                    carousel-images
       :selected-picker                    selected-picker}
 
-
-     (when-not pdp-accordion-picker?
-       {:picker-data picker-data})
-
-     (when pdp-accordion-picker?
-       (accordion-neue/accordion-query
-        {:id                :pdp-picker
-         :allow-all-closed? true
-         :allow-multi-open? true
-         :open-drawers      (-> data (accordion-neue/<- :pdp-picker) :accordion/open-drawers)
-         :drawers           (let [{:keys [sku-quantity selected-length selected-color options]} picker-data]
-                              [(let [color-options (->> options :hair/color (sort-by :filter/order))]
-                                 {:id           "color"
-                                  :face         {:facet-name  "Color"
-                                                 :facet-slug  "color"
-                                                 :option-name (:option/name selected-color)
-                                                 :option-slug (facets/hacky-fix-of-bad-slugs-on-facets (:option/slug selected-color))
-                                                 :swatch      (:option/rectangle-swatch selected-color)}
-                                  :open-message [events/pdp|picker-options|viewed {:facet   "color"
-                                                                                   :options (map :option/slug color-options)}]
-                                  :contents
-                                  {:swatches? true
-                                   :facet     "color"
-                                   :options   (->> color-options
-                                                   (map (fn [{:keys [option/slug option/name option/rectangle-swatch]}]
-                                                          (merge {:option-slug      (facets/hacky-fix-of-bad-slugs-on-facets slug)
-                                                                  :option-name      name
-                                                                  :rectangle-swatch rectangle-swatch
-                                                                  :selected?        (= (:option/slug selected-color) slug)}
-                                                                 (when (-> selected-color :option/slug (not= slug))
-                                                                   {:target
-                                                                    [events/pdp|picker-options|selected
-                                                                     {:data             {:facet           "color"
-                                                                                         :options         (map :option/slug color-options)
-                                                                                         :selected-option slug}
-                                                                      :callback-message [events/control-product-detail-picker-option-select
-                                                                                         {:navigation-event events/navigate-product-details
-                                                                                          :selection        :hair/color
-                                                                                          :value            slug}]}]})))))}})
-                               (let [length-options (->> options
-                                                         :hair/length
-                                                         (sort-by :filter/order))]
-                                 {:id           "length"
-                                  :face         {:facet-name  "Length"
-                                                 :facet-slug  "length"
-                                                 :option-name (:option/name selected-length)
-                                                 :option-slug (:option/slug selected-length)}
-                                  :open-message [events/pdp|picker-options|viewed {:facet   "length"
-                                                                                   :options (map :option/slug length-options)}]
-                                  :contents
-                                  {:facet   "length"
-                                   :options (->> length-options
-                                                 (map (fn [{:keys [option/name option/slug]}]
-                                                        (merge {:copy        name
-                                                                :option-slug slug
-                                                                :selected?   (= (:option/slug selected-length) slug)}
-                                                               (when (-> selected-length :option/slug (not= slug))
-                                                                 {:target [events/pdp|picker-options|selected
-                                                                           {:data             {:facet           "length"
-                                                                                               :options         (map :option/slug length-options)
-                                                                                               :selected-option slug}
-                                                                            :callback-message [events/control-product-detail-picker-option-select
-                                                                                               {:navigation-event events/navigate-product-details
-                                                                                                :selection        :hair/length
-                                                                                                :value            slug}]}]})))))}})
-                               (let [qty-options (->> (range)
-                                                      (take 10)
-                                                      (map inc))]
-                                 {:id           "quantity"
-                                  :face         {:facet-name  "Qty"
-                                                 :facet-slug  "quantity"
-                                                 :option-name sku-quantity
-                                                 :option-slug sku-quantity}
-                                  :open-message [events/pdp|picker-options|viewed {:facet   "quantity"
-                                                                                   :options (map str qty-options)}]
-                                  :contents
-                                  {:facet   "quantity"
-                                   :options (->> qty-options
-                                                 (map (fn [qty]
-                                                        (merge
-                                                         {:copy        (str qty)
-                                                          :option-slug (str qty)
-                                                          :selected?   (= sku-quantity qty)}
-                                                         (when (not (= sku-quantity qty))
-                                                           {:target [events/pdp|picker-options|selected
-                                                                     {:data             {:facet           "quantity"
-                                                                                         :options         (->> (range) (take 10) (map inc) (map str))
-                                                                                         :selected-option (str qty)}
-                                                                      :callback-message [events/control-product-detail-picker-option-quantity-select
-                                                                                         {:value qty}]}]})))))}})])}))
 
      (cond
        product
@@ -766,12 +670,102 @@
         {:price-block/primary   (mf/as-money price)
          :price-block/secondary "each"}))))
 
+(defn options-picker<
+  [state facets-db options-accordion]
+  (let [sku-quantity    (get-in state keypaths/browse-sku-quantity 1)
+        options         (get-in state catalog.keypaths/detailed-product-options)
+        selections      (get-in state catalog.keypaths/detailed-product-selections)
+        selected-length (get-in facets-db [:hair/length :facet/options (:hair/length selections)])
+        selected-color  (get-in facets-db [:hair/color :facet/options (:hair/color selections)])]
+    (accordion-neue/accordion-query
+     {:id                :pdp-picker
+      :allow-all-closed? true
+      :allow-multi-open? true
+      :open-drawers      (:accordion/open-drawers options-accordion)
+      :drawers           [(let [color-options (->> options :hair/color (sort-by :filter/order))]
+                            {:id           "color"
+                             :face         {:facet-name  "Color"
+                                            :facet-slug  "color"
+                                            :option-name (:option/name selected-color)
+                                            :option-slug (facets/hacky-fix-of-bad-slugs-on-facets (:option/slug selected-color))
+                                            :swatch      (:option/rectangle-swatch selected-color)}
+                             :open-message [events/pdp|picker-options|viewed {:facet   "color"
+                                                                              :options (map :option/slug color-options)}]
+                             :contents     {:swatches? true
+                                            :facet     "color"
+                                            :options   (->> color-options
+                                                            (map (fn [{:keys [option/slug option/name option/rectangle-swatch]}]
+                                                                   (merge {:option-slug      (facets/hacky-fix-of-bad-slugs-on-facets slug)
+                                                                           :option-name      name
+                                                                           :rectangle-swatch rectangle-swatch
+                                                                           :selected?        (= (:option/slug selected-color) slug)}
+                                                                          (when (-> selected-color :option/slug (not= slug))
+                                                                            {:target [events/pdp|picker-options|selected
+                                                                                      {:data             {:facet           "color"
+                                                                                                          :options         (map :option/slug color-options)
+                                                                                                          :selected-option slug}
+                                                                                       :callback-message [events/control-product-detail-picker-option-select
+                                                                                                          {:navigation-event events/navigate-product-details
+                                                                                                           :selection        :hair/color
+                                                                                                           :value            slug}]}]})))))}})
+                          (let [length-options (->> options
+                                                    :hair/length
+                                                    (sort-by :filter/order))]
+                            {:id           "length"
+                             :face         {:facet-name  "Length"
+                                            :facet-slug  "length"
+                                            :option-name (:option/name selected-length)
+                                            :option-slug (:option/slug selected-length)}
+                             :open-message [events/pdp|picker-options|viewed {:facet   "length"
+                                                                              :options (map :option/slug length-options)}]
+                             :contents     {:facet   "length"
+                                            :options (->> length-options
+                                                          (map (fn [{:keys [option/name option/slug]}]
+                                                                 (merge {:copy        name
+                                                                         :option-slug slug
+                                                                         :selected?   (= (:option/slug selected-length) slug)}
+                                                                        (when (-> selected-length :option/slug (not= slug))
+                                                                          {:target [events/pdp|picker-options|selected
+                                                                                    {:data             {:facet           "length"
+                                                                                                        :options         (map :option/slug length-options)
+                                                                                                        :selected-option slug}
+                                                                                     :callback-message [events/control-product-detail-picker-option-select
+                                                                                                        {:navigation-event events/navigate-product-details
+                                                                                                         :selection        :hair/length
+                                                                                                         :value            slug}]}]})))))}})
+                          (let [qty-options (->> (range)
+                                                 (take 10)
+                                                 (map inc))]
+                            {:id           "quantity"
+                             :face         {:facet-name  "Qty"
+                                            :facet-slug  "quantity"
+                                            :option-name sku-quantity
+                                            :option-slug sku-quantity}
+                             :open-message [events/pdp|picker-options|viewed {:facet   "quantity"
+                                                                              :options (map str qty-options)}]
+                             :contents     {:facet   "quantity"
+                                            :options (->> qty-options
+                                                          (map (fn [qty]
+                                                                 (merge
+                                                                  {:copy        (str qty)
+                                                                   :option-slug (str qty)
+                                                                   :selected?   (= sku-quantity qty)}
+                                                                  (when (not (= sku-quantity qty))
+                                                                    {:target [events/pdp|picker-options|selected
+                                                                              {:data             {:facet           "quantity"
+                                                                                                  :options         (->> (range) (take 10) (map inc) (map str))
+                                                                                                  :selected-option (str qty)}
+                                                                               :callback-message [events/control-product-detail-picker-option-quantity-select
+                                                                                                  {:value qty}]}]})))))}})]})))
+
 (defn ^:export page
   [state opts]
   (let [;; Databases
+        facets-db          (facets/by-slug state)
         images-db          (get-in state keypaths/v2-images)
         skus-db            (get-in state keypaths/v2-skus)
         product-carousel   (carousel-neue/<- state :product-carousel)
+        options-accordion  (accordion-neue/<- state :pdp-picker)
         ;; external loads
         loaded-quadpay?    (get-in state keypaths/loaded-quadpay)
         ;; Flags
@@ -781,6 +775,7 @@
         selected-sku       (get-in state catalog.keypaths/detailed-product-selected-sku)]
     (c/build (if detailed-product template loading-template)
              (merge (query state)
+                    (options-picker< state facets-db options-accordion)
                     {:add-to-cart (add-to-cart-query state)}
                     (product-carousel<- images-db product-carousel detailed-product carousel-redesign?)
                     (price-block< selected-sku)
