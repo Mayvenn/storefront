@@ -530,8 +530,6 @@
                                        first)
         product-options           (get-in data catalog.keypaths/detailed-product-options)
         ugc                       (ugc-query product selected-sku data)
-        sku-price                 (or (:product/essential-price selected-sku)
-                                      (:sku/price selected-sku))
         shop?                     (or (= "shop" (get-in data keypaths/store-slug))
                                       (= "retail-location" (get-in data keypaths/store-experience)))
         faq                       (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
@@ -542,17 +540,13 @@
         model-image               (first (filter :copy/model-wearing carousel-images))
         pdp-accordion-picker?     (experiments/pdp-accordion-picker? data)
         picker-data               (picker/query data length-guide-image)
-        bf-2022-sale?             (and (experiments/bf-2022-sale? data)
-                                       (:promo.clearance/eligible selected-sku))
         content-slot-data         (content-slots< product
                                                   selected-sku
                                                   model-image
                                                   (get-in data keypaths/cms-pdp-content)
                                                   fake-contentful-product-details-data)]
     (merge
-     {:zip-payments/sku-price             (if bf-2022-sale? (* 0.7 (:sku/price selected-sku)) (:sku/price selected-sku))
-      :zip-payments/loaded?               (get-in data keypaths/loaded-quadpay)
-      :title/primary                      (:copy/title product)
+     {:title/primary                      (:copy/title product)
       :ugc                                ugc
       :fetching-product?                  (utils/requesting? data (conj request-keys/get-products
                                                                         (:catalog/product-id product)))
@@ -573,13 +567,7 @@
                                                                       :faq/content answer})}))
       :carousel-images                    carousel-images
       :selected-picker                    selected-picker}
-     (when sku-price
-       (if bf-2022-sale?
-         {:price-block/primary-struck (mf/as-money sku-price)
-          :price-block/new-primary    (mf/as-money (* 0.7 sku-price))
-          :price-block/secondary      "each"}
-         {:price-block/primary   (mf/as-money sku-price)
-          :price-block/secondary "each"}))
+
 
      (when-not pdp-accordion-picker?
        {:picker-data picker-data})
@@ -758,20 +746,45 @@
        (within :reviews.browser yotpo-data-attributes)
        (within :reviews.summary yotpo-data-attributes)))))
 
+(defn zip-payment<
+  [selected-sku loaded-quadpay?]
+  (when (and loaded-quadpay? (seq selected-sku))
+    {:zip-payments/sku-price (if (:promo.clearance/eligible selected-sku)
+                               (* 0.7 (:sku/price selected-sku))
+                               (:sku/price selected-sku))
+     :zip-payments/loaded?   loaded-quadpay?}))
+
+(defn price-block<
+  [selected-sku]
+  (when selected-sku
+    (let [price (or (:product/essential-price selected-sku)
+                    (:sku/price selected-sku))]
+      (if (:promo.clearance/eligible selected-sku)
+        {:price-block/primary-struck (mf/as-money price)
+         :price-block/new-primary    (mf/as-money (* 0.7 price))
+         :price-block/secondary      "each"}
+        {:price-block/primary   (mf/as-money price)
+         :price-block/secondary "each"}))))
+
 (defn ^:export page
   [state opts]
   (let [;; Databases
         images-db          (get-in state keypaths/v2-images)
         skus-db            (get-in state keypaths/v2-skus)
         product-carousel   (carousel-neue/<- state :product-carousel)
+        ;; external loads
+        loaded-quadpay?    (get-in state keypaths/loaded-quadpay)
         ;; Flags
         carousel-redesign? (experiments/carousel-redesign? state)
         ;; Focus
-        detailed-product   (products/current-product state)]
+        detailed-product   (products/current-product state)
+        selected-sku       (get-in state catalog.keypaths/detailed-product-selected-sku)]
     (c/build (if detailed-product template loading-template)
              (merge (query state)
                     {:add-to-cart (add-to-cart-query state)}
                     (product-carousel<- images-db product-carousel detailed-product carousel-redesign?)
+                    (price-block< selected-sku)
+                    (zip-payment< selected-sku loaded-quadpay?)
                     (reviews< skus-db detailed-product)
                     opts))))
 
