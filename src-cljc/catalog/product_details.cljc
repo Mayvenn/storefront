@@ -259,11 +259,10 @@
            (when (products/stylist-only? product)
              shipping-and-guarantee)
            (c/build accordion-neue/component
-                    (with :product-details-accordion data)
+                    (with :info-accordion data)
                     {:opts {:accordion.drawer.open/face-component   accordions.product-info/face-open
                             :accordion.drawer.closed/face-component accordions.product-info/face-closed
                             :accordion.drawer/contents-component    accordions.product-info/contents}})
-           (c/build catalog.M/non-hair-product-description data opts)
            [:div.hide-on-tb-dt.m3
             [:div.mxn2.mb3 (c/build ugc/component (assoc ugc :id "ugc-mb") opts)]]]))]]
       (when (seq (with :reviews.browser data))
@@ -490,7 +489,7 @@
                                                    last
                                                    (clojure.string/replace #"-" " "))}}))))
                   vec)
-    :id                   "product-details-accordion"
+    :id                   :info-accordion
     :open-drawers         open-drawers}))
 
 (def ^:private fake-contentful-product-details-data
@@ -509,102 +508,48 @@
     :content-value   "<h3>Can It Be Colored?</h3><p>No - Since this hair has already been professionally processed, we don't recommend any lifting (bleaching) or coloring.</p>"}})
 
 (defn query [data]
-  (let [selections                (get-in data catalog.keypaths/detailed-product-selections)
-        product                   (products/current-product data)
-        product-skus              (products/extract-product-skus data product)
-        images-catalog            (get-in data keypaths/v2-images)
-        facets                    (facets/by-slug data)
-        selected-sku              (get-in data catalog.keypaths/detailed-product-selected-sku)
-        carousel-images           (find-carousel-images product product-skus images-catalog
+  (let [selections      (get-in data catalog.keypaths/detailed-product-selections)
+        product         (products/current-product data)
+        product-skus    (products/extract-product-skus data product)
+        images-catalog  (get-in data keypaths/v2-images)
+        facets          (facets/by-slug data)
+        selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
+        carousel-images (find-carousel-images product product-skus images-catalog
                                                         ;;TODO These selection election keys should not be hard coded
-                                                        (select-keys selections [:hair/color
-                                                                                 :hair/base-material])
-                                                        selected-sku)
-        length-guide-image        (->> product
-                                       (images/for-skuer images-catalog)
-                                       (select {:use-case #{"length-guide"}})
-                                       first)
-        product-options           (get-in data catalog.keypaths/detailed-product-options)
-        ugc                       (ugc-query product selected-sku data)
-        shop?                     (or (= "shop" (get-in data keypaths/store-slug))
-                                      (= "retail-location" (get-in data keypaths/store-experience)))
-        faq                       (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
-                                    (-> data
-                                        (get-in (conj keypaths/cms-faq pdp-faq-id))
-                                        (assoc :open-drawers (:accordion/open-drawers (accordion-neue/<- data :pdp-faq)))))
-        selected-picker           (get-in data catalog.keypaths/detailed-product-selected-picker)
-        model-image               (first (filter :copy/model-wearing carousel-images))
-        content-slot-data         (content-slots< product
-                                                  selected-sku
-                                                  model-image
-                                                  (get-in data keypaths/cms-pdp-content)
-                                                  fake-contentful-product-details-data)]
-    (merge
-     {:title/primary                      (:copy/title product)
-      :ugc                                ugc
-      :fetching-product?                  (utils/requesting? data (conj request-keys/get-products
-                                                                        (:catalog/product-id product)))
-      :adding-to-bag?                     (utils/requesting? data (conj request-keys/add-to-bag
-                                                                        (:catalog/sku-id selected-sku)))
-      :sku-quantity                       (get-in data keypaths/browse-sku-quantity 1)
-      :options                            product-options
-      :product                            product
-      :selections                         selections
-      :selected-options                   (get-selected-options selections product-options)
-      :selected-sku                       selected-sku
-      :facets                             facets
-      :faq-section                        (when (and shop? faq)
-                                            (let [{:keys [question-answers]} faq]
-                                              {:faq/expanded-index (get-in data keypaths/faq-expanded-section)
-                                               :list/sections      (for [{:keys [question answer]} question-answers]
-                                                                     {:faq/title   (:text question)
-                                                                      :faq/content answer})}))
-      :carousel-images                    carousel-images
-      :selected-picker                    selected-picker}
+                                              (select-keys selections [:hair/color
+                                                                       :hair/base-material])
+                                              selected-sku)
 
-
-     (cond
-       product
-       (accordion-neue/accordion-query (let [{:accordion/keys [open-drawers]} (accordion-neue/<- data "product-details-accordion")]
-                                         (cond-> (content-slots->accordion-slots content-slot-data product length-guide-image open-drawers)
-                                           ;; In a perfect world the FAQ would be modeled with Filled Content Slots.
-                                           ;; Instead, we shoehorn it into the accordion if we can find the data.
-                                           (and (experiments/pdp-faq-in-accordion? data) faq)
-                                           (update :drawers conj (let [{:keys [question-answers]} faq]
-                                                                   {:id       "pdp-faq-drawer"
-                                                                    :face     {:copy "FAQs"}
-                                                                    :contents {:faq (accordion-neue/accordion-query
-                                                                                     {:id                   :pdp-faq
-                                                                                      :allow-all-closed?    true
-                                                                                      :allow-multi-open?    false
-                                                                                      :open-drawers         (:open-drawers faq)
-                                                                                      :initial-open-drawers #{}
-                                                                                      :drawers
-                                                                                      (map-indexed (fn [ix {:keys [question answer]}]
-                                                                                                     {:id       (str "pdp-faq-" ix)
-                                                                                                      :face     {:copy (:text question)}
-                                                                                                      :contents {:answer answer}})
-                                                                                                   question-answers)})}})))))
-
-       :else (let [{:keys [copy/description
-                           copy/colors
-                           copy/weights
-                           copy/density
-                           copy/materials
-                           copy/whats-included
-                           copy/summary
-                           copy/duration]} product]
-               #:product-description {:duration             duration
-                                      :summary              summary
-                                      :description          description
-                                      :materials            materials
-                                      :colors               colors
-                                      :density              density
-                                      :whats-included       whats-included
-                                      :weights              (when-not density
-                                                              weights)
-                                      :learn-more-nav-event (when-not (contains? (:stylist-exclusives/family product) "kits")
-                                                              events/navigate-content-our-hair)})))))
+        product-options (get-in data catalog.keypaths/detailed-product-options)
+        ugc             (ugc-query product selected-sku data)
+        shop?           (or (= "shop" (get-in data keypaths/store-slug))
+                            (= "retail-location" (get-in data keypaths/store-experience)))
+        faq             (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
+                          (-> data
+                              (get-in (conj keypaths/cms-faq pdp-faq-id))
+                              (assoc :open-drawers (:accordion/open-drawers (accordion-neue/<- data :pdp-faq)))))
+        selected-picker (get-in data catalog.keypaths/detailed-product-selected-picker)]
+    {:title/primary     (:copy/title product)
+     :ugc               ugc
+     :fetching-product? (utils/requesting? data (conj request-keys/get-products
+                                                      (:catalog/product-id product)))
+     :adding-to-bag?    (utils/requesting? data (conj request-keys/add-to-bag
+                                                      (:catalog/sku-id selected-sku)))
+     :sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
+     :options           product-options
+     :product           product
+     :selections        selections
+     :selected-options  (get-selected-options selections product-options)
+     :selected-sku      selected-sku
+     :facets            facets
+     :faq-section       (when (and shop? faq)
+                          (let [{:keys [question-answers]} faq]
+                            {:faq/expanded-index (get-in data keypaths/faq-expanded-section)
+                             :list/sections      (for [{:keys [question answer]} question-answers]
+                                                   {:faq/title   (:text question)
+                                                    :faq/content answer})}))
+     :carousel-images   carousel-images
+     :selected-picker   selected-picker}))
 
 ;; A requirement of the product carousel is that it needs to have the media
 ;; for a detailed product. That should probably be included on the product
@@ -758,6 +703,55 @@
                                                                                :callback-message [events/control-product-detail-picker-option-quantity-select
                                                                                                   {:value qty}]}]})))))}})]})))
 
+(defn information<
+  [state images-db info-accordion faq-accordion detailed-product selected-sku pdp-faq-accordion?]
+  (let [faq                (when-let [pdp-faq-id (accessors.products/product->faq-id detailed-product)]
+                             (-> (get-in state (conj keypaths/cms-faq pdp-faq-id))
+                                 (assoc :open-drawers (:accordion/open-drawers faq-accordion))))
+        length-guide-image (->> (images/for-skuer images-db detailed-product)
+                                (select {:use-case #{"length-guide"}})
+                                first)
+
+        ;; Selections through model-image is so that we can display model wearing 
+        ;; in the information section for the old carousel
+        selections         (get-in state catalog.keypaths/detailed-product-selections)
+        product-skus       (products/extract-product-skus state detailed-product)
+        carousel-images    (find-carousel-images detailed-product product-skus images-db
+                                                 ;;TODO These selection election keys should not be hard coded
+                                                 (select-keys selections [:hair/color
+                                                                          :hair/base-material])
+                                                 selected-sku)
+        model-image        (first (filter :copy/model-wearing carousel-images))
+
+        content-slot-data  (content-slots< detailed-product
+                                           selected-sku
+                                           model-image
+                                           (get-in state keypaths/cms-pdp-content)
+                                           fake-contentful-product-details-data)]
+    (accordion-neue/accordion-query
+     (cond-> (content-slots->accordion-slots content-slot-data
+                                             detailed-product
+                                             length-guide-image
+                                             (:accordion/open-drawers info-accordion))
+                                             ;; In a perfect world the FAQ would be modeled with Filled Content Slots.
+                                             ;; Instead, we shoehorn it into the accordion if we can find the data.
+       (and pdp-faq-accordion?
+            faq)
+       (update :drawers conj (let [{:keys [question-answers]} faq]
+                               {:id       "pdp-faq-drawer"
+                                :face     {:copy "FAQs"}
+                                :contents {:faq (accordion-neue/accordion-query
+                                                 {:id                   :pdp-faq
+                                                  :allow-all-closed?    true
+                                                  :allow-multi-open?    false
+                                                  :open-drawers         (:open-drawers faq)
+                                                  :initial-open-drawers #{}
+                                                  :drawers              (map-indexed (fn [ix {:keys [question answer]}]
+                                                                                       {:id       (str "pdp-faq-" ix)
+                                                                                        :face     {:copy (:text question)}
+                                                                                        :contents {:answer answer}})
+                                                                                     question-answers)})}}))))))
+
 (defn ^:export page
   [state opts]
   (let [;; Databases
@@ -766,10 +760,13 @@
         skus-db            (get-in state keypaths/v2-skus)
         product-carousel   (carousel-neue/<- state :product-carousel)
         options-accordion  (accordion-neue/<- state :pdp-picker)
+        info-accordion     (accordion-neue/<- state :info-accordion)
+        faq-accordion      (accordion-neue/<- state :pdp-faq)
         ;; external loads
         loaded-quadpay?    (get-in state keypaths/loaded-quadpay)
         ;; Flags
         carousel-redesign? (experiments/carousel-redesign? state)
+        pdp-faq-accordion? (experiments/pdp-faq-in-accordion? state)
         ;; Focus
         detailed-product   (products/current-product state)
         selected-sku       (get-in state catalog.keypaths/detailed-product-selected-sku)]
@@ -780,6 +777,10 @@
                     (product-carousel<- images-db product-carousel detailed-product carousel-redesign?)
                     (price-block< selected-sku)
                     (zip-payment< selected-sku loaded-quadpay?)
+                    (information< state images-db
+                                  info-accordion faq-accordion
+                                  detailed-product selected-sku
+                                  pdp-faq-accordion?)
                     (reviews< skus-db detailed-product)
                     opts))))
 
