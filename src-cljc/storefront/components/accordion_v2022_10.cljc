@@ -39,6 +39,7 @@
           opened-face-component :accordion.drawer.open/face-component
           closed-face-component :accordion.drawer.closed/face-component} (c/get-opts this)]
      (c/html [:div.border-bottom.border-gray
+              {:data-test (str "accordion-" (name accordion-id))}
               (cond
                 (not opened?)
                 [:a.block.inherit-color.flex.justify-between.items-center
@@ -46,7 +47,8 @@
                  (merge (utils/fake-href accordion--opened
                                          {:accordion/id accordion-id
                                           :drawer-id    drawer-id})
-                        {:aria-label (:copy face)})
+                        {:data-test (str "accordion-closed-" (name accordion-id) "-" (name drawer-id))
+                         :aria-label (:copy face)})
                  (c/build closed-face-component face)
                  [:div.flex.items-center.p2
                   ^:inline (svg/dropdown-arrow {:class  "fill-black"
@@ -59,7 +61,8 @@
                  (merge (utils/fake-href accordion--closed
                                          {:accordion/id accordion-id
                                           :drawer-id    drawer-id})
-                        {:aria-label (:copy face)})
+                        {:data-test (str "accordion-open-" (name accordion-id) "-" (name drawer-id))
+                         :aria-label (:copy face)})
                  (c/build opened-face-component face)
                  [:div.flex.items-center.p2.flip-vertical
                   ^:inline (svg/dropdown-arrow {:class  "fill-black"
