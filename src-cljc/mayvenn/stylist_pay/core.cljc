@@ -193,6 +193,14 @@
     [:div.myj4.px4.center
      (summary-line (with :summary data))]]])
 
+(c/defcomponent goodbye-template 
+  [data _ _]
+  [:div.my4
+   (c/build header (with :header data))
+   [:div.col-12.bg-cool-gray.myj1.pyj2.px2.stretch
+    [:div.myj3
+     (flipped-title (with :title data))]]])
+
 (defn ^:export page
   [state]
   (let [stripe?         (get-in state k/loaded-stripe)
@@ -218,56 +226,11 @@
                                       "You will receive your 15% off coupon at the end of the month.")}))
 
       :else
-      (c/build template
+      (c/build goodbye-template
                {:header/target      [e/navigate-home]
                 :title/primary      "Mayvenn Stylist Pay"
-                :title/secondary    "Beta"
-                :title/tertiary     "Complete payment with Mayvenn Stylist Pay to receive a 15% off coupon"
-                :stylist/img-url    (some-> store :portrait :resizable-url)
-                :stylist/primary    (:store-name store)
-                :stylist/secondary  (->> ((juxt :city
-                                                :state-abbr)
-                                          (:location store))
-                                         (remove nil?)
-                                         (interpose " ")
-                                         (apply str))
-                :amount/primary     "Amount"
-                :amount/placeholder "e.g. 100"
-                :amount/keypath     (conj stylist-payment/k-current
-                                          :stylist-payment/amount)
-                :amount/type        "number"
-                :amount/min         "1"
-                :amount/max         "500"
-                :note/primary       "Note"
-                :note/placeholder   "Describe what you are purchasing"
-                :note/keypath       (conj stylist-payment/k-current
-                                          :stylist-payment/note)
-                :email/primary      "Email"
-                :email/placeholder  "Your email address"
-                :email/keypath      (conj stylist-payment/k-current
-                                          :stylist-payment/email)
-
-                :phone/primary     "SMS"
-                :phone/placeholder "Your phone number"
-                :phone/keypath     (conj stylist-payment/k-current
-                                         :stylist-payment/phone)
-                :opt-in/primary    (str "I agree to receive information and recurring "
-                                        "automated marketing emails from Mayvenn at above "
-                                        "email address provided.")
-                :opt-in/value      (get-in state
-                                           (conj stylist-payment/k-current
-                                                 :opt-in))
-                :opt-in/keypath    (conj stylist-payment/k-current
-                                         :opt-in)
-                :action/id         "pay-action"
-                :action/label      "Pay"
-                :action/disabled?  (not (:valid stylist-payment))
-                :action/target     [e/stylist-payment|prepared]
-                :new-card/keypath  (conj stylist-payment/k-current
-                                         :cardholder/name)
-                :new-card/value    (:cardholder/name stylist-payment)
-                :new-card/focused  (get-in state k/ui-focus)
-                :new-card/errors   (:field-errors (get-in state k/errors))}))))
+                :title/secondary    "Discontinued"
+                :title/tertiary     "Mayvenn Stylist Pay was discontinued at the end of 2022."}))))
 
 (defmethod fx/perform-effects
   e/navigate-mayvenn-stylist-pay
