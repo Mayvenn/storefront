@@ -432,11 +432,6 @@
                                        :slide-out-nav-menu-item/nested? false
                                        :slide-out-nav-menu-item/id      "menu-home"
                                        :slide-out-nav-menu-item/primary "Home"}
-                                      {:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug           "clearance"
-                                                                                                   :catalog/category-id "48"}]
-                                       :slide-out-nav-menu-item/nested? false
-                                       :slide-out-nav-menu-item/id      "menu-clearance"
-                                       :slide-out-nav-menu-item/primary "Clearance Wigs"}
                                       {:slide-out-nav-menu-item/target  [events/menu-list {:menu-type :hair-shop}]
                                        :slide-out-nav-menu-item/nested? true
                                        :slide-out-nav-menu-item/id      "menu-hair-shop"
@@ -487,11 +482,7 @@
                                             :header-menu-item/content           "Stores"}
                                            {:header-menu-item/href    blog-url
                                             :header-menu-item/id      "desktop-blog"
-                                            :header-menu-item/content "Blog"}]
-                                          [{:header-menu-item/navigation-target [events/navigate-category {:page/slug           "clearance"
-                                                                                                           :catalog/category-id "48"}]
-                                            :header-menu-item/id                "desktop-clearance"
-                                            :header-menu-item/content           "Clearance Wigs"}])}))
+                                            :header-menu-item/content "Blog"}])}))
 
 (defn query [data]
   (-> (basic-query data)

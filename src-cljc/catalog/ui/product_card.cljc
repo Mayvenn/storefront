@@ -92,9 +92,7 @@
                                       (if (= 1 (count product-colors))
                                         [:text (:option/name (first product-colors))]
                                         [:swatches [product-slug product-colors]])
-                                      [:pricing [(:sku/price cheapest-sku)
-                                                 (when (-> cheapest-sku :promo.clearance/eligible first)
-                                                   (* 0.7 (:sku/price cheapest-sku)))]]])
+                                      [:pricing [(:sku/price cheapest-sku)]]])
      :card-image/src               (str (:url image) "-/format/auto/" (:filename image))
      :card-image/alt               (:alt image)}))
 

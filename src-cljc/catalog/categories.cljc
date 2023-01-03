@@ -1313,6 +1313,7 @@
     :page/title-template [:computed/selected-facet-string " Virgin " :seo/title " | Mayvenn"]}])
 
 (def sale-clearance
+  "This is not being used at the moment, but we may use category 48 for clearance in the future, so I'm leaving it here, unreferenced"
   [{:catalog/category-id  "48"
     :header/title         "Clearance Wigs"
     :category/description "Get your favorite wig styles at a fraction of the price. 30% off while supplies last. Clearance items are available online only and not eligible for additional discounts."
@@ -1361,5 +1362,4 @@
           tape-ins-category
           human-hair-bundles
           base-materials-categories
-          special-wigs-promo
-          sale-clearance))
+          special-wigs-promo))

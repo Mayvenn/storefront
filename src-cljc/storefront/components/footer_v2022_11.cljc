@@ -221,9 +221,6 @@
                                              :row-count                    5
                                              :column-count                 2
                                              :links                        [{:target [e/navigate-category
-                                                                                      {:page/slug "clearance" :catalog/category-id "48"}]
-                                                                             :copy   "Clearance Wigs"}
-                                                                            {:target [e/navigate-category
                                                                                       {:page/slug "wigs" :catalog/category-id "13"}]
                                                                              :copy   "Wigs"}
                                                                             {:target [e/navigate-category
