@@ -1230,3 +1230,22 @@
     ;; TODO: anything from the response we need?
     :handler       #(messages/handle-message events/api-success-email-verification-verify %)
     :error-handler #(messages/handle-message events/api-failure-email-verification-verify %)}))
+
+(defn fetch-geo-location-from-ip
+  [cache]
+  (let [path    "http://api.ipstack.com/check"
+        params  {:access_key "e53fd9c4e2f6f73161821bb7b0df0069"
+                 :fields     "main"}
+        handler #(messages/handle-message events/api-success-fetch-geo-location-from-ip %)
+        key     (c/cache-key [path params])
+        res     (cache key)]
+    (if res
+      (handler res)
+      (api-request GET
+                   path
+                   request-keys/fetch-geo-location-from-ip
+                   {:handler       (fn [result]
+                                     (messages/handle-message events/api-success-cache {key result})
+                                     (handler result))
+                    :error-handler identity
+                    :params        params}))))

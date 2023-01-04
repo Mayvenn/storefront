@@ -103,7 +103,8 @@
     ;; trigger GA analytics, even though feature is already enabled
     (messages/handle-message events/enable-feature {:feature feature}))
   (when (get-in app-state keypaths/user-id)
-    (messages/handle-message events/user-identified {:user (get-in app-state keypaths/user)})))
+    (messages/handle-message events/user-identified {:user (get-in app-state keypaths/user)}))
+  (api/fetch-geo-location-from-ip (get-in app-state keypaths/api-cache)))
 
 (defmethod effects/perform-effects events/app-stop [_ event args _ app-state]
   (riskified/remove-tracking)

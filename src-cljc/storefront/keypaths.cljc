@@ -384,3 +384,4 @@
 (def slideout-nav-selected-tab (conj slideout-nav :selected-tab))
 
 (def account-profile [:account-profile])
+(def account-profile-ip-addresses (conj account-profile :ip-addresses))

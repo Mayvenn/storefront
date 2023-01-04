@@ -634,3 +634,7 @@
 (defmethod transition-state events/api-success-get-skus
   [_ event args app-state]
   (update-in app-state keypaths/v2-skus #(merge (-> args :skus products/index-skus) %)))
+
+(defmethod transition-state events/api-success-fetch-geo-location-from-ip
+  [_ event args app-state]
+  (update-in app-state keypaths/account-profile-ip-addresses #(conj % args)))

@@ -82,3 +82,5 @@
 
 (def email-verification-initiate [:email-verification-initiate])
 (def email-verification-verify [:email-verification-verify])
+
+(def fetch-geo-location-from-ip [:fetch-geo-location-from-ip])

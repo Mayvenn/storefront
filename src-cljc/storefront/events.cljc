@@ -396,6 +396,8 @@
 (defpath api-success-email-verification-initiate)
 (defpath api-success-email-verification-verify)
 
+(defpath api-success-fetch-geo-location-from-ip)
+
 (defpath api-failure)
 (defpath api-failure-no-network-connectivity)
 (defpath api-failure-bad-server-response)
