@@ -587,6 +587,7 @@
       (assoc _ :pdp-content-slots (feature-flags/retrieve-flag ld "pdp-content-slots" :bool false))
       (assoc _ :retail-stores-more-info (feature-flags/retrieve-flag ld "retail-stores-more-info" :bool false))
       (assoc _ :footer-email-capture (feature-flags/retrieve-flag ld "footer-email-capture" :bool false))
+      (assoc _ :hdyhau-post-purchase (feature-flags/retrieve-flag ld "hdyhau-post-purchase" :bool false))
       (assoc-in-req-state req keypaths/features _)
       (h _))))
 

@@ -145,3 +145,7 @@
 (defn retail-stores-more-info?
   [data]
   (display-feature? data "retail-stores-more-info"))
+
+(defn hdyhau-post-purchase?
+  [data]
+  (display-feature? data "hdyhau-post-purchase"))
