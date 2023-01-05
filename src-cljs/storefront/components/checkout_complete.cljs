@@ -1,5 +1,7 @@
 (ns storefront.components.checkout-complete
-  (:require [storefront.components.svg :as svg]
+  (:require [mayvenn.concept.acquisition :as acquisition]
+            [mayvenn.visual.tools :refer [with]]
+            [storefront.components.svg :as svg]
             [storefront.accessors.categories :as categories]
             [storefront.api :as api]
             api.orders
@@ -179,28 +181,28 @@
         (component/build shopping-method-choice/organism
                          shopping-method-choice))))))
 
-
-
-(defn hdyhau-component
-  [{:hdyhau/keys [options]}]
-  (when (seq options)
+(defdynamic-component hdyhau-form
+  [{:keys [form title]} _ _]
+  (when (seq title))
     [:div.bg-warm-gray
      [:div
-      "How did you hear about us?"
-      [:form.pb2
-       {:on-submit (utils/send-event-callback events/hdyhau-post-purchase-submitted)}
-       (for [{:keys [label keypath value]} options]
-         (ui/check-box {:label   label
-                        :keypath keypath
-                        :value   value}))
-       (ui/submit-button "Submit" {})]]]))
+      title
+      (when (seq form)
+        [:form.pb2
+         {:on-submit (utils/send-event-callback events/hdyhau-post-purchase-submitted)}
+         (for [{:keys [label keypath value]} options]
+           (ui/check-box {:label   label
+                          :keypath keypath
+                          :value   value}))
+         (ui/submit-button "Submit" {})])]])
 
-(defcomponent component
+(defcomponent template
   [{:thank-you/keys [primary secondary]
     :keys           [spinning?
-           scrim?
-           tertiary
-           results] :as data} _ _]
+                     scrim?
+                     tertiary
+                     results]
+    :as             data} _ _]
   (component/html
    [:div.p3 {:style {:min-height "95vh"}}
     [:div.center
@@ -226,9 +228,8 @@
         (when scrim?
           scrim-atom)])]
 
-    (if (:hdyhau/submitted? data)
-      [:div "Thanks!"]
-      (hdyhau-component data))
+    [:div "hi, i'm the problem, it's me"]
+    (component/build hdyhau-form (with :hdyhau data))
 
     [:div.py2.mx-auto.white.border-bottom
      {:style {:border-width "0.5px"}}]
@@ -432,46 +433,15 @@
                  :essentials       essentials})))
           rule)))
 
-(defn hdyhau-options
-  [data]
-  [{:label   "Facebook / Instagram"
-    :keypath keypaths/hdyhau-fb-ig
-    :value (get-in data keypaths/hdyhau-fb-ig)}
-   {:label   "Friends / Family"
-    :keypath keypaths/hdyhau-friends-family
-    :value (get-in data keypaths/hdyhau-friends-family)}
-   {:label   "News Article"
-    :keypath keypaths/hdyhau-news
-    :value (get-in data keypaths/hdyhau-news)}
-   {:label   "Other Social (TikTok, YouTube)"
-    :keypath keypaths/hdyhau-other-social
-    :value (get-in data keypaths/hdyhau-other-social)}
-   {:label   "Search Engine (Google, Bing)"
-    :keypath keypaths/hdyhau-search-engine
-    :value (get-in data keypaths/hdyhau-search-engine)}
-   {:label   "Stylist"
-    :keypath keypaths/hdyhau-stylist
-    :value (get-in data keypaths/hdyhau-stylist)}
-   {:label   "Billboard / Poster"
-    :keypath keypaths/hdyhau-billboard
-    :value (get-in data keypaths/hdyhau-billboard)}])
-
 (defn query
   [data]
   (let [shop?             (= :shop (sites/determine-site data))
         guest?            (not (get-in data keypaths/user-id))
         matching          (stylist-matching.core/stylist-matching<- data)
-        waiter-order      (:waiter/order (api.orders/completed data))
-        hdyhau?           (experiments/hdyhau-post-purchase? data)
-        hdyhau-submitted? false]
+        waiter-order      (:waiter/order (api.orders/completed data))]
 
     (cond->
-        {:thank-you/primary "We've received your order and will contact you as soon as your package is shipped."
-         :ff/hdyhau?        hdyhau?
-         :hdyhau/submitted? hdyhau-submitted?}
-
-      hdyhau?
-      (merge {:hdyhau/options (hdyhau-options data)})
+        {:thank-you/primary "We've received your order and will contact you as soon as your package is shipped."}
 
       guest?
       (merge
@@ -494,8 +464,31 @@
               :tertiary  "Check out these stylists in your area that can help you install your hair."
               :results   (results< matching)}))))
 
-(defn ^:export built-component [data opts]
-  (component/build component (query data) opts))
+(defn hdyhau<-
+  "The HDYHAU form helps us understand the effectiveness of our awareness campaigns."
+  [hdyhau hdyhau?]
+  (when hdyhau?
+    (if (:submitted hdyhau)
+      {:hdyhau/title "Thanks!"}
+      #:hdyhau
+       {:title "How did you hear about us?"
+        :form  (->> acquisition/hdyhau
+                    (mapv (fn [[slug label]]
+                            {:label   label
+                             :keypath slug
+                             :value   (get hdyhau slug false)})))})))
+
+(defn ^:export built-component
+  [state opts]
+  (let [;; Feature flags
+        hdyhau? (experiments/hdyhau-post-purchase? state)
+        ;; Models
+        hdyhau  (get-in state keypaths/hdyhau)]
+    (component/build template
+                     (merge
+                      (query state)
+                      (hdyhau<- hdyhau hdyhau?))
+                     opts)))
 
 (defmethod effects/perform-effects events/hdyhau-post-purchase-submitted
   [_ _ _ _ ]
