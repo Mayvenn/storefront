@@ -380,11 +380,11 @@
 (def models-live-help (conj models-root :live-help))
 (def models-stylist-payments (conj models-root :stylist-payments))
 
+(def models-hdyhau (conj models-root :hdyhau))
+
 (def slideout-nav (conj ui :slideout-nav))
 (def slideout-nav-selected-tab (conj slideout-nav :selected-tab))
 
 (def account-profile [:account-profile])
 (def account-profile-ip-addresses (conj account-profile :ip-addresses))
 (def account-profile-experiences (conj account-profile :experiences))
-
-(def hdyhau [:ui :hdyhau])

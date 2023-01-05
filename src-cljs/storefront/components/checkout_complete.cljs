@@ -18,6 +18,7 @@
             [storefront.effects :as effects]
             [storefront.hooks.stringer :as stringer]
             [storefront.trackings :as trackings]
+            [storefront.transitions :as transitions]
             [storefront.accessors.stylists :as stylists]
             [storefront.accessors.sites :as sites]
             [storefront.keypaths :as keypaths]
@@ -466,32 +467,37 @@
 
 (defn hdyhau<-
   "The HDYHAU form helps us understand the effectiveness of our awareness campaigns."
-  [hdyhau hdyhau?]
+  [{:keys [submitted to-submit]} hdyhau?]
   (when hdyhau?
-    (if (:submitted hdyhau)
+    (if submitted
       {:hdyhau/title "Thanks!"}
       #:hdyhau
        {:title "How did you hear about us?"
         :form  (->> awareness/hdyhau
                     (mapv (fn [[slug label]]
                             {:label   label
-                             :keypath (conj keypaths/hdyhau slug)
-                             :value   (get hdyhau slug false)})))})))
+                             :keypath (conj keypaths/models-hdyhau :to-submit slug)
+                             :value   (get to-submit slug false)})))})))
 
 (defn ^:export built-component
   [state opts]
   (let [;; Feature flags
         hdyhau? (experiments/hdyhau-post-purchase? state)
         ;; Model
-        hdyhau  (get-in state keypaths/hdyhau)]
+        hdyhau  (get-in state keypaths/models-hdyhau)]
     (component/build template
                      (merge
                       (query state)
                       (hdyhau<- hdyhau hdyhau?))
                      opts)))
 
+(defmethod transitions/transition-state events/hdyhau-post-purchase-submitted
+  [_ _ _ app-state]
+  (-> app-state
+      (assoc-in [:models :hdyhau :submitted] true)))
+
 (defmethod trackings/perform-track events/hdyhau-post-purchase-submitted
   [_ event data app-state]
-  (let [hdyhau-state (get-in app-state keypaths/hdyhau)]
+  (let [hdyhau-state (get-in app-state keypaths/models-hdyhau)]
     (stringer/track-event "hdyhau-answered"
-                          hdyhau-state)))
+                          (:to-submit hdyhau-state))))
