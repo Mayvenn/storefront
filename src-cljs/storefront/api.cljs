@@ -1236,7 +1236,11 @@
   (let [path    "http://api.ipstack.com/check"
         params  {:access_key "e53fd9c4e2f6f73161821bb7b0df0069"
                  :fields     "main"}
-        handler #(messages/handle-message events/api-success-fetch-geo-location-from-ip %)
+        handler (fn [res]
+                  (messages/handle-message events/api-success-fetch-geo-location-from-ip res)
+                  (when (and (= "US" (:country_code res))
+                             (= "CA" (:region_code res)));; TODO
+                    (messages/handle-message events/account-profile|experience-omni-chosen)))
         key     (c/cache-key [path params])
         res     (cache key)]
     (if res

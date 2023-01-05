@@ -638,3 +638,7 @@
 (defmethod transition-state events/api-success-fetch-geo-location-from-ip
   [_ event args app-state]
   (update-in app-state keypaths/account-profile-ip-addresses #(conj % args)))
+
+(defmethod transition-state events/account-profile|experience-omni-chosen
+  [_ event args app-state]
+  (update-in app-state keypaths/account-profile-experiences #(set (conj % "omni"))))

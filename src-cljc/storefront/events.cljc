@@ -830,3 +830,5 @@
 (defpath pdp|carousel|color-synced)
 
 (defpath reviews|reset)
+
+(defpath account-profile|experience-omni-chosen)
