@@ -1,5 +1,5 @@
 (ns storefront.components.checkout-complete
-  (:require [mayvenn.concept.acquisition :as acquisition]
+  (:require [mayvenn.concept.awareness :as awareness]
             [mayvenn.visual.tools :refer [with]]
             [storefront.components.svg :as svg]
             [storefront.accessors.categories :as categories]
@@ -472,7 +472,7 @@
       {:hdyhau/title "Thanks!"}
       #:hdyhau
        {:title "How did you hear about us?"
-        :form  (->> acquisition/hdyhau
+        :form  (->> awareness/hdyhau
                     (mapv (fn [[slug label]]
                             {:label   label
                              :keypath (conj keypaths/hdyhau slug)
@@ -482,18 +482,13 @@
   [state opts]
   (let [;; Feature flags
         hdyhau? (experiments/hdyhau-post-purchase? state)
-        ;; Models
+        ;; Model
         hdyhau  (get-in state keypaths/hdyhau)]
     (component/build template
                      (merge
                       (query state)
                       (hdyhau<- hdyhau hdyhau?))
                      opts)))
-
-(defmethod effects/perform-effects events/hdyhau-post-purchase-submitted
-  [_ _ _ _ ]
-  ; remove form from page, replace with thanks
-  )
 
 (defmethod trackings/perform-track events/hdyhau-post-purchase-submitted
   [_ event data app-state]

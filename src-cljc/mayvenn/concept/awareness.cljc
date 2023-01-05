@@ -1,4 +1,4 @@
-(ns mayvenn.concept.acquisition
+(ns mayvenn.concept.awareness
   "This is probably awareness")
 
 (def hdyhau

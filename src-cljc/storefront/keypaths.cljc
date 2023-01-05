@@ -388,10 +388,3 @@
 (def account-profile-experiences (conj account-profile :experiences))
 
 (def hdyhau [:ui :hdyhau])
-(def hdyhau-fb-ig (conj hdyhau :fb-ig))
-(def hdyhau-friends-family (conj hdyhau :friends-family))
-(def hdyhau-news (conj hdyhau :news))
-(def hdyhau-other-social (conj hdyhau :other-social))
-(def hdyhau-search-engine (conj hdyhau :search-engine))
-(def hdyhau-stylist (conj hdyhau :stylist))
-(def hdyhau-billboard (conj hdyhau :billboard))
