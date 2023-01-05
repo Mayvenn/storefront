@@ -104,7 +104,12 @@
     (messages/handle-message events/enable-feature {:feature feature}))
   (when (get-in app-state keypaths/user-id)
     (messages/handle-message events/user-identified {:user (get-in app-state keypaths/user)}))
-  (api/fetch-geo-location-from-ip (get-in app-state keypaths/api-cache)))
+  (when (not= false ; If browser doesn't support timezone, lookup anyway
+              (some-> (Intl.DateTimeFormat)
+                      .resolvedOptions
+                      .-timeZone
+                      (= "America/Chicago"))) ; limit lookup to central timezone
+    (api/fetch-geo-location-from-ip (get-in app-state keypaths/api-cache))))
 
 (defmethod effects/perform-effects events/app-stop [_ event args _ app-state]
   (riskified/remove-tracking)
