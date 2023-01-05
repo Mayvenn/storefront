@@ -181,20 +181,21 @@
         (component/build shopping-method-choice/organism
                          shopping-method-choice))))))
 
-(defdynamic-component hdyhau-form
+(defcomponent hdyhau-form
   [{:keys [form title]} _ _]
-  (when (seq title))
-    [:div.bg-warm-gray
-     [:div
-      title
-      (when (seq form)
-        [:form.pb2
-         {:on-submit (utils/send-event-callback events/hdyhau-post-purchase-submitted)}
-         (for [{:keys [label keypath value]} options]
-           (ui/check-box {:label   label
-                          :keypath keypath
-                          :value   value}))
-         (ui/submit-button "Submit" {})])]])
+  (when (seq title)
+    (component/html
+     [:div.bg-warm-gray
+      [:div
+       title
+       (when (seq form)
+         [:form.pb2
+          {:on-submit (utils/send-event-callback events/hdyhau-post-purchase-submitted)}
+          (for [{:keys [label keypath value]} form]
+            (ui/check-box {:label   label
+                           :keypath keypath
+                           :value   value}))
+          (ui/submit-button "Submit" {})])]])))
 
 (defcomponent template
   [{:thank-you/keys [primary secondary]
@@ -228,7 +229,6 @@
         (when scrim?
           scrim-atom)])]
 
-    [:div "hi, i'm the problem, it's me"]
     (component/build hdyhau-form (with :hdyhau data))
 
     [:div.py2.mx-auto.white.border-bottom
@@ -475,7 +475,7 @@
         :form  (->> acquisition/hdyhau
                     (mapv (fn [[slug label]]
                             {:label   label
-                             :keypath slug
+                             :keypath (conj keypaths/hdyhau slug)
                              :value   (get hdyhau slug false)})))})))
 
 (defn ^:export built-component
