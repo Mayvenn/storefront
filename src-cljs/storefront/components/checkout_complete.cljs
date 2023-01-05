@@ -186,17 +186,17 @@
   [{:keys [form title]} _ _]
   (when (seq title)
     (component/html
-     [:div.bg-warm-gray
+     [:div.border.flex.justify-center
       [:div
-       title
+       [:div.title-2.proxima.py3 title]
        (when (seq form)
-         [:form.pb2
+         [:form.mx-auto.pb3
           {:on-submit (utils/send-event-callback events/hdyhau-post-purchase-submitted)}
           (for [{:keys [label keypath value]} form]
             (ui/check-box {:label   label
                            :keypath keypath
                            :value   value}))
-          (ui/submit-button "Submit" {})])]])))
+          (ui/submit-button-medium "Submit" {:disabled? (every? (comp not :value) form)})])]])))
 
 (defcomponent template
   [{:thank-you/keys [primary secondary]
