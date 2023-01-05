@@ -13,6 +13,9 @@
             [storefront.components.formatters :as formatters]
             [storefront.components.sign-up :as sign-up]
             [storefront.components.ui :as ui]
+            [storefront.effects :as effects]
+            [storefront.hooks.stringer :as stringer]
+            [storefront.trackings :as trackings]
             [storefront.accessors.stylists :as stylists]
             [storefront.accessors.sites :as sites]
             [storefront.keypaths :as keypaths]
@@ -176,9 +179,25 @@
         (component/build shopping-method-choice/organism
                          shopping-method-choice))))))
 
+
+
+(defn hdyhau-component
+  [{:hdyhau/keys [options]}]
+  (when (seq options)
+    [:div.bg-warm-gray
+     [:div
+      "How did you hear about us?"
+      [:form.pb2
+       {:on-submit (utils/send-event-callback events/hdyhau-post-purchase-submitted)}
+       (for [{:keys [label keypath value]} options]
+         (ui/check-box {:label   label
+                        :keypath keypath
+                        :value   value}))
+       (ui/submit-button "Submit" {})]]]))
+
 (defcomponent component
   [{:thank-you/keys [primary secondary]
-    :keys [spinning?
+    :keys           [spinning?
            scrim?
            tertiary
            results] :as data} _ _]
@@ -206,6 +225,10 @@
         (component/build results-template results)
         (when scrim?
           scrim-atom)])]
+
+    (if (:hdyhau/submitted? data)
+      [:div "Thanks!"]
+      (hdyhau-component data))
 
     [:div.py2.mx-auto.white.border-bottom
      {:style {:border-width "0.5px"}}]
@@ -409,15 +432,46 @@
                  :essentials       essentials})))
           rule)))
 
+(defn hdyhau-options
+  [data]
+  [{:label   "Facebook / Instagram"
+    :keypath keypaths/hdyhau-fb-ig
+    :value (get-in data keypaths/hdyhau-fb-ig)}
+   {:label   "Friends / Family"
+    :keypath keypaths/hdyhau-friends-family
+    :value (get-in data keypaths/hdyhau-friends-family)}
+   {:label   "News Article"
+    :keypath keypaths/hdyhau-news
+    :value (get-in data keypaths/hdyhau-news)}
+   {:label   "Other Social (TikTok, YouTube)"
+    :keypath keypaths/hdyhau-other-social
+    :value (get-in data keypaths/hdyhau-other-social)}
+   {:label   "Search Engine (Google, Bing)"
+    :keypath keypaths/hdyhau-search-engine
+    :value (get-in data keypaths/hdyhau-search-engine)}
+   {:label   "Stylist"
+    :keypath keypaths/hdyhau-stylist
+    :value (get-in data keypaths/hdyhau-stylist)}
+   {:label   "Billboard / Poster"
+    :keypath keypaths/hdyhau-billboard
+    :value (get-in data keypaths/hdyhau-billboard)}])
+
 (defn query
   [data]
-  (let [shop?        (= :shop (sites/determine-site data))
-        guest?       (not (get-in data keypaths/user-id))
-        matching     (stylist-matching.core/stylist-matching<- data)
-        waiter-order (:waiter/order (api.orders/completed data))]
+  (let [shop?             (= :shop (sites/determine-site data))
+        guest?            (not (get-in data keypaths/user-id))
+        matching          (stylist-matching.core/stylist-matching<- data)
+        waiter-order      (:waiter/order (api.orders/completed data))
+        hdyhau?           (experiments/hdyhau-post-purchase? data)
+        hdyhau-submitted? false]
 
     (cond->
-        {:thank-you/primary "We've received your order and will contact you as soon as your package is shipped."}
+        {:thank-you/primary "We've received your order and will contact you as soon as your package is shipped."
+         :ff/hdyhau?        hdyhau?
+         :hdyhau/submitted? hdyhau-submitted?}
+
+      hdyhau?
+      (merge {:hdyhau/options (hdyhau-options data)})
 
       guest?
       (merge
@@ -437,8 +491,19 @@
       (merge {:spinning? (or
                           (utils/requesting? data request-keys/fetch-stylists)
                           (utils/requesting? data request-keys/fetch-stylists-matching-filters))
-              :tertiary "Check out these stylists in your area that can help you install your hair."
-              :results (results< matching)}))))
+              :tertiary  "Check out these stylists in your area that can help you install your hair."
+              :results   (results< matching)}))))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
+
+(defmethod effects/perform-effects events/hdyhau-post-purchase-submitted
+  [_ _ _ _ ]
+  ; remove form from page, replace with thanks
+  )
+
+(defmethod trackings/perform-track events/hdyhau-post-purchase-submitted
+  [_ event data app-state]
+  (let [hdyhau-state (get-in app-state keypaths/hdyhau)]
+    (stringer/track-event "hdyhau-answered"
+                          hdyhau-state)))
