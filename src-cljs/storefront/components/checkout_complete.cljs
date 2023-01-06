@@ -215,6 +215,8 @@
      (when tertiary
        [:div.proxima.content-2.mt4 tertiary])]
 
+    (component/build hdyhau-form (with :hdyhau data))
+
     [:div.hide-on-mb
      (if spinning?
        [:div.mt6 ui/spinner]
@@ -229,8 +231,6 @@
         (component/build results-template results)
         (when scrim?
           scrim-atom)])]
-
-    (component/build hdyhau-form (with :hdyhau data))
 
     [:div.py2.mx-auto.white.border-bottom
      {:style {:border-width "0.5px"}}]
