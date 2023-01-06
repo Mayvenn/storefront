@@ -498,6 +498,17 @@
 
 (defmethod trackings/perform-track events/hdyhau-post-purchase-submitted
   [_ event data app-state]
-  (let [hdyhau-state (get-in app-state keypaths/models-hdyhau)]
+  (let [hdyhau-to-submit           (:to-submit (get-in app-state keypaths/models-hdyhau))
+        {:keys [shipping-address user
+                phone-marketing-opt-in
+                phone-txn-opt-in]} (get-in app-state keypaths/completed-order)]
     (stringer/track-event "hdyhau-answered"
-                          (:to-submit hdyhau-state))))
+                          {:address                {:city    (:city shipping-address)
+                                                    :state   (:state shipping-address)
+                                                    :zipcode (:zipcode shipping-address)}
+                           :email                  (:email user)
+                           :phone                  (:phone shipping-address)
+                           :phone-marketing-opt-in phone-marketing-opt-in
+                           :phone-txn-opt-in       phone-txn-opt-in
+                           :hdyhau                 (keys (filter #(= true (val %)) hdyhau-to-submit))
+                           :form                   "post-purchase"})))
