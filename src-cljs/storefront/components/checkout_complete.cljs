@@ -186,7 +186,7 @@
   [{:keys [form title]} _ _]
   (when (seq title)
     (component/html
-     [:div.border.flex.justify-center
+     [:div.border.flex.justify-center.my4
       [:div
        [:div.title-2.proxima.py3 title]
        (when (seq form)
