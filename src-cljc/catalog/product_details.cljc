@@ -570,9 +570,10 @@
     (let [index    (:idx product-carousel)
           exhibits (->> detailed-product
                         (detailed-product-media images-catalog)
-                        (map (fn [{:keys [alt url]}]
+                        (map (fn [{:keys [alt url] :as image}]
                                {:src url
-                                :alt alt})))]
+                                :alt alt
+                                :type (:media/type image)})))]
       #:product-carousel
       {:selected-exhibit-idx (if (< -1 index (count exhibits))
                                index 0)
