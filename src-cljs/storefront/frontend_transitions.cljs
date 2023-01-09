@@ -194,6 +194,7 @@
         (assoc-in keypaths/flyout-stuck-open? false)
         (update-flash (:navigate/caused-by args))
         (update-in keypaths/ui dissoc :navigation-stashed-stack-item)
+        (update-in keypaths/models-hdyhau dissoc :to-submit)
         (assoc-in keypaths/navigation-uri uri)
         ;; order is important from here on
         (assoc-in keypaths/redirecting? false)
