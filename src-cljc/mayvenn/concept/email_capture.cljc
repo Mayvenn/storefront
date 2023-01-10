@@ -130,8 +130,9 @@
 #?(:cljs
    (defmethod trk/perform-track e/biz|email-capture|captured
      [_ event {:keys [trigger-id variation-description template-content-id details]} app-state]
-     (let [no-errors?     (empty? (get-in app-state k/errors))
-           captured-email (get-in app-state textfield-keypath)]
+     (let [no-errors?       (empty? (get-in app-state k/errors))
+           captured-email   (get-in app-state textfield-keypath)
+           hdyhau-to-submit (:to-submit (get-in app-state k/models-hdyhau))]
        (when no-errors?
          ;; TODO: CONSIDER READDING THESE
          ;; (facebook-analytics/subscribe)
@@ -141,12 +142,17 @@
                                {:email-capture-id      trigger-id
                                 :variation-description variation-description
                                 :template-content-id   template-content-id
-                                :email            captured-email
-                                :details          details
-                                :test-variations  (get-in app-state k/features)
-                                :store-slug       (get-in app-state k/store-slug)
-                                :store-experience (get-in app-state k/store-experience)
-                                :account-profile  (get-in app-state k/account-profile)})))))
+                                :email                 captured-email
+                                :details               details
+                                :test-variations       (get-in app-state k/features)
+                                :store-slug            (get-in app-state k/store-slug)
+                                :store-experience      (get-in app-state k/store-experience)
+                                :account-profile       (get-in app-state k/account-profile)})
+         (when hdyhau-to-submit
+           (stringer/track-event "hdydau-answered"
+                                 {:email  captured-email
+                                  :hdyhau (keys (filter #(= true (val %)) hdyhau-to-submit))
+                                  :form   "email-capture"}))))))
 
 #?(:cljs
    (defmethod trk/perform-track e/biz|email-capture|dismissed

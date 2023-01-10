@@ -1,5 +1,6 @@
 (ns storefront.components.email-capture
   (:require [storefront.accessors.experiments :as experiments]
+            [mayvenn.concept.awareness :as awareness]
             [mayvenn.concept.email-capture :as concept]
             [mayvenn.concept.funnel :as funnel]
             [storefront.browser.scroll :as scroll]
@@ -90,6 +91,47 @@
        hr-divider
        (fine-print fine-print-lead-in)])]))
 
+;; In Contentful, this is labeled as:
+;; "Email Modal: Template 2" (content type id: emailModalTemplate2)
+(defn email-capture-modal-template-2
+  [{:keys [id] :as data}]
+  (c/html
+   [:div.flex.flex-column
+    {:data-test (str id "-modal")}
+    (m-header id (apply utils/fake-href (:email-capture.dismiss/target data)))
+    (let [{:email-capture.photo/keys [url title description]} data]
+      (when (seq url)
+        (ui/aspect-ratio 4 3
+                         (ui/img
+                          {:max-size 500
+                           :src      url
+                           :title    title
+                           :class    "col-12"
+                           :style    {:vertical-align "bottom"}
+                           :alt      description}))))
+    (let [{:email-capture.copy/keys [title subtitle supertitle fine-print-lead-in]} data]
+      [:div.p4.black
+       {:class (:email-capture.design/background-color data)}
+       [:form.col-12.center.px1
+        {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
+        [:div.mb2
+         [:div.title-2.proxima.shout supertitle]
+         [:div.title-1.canela.p-color title]
+         [:div.title-2.proxima subtitle]]
+        [:div.px3
+         (text-field data)
+         (let [{:email-capture.hdyhau/keys [form title]} data]
+           [:div.content-3
+            [:div.pb2 title]
+            (for [{:keys [label keypath value]} form]
+              (ui/check-box {:label    label
+                             :keypath  keypath
+                             :value    value
+                             :box-size "10px"}))])
+         (cta data)]]
+       hr-divider
+       (fine-print fine-print-lead-in)])]))
+
 (c/defdynamic-component template
   (did-mount
    [this]
@@ -115,7 +157,8 @@
           :email-capture/keys [content-type]
           :as                 data} (c/get-props this)
          template                   (case content-type
-                                      "emailModalTemplate" email-capture-modal-template-1
+                                      "emailModalTemplate"  email-capture-modal-template-1
+                                      "emailModalTemplate2" email-capture-modal-template-2
                                       nil)]
      (if template
        (ui/modal
@@ -196,32 +239,40 @@
     (let [errors            (get-in state (conj k/field-errors ["email"]))
           focused           (get-in state k/ui-focus)
           textfield-keypath concept/textfield-keypath
-          email             (get-in state textfield-keypath)]
-      {:id                                    "email-capture"
-       :email-capture/trigger-id              trigger-id
-       :email-capture/variation-description   variation-description
-       :email-capture/template-content-id     template-content-id
-       :email-capture/content-type            (:content/type content)
-       :email-capture.dismiss/target          [e/email-modal-dismissed {:email-modal email-modal}]
-       :email-capture.submit/target           [e/email-modal-submitted {:email-modal email-modal
-                                                                          :values      {"email-capture-input" email}}]
-       :email-capture.design/background-color (:background-color content)
-       :email-capture.design/close-x-color    (:close-xcolor content)
-       :email-capture.copy/title              (:title content)
-       :email-capture.copy/subtitle           (:subtitle content)
-       :email-capture.copy/supertitle         (:supertitle content)
-       :email-capture.copy/fine-print-lead-in (:fine-print-lead-in content)
-       :email-capture.cta/id                  "email-capture-submit"
-       :email-capture.cta/value               (:cta-copy content)
-       :email-capture.text-field/id           "email-capture-input"
-       :email-capture.text-field/placeholder  (:email-input-field-placeholder-copy content)
-       :email-capture.text-field/focused      focused
-       :email-capture.text-field/keypath      textfield-keypath
-       :email-capture.text-field/errors       errors
-       :email-capture.text-field/email        email
-       :email-capture.photo/url               (-> content :hero-image :file :url)
-       :email-capture.photo/title             (-> content :hero-image :title)
-       :email-capture.photo/description       (-> content :hero-image :description)})))
+          email             (get-in state textfield-keypath)
+          hdyhau            (get-in state k/models-hdyhau)]
+      (merge {:id                                    "email-capture"
+              :email-capture/trigger-id              trigger-id
+              :email-capture/variation-description   variation-description
+              :email-capture/template-content-id     template-content-id
+              :email-capture/content-type            (:content/type content)
+              :email-capture.dismiss/target          [e/email-modal-dismissed {:email-modal email-modal}]
+              :email-capture.submit/target           [e/email-modal-submitted {:email-modal email-modal
+                                                                               :values      {"email-capture-input" email}}]
+              :email-capture.design/background-color (:background-color content)
+              :email-capture.design/close-x-color    (:close-xcolor content)
+              :email-capture.copy/title              (:title content)
+              :email-capture.copy/subtitle           (:subtitle content)
+              :email-capture.copy/supertitle         (:supertitle content)
+              :email-capture.copy/fine-print-lead-in (:fine-print-lead-in content)
+              :email-capture.cta/id                  "email-capture-submit"
+              :email-capture.cta/value               (:cta-copy content)
+              :email-capture.text-field/id           "email-capture-input"
+              :email-capture.text-field/placeholder  (:email-input-field-placeholder-copy content)
+              :email-capture.text-field/focused      focused
+              :email-capture.text-field/keypath      textfield-keypath
+              :email-capture.text-field/errors       errors
+              :email-capture.text-field/email        email
+              :email-capture.photo/url               (-> content :hero-image :file :url)
+              :email-capture.photo/title             (-> content :hero-image :title)
+              :email-capture.photo/description       (-> content :hero-image :description)}
+             (when (:hdyhau content)
+               {:email-capture.hdyhau/title "How did you hear about us?"
+                :email-capture.hdyhau/form  (->> awareness/hdyhau
+                                                               (mapv (fn [[slug label]]
+                                                                       {:label   label
+                                                                        :keypath (conj k/models-hdyhau :to-submit slug)
+                                                                        :value   (get (:to-submit hdyhau) slug false)})))})))))
 
 ;;; Matchers and Triggers
 
