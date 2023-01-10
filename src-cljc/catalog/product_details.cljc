@@ -423,8 +423,9 @@
 (defn legacy-content-from-cellar
   "Converts cellar SKU and cellar Product to template-slots"
   [current-product selected-sku model-image]
-  (->> [:pdp.details.description/description             nil                        (->> current-product :copy/description)
-        :pdp.details.description/whats-included          "Hair Type"                (->> current-product :copy/hair-type)
+  (->> [:pdp.details.description/description              nil                       (->> current-product :copy/description)
+        :pdp.details.description/what's-included          "What's Included"         (->> current-product :copy/whats-included)
+        :pdp.details.description/hair-type               "Hair Type"                (->> current-product :copy/hair-type)
         :pdp.details.hair-info/model-wearing             "Model Wearing"            (or (:copy/model-wearing model-image)
                                                                                         (:copy/model-wearing current-product))
         :pdp.details.hair-info/unit-weight               "Unit Weight"              (or (->> selected-sku :hair/weight)
@@ -440,7 +441,6 @@
         :pdp.details.hair-info/silk-size                 "Silk Size"                (->> current-product :copy/silk-size)
         :pdp.details.hair-info/cap-size                  "Cap Size"                 (->> current-product :copy/cap-size)
         :pdp.details.hair-info/tape--in-glue-information "Tape-in Glue Information" (->> current-product :copy/tape-in-glue)
-        :pdp.details.description/hair-type               "Hair Type"                (->> current-product :copy/hair-type)
         :pdp.details.care/maintenance-level              "Maintenance Level"        (->> current-product :copy/maintenance-level)]
        (partition 3)
        (keep (fn [[k heading content]]
