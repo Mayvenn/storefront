@@ -613,7 +613,8 @@
    (defmethod storefront.trackings/perform-track events/biz|shared-cart|hydrated
      [_ _ {:keys [order shared-cart-id]} state]
      (trackings/track-bulk-add-to-cart
-      {:skus-db          (get-in state keypaths/v2-skus)
+      {:environment      (get-in state keypaths/environment)
+       :skus-db          (get-in state keypaths/v2-skus)
        :images-catalog   (get-in state keypaths/v2-images)
        :store-experience (get-in state keypaths/store-experience)
        :order            order

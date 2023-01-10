@@ -13,6 +13,7 @@
             [storefront.events :as events]
             [storefront.hooks.facebook-analytics :as facebook-analytics]
             [storefront.hooks.google-tag-manager :as google-tag-manager]
+            [storefront.hooks.google-analytics :as google-analytics]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.stringer :as stringer]
             [storefront.keypaths :as keypaths]
@@ -24,7 +25,7 @@
   [skus-db waiter-line-item]
   (merge (get skus-db (:sku waiter-line-item))
          (maps/select-rename-keys waiter-line-item {:quantity        :item/quantity
-                                                    :line-item-group :line-item-group})) )
+                                                    :line-item-group :line-item-group})))
 
 (defn waiter-line-items->line-item-skuer
   "This is a stopgap measure to stand in for when waiter will one day return
@@ -97,7 +98,7 @@
 
 (defn ^:private sku->data-sku-reference
   [s]
-  (select-keys s [:catalog/sku-id :legacy/variant-id]) )
+  (select-keys s [:catalog/sku-id :legacy/variant-id]))
 
 (defn ^:private selections->product-selections
   [selections]
@@ -172,12 +173,16 @@
                                                   :variant_quantity quantity
                                                   :quantity         quantity
                                                   :context          {:cart-items cart-items}}))
-      (google-tag-manager/track-add-to-cart {:number           (:number order)
-                                             :store-slug       store-slug
-                                             :store-is-stylist (not (or (#{"store" "shop" "internal"} store-slug)
-                                                                        (= "retail-location" (get-in app-state keypaths/store-experience))))
-                                             :order-quantity   order-quantity
-                                             :line-item-skuers [(assoc sku :item/quantity quantity)]}))))
+      ((if (= "production" (get-in app-state keypaths/environment))
+         google-tag-manager/track-add-to-cart 
+         ;; TODO(jjh): raise once we use GA4 on production
+         google-analytics/track-add-to-cart)
+       {:number           (:number order)
+        :store-slug       store-slug
+        :store-is-stylist (not (or (#{"store" "shop" "internal"} store-slug)
+                                   (= "retail-location" (get-in app-state keypaths/store-experience))))
+        :order-quantity   order-quantity
+        :line-item-skuers [(assoc sku :item/quantity quantity)]}))))
 
 (defmethod perform-track events/api-success-remove-from-bag
   [_ _ {order :order} app-state]
@@ -227,15 +232,19 @@
                            :store_id              (get-in app-state keypaths/store-stylist-id)})))
 
 (defn track-cart-initialization
-  [initialized-by initialized-id {:keys [skus-db images-catalog store-experience order]}]
+  [initialized-by initialized-id {:keys [skus-db images-catalog store-experience order environment]}]
   (let [line-item-skuers   (waiter-line-items->line-item-skuer skus-db (orders/product-and-service-items order))
         line-item-quantity (->> line-item-skuers (map :item/quantity) (reduce + 0))
         cart-items         (mapv (partial line-item-skuer->stringer-cart-item images-catalog) line-item-skuers)]
     (facebook-analytics/track-event "AddToCart" {:content_type "product"
                                                  :content_ids  (map :catalog/sku-id line-item-skuers)
                                                  :num_items    line-item-quantity})
-    (google-tag-manager/track-add-to-cart {:number           (:number order)
-                                           :line-item-skuers line-item-skuers})
+    ((if (= "production" environment)
+       google-tag-manager/track-add-to-cart 
+       ;; TODO(jjh): raise once we use GA4 on production
+       google-analytics/track-add-to-cart)
+     {:number           (:number order)
+      :line-item-skuers line-item-skuers})
     (stringer/track-event "cart_initialized"
                           (merge {:store_experience store-experience
                                   :order_number     (:number order)
@@ -251,7 +260,7 @@
 
 ;; If you are intending to track some bulk add event which should always create a new order, use `cart-initialized`
 (defn track-bulk-add-to-cart
-  [{:keys [skus-db images-catalog store-experience order shared-cart-id look-id]}]
+  [{:keys [skus-db images-catalog store-experience order shared-cart-id look-id environment]}]
   (let [line-item-skuers       (waiter-line-items->line-item-skuer
                                 skus-db
                                 (orders/product-and-service-items order))
@@ -264,8 +273,12 @@
     (facebook-analytics/track-event "AddToCart" {:content_type "product"
                                                  :content_ids  (map :catalog/sku-id line-item-skuers)
                                                  :num_items    line-item-quantity})
-    (google-tag-manager/track-add-to-cart {:number           (:number order)
-                                           :line-item-skuers line-item-skuers})
+    ((if (= "production" environment)
+       google-tag-manager/track-add-to-cart 
+       ;; TODO(jjh): raise once we use GA4 on production
+       google-analytics/track-add-to-cart)
+     {:number           (:number order)
+      :line-item-skuers line-item-skuers})
     (stringer/track-event "bulk_add_to_cart" (merge {:shared_cart_id       shared-cart-id
                                                      :store_experience     store-experience
                                                      :order_number         (:number order)
@@ -303,12 +316,16 @@
                              :skus             (->> added-line-item-skuers (map :catalog/sku-id) (string/join ","))
                              :variant_ids      (->> added-line-item-skuers (map :legacy/variant-id) (string/join ","))
                              :context          {:cart-items added-stringer-cart-items}})
-      (google-tag-manager/track-add-to-cart {:number           (:number order)
-                                             :store-slug       store-slug
-                                             :store-is-stylist (not (or (#{"store" "shop" "internal"} store-slug)
-                                                                        (= "retail-location" (get-in app-state keypaths/store-experience))))
-                                             :order-quantity   order-quantity
-                                             :line-item-skuers added-line-item-skuers}))))
+      ((if (= "production" (get-in app-state keypaths/environment))
+         google-tag-manager/track-add-to-cart 
+         ;; TODO(jjh): raise once we use GA4 on production
+         google-analytics/track-add-to-cart)
+       {:number           (:number order)
+        :store-slug       store-slug
+        :store-is-stylist (not (or (#{"store" "shop" "internal"} store-slug)
+                                   (= "retail-location" (get-in app-state keypaths/store-experience))))
+        :order-quantity   order-quantity
+        :line-item-skuers added-line-item-skuers}))))
 
 (def interesting-payment-methods
   #{"apple-pay" "paypal" "quadpay"})
@@ -340,52 +357,62 @@
 
 (defmethod perform-track events/order-placed [_ event order app-state]
   (stringer/track-event "checkout-complete" (stringer-order-completed order))
-  (let [order-total (:total order)
+  (let [order-total      (:total order)
 
         line-item-skuers (waiter-line-items->line-item-skuer (get-in app-state keypaths/v2-skus)
                                                              (orders/product-items order))
 
-        store-slug (get-in app-state keypaths/store-slug)
-        shipping   (orders/shipping-item order)
-        user       (get-in app-state keypaths/user)
+        store-slug       (get-in app-state keypaths/store-slug)
+        shipping         (orders/shipping-item order)
+        user             (get-in app-state keypaths/user)
 
-        order-quantity (->> line-item-skuers (map :item/quantity) (reduce + 0))
+        order-quantity   (->> line-item-skuers (map :item/quantity) (reduce + 0))
 
-        shared-fields {:buyer_type            (cond
-                                                (:store-slug user) "stylist"
-                                                (:id user)         "registered_user"
-                                                :else              "guest_user")
-                       :currency              "USD"
-                       :discount_total        (js/Math.abs (or (:promotion-discount order) 0))
-                       :is_stylist_store      (boolean (not (or (#{"store" "shop"} store-slug)
-                                                                (= "retail-location" (get-in app-state keypaths/store-experience)))))
-                       :shipping_method_name  (:product-name shipping)
-                       :shipping_method_price (:unit-price shipping)
-                       :shipping_method_sku   (:sku shipping)
-                       :store_slug            store-slug
-                       :used_promotion_codes  (->> order :promotions (map :code))}]
+        shared-fields    {:buyer_type            (cond
+                                                   (:store-slug user) "stylist"
+                                                   (:id user)         "registered_user"
+                                                   :else              "guest_user")
+                          :currency              "USD"
+                          :discount_total        (js/Math.abs (or (:promotion-discount order) 0))
+                          :is_stylist_store      (boolean (not (or (#{"store" "shop"} store-slug)
+                                                                   (= "retail-location" (get-in app-state keypaths/store-experience)))))
+                          :shipping_method_name  (:product-name shipping)
+                          :shipping_method_price (:unit-price shipping)
+                          :shipping_method_sku   (:sku shipping)
+                          :store_slug            store-slug
+                          :used_promotion_codes  (->> order :promotions (map :code))}]
     (facebook-analytics/track-event "Purchase" (merge shared-fields
                                                       {:value        (str order-total) ;; Facebook wants a string
                                                        :content_ids  (map :catalog/sku-id line-item-skuers)
                                                        :content_type "product"
                                                        :num_items    order-quantity}))
 
-    (google-tag-manager/track-placed-order (merge (set/rename-keys shared-fields {:buyer_type            :buyer-type
-                                                                                  :is_stylist_store      :is-stylist-store
-                                                                                  :shipping_method_name  :shipping-method-name
-                                                                                  :shipping_method_price :shipping-method-price
-                                                                                  :shipping_method_sku   :shipping-method-sku
-                                                                                  :store_slug            :store-slug
-                                                                                  :used_promotion_codes  :used-promotion-codes})
-                                                  {:total            (:total order)
-                                                   :number           (:number order)
-                                                   :line-item-skuers line-item-skuers}))))
+    ((if (= "production" (get-in app-state keypaths/environment))
+       google-tag-manager/track-placed-order 
+       ;; TODO(jjh): raise once we use GA4 on production 
+       google-analytics/track-placed-order)
+     (merge (set/rename-keys shared-fields {:buyer_type            :buyer-type
+                                            :is_stylist_store      :is-stylist-store
+                                            :shipping_method_name  :shipping-method-name
+                                            :shipping_method_price :shipping-method-price
+                                            :shipping_method_sku   :shipping-method-sku
+                                            :store_slug            :store-slug
+                                            :used_promotion_codes  :used-promotion-codes})
+            {:total            (:total order)
+             :number           (:number order)
+             :line-item-skuers line-item-skuers}))))
 
 (defmethod perform-track events/api-success-auth-sign-in [_ event {:keys [flow user] :as args} app-state]
   (stringer/track-event "sign_in" {:type flow})
+  (when (#{"development" "acceptance"} (get-in app-state keypaths/environment))
+    ;; TODO(jjh): raise once we use GA4 on production
+    (google-analytics/track-login))
   (facebook-analytics/track-custom-event "user_logged_in" {:store_url stylist-urls/store-url}))
 
 (defmethod perform-track events/api-success-auth-sign-up [_ event {:keys [flow] :as args} app-state]
+  (when (#{"development" "acceptance"} (get-in app-state keypaths/environment))
+    ;; TODO(jjh): raise once we use GA4 on production 
+    (google-analytics/track-sign-up))
   (stringer/track-event "sign_up" {:type flow}))
 
 (defmethod perform-track events/api-success-auth-reset-password [_ events {:keys [flow] :as args} app-state]
@@ -399,7 +426,11 @@
   (let [order-number (get-in app-state keypaths/order-number)]
     (stringer/track-event "checkout-initiate" {:flow flow
                                                :order_number order-number})
-    (google-tag-manager/track-checkout-initiate {:number order-number})
+    ((if (= "production" (get-in app-state keypaths/environment))
+       google-tag-manager/track-checkout-initiate 
+       ;; TODO(jjh): raise once we use GA4 on production
+       google-analytics/track-checkout-initiate)
+     {:number order-number})
     (facebook-analytics/track-event "InitiateCheckout")))
 
 (defmethod perform-track events/browse-addon-service-menu-button-enabled

@@ -847,7 +847,8 @@
                                    (trackings/track-cart-initialization
                                     "look-customization"
                                     look-id
-                                    {:skus-db          (get-in state keypaths/v2-skus)
+                                    {:environment      (get-in state keypaths/environment)
+                                     :skus-db          (get-in state keypaths/v2-skus)
                                      :image-catalog    (get-in state keypaths/v2-images)
                                      :store-experience (get-in state keypaths/store-experience)
                                      :order            order})))))

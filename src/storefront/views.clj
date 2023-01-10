@@ -275,12 +275,16 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('init', '" facebook-pixel-id "'); fbq('track', 'PageView');")))]
 
             ;; Google Tag Manager
-            [:script {:type "text/javascript"}
-             (raw "(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            (let [gtm-container-id (case environment
+                                     "development" "GTM-KLFHMCS"   ; GTM/SS -> GA4
+                                     "production"  "GTM-TLS2JL"    ; -> GA UA
+                                     "acceptance"  "GTM-NNC8T99")] ; GTM/SS -> GA4
+              [:script {:type "text/javascript"}
+               (raw (str "(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-TLS2JL');")]
+    })(window,document,'script','dataLayer','" gtm-container-id "');"))])
 
           ;;;;;;;;;;;;
 
