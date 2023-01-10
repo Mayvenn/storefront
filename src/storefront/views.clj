@@ -276,9 +276,10 @@ fbq('init', '" facebook-pixel-id "'); fbq('track', 'PageView');")))]
 
             ;; Google Tag Manager
             (let [gtm-container-id (case environment
-                                     "development" "GTM-KLFHMCS"   ; GTM/SS -> GA4
-                                     "production"  "GTM-TLS2JL"    ; -> GA UA
-                                     "acceptance"  "GTM-NNC8T99")] ; GTM/SS -> GA4
+                                     "production"  "GTM-TLS2JL"  ; -> GA UA
+                                     "acceptance"  "GTM-NNC8T99" ; GTM/SS -> GA4
+                                     "GTM-KLFHMCS"               ; Dev: GTM/SS -> GA4
+                                     )] 
               [:script {:type "text/javascript"}
                (raw (str "(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
