@@ -9,6 +9,7 @@
                        [storefront.components.svg :as svg]
                        [storefront.history :as history]
                        [storefront.hooks.facebook-analytics :as facebook-analytics]
+                       [storefront.hooks.google-analytics :as google-analytics]
                        [storefront.hooks.quadpay :as zip]
                        [storefront.hooks.stringer :as stringer]
                        [storefront.hooks.seo :as seo]
@@ -916,7 +917,17 @@
 
 #?(:cljs
    (defmethod trackings/perform-track events/navigate-product-details
-     [_ _ {:keys [catalog/product-id]} app-state]
+     [_ _ {:keys [catalog/product-id query-params]} app-state] 
+     (when-let [sku (or (->> (:SKU query-params)
+                             (conj keypaths/v2-skus)
+                             (get-in app-state))
+                        (get-in app-state catalog.keypaths/detailed-product-selected-sku)
+                        (->> product-id
+                             (conj keypaths/v2-products)
+                             (get-in app-state)
+                             (products/extract-product-skus app-state)
+                             first))]
+       (google-analytics/track-view-item sku))
      (when (-> product-id
                ((get-in app-state keypaths/v2-products))
                accessors.products/wig-product?)

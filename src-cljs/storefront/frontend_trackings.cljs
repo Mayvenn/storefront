@@ -466,6 +466,9 @@
   (stringer/track-event "request_reset_password" {:email email}))
 
 (defmethod perform-track events/api-success-update-order-add-promotion-code [_ events {order :order promo-code :promo-code} app-state]
+  (when (#{"development" "acceptance"} (get-in app-state keypaths/environment))
+    ;; TODO(jjh): raise once we use GA4 on production
+    (google-analytics/track-select-promotion {:promo-code promo-code}))
   (stringer/track-event "promo_add" {:order_number (:number order)
                                      :promotion_code promo-code}))
 

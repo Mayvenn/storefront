@@ -76,3 +76,12 @@
           :orderQuantity  order-quantity
           :storeSlug      store-slug
           :storeIsStylist store-is-stylist}))
+
+(defn track-view-item
+  [sku]
+  (track "view_item"
+         {:items [(line-item-skuer->ga-cart-item sku)]}))
+
+(defn track-select-promotion
+  [{:keys [promo-code]}]
+  (track "select_promotion" {:promotion_id promo-code}))
