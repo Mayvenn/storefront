@@ -48,7 +48,7 @@
    :coupon             (not-empty (string/join " " used-promotion-codes)) ; HACK
 
    ;; Custom:
-   :orderNuber         number
+   :orderNumber        number
    :buyerType          buyer-type
    :isStylistStore     is-stylist-store
    :shippingMethodName shipping-method-name
