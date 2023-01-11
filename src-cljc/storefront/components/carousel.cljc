@@ -48,6 +48,7 @@
         :muted       "muted"
         :playsInline "playsInline"
         :style       {:object-fit "cover"}
+        :aria-label  alt
         :src         src}]
 
       :else
@@ -68,8 +69,9 @@
       [:div
        {:style {:display "contents"}}
        [:video.container-size.contents
-        {:style {:object-fit "cover"}
-         :src   src
+        {:style      {:object-fit "cover"}
+         :aria-label alt
+         :src        src
          ;; if we want to change the still frame, use this instead
          ;; :src         (str src "#t=5.1")
          }]
@@ -195,7 +197,9 @@
          (c/build exhibit-highlight-component (nth exhibits selected-exhibit-idx))]
         [:div.exhibits.flex.flex-column
          [:a.center.flip-vertical
-          (merge {:on-click (partial decrement-selected-exhibit this)}
+          (merge {:on-click   (partial decrement-selected-exhibit this)
+                  :href       "#"
+                  :aria-label "Move to previous image"}
                  (if (= 0 selected-exhibit-idx)
                    {:style {:filter "opacity(0.25)"}}
                    {:class "pointer"}))
@@ -211,10 +215,12 @@
                    :position   "relative"}}
           (map-indexed (fn [index exhibit]
                          [:a.exhibit.relative.grid.pointer
-                          {:key      index
-                           :on-click #(publish events/carousel|jumped {:id  id
-                                                                       :idx index})
-                           :style    {:grid-template-areas "\"thumbnail\""}}
+                          {:key        index
+                           :href       "#"
+                           :aria-label "View image"
+                           :on-click   #(publish events/carousel|jumped {:id  id
+                                                                         :idx index})
+                           :style      {:grid-template-areas "\"thumbnail\""}}
                           [:div
                            (merge
                             {:style {:grid-area "thumbnail"
@@ -226,7 +232,9 @@
                            (c/build (or exhibit-thumbnail-component exhibit-highlight-component) exhibit)]])
                        exhibits)]
          [:a.center
-          (merge {:on-click (partial increment-selected-exhibit this)}
+          (merge {:on-click   (partial increment-selected-exhibit this)
+                  :href       "#"
+                  :aria-label "Move to next image"}
                  (if (= (count exhibits) (inc selected-exhibit-idx))
                    {:style {:filter "opacity(0.25)"}}
                    {:class "pointer"}))
