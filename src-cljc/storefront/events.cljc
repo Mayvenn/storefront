@@ -831,6 +831,7 @@
 
 (defpath reviews|reset)
 
-(defpath account-profile|experience-omni-chosen)
+(defpath account-profile|experience|evaluated)
+(defpath account-profile|experience|joined)
 
 (defpath hdyhau-post-purchase-submitted)

@@ -1239,9 +1239,7 @@
                  :fields     "main"}
         handler (fn [res]
                   (messages/handle-message events/api-success-fetch-geo-location-from-ip res)
-                  (when (and (= "US" (:country_code res))
-                             (= "TX" (:region_code res)))
-                    (messages/handle-message events/account-profile|experience-omni-chosen)))
+                  (messages/handle-message events/account-profile|experience|evaluated))
         key     (c/cache-key [path params])
         res     (cache key)]
     (if res

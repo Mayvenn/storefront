@@ -588,6 +588,7 @@
       (assoc _ :retail-stores-more-info (feature-flags/retrieve-flag ld "retail-stores-more-info" :bool false))
       (assoc _ :footer-email-capture (feature-flags/retrieve-flag ld "footer-email-capture" :bool false))
       (assoc _ :hdyhau-post-purchase (feature-flags/retrieve-flag ld "hdyhau-post-purchase" :bool false))
+      (assoc _ :experience-omni (feature-flags/retrieve-flag ld "experience-omni" :bool false))
       (assoc-in-req-state req keypaths/features _)
       (h _))))
 

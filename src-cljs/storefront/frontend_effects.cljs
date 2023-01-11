@@ -109,7 +109,8 @@
                       .resolvedOptions
                       .-timeZone
                       (= "America/Chicago"))) ; limit lookup to central timezone
-    (api/fetch-geo-location-from-ip (get-in app-state keypaths/api-cache))))
+    (api/fetch-geo-location-from-ip (get-in app-state keypaths/api-cache)))
+  (messages/handle-message events/account-profile|experience|evaluated))
 
 (defmethod effects/perform-effects events/app-stop [_ event args _ app-state]
   (riskified/remove-tracking)
@@ -123,7 +124,10 @@
     (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)}))
 
   (when (= feature "edit-gallery")
-    (messages/handle-message events/poll-gallery)))
+    (messages/handle-message events/poll-gallery))
+
+  (when (= feature "experience-omni")
+    (messages/handle-message events/account-profile|experience|evaluated)))
 
 (defmethod effects/perform-effects events/ensure-sku-ids
   [_ _ {:keys [sku-ids]} _ app-state]
