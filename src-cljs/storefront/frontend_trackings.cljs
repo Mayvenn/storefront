@@ -128,14 +128,25 @@
   (track-select-bundle-option selection value))
 
 (defmethod perform-track events/api-success-suggested-add-to-bag [_ event {:keys [order sku-id->quantity initial-sku]} app-state]
-  (let [line-item-skuers (sku-id->quantity-to-line-item-skuer (get-in app-state keypaths/v2-skus) sku-id->quantity)
+  (let [store-slug       (get-in app-state keypaths/store-slug)
+        line-item-skuers (sku-id->quantity-to-line-item-skuer (get-in app-state keypaths/v2-skus) sku-id->quantity)
         images-catalog   (get-in app-state keypaths/v2-images)
         added-skus       (mapv line-item-skuer->stringer-cart-item images-catalog line-item-skuers)]
+    (when-not (= "production" (get-in app-state keypaths/environment))
+      ;; TODO(jjh): raise once we use GA4 on production
+      (google-analytics/track-add-to-cart
+       {:number           (:number order)
+        :store-slug       store-slug
+        :store-is-stylist (not (or (#{"store" "shop" "internal"} store-slug)
+                                   (= "retail-location" (get-in app-state keypaths/store-experience))))
+        :order-quantity   (orders/product-and-service-quantity order)
+        :line-item-skuers line-item-skuers}))
     (stringer/track-event "suggested_line_item_added" {:added_skus   added-skus
                                                        :initial_sku  (dissoc (line-item-skuer->stringer-cart-item images-catalog initial-sku)
                                                                              :variant_quantity)
                                                        :order_number (:number order)
                                                        :order_total  (:total order)})))
+
 
 (defmethod perform-track events/control-add-sku-to-bag [_ event {:keys [sku quantity]} app-state]
   (facebook-analytics/track-event "AddToCart" {:content_type "product"
