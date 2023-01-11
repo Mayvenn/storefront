@@ -82,4 +82,5 @@
                               :token      (:token order)
                               :variant-id (:id variant)
                               :sku-code   (:sku variant)}
-                             #(messages/handle-message events/api-success-decrease-quantity {:order %})))))
+                             #(messages/handle-message events/api-success-decrease-quantity {:order  %
+                                                                                             :sku-id (:sku variant)})))))

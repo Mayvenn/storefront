@@ -185,9 +185,15 @@
         :line-item-skuers [(assoc sku :item/quantity quantity)]}))))
 
 (defmethod perform-track events/api-success-remove-from-bag
-  [_ _ {order :order} app-state]
+  [_ _ {:keys [sku-id order]} app-state] 
   (let [skus           (get-in app-state keypaths/v2-skus)
         images-catalog (get-in app-state keypaths/v2-images)]
+    (when (#{"development" "acceptance"} (get-in app-state keypaths/environment))
+       ;; TODO(jjh): raise once we use GA4 on production
+      (when-let [sku (get skus sku-id)]
+        (google-analytics/track-remove-from-cart
+         {:number (:number order)
+          :sku    sku})))
     (stringer/track-event "remove_from_cart"
                           {:order_number     (:number order)
                            :order_total      (:total order)
@@ -199,9 +205,15 @@
                                                                (mapv (partial line-item-skuer->stringer-cart-item images-catalog)))}})))
 
 (defmethod perform-track events/api-success-decrease-quantity
-  [_ _ {order :order} app-state]
+  [_ _ {:keys [sku-id order]} app-state]
   (let [skus           (get-in app-state keypaths/v2-skus)
-        images-catalog (get-in app-state keypaths/v2-images)]
+        images-catalog (get-in app-state keypaths/v2-images)] 
+    (when (#{"development" "acceptance"} (get-in app-state keypaths/environment))
+      ;; TODO(jjh): raise once we use GA4 on production
+      (when-let [sku (get skus sku-id)]
+        (google-analytics/track-remove-from-cart
+         {:number           (:number order)
+          :sku              sku})))
     (stringer/track-event "remove_from_cart"
                           {:order_number     (:number order)
                            :order_total      (:total order)
