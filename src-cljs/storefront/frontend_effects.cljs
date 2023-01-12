@@ -104,11 +104,12 @@
     (messages/handle-message events/enable-feature {:feature feature}))
   (when (get-in app-state keypaths/user-id)
     (messages/handle-message events/user-identified {:user (get-in app-state keypaths/user)}))
-  (when (not= false ; If browser doesn't support timezone, lookup anyway
-              (some-> (Intl.DateTimeFormat)
-                      .resolvedOptions
-                      .-timeZone
-                      (= "America/Chicago"))) ; limit lookup to central timezone
+  ;not= false
+  (when (contains? #{nil  ; If browser doesn't support timezone, lookup anyway
+                     "America/Chicago"}
+                   (some-> (Intl.DateTimeFormat)
+                           .resolvedOptions
+                           .-timeZone))  ; limit lookup to central timezone
     (api/fetch-geo-location-from-ip (get-in app-state keypaths/api-cache)))
   (messages/handle-message events/account-profile|experience|evaluated))
 
