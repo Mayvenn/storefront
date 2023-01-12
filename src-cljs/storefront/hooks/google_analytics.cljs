@@ -24,7 +24,7 @@
                                :item_name (or (:legacy/product-name item)
                                               (:sku/title item))
                                :quantity  (:item/quantity item)
-                               :price     1.99 #_ (:sku/price item)}) line-item-skuers)
+                               :price     (:sku/price item)}) line-item-skuers)
             :currency "USD"
             :value    value})))
 
