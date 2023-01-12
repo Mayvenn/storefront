@@ -5,7 +5,8 @@
             [mayvenn.concept.email-capture :as email-capture]
             [mayvenn.visual.tools :as vt]
             [storefront.keypaths :as k]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.accessors.experiments :as experiments]
+            [mayvenn.concept.account :as accounts]))
 
 (defn page
   "Binds app-state to template for classic experiences"
@@ -40,6 +41,14 @@
                                                         :promises.icon/title  "100% Virgin Human Hair"}
                                                        {:promises.icon/symbol :svg/ship-truck,
                                                         :promises.icon/title  "Free Standard Shipping"}]})
+                                (when (:experience/omni (:experiences (accounts/<- app-state)))
+                                    (vt/within :omni-driver-hero {:dsk-url   "//images.ctfassets.net/76m8os65degn/3JtQfOTTqKznAhtc1OF9ch/046f10965212e76fff01eb6d9d57bfcb/400.jpeg"
+                                                                  :mob-url   "//images.ctfassets.net/76m8os65degn/3JtQfOTTqKznAhtc1OF9ch/046f10965212e76fff01eb6d9d57bfcb/400.jpeg"
+                                                                  :alt       "It's a placekitten!"
+                                                                  :file-name "placekitten.jpg"
+                                                                  :opts      {:data-test          :omni-driver-hero
+                                                                              :h1?                true
+                                                                              :navigation-message [e/navigate-home {}]}}))
                                 {:shop-these-looks/row-1 [{:shop-these-looks.entry.cta/copy   "Wedding Hair"
                                                            :shop-these-looks.entry.cta/target e/navigate-shop-by-look-details
                                                            :shop-these-looks.entry.cta/args   {:album-keyword :look
