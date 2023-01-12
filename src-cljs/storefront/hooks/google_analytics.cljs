@@ -60,13 +60,20 @@
    :usedPromotionCodes used-promotion-codes})
 
 (defn track-placed-order
-  [{:keys [number shipping-method-price]
-    :as   data}]
-#_
-  (track "purchase" (merge (order< data)
-                           {:transaction_id number
-                            ;; :tax TODO
-                            :shipping       shipping-method-price})))
+  [{:keys [number shipping-method-price line-item-skuers used-promotion-codes tax]}]
+  (track "purchase" {:transaction_id number
+                     :items          (mapv (fn mayvenn->ga4 [item]
+                                             {:item_id   (:catalog/sku-id item)
+                                              :item_name (or (:legacy/product-name item)
+                                                             (:sku/title item))
+                                              :quantity  (:item/quantity item)
+                                              :price     (:sku/price item)}) line-item-skuers)
+                     :currency       "USD"
+                     :value          (reduce + 0 (map :sku/price line-item-skuers))
+                     :coupon         (not-empty (string/join " " used-promotion-codes))
+                     :tax            tax
+                     :shipping       shipping-method-price}))
+
 (defn track-checkout-initiate
   [data]
 #_

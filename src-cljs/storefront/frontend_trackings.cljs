@@ -422,6 +422,7 @@
                                             :store_slug            :store-slug
                                             :used_promotion_codes  :used-promotion-codes})
             {:total            (:total order)
+             :tax              (:tax-total order)
              :number           (:number order)
              :line-item-skuers line-item-skuers}))))
 
