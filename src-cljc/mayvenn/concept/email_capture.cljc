@@ -2,7 +2,7 @@
   (:require #?@(:cljs
                 [[storefront.browser.cookie-jar :as cookie-jar]
                  [storefront.hooks.facebook-analytics :as facebook-analytics]
-                 [storefront.hooks.google-tag-manager :as google-tag-manager]
+                 [storefront.hooks.google-analytics :as google-analytics]
                  [storefront.hooks.stringer :as stringer]])
             [clojure.set :as set]
             [spice.date]
@@ -148,6 +148,7 @@
                                 :store-slug            (get-in app-state k/store-slug)
                                 :store-experience      (get-in app-state k/store-experience)
                                 :account-profile       (get-in app-state k/account-profile)})
+         (google-analytics/track-generate-lead)
          (when hdyhau-to-submit
            (stringer/track-event "hdydau-answered"
                                  {:email  captured-email

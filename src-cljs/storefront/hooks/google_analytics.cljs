@@ -95,3 +95,8 @@
   (track "remove_from_cart"
          {:items       [(line-item-skuer->ga-cart-item sku)]
           :orderNumber number}))
+
+(defn track-generate-lead
+  "TODO: We should probably track the trigger/template ids"
+  []
+  (track "generate_lead" {:currency "USD" :value 0}))
