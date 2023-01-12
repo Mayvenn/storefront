@@ -6,24 +6,26 @@
             [clojure.set :as set]
             [storefront.platform.messages :refer [handle-message] :rename {handle-message publish}]))
 
-(defn omni? [data]
-  (let [feature-flag              (get-in data (conj keypaths/features :experience-omni))
-        previously-experienced    (contains? (get-in data keypaths/account-profile-experiences) :experience/omni)
-        ip-address-in-texas       (seq (filter #(and (= "TX" (:region_code %))
-                                                     (= "US" (:country_code %)))
-                                               (get-in data keypaths/account-profile-ip-addresses)))
-        shipping-address-in-texas (= "TX" (:state (get-in data keypaths/order-shipping-address)))
-        landfall-in-texas         false] ;; TODO: find landfall criteria
-    (and feature-flag
-         (or previously-experienced
-             ip-address-in-texas
-             shipping-address-in-texas
-             landfall-in-texas))))
+(def experiences
+  {:experience/omni (fn omni? [data]
+                      (let [feature-flag              (get-in data (conj keypaths/features :experience-omni))
+                            previously-experienced    (contains? (get-in data keypaths/account-profile-experiences) :experience/omni)
+                            ip-address-in-texas       (seq (filter #(and (= "TX" (:region_code %))
+                                                                         (= "US" (:country_code %)))
+                                                                   (get-in data keypaths/account-profile-ip-addresses)))
+                            shipping-address-in-texas (= "TX" (:state (get-in data keypaths/order-shipping-address)))
+                            landfall-in-texas         false] ;; TODO: find landfall criteria
+                        (and feature-flag
+                             (or previously-experienced
+                                 ip-address-in-texas
+                                 shipping-address-in-texas
+                                 landfall-in-texas))))})
 
 (defn <- [data]
-  {:experiences (->> [(when (omni? data) :experience/omni)]
-                     (remove nil?)
-                     set)})
+  {:experiences (set (keep (fn [[exp-name exp-validator]]
+                             (when (exp-validator data)
+                               exp-name))
+                           experiences))})
 
 (defmethod effects/perform-effects events/account-profile|experience|evaluated
   [_ _ _ _ data]

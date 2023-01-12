@@ -4,6 +4,7 @@
                        [goog.events.EventType :as EventType]
                        [goog.style]])
             catalog.keypaths
+            [mayvenn.concept.account :as account]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.promos :as promos]
@@ -15,7 +16,7 @@
 
 (defmulti component
   "Display a different component based on type of promotion"
-  (fn [data owner opts] (:promo/type data))
+  (fn [data owner opts] (:type data))
   :default :none)
 
 (defmethod component :none
@@ -23,14 +24,14 @@
   [:div])
 
 (defmethod component :basic basic
-  [{:keys [promo]} _ {hide-dt? :hide-dt?}]
+  [{:keys [primary target]} _ {hide-dt? :hide-dt?}]
   [:div.inherit-color.center.pp5.bg-warm-gray.h5.bold.shout
    {:data-test (when-not hide-dt? "promo-banner")}
-   (if-let [uri (:uri promo)]
+   (if target
      [:a.underline.inherit-color
-      {:href  uri}
-      (:description promo)]
-     [:div (:description promo)])])
+      {:href  target}
+      primary]
+     [:div primary])])
 
 (def ^:private walmart-retail-pages
   #{events/navigate-retail-walmart
@@ -63,6 +64,10 @@
              :advertised  true}
             (promos/default-advertised-promotion promotion-db))))))
 
+(defn promo->banner-data [promotion]
+  {:primary (:description promotion)
+   :target  (:uri promotion)})
+
 (defn ^:private nav-allowlist-for
   "Promo code banner should only show on these nav-events
 
@@ -85,9 +90,16 @@
         on-shop?          (= :shop (sites/determine-site data))
         nav-event         (get-in data keypaths/navigation-event)
         show?             (contains? (nav-allowlist-for no-applied-promo? on-shop?) nav-event)
-        hide-on-mb-tb?    (boolean (get-in data catalog.keypaths/category-panel))]
-    (cond-> {:promo (promotion-to-advertise data)}
-      show?          (assoc :promo/type :basic)
+        hide-on-mb-tb?    (boolean (get-in data catalog.keypaths/category-panel))
+        account-profile   (account/<- data)
+        omni?             (:experience/omni (:experiences account-profile))
+        promo             (promotion-to-advertise data)
+        query-data        (if omni?
+                            {:primary "Click here to check out our Texas retail locations!"
+                             :target  "https://www.example.com/texas-locations"}
+                            (promo->banner-data promo))]
+    (cond-> query-data
+      show?          (assoc :type :basic)
       hide-on-mb-tb? (assoc :hide-on-mb-tb? true))))
 
 (defn static-organism
