@@ -12,7 +12,6 @@
             [storefront.accessors.stylist-urls :as stylist-urls]
             [storefront.events :as events]
             [storefront.hooks.facebook-analytics :as facebook-analytics]
-            [storefront.hooks.google-tag-manager :as google-tag-manager]
             [storefront.hooks.google-analytics :as google-analytics]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.stringer :as stringer]
@@ -132,15 +131,13 @@
         line-item-skuers (sku-id->quantity-to-line-item-skuer (get-in app-state keypaths/v2-skus) sku-id->quantity)
         images-catalog   (get-in app-state keypaths/v2-images)
         added-skus       (mapv line-item-skuer->stringer-cart-item images-catalog line-item-skuers)]
-    (when-not (= "production" (get-in app-state keypaths/environment))
-      ;; TODO(jjh): raise once we use GA4 on production
-      (google-analytics/track-add-to-cart
-       {:number           (:number order)
-        :store-slug       store-slug
-        :store-is-stylist (not (or (#{"store" "shop" "internal"} store-slug)
-                                   (= "retail-location" (get-in app-state keypaths/store-experience))))
-        :order-quantity   (orders/product-and-service-quantity order)
-        :line-item-skuers line-item-skuers}))
+    (google-analytics/track-add-to-cart
+     {:number           (:number order)
+      :store-slug       store-slug
+      :store-is-stylist (not (or (#{"store" "shop" "internal"} store-slug)
+                                 (= "retail-location" (get-in app-state keypaths/store-experience))))
+      :order-quantity   (orders/product-and-service-quantity order)
+      :line-item-skuers line-item-skuers})
     (stringer/track-event "suggested_line_item_added" {:added_skus   added-skus
                                                        :initial_sku  (dissoc (line-item-skuer->stringer-cart-item images-catalog initial-sku)
                                                                              :variant_quantity)
@@ -184,10 +181,7 @@
                                                   :variant_quantity quantity
                                                   :quantity         quantity
                                                   :context          {:cart-items cart-items}}))
-      ((if (= "production" (get-in app-state keypaths/environment))
-         google-tag-manager/track-add-to-cart 
-         ;; TODO(jjh): raise once we use GA4 on production
-         google-analytics/track-add-to-cart)
+      (google-analytics/track-add-to-cart
        {:number           (:number order)
         :store-slug       store-slug
         :store-is-stylist (not (or (#{"store" "shop" "internal"} store-slug)
@@ -199,12 +193,9 @@
   [_ _ {:keys [sku-id order]} app-state] 
   (let [skus           (get-in app-state keypaths/v2-skus)
         images-catalog (get-in app-state keypaths/v2-images)]
-    (when (#{"development" "acceptance"} (get-in app-state keypaths/environment))
-       ;; TODO(jjh): raise once we use GA4 on production
-      (when-let [sku (get skus sku-id)]
-        (google-analytics/track-remove-from-cart
-         {:number (:number order)
-          :sku    sku})))
+    (when-let [sku (get skus sku-id)]
+      (google-analytics/track-remove-from-cart {:number (:number order)
+                                                :sku    sku}))
     (stringer/track-event "remove_from_cart"
                           {:order_number     (:number order)
                            :order_total      (:total order)
@@ -218,13 +209,10 @@
 (defmethod perform-track events/api-success-decrease-quantity
   [_ _ {:keys [sku-id order]} app-state]
   (let [skus           (get-in app-state keypaths/v2-skus)
-        images-catalog (get-in app-state keypaths/v2-images)] 
-    (when (#{"development" "acceptance"} (get-in app-state keypaths/environment))
-      ;; TODO(jjh): raise once we use GA4 on production
-      (when-let [sku (get skus sku-id)]
-        (google-analytics/track-remove-from-cart
-         {:number           (:number order)
-          :sku              sku})))
+        images-catalog (get-in app-state keypaths/v2-images)]
+    (when-let [sku (get skus sku-id)]
+      (google-analytics/track-remove-from-cart {:number (:number order)
+                                                :sku    sku}))
     (stringer/track-event "remove_from_cart"
                           {:order_number     (:number order)
                            :order_total      (:total order)
@@ -262,12 +250,8 @@
     (facebook-analytics/track-event "AddToCart" {:content_type "product"
                                                  :content_ids  (map :catalog/sku-id line-item-skuers)
                                                  :num_items    line-item-quantity})
-    ((if (= "production" environment)
-       google-tag-manager/track-add-to-cart 
-       ;; TODO(jjh): raise once we use GA4 on production
-       google-analytics/track-add-to-cart)
-     {:number           (:number order)
-      :line-item-skuers line-item-skuers})
+    (google-analytics/track-add-to-cart {:number           (:number order)
+                                         :line-item-skuers line-item-skuers})
     (stringer/track-event "cart_initialized"
                           (merge {:store_experience store-experience
                                   :order_number     (:number order)
@@ -296,12 +280,8 @@
     (facebook-analytics/track-event "AddToCart" {:content_type "product"
                                                  :content_ids  (map :catalog/sku-id line-item-skuers)
                                                  :num_items    line-item-quantity})
-    ((if (= "production" environment)
-       google-tag-manager/track-add-to-cart 
-       ;; TODO(jjh): raise once we use GA4 on production
-       google-analytics/track-add-to-cart)
-     {:number           (:number order)
-      :line-item-skuers line-item-skuers})
+    (google-analytics/track-add-to-cart {:number           (:number order)
+                                         :line-item-skuers line-item-skuers})
     (stringer/track-event "bulk_add_to_cart" (merge {:shared_cart_id       shared-cart-id
                                                      :store_experience     store-experience
                                                      :order_number         (:number order)
@@ -339,10 +319,7 @@
                              :skus             (->> added-line-item-skuers (map :catalog/sku-id) (string/join ","))
                              :variant_ids      (->> added-line-item-skuers (map :legacy/variant-id) (string/join ","))
                              :context          {:cart-items added-stringer-cart-items}})
-      ((if (= "production" (get-in app-state keypaths/environment))
-         google-tag-manager/track-add-to-cart 
-         ;; TODO(jjh): raise once we use GA4 on production
-         google-analytics/track-add-to-cart)
+      (google-analytics/track-add-to-cart
        {:number           (:number order)
         :store-slug       store-slug
         :store-is-stylist (not (or (#{"store" "shop" "internal"} store-slug)
@@ -410,10 +387,7 @@
                                                        :content_type "product"
                                                        :num_items    order-quantity}))
 
-    ((if (= "production" (get-in app-state keypaths/environment))
-       google-tag-manager/track-placed-order 
-       ;; TODO(jjh): raise once we use GA4 on production 
-       google-analytics/track-placed-order)
+    (google-analytics/track-placed-order
      (merge (set/rename-keys shared-fields {:buyer_type            :buyer-type
                                             :is_stylist_store      :is-stylist-store
                                             :shipping_method_name  :shipping-method-name
@@ -428,15 +402,11 @@
 
 (defmethod perform-track events/api-success-auth-sign-in [_ event {:keys [flow user] :as args} app-state]
   (stringer/track-event "sign_in" {:type flow})
-  (when (#{"development" "acceptance"} (get-in app-state keypaths/environment))
-    ;; TODO(jjh): raise once we use GA4 on production
-    (google-analytics/track-login))
+  (google-analytics/track-login)
   (facebook-analytics/track-custom-event "user_logged_in" {:store_url stylist-urls/store-url}))
 
 (defmethod perform-track events/api-success-auth-sign-up [_ event {:keys [flow] :as args} app-state]
-  (when (#{"development" "acceptance"} (get-in app-state keypaths/environment))
-    ;; TODO(jjh): raise once we use GA4 on production 
-    (google-analytics/track-sign-up))
+  (google-analytics/track-sign-up)
   (stringer/track-event "sign_up" {:type flow}))
 
 (defmethod perform-track events/api-success-auth-reset-password [_ events {:keys [flow] :as args} app-state]
@@ -450,11 +420,7 @@
   (let [order-number (get-in app-state keypaths/order-number)]
     (stringer/track-event "checkout-initiate" {:flow flow
                                                :order_number order-number})
-    ((if (= "production" (get-in app-state keypaths/environment))
-       google-tag-manager/track-checkout-initiate 
-       ;; TODO(jjh): raise once we use GA4 on production
-       google-analytics/track-checkout-initiate)
-     {:number order-number})
+    (google-analytics/track-checkout-initiate {:number order-number})
     (facebook-analytics/track-event "InitiateCheckout")))
 
 (defmethod perform-track events/browse-addon-service-menu-button-enabled
@@ -490,9 +456,7 @@
   (stringer/track-event "request_reset_password" {:email email}))
 
 (defmethod perform-track events/api-success-update-order-add-promotion-code [_ events {order :order promo-code :promo-code} app-state]
-  (when (#{"development" "acceptance"} (get-in app-state keypaths/environment))
-    ;; TODO(jjh): raise once we use GA4 on production
-    (google-analytics/track-select-promotion {:promo-code promo-code}))
+  (google-analytics/track-select-promotion {:promo-code promo-code})
   (stringer/track-event "promo_add" {:order_number (:number order)
                                      :promotion_code promo-code}))
 

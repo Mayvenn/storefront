@@ -136,7 +136,6 @@
        (when no-errors?
          ;; TODO: CONSIDER READDING THESE
          ;; (facebook-analytics/subscribe)
-         ;; (google-tag-manager/track-email-capture-capture {:email captured-email})
          (stringer/identify {:email captured-email})
          (stringer/track-event "email_capture-capture"
                                {:email-capture-id      trigger-id
