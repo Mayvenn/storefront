@@ -761,6 +761,9 @@
   (cookie-jar/clear-order (get-in app-state keypaths/cookie)))
 
 (defmethod effects/perform-effects events/cart-cleared [_ _ _ _ app-state]
+  ;; HACK: By adding a freeinstall sku to the cart without specifying the order token
+  ;; the service gets automatically removed and we create a new cart.
+  ;; TODO(jjh): Remove cart items explicitly (and track the removals) 
   (api/add-sku-to-bag
    (get-in app-state keypaths/session-id)
    {:sku                {:catalog/sku-id                     "SV2-LBI-X"

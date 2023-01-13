@@ -417,10 +417,12 @@
                                              :variation feature}))
 
 (defn- checkout-initiate [app-state flow]
-  (let [order-number (get-in app-state keypaths/order-number)]
-    (stringer/track-event "checkout-initiate" {:flow flow
-                                               :order_number order-number})
-    (google-analytics/track-checkout-initiate {:number order-number})
+  (let [order (get-in app-state keypaths/order)]
+    (stringer/track-event "checkout-initiate" {:flow         flow
+                                               :order_number (:number order)})
+    (google-analytics/track-begin-checkout {:line-item-skuers     (waiter-line-items->line-item-skuer (get-in app-state keypaths/v2-skus)
+                                                                                                      (orders/product-items order))
+                                            :used-promotion-codes (:promotion-codes order)})
     (facebook-analytics/track-event "InitiateCheckout")))
 
 (defmethod perform-track events/browse-addon-service-menu-button-enabled
