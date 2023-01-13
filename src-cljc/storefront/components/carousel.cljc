@@ -198,7 +198,7 @@
         [:div.exhibits.flex.flex-column
          [:a.center.flip-vertical
           (merge {:on-click   (partial decrement-selected-exhibit this)
-                  :href       "#"
+                  :href       "javascript:void(0);"
                   :aria-label "Move to previous image"}
                  (if (= 0 selected-exhibit-idx)
                    {:style {:filter "opacity(0.25)"}}
@@ -216,7 +216,7 @@
           (map-indexed (fn [index exhibit]
                          [:a.exhibit.relative.grid.pointer
                           {:key        index
-                           :href       "#"
+                           :href       "javascript:void(0);"
                            :aria-label "View image"
                            :on-click   #(publish events/carousel|jumped {:id  id
                                                                          :idx index})
@@ -233,7 +233,7 @@
                        exhibits)]
          [:a.center
           (merge {:on-click   (partial increment-selected-exhibit this)
-                  :href       "#"
+                  :href       "javascript:void(0);"
                   :aria-label "Move to next image"}
                  (if (= (count exhibits) (inc selected-exhibit-idx))
                    {:style {:filter "opacity(0.25)"}}
