@@ -118,10 +118,6 @@
   [data]
   (display-feature? data "looks-tags"))
 
-(defn pdp-accordion-picker?
-  [data]
-  (display-feature? data "pdp-accordion-picker"))
-
 (defn carousel-redesign?
   [data]
   (display-feature? data "carousel-redesign"))
