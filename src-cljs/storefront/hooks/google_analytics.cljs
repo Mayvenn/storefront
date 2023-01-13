@@ -55,9 +55,11 @@
   [sku]
   #_(track "view_item"
            {:items [(line-item-skuer->ga-cart-item sku)]}))
+
 (defn track-select-promotion
-  [{:keys [promo-code]}]
-  #_(track "select_promotion" {:promotion_id promo-code}))
+  [{:keys [promotion]}]
+  (track "select_promotion" {:promotion_id   (:code promotion)
+                             :promotion_name (:description promotion)}))
 
 (defn track-remove-from-cart
   [{:keys [sku number]}]

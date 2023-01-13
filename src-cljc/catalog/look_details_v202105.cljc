@@ -831,24 +831,28 @@
 (defmethod effects/perform-effects events/control-create-order-from-customized-look
   [_ _ {:keys [items promotion-codes look-id]} _ state]
   #?(:cljs
-     (api/new-order-from-sku-ids (get-in state keypaths/session-id)
-                                 {:store-stylist-id     (get-in state keypaths/store-stylist-id)
-                                  :user-id              (get-in state keypaths/user-id)
-                                  :user-token           (get-in state keypaths/user-token)
-                                  :servicing-stylist-id (get-in state keypaths/order-servicing-stylist-id)
-                                  :sku-id->quantity     items
-                                  :promotion-codes      promotion-codes
-                                  :ignore-promo-absence true}
-                                 (fn [{:keys [order]}]
-                                   (messages/handle-message
-                                    events/api-success-update-order
-                                    {:order    order
-                                     :navigate events/navigate-cart})
-                                   (trackings/track-cart-initialization
-                                    "look-customization"
-                                    look-id
-                                    {:environment      (get-in state keypaths/environment)
-                                     :skus-db          (get-in state keypaths/v2-skus)
-                                     :image-catalog    (get-in state keypaths/v2-images)
-                                     :store-experience (get-in state keypaths/store-experience)
-                                     :order            order})))))
+     (api/new-order-from-sku-ids 
+      (get-in state keypaths/session-id) 
+      {:store-stylist-id     (get-in state keypaths/store-stylist-id)
+       :user-id              (get-in state keypaths/user-id)
+       :user-token           (get-in state keypaths/user-token)
+       :servicing-stylist-id (get-in state keypaths/order-servicing-stylist-id)
+       :sku-id->quantity     items
+       :promotion-codes      promotion-codes
+       :ignore-promo-absence true}
+      (fn [{:keys [order]}]
+        (messages/handle-message
+         events/api-success-update-order
+         {:order    order
+          :navigate events/navigate-cart})
+        (trackings/track-cart-initialization
+         "look-customization"
+         look-id
+         {:environment      (get-in state keypaths/environment)
+          :skus-db          (get-in state keypaths/v2-skus)
+          :image-catalog    (get-in state keypaths/v2-images)
+          :store-experience (get-in state keypaths/store-experience)
+          :order            order}) 
+        (doseq [promo-code promotion-codes]
+          (messages/handle-message events/order-promo-code-added {:order-number (:number order)
+                                                                  :promo-code   promo-code}))))))

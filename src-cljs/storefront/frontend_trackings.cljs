@@ -457,9 +457,13 @@
 (defmethod perform-track events/api-success-forgot-password [_ events {email :email} app-state]
   (stringer/track-event "request_reset_password" {:email email}))
 
-(defmethod perform-track events/api-success-update-order-add-promotion-code [_ events {order :order promo-code :promo-code} app-state]
-  (google-analytics/track-select-promotion {:promo-code promo-code})
-  (stringer/track-event "promo_add" {:order_number (:number order)
+(defmethod perform-track events/order-promo-code-added 
+  [_ events {:keys [order-number promo-code]} app-state]
+  (google-analytics/track-select-promotion {:promotion (->> keypaths/promotions
+                                                            (get-in app-state)
+                                                            (filter #(= promo-code (:code %)))
+                                                            first)})
+  (stringer/track-event "promo_add" {:order_number   order-number
                                      :promotion_code promo-code}))
 
 (defmethod perform-track events/api-success-update-order-remove-promotion-code [_ events {order :order promo-code :promo-code} app-state]

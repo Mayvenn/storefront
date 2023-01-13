@@ -971,14 +971,16 @@
                              {:message "The coupon code was successfully removed from your order."
                               :scroll? false})))
 
-(defmethod effects/perform-effects events/api-success-update-order-add-promotion-code
-  [_ _ {:keys [allow-dormant?]} _ app-state]
+(defmethod effects/perform-effects events/api-success-update-order-add-promotion-code 
+  [_ _ {:keys [allow-dormant? order promo-code]} _ app-state]
   (when-not allow-dormant?
     (messages/handle-message events/flash-show-success
                              {:message "The coupon code was successfully applied to your order."
                               :scroll? false}))
   (api/get-promotions (get-in app-state keypaths/api-cache)
-                      (first (get-in app-state keypaths/order-promotion-codes))))
+                      (first (get-in app-state keypaths/order-promotion-codes)))
+  (messages/handle-message events/order-promo-code-added {:order-number (:number order) 
+                                                          :promo-code   promo-code}))
 
 (defmethod effects/perform-effects events/sign-out [_ event args app-state-before app-state]
   (messages/handle-message events/clear-order)

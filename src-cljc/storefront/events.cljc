@@ -9,6 +9,7 @@
 (defpath order-completed)
 (defpath order-placed)
 
+(defpath order-promo-code-added)
 (defpath order-remove-promotion)
 (defpath order-remove-freeinstall-line-item)
 
