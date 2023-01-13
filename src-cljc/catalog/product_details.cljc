@@ -913,10 +913,11 @@
        (when (nil? product)
          (fetch-product-details app-state product-id))
        (when just-arrived?
-         (messages/handle-message events/initialize-product-details (assoc args :origin-nav-event event))))))
+         (messages/handle-message events/initialize-product-details (assoc args :origin-nav-event event)))
+       (messages/handle-message events/pdp|viewed args))))
 
 #?(:cljs
-   (defmethod trackings/perform-track events/navigate-product-details
+   (defmethod trackings/perform-track events/pdp|viewed
      [_ _ {:keys [catalog/product-id query-params]} app-state] 
      (when-let [sku (or (->> (:SKU query-params)
                              (conj keypaths/v2-skus)

@@ -1,6 +1,5 @@
 (ns storefront.hooks.google-analytics
-  (:require [clojure.string :as string]
-            [storefront.accessors.orders :as accessors.orders]))
+  (:require [clojure.string :as string]))
 
 (defn ^:private track
   [event-name data]
@@ -11,17 +10,18 @@
                                   :ecommerce data}))))
 
 (defn ^:private mayvenn-line-item->ga4-item [item]
-  {:item_id   (:catalog/sku-id item)
-   :item_name (or (:legacy/product-name item)
-                  (:sku/title item))
-   :quantity  (:item/quantity item)
-   :price     (:sku/price item)})
+  (->> {:item_id   (:catalog/sku-id item)
+        :item_name (or (:legacy/product-name item)
+                       (:sku/title item))
+        :quantity  (:item/quantity item)
+        :price     (:sku/price item)}
+       (filter second)
+       (into {})))
 
 (defn track-add-to-cart
-  "Track an add-to-cart event in GA4 schema.
-   
-   When things settle down we might want to consider the following or more:
-   order/number, order/quantity, store/slug, stylist?"
+  "Track an add-to-cart event in GA4 schema."
+  ;; When things settle down we might want to consider the following or more:
+  ;; order/number, order/quantity, store/slug, stylist?
   [{:keys [line-item-skuers]}]
   ;; NOTE: We are ignoring discounts here
   ;; TODO: We should probably minus the discount out of the value.
@@ -53,8 +53,8 @@
 
 (defn track-view-item
   [sku]
-  #_(track "view_item"
-           {:items [(line-item-skuer->ga-cart-item sku)]}))
+  (track "view_item"
+           {:items [(mayvenn-line-item->ga4-item sku)]}))
 
 (defn track-select-promotion
   [{:keys [promotion]}]
