@@ -12,6 +12,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
+            [storefront.components.carousel :as carousel-2022]
             [storefront.routes :as routes]
             [storefront.ugc :as ugc]
             [spice.maps :as maps]
@@ -223,14 +224,14 @@
 
                                                  {}))
                                              (:images body-layer))}
-      "imageCarousel" {:layer/type :lp-image-carousel
-                       :images     (mapv (fn [image]
-                                           (if (:image image) ; Prioritize contentful-hosted image over ucare
-                                             {:url (-> image :image :file :url)
-                                              :alt (:alt image)}
-                                             {:url (:url image)
-                                              :alt (:alt image)}))
-                                         (:images body-layer))}
+      "imageCarousel" {:layer/type           :lp-image-carousel
+                       :exhibits             (mapv (fn [image]
+                                                     {:src  (-> image :image :file :url)
+                                                      :alt  (:alt image)
+                                                      :type "image"})
+                                                   (:images body-layer))
+                       :selected-exhibit-idx (:idx (carousel-2022/<- data (:content/id body-layer)))
+                       :id                   (:content/id body-layer)}
       "video"         (let [youtube-id        (:youtube-id body-layer)
                             landing-page-slug (landing-page-slug data)]
                         {:layer/type  :lp-video

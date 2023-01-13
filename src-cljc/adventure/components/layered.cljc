@@ -8,6 +8,7 @@
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.carousel :as carousel]
+            [storefront.components.carousel :as carousel-2022]
             [storefront.platform.messages
              :refer [handle-message]
              :rename {handle-message publish}]
@@ -699,16 +700,13 @@
                                       :items       1}}}))
 
 (defcomponent lp-image-carousel
-  [{:keys [images]} _ _]
+  [{:keys [id] :as data} _ _]
   [:div.mx-auto.max-580.py10
-   (component/build carousel/component
-                    {:dependencies true
-                     :images       images
-                     :slides       (map-indexed image-body images)}
-                    {:opts {:settings {:nav         true
-                                       :edgePadding 0
-                                       :controls    true
-                                       :items       1}}})])
+   (component/build carousel-2022/component
+                    data
+                    {:opts {:carousel/exhibit-thumbnail-component carousel-2022/product-carousel-thumbnail
+                            :carousel/exhibit-highlight-component carousel-2022/product-carousel-highlight
+                            :carousel/id                          id}})])
 
 (defcomponent lp-video
   [{:keys [video open-modal? opts title]} _ _]
