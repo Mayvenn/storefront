@@ -95,8 +95,8 @@
         omni?             (:experience/omni (:experiences account-profile))
         promo             (promotion-to-advertise data)
         query-data        (if omni?
-                            {:primary "Click here to check out our Texas retail locations!"
-                             :target  "https://www.example.com/texas-locations"}
+                            {:primary "Visit a Mayvenn Beauty Lounge in person! Click for Details"
+                             :target  "/info/walmart"}
                             (promo->banner-data promo))]
     (cond-> query-data
       show?          (assoc :type :basic)
