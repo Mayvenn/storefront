@@ -189,30 +189,12 @@
         :order-quantity   order-quantity
         :line-item-skuers [(assoc sku :item/quantity quantity)]}))))
 
-(defmethod perform-track events/api-success-remove-from-bag
+(defmethod perform-track events/order-item-removed
   [_ _ {:keys [sku-id order]} app-state] 
   (let [skus           (get-in app-state keypaths/v2-skus)
         images-catalog (get-in app-state keypaths/v2-images)]
     (when-let [sku (get skus sku-id)]
-      (google-analytics/track-remove-from-cart {:number (:number order)
-                                                :sku    sku}))
-    (stringer/track-event "remove_from_cart"
-                          {:order_number     (:number order)
-                           :order_total      (:total order)
-                           :order_quantity   (orders/product-and-service-quantity order)
-                           :store_experience (get-in app-state keypaths/store-experience)
-                           :context          {:cart-items (->> order
-                                                               orders/product-and-service-items
-                                                               (waiter-line-items->line-item-skuer skus)
-                                                               (mapv (partial line-item-skuer->stringer-cart-item images-catalog)))}})))
-
-(defmethod perform-track events/api-success-decrease-quantity
-  [_ _ {:keys [sku-id order]} app-state]
-  (let [skus           (get-in app-state keypaths/v2-skus)
-        images-catalog (get-in app-state keypaths/v2-images)]
-    (when-let [sku (get skus sku-id)]
-      (google-analytics/track-remove-from-cart {:number (:number order)
-                                                :sku    sku}))
+      (google-analytics/track-remove-from-cart {:sku sku}))
     (stringer/track-event "remove_from_cart"
                           {:order_number     (:number order)
                            :order_total      (:total order)

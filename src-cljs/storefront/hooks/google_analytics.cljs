@@ -3,7 +3,6 @@
 
 (defn ^:private track
   [event-name data]
-  #_(prn "track" event-name data)
   (when (.hasOwnProperty js/window "dataLayer")
     (.push js/dataLayer (clj->js {:ecommerce nil}))
     (.push js/dataLayer (clj->js {:event event-name
@@ -53,8 +52,9 @@
 
 (defn track-view-item
   [sku]
-  (track "view_item"
-           {:items [(mayvenn-line-item->ga4-item sku)]}))
+  (track "view_item" {:currency "USD"
+                      :value    (:sku/price sku)
+                      :items    [(mayvenn-line-item->ga4-item sku)]}))
 
 (defn track-select-promotion
   [{:keys [promotion]}]
@@ -62,12 +62,13 @@
                              :promotion_name (:description promotion)}))
 
 (defn track-remove-from-cart
-  [{:keys [sku number]}]
-  #_(track "remove_from_cart"
-           {:items       [(line-item-skuer->ga-cart-item sku)]
-            :orderNumber number}))
+  [{:keys [sku]}]
+  (prn "track-remove-from-cart")
+  (track "remove_from_cart"
+         {:items [(mayvenn-line-item->ga4-item sku)]}))
 
 (defn track-generate-lead
-  "TODO: We should probably track the trigger/template ids"
+  ;; TODO: We should probably track the trigger/template ids
   []
-  (track "generate_lead" {:currency "USD" :value 0}))
+  (track "generate_lead" {:currency "USD" 
+                          :value    0}))

@@ -939,13 +939,17 @@
                                       (scroll/snap-to-top))
     (scroll/snap-to-top)))
 
-(defmethod effects/perform-effects events/api-success-decrease-quantity [dispatch event {:keys [order]} _ app-state]
+(defmethod effects/perform-effects events/api-success-decrease-quantity 
+  [_dispatch _event {:as args :keys [order]} _ app-state]
   (messages/handle-message events/save-order {:order order})
   (apply-pending-promo-code app-state order)
-  (messages/handle-later events/added-to-bag))
+  (messages/handle-later events/added-to-bag)
+  (messages/handle-message events/order-item-removed args))
 
-(defmethod effects/perform-effects events/api-success-remove-from-bag [dispatch event {:keys [order]} _ app-state]
-  (messages/handle-message events/save-order {:order order}))
+(defmethod effects/perform-effects events/api-success-remove-from-bag 
+  [_dispatch _event {:as args :keys [order]} _ _app-state]
+  (messages/handle-message events/save-order {:order order})
+  (messages/handle-message events/order-item-removed args))
 
 (defmethod effects/perform-effects events/api-success-add-sku-to-bag [dispatch event {:keys [order]} _ app-state]
   (messages/handle-message events/save-order {:order order})
