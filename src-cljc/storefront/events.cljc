@@ -420,8 +420,6 @@
 (defpath flash-later-show-success)
 (defpath flash-later-show-failure)
 
-(defpath added-to-bag)
-
 (defpath save-order)
 (defpath clear-order)
 

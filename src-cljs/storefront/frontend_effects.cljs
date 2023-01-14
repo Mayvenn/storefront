@@ -943,7 +943,7 @@
   [_dispatch _event {:as args :keys [order]} _ app-state]
   (messages/handle-message events/save-order {:order order})
   (apply-pending-promo-code app-state order)
-  (messages/handle-later events/added-to-bag)
+  (messages/handle-later events/control-scroll-to-selector {:selector "[data-ref=start-checkout-button]"})
   (messages/handle-message events/order-item-removed args))
 
 (defmethod effects/perform-effects events/api-success-remove-from-bag 
@@ -953,16 +953,12 @@
 
 (defmethod effects/perform-effects events/api-success-add-sku-to-bag [dispatch event {:keys [order]} _ app-state]
   (messages/handle-message events/save-order {:order order})
-  (messages/handle-later events/added-to-bag))
+  (messages/handle-later events/control-scroll-to-selector {:selector "[data-ref=start-checkout-button]"}))
 
 
 (defmethod effects/perform-effects events/api-success-add-multiple-skus-to-bag [dispatch event {:keys [order]} _ app-state]
   (messages/handle-message events/save-order {:order order})
-  (messages/handle-later events/added-to-bag))
-
-(defmethod effects/perform-effects events/added-to-bag [_ _ _ _ app-state]
-  (when-let [el (.querySelector js/document "[data-ref=cart-button]")]
-    (scroll/scroll-to-elem el)))
+  (messages/handle-later events/control-scroll-to-selector {:selector "[data-ref=start-checkout-button]"}))
 
 (defmethod effects/perform-effects events/checkout-address-component-mounted
   [_ event {:keys [address-elem address-keypath]} _ app-state]

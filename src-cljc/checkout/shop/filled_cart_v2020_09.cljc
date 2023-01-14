@@ -170,6 +170,7 @@
          (when id
            [:div
             (ui/button-large-primary {:data-test id
+                                      :data-ref  id
                                       :disabled? disabled?
                                       :on-click  (apply utils/send-event-callback target)}
                                      content)

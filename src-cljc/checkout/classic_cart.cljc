@@ -134,6 +134,7 @@
      (ui/button-large-primary {:spinning? false
                                :disabled? updating?
                                :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
+                               :data-ref  "start-checkout-button"
                                :data-test "start-checkout-button"}
                               [:div "Check out"])
 
