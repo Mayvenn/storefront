@@ -63,7 +63,6 @@
 
 (defn track-remove-from-cart
   [{:keys [sku]}]
-  (prn "track-remove-from-cart")
   (track "remove_from_cart"
          {:items [(mayvenn-line-item->ga4-item sku)]}))
 
