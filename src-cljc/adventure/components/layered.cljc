@@ -701,7 +701,7 @@
 
 (defcomponent lp-image-carousel
   [{:keys [id] :as data} _ _]
-  [:div.mx-auto.max-580.py10
+  [:div.mx8.py10
    (component/build carousel-2022/component
                     data
                     {:opts {:carousel/exhibit-thumbnail-component carousel-2022/product-carousel-thumbnail

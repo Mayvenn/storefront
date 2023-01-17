@@ -334,7 +334,8 @@
   {:landingPageV2     [:slug]
    :homepage          [:experience]
    :retailLocation    [:slug]
-   :filledContentSlot [:content/id]})
+   :filledContentSlot [:content/id]
+   :copyUrlSlug       [:slug]})
 
 (defn find-cms-nodes
   ([nodes-db content-type]
@@ -377,6 +378,7 @@
       (h (update-in-req-state req keypaths/cms
                               maps/deep-merge
                               (update-data {} [:advertisedPromo])
+                              {:copyUrlSlug (maps/index-by :slug  (assemble-cms-node normalized-cms-cache :copyUrlSlug :banner-omni))}
                               {:emailModal (into {} (for [modal (filter (comp (partial = "emailModal") :id :sys :contentType :sys) (vals normalized-cms-cache))]
                                                       [(-> modal :sys :id) (->> modal
                                                                                 contentful/extract-fields

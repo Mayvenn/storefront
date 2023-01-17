@@ -41,32 +41,40 @@
     events/navigate-retail-walmart-dallas
     events/navigate-retail-walmart-mansfield})
 
-(defn ^:private promotion-to-advertise
+(defn ^:private promo->banner-data [promotion]
+  (when promotion
+    {:primary (:description promotion)
+     :target  (:uri promotion)}))
+
+(defn ^:private banner-data<-
   [data]
-  (let [promotion-db (get-in data keypaths/promotions)
-        applied      (get-in data keypaths/order-promotion-codes)
-        pending      (get-in data keypaths/pending-promo-code)]
+  (let [promotion-db    (get-in data keypaths/promotions)
+        applied         (get-in data keypaths/order-promotion-codes)
+        pending         (get-in data keypaths/pending-promo-code)
+        omni?           (-> data account/<- :experiences :experience/omni)
+        cms-omni-banner (when omni? (get-in data (conj keypaths/cms-copy-url-slug "banner-omni")))]
     (cond
-      (contains? walmart-retail-pages (get-in data keypaths/navigation-event))
+      (contains? walmart-retail-pages (get-in data keypaths/navigation-event)) ; on a walmart page
       {}
 
-      :else
-      (or (promos/find-promotion-by-code promotion-db (first applied)) ;; on the order
-          (promos/find-promotion-by-code promotion-db pending) ;; on a potential order
-          (if-let [default-advertised-promo-text (get-in data keypaths/cms-advertised-promo-text)]
-            ;; NOTE(jeff, justin): ideally contentful should provide the entire
-            ;; promo object, but it's so much easier to pretend we have a
-            ;; promotion object here.
-            {:id          -1
-             :code        nil
-             :description default-advertised-promo-text
-             :uri         (get-in data keypaths/cms-advertised-promo-uri)
-             :advertised  true}
-            (promos/default-advertised-promotion promotion-db))))))
+      (first applied) ; on the order
+      (promo->banner-data (promos/find-promotion-by-code promotion-db (first applied)))
 
-(defn promo->banner-data [promotion]
-  {:primary (:description promotion)
-   :target  (:uri promotion)})
+      pending ; on a potential order
+      (promo->banner-data (promos/find-promotion-by-code promotion-db pending))
+
+      cms-omni-banner ; in the omni experience
+      {:primary (:copy cms-omni-banner)
+       :target  (:url cms-omni-banner)}
+
+      (get-in data keypaths/cms-advertised-promo-text) ; CMS override (old)
+      {:primary (get-in data keypaths/cms-advertised-promo-text)
+       :target (get-in data keypaths/cms-advertised-promo-uri)}
+
+      :else ; any promo with the advertise flag on in el-jefe
+      (promo->banner-data (promos/default-advertised-promotion promotion-db)))))
+
+
 
 (defn ^:private nav-allowlist-for
   "Promo code banner should only show on these nav-events
@@ -91,14 +99,8 @@
         nav-event         (get-in data keypaths/navigation-event)
         show?             (contains? (nav-allowlist-for no-applied-promo? on-shop?) nav-event)
         hide-on-mb-tb?    (boolean (get-in data catalog.keypaths/category-panel))
-        account-profile   (account/<- data)
-        omni?             (:experience/omni (:experiences account-profile))
-        promo             (promotion-to-advertise data)
-        query-data        (if omni?
-                            {:primary "Visit a Mayvenn Beauty Lounge in person! Click for Details"
-                             :target  "/info/walmart"}
-                            (promo->banner-data promo))]
-    (cond-> query-data
+        banner-data       (banner-data<- data)]
+    (cond-> banner-data
       show?          (assoc :type :basic)
       hide-on-mb-tb? (assoc :hide-on-mb-tb? true))))
 
