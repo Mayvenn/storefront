@@ -1,6 +1,7 @@
 (ns catalog.look-details-v202105
   "Shopping by Looks: Detail page for an individual 'look'"
   (:require #?@(:cljs [[storefront.api :as api]
+                       [storefront.accessors.orders :as orders]
                        [storefront.frontend-trackings :as trackings]
                        [storefront.trackings]
                        [storefront.hooks.quadpay :as quadpay]
@@ -18,7 +19,6 @@
             [adventure.faq :as adv-faq]
             [spice.maps :as maps]
             [storefront.accessors.contentful :as contentful]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.images :as images]
             [storefront.accessors.shared-cart :as shared-cart]
             [storefront.accessors.sites :as sites]
@@ -831,28 +831,34 @@
 (defmethod effects/perform-effects events/control-create-order-from-customized-look
   [_ _ {:keys [items promotion-codes look-id]} _ state]
   #?(:cljs
-     (api/new-order-from-sku-ids 
-      (get-in state keypaths/session-id) 
-      {:store-stylist-id     (get-in state keypaths/store-stylist-id)
-       :user-id              (get-in state keypaths/user-id)
-       :user-token           (get-in state keypaths/user-token)
-       :servicing-stylist-id (get-in state keypaths/order-servicing-stylist-id)
-       :sku-id->quantity     items
-       :promotion-codes      promotion-codes
-       :ignore-promo-absence true}
-      (fn [{:keys [order]}]
-        (messages/handle-message
-         events/api-success-update-order
-         {:order    order
-          :navigate events/navigate-cart})
-        (trackings/track-cart-initialization
-         "look-customization"
-         look-id
-         {:environment      (get-in state keypaths/environment)
-          :skus-db          (get-in state keypaths/v2-skus)
-          :image-catalog    (get-in state keypaths/v2-images)
-          :store-experience (get-in state keypaths/store-experience)
-          :order            order}) 
-        (doseq [promo-code promotion-codes]
-          (messages/handle-message events/order-promo-code-added {:order-number (:number order)
-                                                                  :promo-code   promo-code}))))))
+     (let [removed-items (orders/product-items (get-in state keypaths/order))]
+       (api/new-order-from-sku-ids 
+        (get-in state keypaths/session-id) 
+        {:store-stylist-id     (get-in state keypaths/store-stylist-id)
+         :user-id              (get-in state keypaths/user-id)
+         :user-token           (get-in state keypaths/user-token)
+         :servicing-stylist-id (get-in state keypaths/order-servicing-stylist-id)
+         :sku-id->quantity     items
+         :promotion-codes      promotion-codes
+         :ignore-promo-absence true}
+        (fn success-handler
+          [{:keys [order]}]
+          (doseq [{:keys [sku quantity]} removed-items]
+            (messages/handle-message events/order-line-item-removed {:sku-id   sku
+                                                                     :quantity quantity
+                                                                     :order    order}))
+          (messages/handle-message
+           events/api-success-update-order
+           {:order    order
+            :navigate events/navigate-cart})
+          (trackings/track-cart-initialization
+           "look-customization"
+           look-id
+           {:environment      (get-in state keypaths/environment)
+            :skus-db          (get-in state keypaths/v2-skus)
+            :image-catalog    (get-in state keypaths/v2-images)
+            :store-experience (get-in state keypaths/store-experience)
+            :order            order}) 
+          (doseq [promo-code promotion-codes]
+            (messages/handle-message events/order-promo-code-added {:order-number (:number order)
+                                                                    :promo-code   promo-code})))))))
