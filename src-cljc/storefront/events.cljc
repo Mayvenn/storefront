@@ -12,7 +12,7 @@
 (defpath order-promo-code-added)
 (defpath order-remove-promotion)
 (defpath order-remove-freeinstall-line-item)
-(defpath order-item-removed)
+(defpath order-line-item-removed)
 
 (defpath external-redirect-url)
 (defpath external-redirect-welcome)

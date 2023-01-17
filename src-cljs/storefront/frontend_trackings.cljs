@@ -189,7 +189,7 @@
         :order-quantity   order-quantity
         :line-item-skuers [(assoc sku :item/quantity quantity)]}))))
 
-(defmethod perform-track events/order-item-removed
+(defmethod perform-track events/order-line-item-removed
   [_ _ {:keys [sku-id quantity order]} app-state] 
   (let [skus           (get-in app-state keypaths/v2-skus)
         images-catalog (get-in app-state keypaths/v2-images)]

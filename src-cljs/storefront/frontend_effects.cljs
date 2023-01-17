@@ -763,19 +763,26 @@
 (defmethod effects/perform-effects events/cart-cleared [_ _ _ _ app-state]
   ;; HACK: By adding a freeinstall sku to the cart without specifying the order token
   ;; the service gets automatically removed and we create a new cart.
-  ;; TODO(jjh): Remove cart items explicitly (and track the removals) 
-  (api/add-sku-to-bag
-   (get-in app-state keypaths/session-id)
-   {:sku                {:catalog/sku-id                     "SV2-LBI-X"
-                         :promo.mayvenn-install/discountable true}
-    :quantity           1
-    :stylist-id         (get-in app-state keypaths/store-stylist-id)
-    :heat-feature-flags (keys (filter second (get-in app-state keypaths/features)))}
-   #(messages/handle-message events/api-success-add-sku-to-bag
-                             {:order    %
-                              :quantity 1
+  (let [removed-items (orders/product-items (get-in app-state keypaths/order))]
+    (api/add-sku-to-bag
+     (get-in app-state keypaths/session-id)
+     {:sku                {:catalog/sku-id                     "SV2-LBI-X"
+                           :promo.mayvenn-install/discountable true}
+      :quantity           1
+      :stylist-id         (get-in app-state keypaths/store-stylist-id)
+      :heat-feature-flags (keys (filter second (get-in app-state keypaths/features)))}
+     (fn success-handler [updated-order]
+       (doseq [{:keys [sku quantity]} removed-items]
+         (messages/handle-message events/order-line-item-removed {:sku-id   sku
+                                                                  :quantity quantity
+                                                                  :order    updated-order}))
+       ;; Why must we continue this add-sku-to-bag charade?
+       (messages/handle-message events/api-success-add-sku-to-bag
+                                {:order    updated-order
+                                 :quantity 1
                               ;; NOTE: Nil sku prevents the tracking behavior on this handler
-                              :sku      nil})))
+                                 :sku      nil})))))
+
 
 (defmethod effects/perform-effects events/api-success-auth [_ _ {:keys [order]} _ app-state]
   (messages/handle-message events/save-order {:order order})
@@ -944,12 +951,12 @@
   (messages/handle-message events/save-order {:order order})
   (apply-pending-promo-code app-state order)
   (messages/handle-later events/control-scroll-to-selector {:selector "[data-ref=start-checkout-button]"})
-  (messages/handle-message events/order-item-removed args))
+  (messages/handle-message events/order-line-item-removed args))
 
 (defmethod effects/perform-effects events/api-success-remove-from-bag 
   [_dispatch _event {:as args :keys [order]} _ _app-state]
   (messages/handle-message events/save-order {:order order})
-  (messages/handle-message events/order-item-removed args))
+  (messages/handle-message events/order-line-item-removed args))
 
 (defmethod effects/perform-effects events/api-success-add-sku-to-bag [dispatch event {:keys [order]} _ app-state]
   (messages/handle-message events/save-order {:order order})
