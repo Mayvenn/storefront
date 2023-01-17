@@ -362,7 +362,7 @@
                           :shipping_method_price (:unit-price shipping)
                           :shipping_method_sku   (:sku shipping)
                           :store_slug            store-slug
-                          :used_promotion_codes  (->> order :promotions (map :code))}]
+                          :used_promotion_codes  (:promotion-codes order)}]
     (facebook-analytics/track-event "Purchase" (merge shared-fields
                                                       {:value        (str order-total) ;; Facebook wants a string
                                                        :content_ids  (map :catalog/sku-id line-item-skuers)

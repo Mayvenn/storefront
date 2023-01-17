@@ -35,11 +35,12 @@
 
 (defn track-placed-order
   [{:keys [number shipping-method-price line-item-skuers used-promotion-codes tax]}]
+  (print "tpo" used-promotion-codes)
   (track "purchase" {:transaction_id number
                      :items          (mapv mayvenn-line-item->ga4-item line-item-skuers)
                      :currency       "USD"
                      :value          (reduce + 0 (map :sku/price line-item-skuers))
-                     :coupon         (not-empty (string/join " " used-promotion-codes))
+                     :coupon         (->> used-promotion-codes (string/join " ") not-empty)
                      :tax            tax
                      :shipping       shipping-method-price}))
 
