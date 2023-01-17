@@ -4,7 +4,8 @@
             [storefront.effects :as effects]
             [storefront.events :as events]
             [clojure.set :as set]
-            [storefront.platform.messages :refer [handle-message] :rename {handle-message publish}]))
+            [storefront.platform.messages :refer [handle-message] :rename {handle-message publish}]
+            [clojure.string :as string]))
 
 (def experiences
   {:experience/omni (fn omni? [data]
@@ -14,7 +15,8 @@
                                                                          (= "US" (:country_code %)))
                                                                    (get-in data keypaths/account-profile-ip-addresses)))
                             shipping-address-in-texas (= "TX" (:state (get-in data keypaths/order-shipping-address)))
-                            landfall-in-texas         (some #(-> % :utm-params (get "utm_campaign") (= "foo"))
+                            landfall-in-texas         (some #(or (some-> % :utm-params (get "utm_campaign") (= "foo"))
+                                                                 (some-> % :path (string/starts-with? "/info/walmart")))
                                                             (get-in data keypaths/account-profile-landfalls))]
                         (and feature-flag
                              (or previously-experienced
