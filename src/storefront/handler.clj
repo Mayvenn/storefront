@@ -547,7 +547,9 @@
    [{:utm-params (->> req
                       :query-params
                       (filter (fn [[k _v]] (re-matches #"utm_.*|_utmt\d*" k)))
-                      (into {}))}]})
+                      (into {}))
+     :path        (-> req
+                      :uri)}]})
 
 (defn wrap-set-user [h]
   (fn [req]
