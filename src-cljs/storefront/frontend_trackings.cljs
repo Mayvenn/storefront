@@ -190,11 +190,12 @@
         :line-item-skuers [(assoc sku :item/quantity quantity)]}))))
 
 (defmethod perform-track events/order-item-removed
-  [_ _ {:keys [sku-id order]} app-state] 
+  [_ _ {:keys [sku-id quantity order]} app-state] 
   (let [skus           (get-in app-state keypaths/v2-skus)
         images-catalog (get-in app-state keypaths/v2-images)]
     (when-let [sku (get skus sku-id)]
-      (google-analytics/track-remove-from-cart {:sku sku}))
+      (google-analytics/track-remove-from-cart {:sku      sku
+                                                :quantity quantity}))
     (stringer/track-event "remove_from_cart"
                           {:order_number     (:number order)
                            :order_total      (:total order)

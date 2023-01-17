@@ -746,16 +746,18 @@
 (defn delete-line-item [session-id order variant-id]
   (let [line-item (->> order
                        orders/product-and-service-items
-                       (orders/line-item-by-id variant-id))]
+                       (orders/line-item-by-id variant-id))
+        quantity  (:quantity line-item)]
     (remove-from-bag
      (conj request-keys/delete-line-item variant-id)
      session-id
      (merge (select-keys order [:number :token])
             {:session-id session-id
              :variant-id variant-id
-             :quantity   (:quantity line-item)})
-     #(messages/handle-message events/api-success-remove-from-bag {:order  %
-                                                                   :sku-id (:sku line-item)}))))
+             :quantity   quantity})
+     #(messages/handle-message events/api-success-remove-from-bag {:order    %
+                                                                   :quantity quantity
+                                                                   :sku-id   (:sku line-item)}))))
 
 (defn update-addresses [session-id order]
   (storeback-api-req

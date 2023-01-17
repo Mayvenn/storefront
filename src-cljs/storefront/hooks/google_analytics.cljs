@@ -8,14 +8,14 @@
     (.push js/dataLayer (clj->js {:event event-name
                                   :ecommerce data}))))
 
-(defn ^:private mayvenn-line-item->ga4-item [item]
-  (->> {:item_id   (:catalog/sku-id item)
-        :item_name (or (:legacy/product-name item)
-                       (:sku/title item))
-        :quantity  (:item/quantity item)
-        :price     (:sku/price item)}
-       (filter second)
-       (into {})))
+(defn ^:private mayvenn-line-item->ga4-item 
+  ([item quantity] (mayvenn-line-item->ga4-item (assoc item :item/quantity quantity)))
+  ([item]
+   {:item_id   (:catalog/sku-id item)
+    :item_name (or (:legacy/product-name item)
+                   (:sku/title item))
+    :quantity  (or (:item/quantity item) 1)
+    :price     (:sku/price item)}))
 
 (defn track-add-to-cart
   "Track an add-to-cart event in GA4 schema."
@@ -63,9 +63,9 @@
                              :promotion_name (:description promotion)}))
 
 (defn track-remove-from-cart
-  [{:keys [sku]}]
+  [{:keys [sku quantity]}]
   (track "remove_from_cart"
-         {:items [(mayvenn-line-item->ga4-item sku)]}))
+         {:items [(mayvenn-line-item->ga4-item sku quantity)]}))
 
 (defn track-generate-lead
   ;; TODO: We should probably track the trigger/template ids
