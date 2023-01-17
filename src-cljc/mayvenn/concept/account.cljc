@@ -14,7 +14,8 @@
                                                                          (= "US" (:country_code %)))
                                                                    (get-in data keypaths/account-profile-ip-addresses)))
                             shipping-address-in-texas (= "TX" (:state (get-in data keypaths/order-shipping-address)))
-                            landfall-in-texas         false] ;; TODO: find landfall criteria
+                            landfall-in-texas         (some #(-> % :utm-params (get "utm_campaign") (= "foo"))
+                                                            (get-in data keypaths/account-profile-landfalls))]
                         (and feature-flag
                              (or previously-experienced
                                  ip-address-in-texas
