@@ -145,3 +145,7 @@
 (defn hdyhau-post-purchase?
   [data]
   (display-feature? data "hdyhau-post-purchase"))
+
+(defn hdyhau-email-capture?
+  [data]
+  (display-feature? data "hdyhau-email-capture"))

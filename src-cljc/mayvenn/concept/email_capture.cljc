@@ -107,15 +107,31 @@
 
 (defmethod fx/perform-effects e/biz|email-capture|captured
   [_ _ _ state _]
-  #?(:cljs
-     (cookie-jar/save-email-capture-long-timer-started (get-in state k/cookie)))
-  (publish e/biz|email-capture|timer-state-observed))
+  (when-not experiments/hdyhau-email-capture? state ; if getting hdyhau, don't set timer until after hdyhau is collected
+        #?(:cljs
+           (cookie-jar/save-email-capture-long-timer-started (get-in state k/cookie)))
+        (publish e/biz|email-capture|timer-state-observed)))
 
 (defmethod fx/perform-effects e/biz|email-capture|dismissed
   [_ _ {:keys [id trigger-id]} state _]
   #?(:cljs
      (cookie-jar/save-email-capture-short-timer-started (email-modal-trigger-id->cookie-id trigger-id)
                                                         (get-in state k/cookie)))
+  (publish e/biz|email-capture|timer-state-observed))
+
+(defmethod t/transition-state e/hdyhau-email-capture-submitted
+  [_ _ _ app-state]
+  (-> app-state
+      (assoc-in [:models :hdyhau :submitted] true)))
+
+(defmethod fx/perform-effects e/hdyhau-email-capture-submitted
+  [_ _ _ state _]
+  (publish e/biz|hdyhau-capture|captured))
+
+(defmethod fx/perform-effects e/biz|hdyhau-capture|captured
+  [_ _ _ state _]
+  #?(:cljs
+     (cookie-jar/save-email-capture-long-timer-started (get-in state k/cookie)))
   (publish e/biz|email-capture|timer-state-observed))
 
 ;;; TRACKING
@@ -160,3 +176,15 @@
      (stringer/track-event "email_capture-dismiss" {:email-capture-id      trigger-id
                                                     :variation-description variation-description
                                                     :template-content-id   template-content-id})))
+
+#?(:cljs
+   (defmethod trk/perform-track e/biz|hdyhau-capture|captured
+     [_ event data app-state]
+     (let [hdyhau-to-submit           (:to-submit (get-in app-state k/models-hdyhau))
+           {:keys [shipping-address user
+                   phone-marketing-opt-in
+                   phone-txn-opt-in]} (get-in app-state k/completed-order)]
+       (stringer/track-event "hdyhau-answered"
+                             {:email  "" ;; Do we need this?
+                              :hdyhau (keys (filter #(= true (val %)) hdyhau-to-submit))
+                              :form   "email-capture"}))))

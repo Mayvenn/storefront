@@ -91,46 +91,27 @@
        hr-divider
        (fine-print fine-print-lead-in)])]))
 
-;; In Contentful, this is labeled as:
-;; "Email Modal: Template 2" (content type id: emailModalTemplate2)
-(defn email-capture-modal-template-2
-  [{:keys [id] :as data}]
+(defn email-capture-modal-hdyhau
+  [data]
   (c/html
-   [:div.flex.flex-column
-    {:data-test (str id "-modal")}
-    (m-header id (apply utils/fake-href (:email-capture.dismiss/target data)))
-    (let [{:email-capture.photo/keys [url title description]} data]
-      (when (seq url)
-        (ui/aspect-ratio 4 3
-                         (ui/img
-                          {:max-size 500
-                           :src      url
-                           :title    title
-                           :class    "col-12"
-                           :style    {:vertical-align "bottom"}
-                           :alt      description}))))
-    (let [{:email-capture.copy/keys [title subtitle supertitle fine-print-lead-in]} data]
-      [:div.p4.black
-       {:class (:email-capture.design/background-color data)}
-       [:form.col-12.center.px1
-        {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
-        [:div.mb2
-         [:div.title-2.proxima.shout supertitle]
-         [:div.title-1.canela.p-color title]
-         [:div.title-2.proxima subtitle]]
-        [:div.px3
-         (text-field data)
-         (let [{:email-capture.hdyhau/keys [form title]} data]
-           [:div.content-3
-            [:div.pb2 title]
-            (for [{:keys [label keypath value]} form]
-              (ui/check-box {:label    label
-                             :keypath  keypath
-                             :value    value
-                             :box-size "10px"}))])
-         (cta data)]]
-       hr-divider
-       (fine-print fine-print-lead-in)])]))
+   [:div.bg-cool-gray.p3.center.fixed.bottom-0
+    (let [{:email-capture.hdyhau/keys [form title subtitle target]} data]
+      [:form.content-3.col-9.mx-auto
+       {:on-submit (apply utils/send-event-callback target)}
+       [:div.pb2.content-2.bold title]
+       [:div.pb2.content-3.bold subtitle]
+       [:div
+        (for [{:keys [label keypath value]} form]
+          [:div {:key label}
+           (ui/check-box {:label    label
+                          :keypath  keypath
+                          :value    value
+                          :boxsize "10px"})])]
+       (ui/submit-button-medium "Submit" {:disabled? (every? (comp not :value) form)})
+       (ui/button-small-underline-black
+        {:on-click   (apply utils/send-event-callback (:email-capture.dismiss/target data))
+         :aria-label "skip"}
+        "Skip")])]))
 
 (c/defdynamic-component template
   (did-mount
@@ -155,22 +136,26 @@
    [this]
    (let [{:keys               [id]
           :email-capture/keys [content-type]
+          :email-capture.hdyhau/keys [title]
           :as                 data} (c/get-props this)
-         template                   (case content-type
-                                      "emailModalTemplate"  email-capture-modal-template-1
-                                      "emailModalTemplate2" email-capture-modal-template-2
-                                      nil)]
-     (if template
+         template                   email-capture-modal-template-1]
+     (if title
        (ui/modal
         {:close-attrs (apply utils/fake-href (:email-capture.dismiss/target data))
          :col-class   "col-12 col-5-on-tb col-4-on-dt flex justify-center"
          :bg-class    "bg-darken-4"}
-        (template data))
-       (js/console.error (str "Content-type not found: " content-type))))))
+        (email-capture-modal-hdyhau data))
+       (if template
+         (ui/modal
+          {:close-attrs (apply utils/fake-href (:email-capture.dismiss/target data))
+           :col-class   "col-12 col-5-on-tb col-4-on-dt flex justify-center"
+           :bg-class    "bg-darken-4"}
+          (template data))
+         (js/console.error (str "Content-type not found: " content-type)))))))
 
 (defmethod fx/perform-effects e/email-modal-submitted
-  [_ _ {:keys [email-modal values]} _ _]
-  (let [{{:keys [template-content-id]} :email-modal-template
+  [_ _ {:keys [email-modal values hdyhau]} _ state]
+  (let [{{:keys [template-content-id]} :emal-modal-template
          variation-description         :description
          {:keys [trigger-id]}          :email-modal-trigger}
         email-modal
@@ -210,6 +195,11 @@
               :template-content-id   template-content-id
               :email                 email-address})))
 
+(defmethod t/transition-state e/email-modal-submitted
+  [_ _ _ app-state]
+  (when (experiments/hdyhau-email-capture? app-state)
+    (assoc-in app-state k/show-hdyhau true)))
+
 (defmethod t/transition-state e/homepage-email-submitted
   [_ _ _ app-state]
   (assoc-in app-state k/homepage-email-submitted true))
@@ -239,16 +229,19 @@
     (let [errors            (get-in state (conj k/field-errors ["email"]))
           focused           (get-in state k/ui-focus)
           textfield-keypath concept/textfield-keypath
-          email             (get-in state textfield-keypath)
-          hdyhau            (get-in state k/models-hdyhau)]
+          show-hdyhau?      (get-in state k/show-hdyhau)
+          email             (get-in state textfield-keypath)]
       (merge {:id                                    "email-capture"
               :email-capture/trigger-id              trigger-id
               :email-capture/variation-description   variation-description
               :email-capture/template-content-id     template-content-id
               :email-capture/content-type            (:content/type content)
               :email-capture.dismiss/target          [e/email-modal-dismissed {:email-modal email-modal}]
-              :email-capture.submit/target           [e/email-modal-submitted {:email-modal email-modal
-                                                                               :values      {"email-capture-input" email}}]
+              :email-capture.submit/target           (if (:hdyhau content)
+                                                       [e/email-modal-submitted-add-hdyhau {:email-modal email-modal
+                                                                                            :values      {"email-capture-input" email}}]
+                                                       [e/email-modal-submitted {:email-modal email-modal
+                                                                                 :values      {"email-capture-input" email}}])
               :email-capture.design/background-color (:background-color content)
               :email-capture.design/close-x-color    (:close-xcolor content)
               :email-capture.copy/title              (:title content)
@@ -266,13 +259,16 @@
               :email-capture.photo/url               (-> content :hero-image :file :url)
               :email-capture.photo/title             (-> content :hero-image :title)
               :email-capture.photo/description       (-> content :hero-image :description)}
-             (when (:hdyhau content)
-               {:email-capture.hdyhau/title "How did you hear about us?"
-                :email-capture.hdyhau/form  (->> awareness/hdyhau
-                                                               (mapv (fn [[slug label]]
-                                                                       {:label   label
-                                                                        :keypath (conj k/models-hdyhau :to-submit slug)
-                                                                        :value   (get (:to-submit hdyhau) slug false)})))})))))
+             (when (and show-hdyhau? (:hdyhau content))
+               {
+                :email-capture.hdyhau/title  "Thanks for signing up!"
+                :email-capture.hdyhau/subtitle  "How did you hear about us? Select all that apply."
+                :email-capture.hdyhau/form   (->> (spice.core/spy awareness/hdyhau)
+                                                 (mapv (fn [[slug label]]
+                                                         {:label   label
+                                                          :keypath (conj k/models-hdyhau :to-submit slug)
+                                                          :value   (get (:to-submit (get-in state k/models-hdyhau)) slug false)})))
+                :email-capture.hdyhau/target [e/hdyhau-email-capture-submitted]})))))
 
 ;;; Matchers and Triggers
 

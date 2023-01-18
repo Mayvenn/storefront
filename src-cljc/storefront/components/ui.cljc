@@ -478,7 +478,7 @@
                                      (dissoc select-attributes :label :keypath :value :options :errors :div-attrs))
         (field-error-message error data-test)]))))
 
-(defn check-box [{:keys [label data-test errors keypath value label-classes disabled box-size] :as attributes}]
+(defn check-box [{:keys [label data-test errors keypath value label-classes disabled boxsize] :as attributes}]
   (component/html
    [:div.col-12.mb2
     [:label.flex.items-start
@@ -489,13 +489,13 @@
       ^:attrs (merge (when-not disabled (utils/toggle-checkbox keypath value))
                      (dissoc attributes :label :keypath :value :label-classes)
                      {:type "checkbox"})]
-     [:div.border.left.mr3.pp2
+     [:div.border.left.mr3.pp2.bg-white
       (when disabled {:class "border-gray bg-cool-gray"})
       (if value
         (svg/x-sharp {:class  (str "block " (if disabled "fill-gray" "fill-p-color"))
-                      :width  (or box-size "15px")
-                      :height (or box-size "15px")})
-        [:div {:style {:width (or box-size "15px") :height (or box-size "15px")}}])]
+                      :width  (or boxsize "15px")
+                      :height (or boxsize "15px")})
+        [:div {:style {:width (or boxsize "15px") :height (or boxsize "15px")}}])]
      (when (seq label)
        [:span
         (when disabled {:class "gray"})

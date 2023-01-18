@@ -382,6 +382,7 @@
 (def models-stylist-payments (conj models-root :stylist-payments))
 
 (def models-hdyhau (conj models-root :hdyhau))
+(def show-hdyhau (conj models-hdyhau :show))
 
 (def slideout-nav (conj ui :slideout-nav))
 (def slideout-nav-selected-tab (conj slideout-nav :selected-tab))

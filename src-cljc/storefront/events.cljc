@@ -725,6 +725,7 @@
 (defpath biz|email-capture|captured)
 (defpath biz|email-capture|dismissed)
 (defpath biz|email-capture|timer-state-observed)
+(defpath biz|hdyhau-capture|captured)
 
 ;; Shopping Quiz iterations
 (defpath navigate-shopping-quiz)
@@ -836,3 +837,5 @@
 (defpath account-profile|experience|joined)
 
 (defpath hdyhau-post-purchase-submitted)
+(defpath email-modal-submitted-add-hdyhau)
+(defpath hdyhau-email-capture-submitted)
