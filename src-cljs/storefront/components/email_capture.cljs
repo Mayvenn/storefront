@@ -91,7 +91,7 @@
        hr-divider
        (fine-print fine-print-lead-in)])]))
 
-(defn email-capture-modal-hdyhau
+(defn email-capture-modal-template-hdyhau
   [data]
   (c/html
    [:div.bg-cool-gray.p3.center.fixed.bottom-0
@@ -138,20 +138,14 @@
           :email-capture/keys [content-type]
           :email-capture.hdyhau/keys [title]
           :as                 data} (c/get-props this)
-         template                   email-capture-modal-template-1]
-     (if title
+         template                   (if title email-capture-modal-template-hdyhau email-capture-modal-template-1)]
+     (if template
        (ui/modal
         {:close-attrs (apply utils/fake-href (:email-capture.dismiss/target data))
          :col-class   "col-12 col-5-on-tb col-4-on-dt flex justify-center"
          :bg-class    "bg-darken-4"}
-        (email-capture-modal-hdyhau data))
-       (if template
-         (ui/modal
-          {:close-attrs (apply utils/fake-href (:email-capture.dismiss/target data))
-           :col-class   "col-12 col-5-on-tb col-4-on-dt flex justify-center"
-           :bg-class    "bg-darken-4"}
-          (template data))
-         (js/console.error (str "Content-type not found: " content-type)))))))
+        (template data))
+       (js/console.error (str "Content-type not found: " content-type))))))
 
 (defmethod fx/perform-effects e/email-modal-submitted
   [_ _ {:keys [email-modal values hdyhau]} _ state]
@@ -245,7 +239,8 @@
               :email-capture/template-content-id     template-content-id
               :email-capture/content-type            (:content/type content)
               :email-capture.dismiss/target          [e/email-modal-dismissed {:email-modal email-modal}]
-              :email-capture.submit/target           (if (and (experiments/hdyhau-email-capture? state) (:hdyhau content))
+              :email-capture.submit/target           (if (and (experiments/hdyhau-email-capture? state) ; experiment
+                                                              (:hdyhau content)) ; template-2 AND yes, hdyhau
                                                        [e/email-modal-submitted-add-hdyhau {:email-modal email-modal
                                                                                             :values      {"email-capture-input" email}}]
                                                        [e/email-modal-submitted {:email-modal email-modal
