@@ -237,7 +237,7 @@
               :email-capture/template-content-id     template-content-id
               :email-capture/content-type            (:content/type content)
               :email-capture.dismiss/target          [e/email-modal-dismissed {:email-modal email-modal}]
-              :email-capture.submit/target           (if (:hdyhau content)
+              :email-capture.submit/target           (if (and (experiments/hdyhau-email-capture? state) (:hdyhau content))
                                                        [e/email-modal-submitted-add-hdyhau {:email-modal email-modal
                                                                                             :values      {"email-capture-input" email}}]
                                                        [e/email-modal-submitted {:email-modal email-modal

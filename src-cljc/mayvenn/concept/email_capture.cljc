@@ -107,7 +107,7 @@
 
 (defmethod fx/perform-effects e/biz|email-capture|captured
   [_ _ _ state _]
-  (when-not experiments/hdyhau-email-capture? state ; if getting hdyhau, don't set timer until after hdyhau is collected
+  (when-not (experiments/hdyhau-email-capture? state) ; if getting hdyhau, don't set timer until after hdyhau is collected
         #?(:cljs
            (cookie-jar/save-email-capture-long-timer-started (get-in state k/cookie)))
         (publish e/biz|email-capture|timer-state-observed)))
