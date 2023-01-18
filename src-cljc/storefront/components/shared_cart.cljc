@@ -550,7 +550,12 @@
 #?(:cljs
    (defn control-fx
      [state {:keys [id advertised-price]} on-success]
-     (let [success-handler #(let [new-order (orders/TEMP-pretend-service-items-do-not-exist %)]
+     (let [removed-items   (orders/product-items (get-in state keypaths/order))
+           success-handler #(let [new-order (orders/TEMP-pretend-service-items-do-not-exist %)]
+                              (doseq [{:keys [sku quantity]} removed-items]
+                                (messages/handle-message events/order-line-item-removed {:sku-id   sku
+                                                                                         :quantity quantity
+                                                                                         :order    new-order}))
                               (messages/handle-message events/save-order
                                                        {:order new-order})
                               (messages/handle-message events/biz|shared-cart|hydrated
