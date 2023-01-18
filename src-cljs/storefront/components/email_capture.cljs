@@ -220,6 +220,13 @@
               :variation-description variation-description
               :template-content-id   template-content-id})))
 
+(defn shuffled-hdyhau-options
+  []
+  (shuffle awareness/hdyhau))
+
+(def memoize-hdyhau-options
+  (memoize shuffled-hdyhau-options))
+
 (defn query [state email-modal]
   (when-let [{{:keys [template-content-id] :as content} :email-modal-template
               variation-description                     :description
@@ -230,7 +237,8 @@
           focused           (get-in state k/ui-focus)
           textfield-keypath concept/textfield-keypath
           show-hdyhau?      (get-in state k/show-hdyhau)
-          email             (get-in state textfield-keypath)]
+          email             (get-in state textfield-keypath)
+          hdyhau            (memoize-hdyhau-options)]
       (merge {:id                                    "email-capture"
               :email-capture/trigger-id              trigger-id
               :email-capture/variation-description   variation-description
@@ -260,15 +268,14 @@
               :email-capture.photo/title             (-> content :hero-image :title)
               :email-capture.photo/description       (-> content :hero-image :description)}
              (when (and show-hdyhau? (:hdyhau content))
-               {
-                :email-capture.hdyhau/title  "Thanks for signing up!"
-                :email-capture.hdyhau/subtitle  "How did you hear about us? Select all that apply."
-                :email-capture.hdyhau/form   (->> (spice.core/spy awareness/hdyhau)
-                                                 (mapv (fn [[slug label]]
-                                                         {:label   label
-                                                          :keypath (conj k/models-hdyhau :to-submit slug)
-                                                          :value   (get (:to-submit (get-in state k/models-hdyhau)) slug false)})))
-                :email-capture.hdyhau/target [e/hdyhau-email-capture-submitted]})))))
+               {:email-capture.hdyhau/title    "Thanks for signing up!"
+                :email-capture.hdyhau/subtitle "How did you hear about us? Select all that apply."
+                :email-capture.hdyhau/form     (->> hdyhau
+                                                    (mapv (fn [[slug label]]
+                                                            {:label   label
+                                                             :keypath (conj k/models-hdyhau :to-submit slug)
+                                                             :value   (get (:to-submit (get-in state k/models-hdyhau)) slug false)})))
+                :email-capture.hdyhau/target   [e/hdyhau-email-capture-submitted]})))))
 
 ;;; Matchers and Triggers
 
