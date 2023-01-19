@@ -166,12 +166,7 @@
                                 :store-slug            (get-in app-state k/store-slug)
                                 :store-experience      (get-in app-state k/store-experience)
                                 :account-profile       (get-in app-state k/account-profile)})
-         (google-analytics/track-generate-lead)
-         (when hdyhau-to-submit
-           (stringer/track-event "hdydau-answered"
-                                 {:email  captured-email
-                                  :hdyhau (keys (filter #(= true (val %)) hdyhau-to-submit))
-                                  :form   "email-capture"}))))))
+         (google-analytics/track-generate-lead)))))
 
 #?(:cljs
    (defmethod trk/perform-track e/biz|email-capture|dismissed
@@ -183,11 +178,8 @@
 #?(:cljs
    (defmethod trk/perform-track e/biz|hdyhau-capture|captured
      [_ event data app-state]
-     (let [hdyhau-to-submit           (:to-submit (get-in app-state k/models-hdyhau))
-           {:keys [shipping-address user
-                   phone-marketing-opt-in
-                   phone-txn-opt-in]} (get-in app-state k/completed-order)]
+     (let [hdyhau-to-submit           (:to-submit (get-in app-state k/models-hdyhau))]
        (stringer/track-event "hdyhau-answered"
-                             {:email  "" ;; Do we need this?
+                             {:email  (get-in app-state [:models :email-capture :textfield])
                               :hdyhau (keys (filter #(= true (val %)) hdyhau-to-submit))
                               :form   "email-capture"}))))
