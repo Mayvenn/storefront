@@ -46,15 +46,20 @@
          [:div.title-3.proxima.shout.bold "Location"]
          [:div.content-4 address1-2]
          [:div.content-4 city-state-zip]
-         [:div.content-4.my2 phone]]
+         [:a.block.black.content-4.my2 
+          (utils/fake-href events/external-redirect-phone {:number phone})
+          phone]]
         [:div
          [:div.title-3.proxima.shout.bold "Hours"]
          [:div
           [:div.content-4 mon-sat-hours]
           [:div.content-4 sun-hours]]]]
        [:div.flex.justify-between.gap-4
-        [:div (ui/button-small-underline-primary {:href directions} "Get Directions")]
+        [:div (ui/button-small-underline-primary 
+               (utils/fake-href events/external-redirect-url-retail-directions {:url directions}) 
+               "Get Directions")]
         [:div.flex
+         ;; TODO(jjh): make these use e/external-redirect-... events instead of hreffing.
          (when instagram [:a.block.mx1.flex.items-center {:href instagram :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Instagram")}
                           [:div ^:inline (svg/instagram {:style {:height "20px" :width "20px"}})]])
          (when facebook [:a.block.mx1.flex.items-center {:href facebook :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Facebook")}

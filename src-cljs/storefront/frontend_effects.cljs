@@ -157,6 +157,10 @@
 (defmethod effects/perform-effects events/external-redirect-sms [_ event {:keys [sms-message number]} _ app-state]
   (set! (.-location js/window) (share-links/sms-link sms-message number)))
 
+(defmethod effects/perform-effects events/external-redirect-phone 
+  [_ _ {:keys [number]} _ _]
+  (set! (.-location js/window) (str "tel:" number)))
+
 (defmethod effects/perform-effects events/external-redirect-paypal-setup [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/order-cart-payments-paypal-redirect-url)))
 
