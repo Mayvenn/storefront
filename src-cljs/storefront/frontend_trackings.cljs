@@ -527,16 +527,18 @@
   (stringer/track-event "external-redirect-sms" params))
 
 (defmethod perform-track events/external-redirect-phone
-  [_ _ {:keys [number]} _]
-  (google-analytics/track-external-redirect-phone {:number number}))
+  [_ _ {:keys [number slug]} _]
+  (google-analytics/track-external-redirect-phone {:number number
+                                                   :slug   slug}))
 
 (defmethod perform-track events/external-redirect-instagram-profile
   [_ _ {:keys [ig-username]} _]
   (stringer/track-event "stylist_instagram_link-clicked" {:instagram-username ig-username}))
 
 (defmethod perform-track events/external-redirect-url-retail-directions
-  [_ _ params _]
-  (google-analytics/track-external-redirect-url-retail-directions params))
+  [_ _ {:keys [url slug]} _]
+  (google-analytics/track-external-redirect-url-retail-directions {:url  url
+                                                                   :slug slug}))
 
 (defn cart-items-model<-
   [order images-db skus-db]

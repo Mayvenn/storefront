@@ -3,7 +3,7 @@
 
 (defn ^:private track
   [event-name data]
-  #_(prn "track" event-name data)
+  (prn "track" event-name data)
   (when (.hasOwnProperty js/window "dataLayer")
     (.push js/dataLayer (clj->js {:ecommerce nil}))
     (.push js/dataLayer (clj->js {:event event-name
