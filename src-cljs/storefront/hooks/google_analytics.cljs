@@ -3,7 +3,6 @@
 
 (defn ^:private track
   [event-name data]
-  (prn "track" event-name data)
   (when (.hasOwnProperty js/window "dataLayer")
     (.push js/dataLayer (clj->js {:ecommerce nil}))
     (.push js/dataLayer (clj->js {:event event-name
@@ -73,11 +72,3 @@
   []
   (track "generate_lead" {:currency "USD" 
                           :value    0}))
-
-(defn track-external-redirect-url-retail-directions
-  [{:keys [slug url]}]
-  #_(track "external_link_retail_directions" {:slug slug :url url}))
-
-(defn track-external-redirect-phone
-  [{:keys [slug number]}]
-  #_(track "external_link_phone" {:slug slug :number number}))
