@@ -76,8 +76,8 @@
 
 (defn track-external-redirect-url-retail-directions
   [{:keys [slug url]}]
-  (track "external_link_retail_directions" {:slug slug :url url}))
+  #_(track "external_link_retail_directions" {:slug slug :url url}))
 
 (defn track-external-redirect-phone
   [{:keys [slug number]}]
-  (track "external_link_phone" {:slug slug :number number}))
+  #_(track "external_link_phone" {:slug slug :number number}))
