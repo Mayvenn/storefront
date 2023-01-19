@@ -148,10 +148,10 @@
        (js/console.error (str "Content-type not found: " content-type))))))
 
 (defmethod fx/perform-effects e/email-modal-submitted
-  [_ _ {:keys [email-modal values hdyhau]} _ state]
-  (let [{{:keys [template-content-id]} :emal-modal-template
-         variation-description         :description
-         {:keys [trigger-id]}          :email-modal-trigger}
+  [_ _ {:keys [email-modal values]} _ state]
+  (let [{{:keys [template-content-id hdyhau]} :email-modal-template
+         variation-description                :description
+         {:keys [trigger-id]}                 :email-modal-trigger}
         email-modal
 
         email-address (get values "email-capture-input")]
@@ -166,6 +166,7 @@
              {:trigger-id            trigger-id
               :variation-description variation-description
               :template-content-id   template-content-id
+              :hdyhau                hdyhau
               :email                 email-address})))
 
 (defmethod fx/perform-effects e/homepage-email-submitted
@@ -190,9 +191,11 @@
               :email                 email-address})))
 
 (defmethod t/transition-state e/email-modal-submitted
-  [_ _ _ app-state]
-  (when (experiments/hdyhau-email-capture? app-state)
-    (assoc-in app-state k/show-hdyhau true)))
+  [_ _ {:keys [email-modal]} app-state]
+  (if (and (:hdyhau (:email-modal-template email-modal))
+           (experiments/hdyhau-email-capture? app-state))
+    (assoc-in app-state k/show-hdyhau true)
+    (assoc-in app-state k/show-hdyhau false)))
 
 (defmethod t/transition-state e/homepage-email-submitted
   [_ _ _ app-state]
