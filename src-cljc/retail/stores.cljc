@@ -27,9 +27,10 @@
   [:div.max-960.mx-auto
    [:h1.canela.title-1.center.mb6 "Store Locations"]
    [:div.flex.flex-wrap.container.justify-center-on-mb.mx-auto
-    (for [{:keys [name img-url address1-2 city-state-zip phone mon-sat-hours sun-hours
+    (for [{:keys [name slug img-url address1-2 city-state-zip phone mon-sat-hours sun-hours
                   directions instagram facebook tiktok email show-page-target]} locations]
       [:div.col-6-on-tb-dt.col-12.px2.py3
+       {:key slug}
        [:a (merge (utils/route-to show-page-target)
                   {:aria-label (str name " Mayvenn Beauty Lounge")})
         (ui/aspect-ratio 3 2 (ui/img {:width "100%" :class "col-12" :alt "" :src img-url}))]
@@ -47,7 +48,8 @@
          [:div.content-4 address1-2]
          [:div.content-4 city-state-zip]
          [:a.block.black.content-4.my2 
-          (utils/fake-href events/external-redirect-phone {:number phone})
+          (utils/fake-href events/external-redirect-phone {:number phone
+                                                           :slug   slug})
           phone]]
         [:div
          [:div.title-3.proxima.shout.bold "Hours"]
@@ -56,7 +58,8 @@
           [:div.content-4 sun-hours]]]]
        [:div.flex.justify-between.gap-4
         [:div (ui/button-small-underline-primary 
-               (utils/fake-href events/external-redirect-url-retail-directions {:url directions}) 
+               (utils/fake-href events/external-redirect-url-retail-directions {:url  directions
+                                                                                :slug slug}) 
                "Get Directions")]
         [:div.flex
          ;; TODO(jjh): make these use e/external-redirect-... events instead of hreffing.
@@ -160,6 +163,7 @@
                                                       location address-1 address-2 address-zipcode address-city slug]}]]
                                         (when (and name slug)
                                           {:name             (str name ", " state)
+                                           :slug             slug
                                            :img-url          (-> hero :file :url)
                                            :address1-2       (when address-1 (str address-1 (when address-2 (str ", " address-2))))
                                            :city-state-zip   (when address-city (str address-city ", " state " " address-zipcode))
