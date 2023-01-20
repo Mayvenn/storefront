@@ -19,10 +19,10 @@
                                                                  (some-> % :path (string/starts-with? "/info/walmart")))
                                                             (get-in data keypaths/account-profile-landfalls))]
                         (and feature-flag
-                             (or previously-experienced
+                             (or #_previously-experienced
                                  ip-address-in-texas
-                                 shipping-address-in-texas
-                                 landfall-in-texas))))})
+                                 #_shipping-address-in-texas
+                                 #_landfall-in-texas))))})
 
 (defn <- [data]
   {:experiences (set (keep (fn [[exp-name exp-validator]]
