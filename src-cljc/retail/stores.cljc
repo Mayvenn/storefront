@@ -27,7 +27,7 @@
   [:div.max-960.mx-auto
    [:h1.canela.title-1.center.mb6 "Store Locations"]
    [:div.flex.flex-wrap.container.justify-center-on-mb.mx-auto
-    (for [{:keys [name img-url address1-2 city-state-zip phone mon-sat-hours sun-hours
+    (for [{:keys [name slug img-url address1-2 city-state-zip phone mon-sat-hours sun-hours
                   directions instagram facebook tiktok email show-page-target]} locations]
       [:div.col-6-on-tb-dt.col-12.px2.py3
        [:a (merge (utils/route-to show-page-target)
@@ -46,14 +46,20 @@
          [:div.title-3.proxima.shout.bold "Location"]
          [:div.content-4 address1-2]
          [:div.content-4 city-state-zip]
-         [:div.content-4.my2 phone]]
+         [:a.block.black.content-4.my2 
+          {:href       (str "tel:" phone)
+           :id         (str "phone-retail-" slug)
+           :aria-label (str "Call " name " Beauty Lounge")}
+          phone]]
         [:div
          [:div.title-3.proxima.shout.bold "Hours"]
          [:div
           [:div.content-4 mon-sat-hours]
           [:div.content-4 sun-hours]]]]
        [:div.flex.justify-between.gap-4
-        [:div (ui/button-small-underline-primary {:href directions} "Get Directions")]
+        [:div (ui/button-small-underline-primary {:href directions
+                                                  :id   (str "directions-retail-" slug)} 
+                                                 "Get Directions")]
         [:div.flex
          (when instagram [:a.block.mx1.flex.items-center {:href instagram :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Instagram")}
                           [:div ^:inline (svg/instagram {:style {:height "20px" :width "20px"}})]])
@@ -155,6 +161,7 @@
                                                       location address-1 address-2 address-zipcode address-city slug]}]]
                                         (when (and name slug)
                                           {:name             (str name ", " state)
+                                           :slug             slug
                                            :img-url          (-> hero :file :url)
                                            :address1-2       (when address-1 (str address-1 (when address-2 (str ", " address-2))))
                                            :city-state-zip   (when address-city (str address-city ", " state " " address-zipcode))
