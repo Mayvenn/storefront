@@ -265,7 +265,7 @@
 
 (c/defcomponent component
   [{:keys [] :as data} owner opts]
-  [:div
+  [:div.mt8
    (c/build email-capture/organism (vt/with :email-capture data))
    (c/build layered/lp-divider-purple-pink)
    [:div.hide-on-tb-dt

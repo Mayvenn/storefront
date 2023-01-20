@@ -38,8 +38,7 @@
 
                                 (when in-omni?
                                   (vt/within :omni-split-image-cta
-                                             {:id "omni-split-image-cta"
-                                              :target "/_components"}))
+                                             {:id "omni-split-image-cta"}))
                                 (vt/within :promises {:list/icons
                                                       [{:promises.icon/symbol :svg/hand-heart,
                                                         :promises.icon/title  "Top-Notch Service"}
