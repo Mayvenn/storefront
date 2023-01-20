@@ -13,7 +13,9 @@
   [app-state]
   (let [cms        (get-in app-state k/cms)
         categories (get-in app-state k/categories)]
-    (c/build ui/template (merge {:hero                (ui/hero-query cms :unified-fi)
+    (c/build ui/template (merge {:hero                (if (:experience/omni (:experiences (accounts/<- app-state)))
+                                                        (ui/hero-query cms :omni)
+                                                        (ui/hero-query cms :unified-fi))
                                  :shopping-categories (ui/shopping-categories-query categories)
                                  :zip-explanation     {:zip-explanation/id "zip-explanation"}
                                  :blog1               {:blog/id        "dye-humann-hair-wig"
@@ -41,14 +43,6 @@
                                                         :promises.icon/title  "100% Virgin Human Hair"}
                                                        {:promises.icon/symbol :svg/ship-truck,
                                                         :promises.icon/title  "Free Standard Shipping"}]})
-                                (when (:experience/omni (:experiences (accounts/<- app-state)))
-                                    (vt/within :omni-driver-hero {:dsk-url   "//images.ctfassets.net/76m8os65degn/3JtQfOTTqKznAhtc1OF9ch/046f10965212e76fff01eb6d9d57bfcb/400.jpeg"
-                                                                  :mob-url   "//images.ctfassets.net/76m8os65degn/3JtQfOTTqKznAhtc1OF9ch/046f10965212e76fff01eb6d9d57bfcb/400.jpeg"
-                                                                  :alt       "It's a placekitten!"
-                                                                  :file-name "placekitten.jpg"
-                                                                  :opts      {:data-test          :omni-driver-hero
-                                                                              :h1?                true
-                                                                              :navigation-message [e/navigate-home {}]}}))
                                 {:shop-these-looks/row-1 [{:shop-these-looks.entry.cta/copy   "Wedding Hair"
                                                            :shop-these-looks.entry.cta/target e/navigate-shop-by-look-details
                                                            :shop-these-looks.entry.cta/args   {:album-keyword :look

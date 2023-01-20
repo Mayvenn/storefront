@@ -309,6 +309,7 @@
                            :unified-fi
                            :unified)]
     (effects/fetch-cms2 app-state [:homepage homepage-version])
+    (effects/fetch-cms2 app-state [:homepage :omni])
     (doseq [keypath [[:advertisedPromo]
                      [:ugc-collection :free-install-mayvenn]
                      [:faq :free-mayvenn-services]]]
