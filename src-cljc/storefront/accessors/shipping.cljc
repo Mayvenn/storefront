@@ -6,7 +6,7 @@
 (defn longform-timeframe [rate-sku drop-shipping?]
   (case rate-sku
     "WAITER-SHIPPING-1" (if drop-shipping?
-                          "7-10 days (Weekend Delivery Included)"
+                          nil ; "7-10 days (Weekend Delivery Included)"
                           "4-6 days (Weekend Delivery Included)")
     "WAITER-SHIPPING-7" "2-4 days (Weekend Delivery Included)"
     "WAITER-SHIPPING-2" "1-2 business days (No Weekend & No P.O. Box)"
@@ -17,7 +17,7 @@
 (defn names-with-time-range [rate-sku-id drop-shipping?]
   (case rate-sku-id
     "WAITER-SHIPPING-1" (if drop-shipping?
-                          "Free 7-10 Days Standard Shipping"
+                          nil ; "Free 7-10 Days Standard Shipping"
                           "Free 4-6 Days Standard Shipping")
     "WAITER-SHIPPING-7" "Priority 2-4 Days Shipping"
     "WAITER-SHIPPING-2" "Express 1-2 Days Shipping"
@@ -34,7 +34,7 @@
 (defn timeframe [rate-sku drop-shipping?]
   (case rate-sku
     "WAITER-SHIPPING-1" (if drop-shipping?
-                          "7-10 days"
+                          nil ; "7-10 days"
                           "4-6 days")
     "WAITER-SHIPPING-7" "2-4 days"
     "WAITER-SHIPPING-2" "1-2 business days"

@@ -63,7 +63,7 @@
   [sku drop-shipping?]
   (case sku
     "WAITER-SHIPPING-1" (if drop-shipping?
-                          {:min-delivery 7 :max-delivery 10 :saturday-delivery? true}
+                          {:min-delivery 14 :max-delivery 17 :saturday-delivery? true} ; normally 10 and 14. Added 7 for Lunar New Year
                           {:min-delivery 4 :max-delivery 6 :saturday-delivery? true})
     "WAITER-SHIPPING-7" {:min-delivery 2 :max-delivery 4 :saturday-delivery? true}
     "WAITER-SHIPPING-2" {:min-delivery 1 :max-delivery 2 :saturday-delivery? false}
