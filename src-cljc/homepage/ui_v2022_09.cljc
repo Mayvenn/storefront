@@ -17,8 +17,6 @@
   [:div
    (c/build hero/organism-without-shipping-bar hero)
    (c/build promises/organism (vt/with :promises data))
-   (when (seq (vt/with :omni-driver-hero data))
-     (c/build hero/organism-without-shipping-bar (vt/with :omni-driver-hero data)))
    (c/build shopping-categories/organism shopping-categories)
    (c/build blog/organism blog1)
    (c/build shop-these-looks/organism data)
