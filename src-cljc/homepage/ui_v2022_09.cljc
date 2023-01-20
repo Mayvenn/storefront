@@ -7,6 +7,7 @@
             [homepage.ui.shopping-categories :as shopping-categories]
             [catalog.ui.shop-these-looks :as shop-these-looks]
             [homepage.ui.zip-explanation :as zip-explanation]
+            [homepage.ui.omni-split-image-cta :as omni-split-image-cta]
             [mayvenn.visual.tools :as vt]
             [storefront.component :as c]
             [storefront.components.homepage-hero :as homepage-hero]
@@ -21,9 +22,11 @@
    (c/build blog/organism blog1)
    (c/build shop-these-looks/organism data)
    (c/build blog/organism blog2)
-   (c/build zip-explanation/organism zip-explanation)
-   (when (:email-capture/show? data)
-     (c/build email-capture/organism (vt/with :email-capture data)))])
+   [:div.mt8
+    (c/build omni-split-image-cta/organism (vt/with :omni-split-image-cta data))
+    (c/build zip-explanation/organism zip-explanation)
+    (when (:email-capture/show? data)
+      (c/build email-capture/organism (vt/with :email-capture data)))]])
 
 (defn hero-query
   "TODO homepage hero query is reused and complected
