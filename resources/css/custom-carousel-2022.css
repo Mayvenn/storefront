@@ -1,42 +1,63 @@
 @media (--on-mobile) {
-    .carousel-2022 {
+    .carousel-2022-slider {
         display: flex;
         gap: 0.5rem;
         scroll-snap-type: x mandatory;
         overflow-x: auto;
     }
 
-    .carousel-2022 > .exhibit {
-        width: 90%;
+    .carousel-2022-slider > .exhibit {
+        width: calc(90% - 0.5rem);
         scroll-snap-align: center;
         flex-shrink: 0;
     }
 
-    .carousel-2022 > .exhibit .contents {
+    .carousel-2022-slider > .exhibit .contents {
         object-fit: cover;
     }
 
-    .carousel-2022 > .spacer {
-        min-width: calc(5% - 0.5rem);
+    .carousel-2022-slider > .spacer {
+        min-width: calc(5% - 0.25rem);
     }
 }
 
 @media (--on-tablet-and-desktop) {
-    .carousel-2022 {
-        display: grid;
-        grid-template-columns: 7fr 1fr;
-        column-gap: 0.5rem;
+    .carousel-2022-slider {
+        display: flex;
+        gap: 0.5rem;
+        scroll-snap-type: x mandatory;
+        overflow-x: auto;
     }
 
-    .carousel-2022 > .exhibits {
-        row-gap: 0.5rem;
+    .carousel-2022-slider > .exhibit {
+        width: calc(30% - 0.5rem);
+        scroll-snap-align: center;
+        flex-shrink: 0;
     }
 
-    .carousel-2022 .exhibits .exhibit {
-        scroll-snap-align: start;
-    }
-
-    .carousel-2022 > .exhibits > .exhibit .contents {
+    .carousel-2022-slider > .exhibit .contents {
         object-fit: cover;
     }
+
+    .carousel-2022-slider > .spacer {
+        min-width: calc(5% - 0.25rem);
+    }
+}
+
+.carousel-2022-with-highlight {
+    display: grid;
+    grid-template-columns: 7fr 1fr;
+    column-gap: 0.5rem;
+}
+
+.carousel-2022-with-highlight > .exhibits {
+    row-gap: 0.5rem;
+}
+
+.carousel-2022-with-highlight .exhibits .exhibit {
+    scroll-snap-align: start;
+}
+
+.carousel-2022-with-highlight > .exhibits > .exhibit .contents {
+    object-fit: cover;
 }

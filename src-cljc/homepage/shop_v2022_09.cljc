@@ -43,7 +43,7 @@
                                 (when in-omni?
                                   (vt/within :foo-carousel
                                              {:selected-exhibit-idx (:idx (carousel/<- app-state :example-image-carousel))
-                                              :exhibits             [{:src "http://placekitten.com/400/600?image=8"
+                                              :exhibits             [{:src "http://placekitten.com/400/400?image=8"
                                                                       :alt "image 1"}
                                                                      {:src "http://placekitten.com/400/400?image=2"
                                                                       :alt "image 2"}

@@ -21,9 +21,9 @@
    (c/build promises/organism (vt/with :promises data))
    (c/build carousel/component
             (vt/with :foo-carousel data)
-            {:opts {:carousel/exhibit-thumbnail-component carousel/product-carousel-thumbnail
-                    :carousel/exhibit-highlight-component carousel/product-carousel-highlight
-                    :carousel/id                          :foo-carousel}})
+            {:opts {:carousel/exhibit-highlight-component carousel/homepage-carousel-exhibit
+                    :carousel/id                          :foo-carousel
+                    :carousel/slider-only-mode            true}})
    (c/build shopping-categories/organism shopping-categories)
    (c/build blog/organism blog1)
    (c/build shop-these-looks/organism data)

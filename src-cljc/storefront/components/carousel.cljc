@@ -91,6 +91,16 @@
                           :backface-visibility "hidden"}
                :max-size 200}))]))
 
+(c/defcomponent homepage-carousel-exhibit
+  [{:keys [src type alt]} _ _]
+  (c/html
+   [:div
+    {:style {:overflow "hidden"}}
+    (ui/img {:src      src
+             :alt      alt
+             :class    "container-size contents"
+             :style    {:object-fit "cover"}})]))
+
 (defn- select-exhibit [this target-id]
   #?(:cljs
      (let [dt-exhibits-el  (c/get-ref this "dt-exhibits")
@@ -189,60 +199,63 @@
          {:carousel/keys
           [exhibit-highlight-component
            exhibit-thumbnail-component
-           id]}                         (c/get-opts this)]
+           id
+           slider-only-mode]}           (c/get-opts this)]
      (c/html
       [:div
-       [:div.carousel-2022.hide-on-mb
-        [:div.exhibit-highlight
-         (c/build exhibit-highlight-component (nth exhibits selected-exhibit-idx))]
-        [:div.exhibits.flex.flex-column
-         [:a.center.flip-vertical
-          (merge {:on-click   (partial decrement-selected-exhibit this)
-                  :href       "javascript:void(0);"
-                  :aria-label "Move to previous image"}
-                 (if (= 0 selected-exhibit-idx)
-                   {:style {:filter "opacity(0.25)"}}
-                   {:class "pointer"}))
-          (svg/dropdown-arrow {:class  "fill-black"
-                               :height "16px"
-                               :width  "16px"})]
-         [:div.flex.flex-column
-          {:ref   (c/use-ref this "dt-exhibits")
-           :style {:flex-basis 0
-                   :flex-grow  1
-                   :overflow   "hidden"
-                   :gap        "0.5rem"
-                   :position   "relative"}}
-          (map-indexed (fn [index exhibit]
-                         [:a.exhibit.relative.grid.pointer
-                          {:key        index
-                           :href       "javascript:void(0);"
-                           :aria-label "View image"
-                           :on-click   #(publish events/carousel|jumped {:id  id
-                                                                         :idx index})
-                           :style      {:grid-template-areas "\"thumbnail\""}}
-                          [:div
-                           (merge
-                            {:style {:grid-area "thumbnail"
-                                     :z-index   1}}
-                            (when (= index selected-exhibit-idx)
-                              {:class "border border-width-3 border-s-color"}))]
-                          [:div
-                           {:style {:grid-area "thumbnail"}}
-                           (c/build (or exhibit-thumbnail-component exhibit-highlight-component) exhibit)]])
-                       exhibits)]
-         [:a.center
-          (merge {:on-click   (partial increment-selected-exhibit this)
-                  :href       "javascript:void(0);"
-                  :aria-label "Move to next image"}
-                 (if (= (count exhibits) (inc selected-exhibit-idx))
-                   {:style {:filter "opacity(0.25)"}}
-                   {:class "pointer"}))
-          (svg/dropdown-arrow {:class  "fill-black"
-                               :height "16px"
-                               :width  "16px"})]]]
-       [:div.carousel-2022.hide-scroll-bar.hide-on-tb-dt
-        {:ref (c/use-ref this "mb-exhibits")}
+       (when (not slider-only-mode)
+         [:div.carousel-2022-with-highlight.hide-on-mb
+          [:div.exhibit-highlight
+           (c/build exhibit-highlight-component (nth exhibits selected-exhibit-idx))]
+          [:div.exhibits.flex.flex-column
+           [:a.center.flip-vertical
+            (merge {:on-click   (partial decrement-selected-exhibit this)
+                    :href       "javascript:void(0);"
+                    :aria-label "Move to previous image"}
+                   (if (= 0 selected-exhibit-idx)
+                     {:style {:filter "opacity(0.25)"}}
+                     {:class "pointer"}))
+            (svg/dropdown-arrow {:class  "fill-black"
+                                 :height "16px"
+                                 :width  "16px"})]
+           [:div.flex.flex-column
+            {:ref   (c/use-ref this "dt-exhibits")
+             :style {:flex-basis 0
+                     :flex-grow  1
+                     :overflow   "hidden"
+                     :gap        "0.5rem"
+                     :position   "relative"}}
+            (map-indexed (fn [index exhibit]
+                           [:a.exhibit.relative.grid.pointer
+                            {:key        index
+                             :href       "javascript:void(0);"
+                             :aria-label "View image"
+                             :on-click   #(publish events/carousel|jumped {:id  id
+                                                                           :idx index})
+                             :style      {:grid-template-areas "\"thumbnail\""}}
+                            [:div
+                             (merge
+                              {:style {:grid-area "thumbnail"
+                                       :z-index   1}}
+                              (when (= index selected-exhibit-idx)
+                                {:class "border border-width-3 border-s-color"}))]
+                            [:div
+                             {:style {:grid-area "thumbnail"}}
+                             (c/build (or exhibit-thumbnail-component exhibit-highlight-component) exhibit)]])
+                         exhibits)]
+           [:a.center
+            (merge {:on-click   (partial increment-selected-exhibit this)
+                    :href       "javascript:void(0);"
+                    :aria-label "Move to next image"}
+                   (if (= (count exhibits) (inc selected-exhibit-idx))
+                     {:style {:filter "opacity(0.25)"}}
+                     {:class "pointer"}))
+            (svg/dropdown-arrow {:class  "fill-black"
+                                 :height "16px"
+                                 :width  "16px"})]]])
+       [:div.carousel-2022-slider.hide-scroll-bar
+        {:class (when (not slider-only-mode) "hide-on-tb-dt")
+         :ref (c/use-ref this "mb-exhibits")}
         [:div.spacer]
         (map-indexed (fn [index exhibit]
                        [:div.exhibit
