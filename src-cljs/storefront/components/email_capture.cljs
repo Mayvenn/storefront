@@ -42,16 +42,16 @@
                    :class     "col-12 bg-white"
                    :data-test id})])
 
-(defn phone-field [{:email-capture.phone-field/keys [id placeholder focused keypath errors email]}]
+(defn phone-field [{:email-capture.phone-field/keys [id placeholder focused keypath errors phone]}]
   [:div.mx-auto.mb3
    (ui/text-field {:errors    (get errors ["phone"])
                    :keypath   keypath
                    :focused   focused
                    :label     placeholder
                    :name      "phone"
-                   :required  true
+                   :required  false
                    :type      "tel"
-                   :value     email
+                   :value     phone
                    :class     "col-12 bg-white"
                    :data-test id})])
 
