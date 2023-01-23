@@ -49,6 +49,7 @@
 
 (def model-keypath [:models :email-capture])
 (def textfield-keypath (conj model-keypath :textfield))
+(def smsfield-keypath (conj model-keypath :sms))
 (def long-timer-started-keypath (conj model-keypath :long-timer-started?))
 (def short-timer-starteds-keypath (conj model-keypath :short-timer-starteds?))
 
@@ -149,9 +150,9 @@
 #?(:cljs
    (defmethod trk/perform-track e/biz|email-capture|captured
      [_ event {:keys [trigger-id variation-description template-content-id details]} app-state]
-     (let [no-errors?       (empty? (get-in app-state k/errors))
-           captured-email   (get-in app-state textfield-keypath)
-           hdyhau-to-submit (:to-submit (get-in app-state k/models-hdyhau))]
+     (let [no-errors?     (empty? (get-in app-state k/errors))
+           captured-email (get-in app-state textfield-keypath)
+           captured-sms   (get-in app-state smsfield-keypath)]
        (when no-errors?
          ;; TODO: CONSIDER READDING THESE
          ;; (facebook-analytics/subscribe)
@@ -161,6 +162,7 @@
                                 :variation-description variation-description
                                 :template-content-id   template-content-id
                                 :email                 captured-email
+                                :sms                   captured-sms
                                 :details               details
                                 :test-variations       (get-in app-state k/features)
                                 :store-slug            (get-in app-state k/store-slug)

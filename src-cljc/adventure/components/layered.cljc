@@ -585,7 +585,7 @@
     [:div.title-2.proxima.shout incentive]]
    #?(:cljs
       [:div.px3
-       (email-capture/text-field data)
+       (email-capture/email-field data)
        (email-capture/cta data)
        email-capture/hr-divider
        (email-capture/fine-print fine-print-prefix)])])

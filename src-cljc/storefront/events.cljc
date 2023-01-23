@@ -837,5 +837,4 @@
 (defpath account-profile|experience|joined)
 
 (defpath hdyhau-post-purchase-submitted)
-(defpath email-modal-submitted-add-hdyhau)
 (defpath hdyhau-email-capture-submitted)

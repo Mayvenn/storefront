@@ -29,7 +29,7 @@
   [:hr.border-top.border-gray.col-12.m0
    {:style {:border-bottom 0 :border-left 0 :border-right 0}}])
 
-(defn text-field [{:email-capture.text-field/keys [id placeholder focused keypath errors email]}]
+(defn email-field [{:email-capture.email-field/keys [id placeholder focused keypath errors email]}]
   [:div.mx-auto.mb3
    (ui/text-field {:errors    (get errors ["email"])
                    :keypath   keypath
@@ -42,14 +42,45 @@
                    :class     "col-12 bg-white"
                    :data-test id})])
 
+(defn sms-field [{:email-capture.sms-field/keys [id placeholder focused keypath errors email]}]
+  [:div.mx-auto.mb3
+   (ui/text-field {:errors    (get errors ["phone"])
+                   :keypath   keypath
+                   :focused   focused
+                   :label     placeholder
+                   :name      "phone"
+                   :required  true
+                   :type      "tel"
+                   :value     email
+                   :class     "col-12 bg-white"
+                   :data-test id})])
+
 (defn cta
   [{:email-capture.cta/keys [value id]}]
-  [:div.mb5 (ui/submit-button-medium value {:data-test id})])
+  [:div.mb2 (ui/submit-button-medium value {:data-test id})])
+
+(def sms-fine-print
+  [:div.left-align.mb3
+   {:style {:font  "12px/17px 'Proxima Nova', Arial, sans-serif"}}
+   [:div.bold.py1 "Message & data rates may apply. Message frequency varies. Reply HELP for help or STOP to cancel. See Terms & Privacy Policy for more details."]
+   [:div "By submitting my phone number, I’m signing an agreement to permit Mayvenn to text me recurring automated marketing promotions, surveys and personalized messages using the number I entered above. I understand these texts may be sent using an automatic telephone dialing system or other automated system for the selection and dialing of numbers and that I am not required to consent to receive these texts or sign this agreement as a condition of any purchase."]])
 
 (defn fine-print
   [prefix]
   [:div.px2.pt4.pb6
    {:style {:color "#6b6b6b"
+            :font  "12px/17px 'Proxima Nova', Arial, sans-serif"}}
+   prefix
+   " For further information, please read our "
+   [:a.p-color (utils/route-to e/navigate-content-tos) "Terms"]
+   " and "
+   [:a.p-color (utils/route-to e/navigate-content-privacy) "Privacy Policy"]
+   ". Unsubscribe anytime."])
+
+(defn fine-print-template-2
+  [prefix]
+  [:div.px2.pt2.pb4
+   {:style {;:color "#6b6b6b"
             :font  "12px/17px 'Proxima Nova', Arial, sans-serif"}}
    prefix
    " For further information, please read our "
@@ -86,10 +117,47 @@
          [:div.title-1.canela.p-color title]
          [:div.title-2.proxima subtitle]]
         [:div.px3
-         (text-field data)
+         (email-field data)
          (cta data)]]
        hr-divider
        (fine-print fine-print-lead-in)])]))
+
+;; In Contentful, this is from emailModalTemplate2
+(defn email-capture-modal-template-2
+  [{:keys [id] :as data}]
+  (c/html
+   [:div.flex.flex-column
+    {:data-test (str id "-modal")}
+    (let [{:email-capture.photo/keys [url title description]} data]
+      (when (seq url)
+        (ui/aspect-ratio 4 3
+                         (ui/img
+                          {:max-size     500
+                           :src          url
+                           :title        title
+                           :class        "col-12"
+                           :style        {:vertical-align "bottom"}
+                           :alt          description}))))
+    (let [{:email-capture.copy/keys [title subtitle supertitle fine-print-lead-in]} data]
+      [:div.p4.black
+       {:class (:email-capture.design/background-color data)}
+       [:form.col-12.center.p1.pb3
+        {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
+        [:div.mb2
+         [:div.title-2.proxima.shout supertitle]
+         [:div.title-1.canela.p-color title]
+         [:div.title-2.proxima subtitle]]
+        [:div.px3
+         (email-field data)
+         (sms-field data)
+         sms-fine-print
+         (cta data)
+         (ui/button-small-underline-black
+          {:on-click   (apply utils/send-event-callback (:email-capture.dismiss/target data))
+           :aria-label "no thanks"}
+          "No Thanks")]]
+       hr-divider
+       (fine-print-template-2 fine-print-lead-in)])]))
 
 (defn email-capture-modal-template-hdyhau
   [data]
@@ -138,7 +206,13 @@
           :email-capture/keys [content-type]
           :email-capture.hdyhau/keys [title]
           :as                 data} (c/get-props this)
-         template                   (if title email-capture-modal-template-hdyhau email-capture-modal-template-1)]
+         template                   (cond title
+                                          email-capture-modal-template-hdyhau
+
+                                          (= content-type "emailModalTemplate2")
+                                          email-capture-modal-template-2
+
+                                          :else email-capture-modal-template-1)]
      (if template
        (ui/modal
         {:close-attrs (apply utils/fake-href (:email-capture.dismiss/target data))
@@ -154,7 +228,8 @@
          {:keys [trigger-id]}                 :email-modal-trigger}
         email-modal
 
-        email-address (get values "email-capture-input")]
+        email-address (get values "email-capture-input")
+        sms-number    (get values "sms-capture-input")]
     ;; TODO Identify with backend and publish after success
     (publish e/funnel|acquisition|succeeded
              {:prompt {:method                       :email-modal/trigger
@@ -167,7 +242,8 @@
               :variation-description variation-description
               :template-content-id   template-content-id
               :hdyhau                hdyhau
-              :email                 email-address})))
+              :email                 email-address
+              :sms                   sms-number})))
 
 (defmethod fx/perform-effects e/homepage-email-submitted
   [_ _ {:keys [email-modal values]} _ _]
@@ -231,10 +307,13 @@
              email-modal]
     ;; Handle modal inputs/actions
     (let [errors            (get-in state (conj k/field-errors ["email"]))
+          phone-errors      (get-in state (conj k/field-errors "phone"))
           focused           (get-in state k/ui-focus)
           textfield-keypath concept/textfield-keypath
+          smsfield-keypath  concept/smsfield-keypath
           show-hdyhau?      (get-in state k/show-hdyhau)
           email             (get-in state textfield-keypath)
+          sms               (get-in state smsfield-keypath)
           hdyhau            (memoize-hdyhau-options)]
       (merge {:id                                    "email-capture"
               :email-capture/trigger-id              trigger-id
@@ -242,12 +321,9 @@
               :email-capture/template-content-id     template-content-id
               :email-capture/content-type            (:content/type content)
               :email-capture.dismiss/target          [e/email-modal-dismissed {:email-modal email-modal}]
-              :email-capture.submit/target           (if (and (experiments/hdyhau-email-capture? state) ; experiment
-                                                              (:hdyhau content)) ; template-2 AND yes, hdyhau
-                                                       [e/email-modal-submitted-add-hdyhau {:email-modal email-modal
-                                                                                            :values      {"email-capture-input" email}}]
-                                                       [e/email-modal-submitted {:email-modal email-modal
-                                                                                 :values      {"email-capture-input" email}}])
+              :email-capture.submit/target           [e/email-modal-submitted {:email-modal email-modal
+                                                                               :values      {"email-capture-input" email
+                                                                                             "sms-capture-input"   sms}}]
               :email-capture.design/background-color (:background-color content)
               :email-capture.design/close-x-color    (:close-xcolor content)
               :email-capture.copy/title              (:title content)
@@ -256,12 +332,18 @@
               :email-capture.copy/fine-print-lead-in (:fine-print-lead-in content)
               :email-capture.cta/id                  "email-capture-submit"
               :email-capture.cta/value               (:cta-copy content)
-              :email-capture.text-field/id           "email-capture-input"
-              :email-capture.text-field/placeholder  (:email-input-field-placeholder-copy content)
-              :email-capture.text-field/focused      focused
-              :email-capture.text-field/keypath      textfield-keypath
-              :email-capture.text-field/errors       errors
-              :email-capture.text-field/email        email
+              :email-capture.email-field/id          "email-capture-input"
+              :email-capture.email-field/placeholder (:email-input-field-placeholder-copy content)
+              :email-capture.email-field/focused     focused
+              :email-capture.email-field/keypath     textfield-keypath
+              :email-capture.email-field/errors      errors
+              :email-capture.email-field/email       email
+              :email-capture.sms-field/id            "email-capture-input"
+              :email-capture.sms-field/placeholder   (:sms-input-field-placeholder-copy content)
+              :email-capture.sms-field/focused       focused
+              :email-capture.sms-field/keypath       smsfield-keypath
+              :email-capture.sms-field/errors        phone-errors
+              :email-capture.sms-field/email         sms
               :email-capture.photo/url               (-> content :hero-image :file :url)
               :email-capture.photo/title             (-> content :hero-image :title)
               :email-capture.photo/description       (-> content :hero-image :description)}
