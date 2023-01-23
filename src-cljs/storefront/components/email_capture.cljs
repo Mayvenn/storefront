@@ -29,10 +29,9 @@
   [:hr.border-top.border-gray.col-12.m0
    {:style {:border-bottom 0 :border-left 0 :border-right 0}}])
 
-(defn email-field [{:email-capture.email-field/keys [id placeholder focused keypath errors email]}]
+(defn email-field [{:email-capture.email-field/keys [id placeholder focused keypath email]}]
   [:div.mx-auto.mb3
-   (ui/text-field {:errors    (get errors ["email"])
-                   :keypath   keypath
+   (ui/text-field {:keypath   keypath
                    :focused   focused
                    :label     placeholder
                    :name      "email"
@@ -42,10 +41,9 @@
                    :class     "col-12 bg-white"
                    :data-test id})])
 
-(defn phone-field [{:email-capture.phone-field/keys [id placeholder focused keypath errors phone]}]
+(defn phone-field [{:email-capture.phone-field/keys [id placeholder focused keypath phone]}]
   [:div.mx-auto.mb3
-   (ui/text-field {:errors    (get errors ["phone"])
-                   :keypath   keypath
+   (ui/text-field {:keypath   keypath
                    :focused   focused
                    :label     placeholder
                    :name      "phone"
@@ -306,9 +304,7 @@
               {:keys [trigger-id]}                      :email-modal-trigger}
              email-modal]
     ;; Handle modal inputs/actions
-    (let [errors             (get-in state (conj k/field-errors ["email"]))
-          phone-errors       (get-in state (conj k/field-errors "phone"))
-          focused            (get-in state k/ui-focus)
+    (let [focused            (get-in state k/ui-focus)
           textfield-keypath  concept/textfield-keypath
           phonefield-keypath concept/phonefield-keypath
           show-hdyhau?       (get-in state k/show-hdyhau)
@@ -336,13 +332,11 @@
               :email-capture.email-field/placeholder (:email-input-field-placeholder-copy content)
               :email-capture.email-field/focused     focused
               :email-capture.email-field/keypath     textfield-keypath
-              :email-capture.email-field/errors      errors
               :email-capture.email-field/email       email
               :email-capture.phone-field/id          "email-capture-input"
               :email-capture.phone-field/placeholder (:sms-input-field-placeholder-copy content)
               :email-capture.phone-field/focused     focused
               :email-capture.phone-field/keypath     phonefield-keypath
-              :email-capture.phone-field/errors      phone-errors
               :email-capture.phone-field/phone       phone
               :email-capture.photo/url               (-> content :hero-image :file :url)
               :email-capture.photo/title             (-> content :hero-image :title)
