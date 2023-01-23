@@ -49,7 +49,7 @@
 
 (def model-keypath [:models :email-capture])
 (def textfield-keypath (conj model-keypath :textfield))
-(def smsfield-keypath (conj model-keypath :sms))
+(def phonefield-keypath (conj model-keypath :phone))
 (def long-timer-started-keypath (conj model-keypath :long-timer-started?))
 (def short-timer-starteds-keypath (conj model-keypath :short-timer-starteds?))
 
@@ -152,7 +152,7 @@
      [_ event {:keys [trigger-id variation-description template-content-id details]} app-state]
      (let [no-errors?     (empty? (get-in app-state k/errors))
            captured-email (get-in app-state textfield-keypath)
-           captured-sms   (get-in app-state smsfield-keypath)]
+           captured-phone   (get-in app-state phonefield-keypath)]
        (when no-errors?
          ;; TODO: CONSIDER READDING THESE
          ;; (facebook-analytics/subscribe)
@@ -162,7 +162,7 @@
                                 :variation-description variation-description
                                 :template-content-id   template-content-id
                                 :email                 captured-email
-                                :sms                   captured-sms
+                                :phone                 captured-phone
                                 :details               details
                                 :test-variations       (get-in app-state k/features)
                                 :store-slug            (get-in app-state k/store-slug)

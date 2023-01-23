@@ -42,7 +42,7 @@
                    :class     "col-12 bg-white"
                    :data-test id})])
 
-(defn sms-field [{:email-capture.sms-field/keys [id placeholder focused keypath errors email]}]
+(defn phone-field [{:email-capture.phone-field/keys [id placeholder focused keypath errors email]}]
   [:div.mx-auto.mb3
    (ui/text-field {:errors    (get errors ["phone"])
                    :keypath   keypath
@@ -61,7 +61,7 @@
 
 (def sms-fine-print
   [:div.left-align.mb3
-   {:style {:font  "12px/17px 'Proxima Nova', Arial, sans-serif"}}
+   {:style {:font "12px/17px 'Proxima Nova', Arial, sans-serif"}}
    [:div.bold.py1 "Message & data rates may apply. Message frequency varies. Reply HELP for help or STOP to cancel. See Terms & Privacy Policy for more details."]
    [:div "By submitting my phone number, I’m signing an agreement to permit Mayvenn to text me recurring automated marketing promotions, surveys and personalized messages using the number I entered above. I understand these texts may be sent using an automatic telephone dialing system or other automated system for the selection and dialing of numbers and that I am not required to consent to receive these texts or sign this agreement as a condition of any purchase."]])
 
@@ -149,7 +149,7 @@
          [:div.title-2.proxima subtitle]]
         [:div.px3
          (email-field data)
-         (sms-field data)
+         (phone-field data)
          sms-fine-print
          (cta data)
          (ui/button-small-underline-black
@@ -229,7 +229,7 @@
         email-modal
 
         email-address (get values "email-capture-input")
-        sms-number    (get values "sms-capture-input")]
+        phone-number  (get values "phone-capture-input")]
     ;; TODO Identify with backend and publish after success
     (publish e/funnel|acquisition|succeeded
              {:prompt {:method                       :email-modal/trigger
@@ -243,7 +243,7 @@
               :template-content-id   template-content-id
               :hdyhau                hdyhau
               :email                 email-address
-              :sms                   sms-number})))
+              :phone                 phone-number})))
 
 (defmethod fx/perform-effects e/homepage-email-submitted
   [_ _ {:keys [email-modal values]} _ _]
@@ -306,15 +306,15 @@
               {:keys [trigger-id]}                      :email-modal-trigger}
              email-modal]
     ;; Handle modal inputs/actions
-    (let [errors            (get-in state (conj k/field-errors ["email"]))
-          phone-errors      (get-in state (conj k/field-errors "phone"))
-          focused           (get-in state k/ui-focus)
-          textfield-keypath concept/textfield-keypath
-          smsfield-keypath  concept/smsfield-keypath
-          show-hdyhau?      (get-in state k/show-hdyhau)
-          email             (get-in state textfield-keypath)
-          sms               (get-in state smsfield-keypath)
-          hdyhau            (memoize-hdyhau-options)]
+    (let [errors             (get-in state (conj k/field-errors ["email"]))
+          phone-errors       (get-in state (conj k/field-errors "phone"))
+          focused            (get-in state k/ui-focus)
+          textfield-keypath  concept/textfield-keypath
+          phonefield-keypath concept/phonefield-keypath
+          show-hdyhau?       (get-in state k/show-hdyhau)
+          email              (get-in state textfield-keypath)
+          phone              (get-in state phonefield-keypath)
+          hdyhau             (memoize-hdyhau-options)]
       (merge {:id                                    "email-capture"
               :email-capture/trigger-id              trigger-id
               :email-capture/variation-description   variation-description
@@ -323,7 +323,7 @@
               :email-capture.dismiss/target          [e/email-modal-dismissed {:email-modal email-modal}]
               :email-capture.submit/target           [e/email-modal-submitted {:email-modal email-modal
                                                                                :values      {"email-capture-input" email
-                                                                                             "sms-capture-input"   sms}}]
+                                                                                             "phone-capture-input" phone}}]
               :email-capture.design/background-color (:background-color content)
               :email-capture.design/close-x-color    (:close-xcolor content)
               :email-capture.copy/title              (:title content)
@@ -338,12 +338,12 @@
               :email-capture.email-field/keypath     textfield-keypath
               :email-capture.email-field/errors      errors
               :email-capture.email-field/email       email
-              :email-capture.sms-field/id            "email-capture-input"
-              :email-capture.sms-field/placeholder   (:sms-input-field-placeholder-copy content)
-              :email-capture.sms-field/focused       focused
-              :email-capture.sms-field/keypath       smsfield-keypath
-              :email-capture.sms-field/errors        phone-errors
-              :email-capture.sms-field/email         sms
+              :email-capture.phone-field/id          "email-capture-input"
+              :email-capture.phone-field/placeholder (:sms-input-field-placeholder-copy content)
+              :email-capture.phone-field/focused     focused
+              :email-capture.phone-field/keypath     phonefield-keypath
+              :email-capture.phone-field/errors      phone-errors
+              :email-capture.phone-field/phone       phone
               :email-capture.photo/url               (-> content :hero-image :file :url)
               :email-capture.photo/title             (-> content :hero-image :title)
               :email-capture.photo/description       (-> content :hero-image :description)}
