@@ -6,6 +6,7 @@
             [mayvenn.visual.tools :as vt]
             [storefront.keypaths :as k]
             [storefront.accessors.experiments :as experiments]
+            [storefront.components.carousel :as carousel]
             [mayvenn.concept.account :as accounts]))
 
 (defn page
@@ -39,6 +40,25 @@
                                 (when in-omni?
                                   (vt/within :omni-split-image-cta
                                              {:id "omni-split-image-cta"}))
+                                (when in-omni?
+                                  (vt/within :foo-carousel
+                                             {:selected-exhibit-idx (:idx (carousel/<- app-state :example-image-carousel))
+                                              :exhibits             [{:src "http://placekitten.com/400/600?image=8"
+                                                                      :alt "image 1"}
+                                                                     {:src "http://placekitten.com/400/400?image=2"
+                                                                      :alt "image 2"}
+                                                                     {:src "http://placekitten.com/400/400?image=3"
+                                                                      :alt "image 3"}
+                                                                     {:src "http://placekitten.com/400/400?image=4"
+                                                                      :alt "image 4"}
+                                                                     {:src "http://placekitten.com/400/400?image=5"
+                                                                      :alt "image 5"}
+                                                                     {:src "http://placekitten.com/400/400?image=6"
+                                                                      :alt "image 6"}
+                                                                     {:src "http://placekitten.com/400/400?image=7"
+                                                                      :alt "image 7"}
+                                                                     {:src "http://placekitten.com/400/400?image=1"
+                                                                      :alt "image 8"}]}))
                                 (vt/within :promises {:list/icons
                                                       [{:promises.icon/symbol :svg/hand-heart,
                                                         :promises.icon/title  "Top-Notch Service"}

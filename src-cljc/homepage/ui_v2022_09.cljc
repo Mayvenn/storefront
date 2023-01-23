@@ -11,6 +11,7 @@
             [mayvenn.visual.tools :as vt]
             [storefront.component :as c]
             [storefront.components.homepage-hero :as homepage-hero]
+            [storefront.components.carousel :as carousel]
             [storefront.events :as e]))
 
 (c/defcomponent template
@@ -18,6 +19,11 @@
   [:div
    (c/build hero/organism-without-shipping-bar hero)
    (c/build promises/organism (vt/with :promises data))
+   (c/build carousel/component
+            (vt/with :foo-carousel data)
+            {:opts {:carousel/exhibit-thumbnail-component carousel/product-carousel-thumbnail
+                    :carousel/exhibit-highlight-component carousel/product-carousel-highlight
+                    :carousel/id                          :foo-carousel}})
    (c/build shopping-categories/organism shopping-categories)
    (c/build blog/organism blog1)
    (c/build shop-these-looks/organism data)
