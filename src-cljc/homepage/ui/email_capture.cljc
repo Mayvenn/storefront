@@ -9,13 +9,13 @@
   (when id
     [:div.homepage-email-cap
      {:key id}
+     [:div.gradient-bar.p6
+      {:style {:background "linear-gradient(90deg, #D8D8D8, white)"}}]
      (ui/img {:src   "//ucarecdn.com/cbf1bb83-0ebc-4691-9c61-de6af79e6f8d/"
               :style {:object-fit      "cover"
                       :object-position "50% 35%"}
               :alt   ""
-              :class "block container-size z1"})
-     [:div.gradient-bar.p6
-      {:style {:background "linear-gradient(90deg, #D8D8D8, white)"}}]
+              :class "block container-size"})
      [:div.prompt
       [:div.title-2.canela.mb4
        "Stay in the Know"]
