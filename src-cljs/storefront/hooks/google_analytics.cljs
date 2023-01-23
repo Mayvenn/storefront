@@ -35,7 +35,6 @@
 
 (defn track-placed-order
   [{:keys [number shipping-method-price line-item-skuers used-promotion-codes tax]}]
-  (print "tpo" used-promotion-codes)
   (track "purchase" {:transaction_id number
                      :items          (mapv mayvenn-line-item->ga4-item line-item-skuers)
                      :currency       "USD"
@@ -65,7 +64,8 @@
 (defn track-remove-from-cart
   [{:keys [sku quantity]}]
   (track "remove_from_cart"
-         {:items [(mayvenn-line-item->ga4-item sku quantity)]}))
+         {:currency "USD"
+          :items    [(mayvenn-line-item->ga4-item sku quantity)]}))
 
 (defn track-generate-lead
   ;; TODO: We should probably track the trigger/template ids
