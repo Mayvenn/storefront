@@ -5,6 +5,7 @@
                  [storefront.hooks.google-analytics :as google-analytics]
                  [storefront.hooks.stringer :as stringer]])
             [clojure.set :as set]
+            [mayvenn.concept.awareness :as awareness]
             [spice.date]
             [storefront.events :as e]
             [storefront.effects :as fx]
@@ -183,5 +184,7 @@
      (let [hdyhau-to-submit           (:to-submit (get-in app-state k/models-hdyhau))]
        (stringer/track-event "hdyhau-answered"
                              {:email  (get-in app-state [:models :email-capture :textfield])
-                              :hdyhau (keys (filter #(= true (val %)) hdyhau-to-submit))
+                              :hdyhau (merge
+                                       (zipmap (keys awareness/hdyhau) (repeat false))
+                                       hdyhau-to-submit)
                               :form   "email-capture"}))))

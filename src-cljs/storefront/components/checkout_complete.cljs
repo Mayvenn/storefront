@@ -510,5 +510,7 @@
                            :phone                  (:phone shipping-address)
                            :phone-marketing-opt-in phone-marketing-opt-in
                            :phone-txn-opt-in       phone-txn-opt-in
-                           :hdyhau                 (keys (filter #(= true (val %)) hdyhau-to-submit))
+                           :hdyhau                 (merge
+                                                    (zipmap (keys awareness/hdyhau) (repeat false))
+                                                    hdyhau-to-submit)
                            :form                   "post-purchase"})))
