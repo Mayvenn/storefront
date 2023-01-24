@@ -240,8 +240,13 @@
               :variation-description variation-description
               :template-content-id   template-content-id
               :hdyhau                hdyhau
-              :email                 email-address
-              :phone                 phone-number})))
+              :email                 email-address})
+    (when phone-number
+      (publish e/biz|sms-capture|captured
+               {:trigger-id            trigger-id
+                :variation-description variation-description
+                :template-content-id   template-content-id
+                :phone                 phone-number}))))
 
 (defmethod fx/perform-effects e/homepage-email-submitted
   [_ _ {:keys [email-modal values]} _ _]

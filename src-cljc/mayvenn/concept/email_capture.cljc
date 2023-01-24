@@ -153,7 +153,7 @@
      [_ event {:keys [trigger-id variation-description template-content-id details]} app-state]
      (let [no-errors?     (empty? (get-in app-state k/errors))
            captured-email (get-in app-state textfield-keypath)
-           captured-phone   (get-in app-state phonefield-keypath)]
+           captured-phone (get-in app-state phonefield-keypath)]
        (when no-errors?
          ;; TODO: CONSIDER READDING THESE
          ;; (facebook-analytics/subscribe)
@@ -163,13 +163,32 @@
                                 :variation-description variation-description
                                 :template-content-id   template-content-id
                                 :email                 captured-email
-                                :phone                 captured-phone
                                 :details               details
                                 :test-variations       (get-in app-state k/features)
                                 :store-slug            (get-in app-state k/store-slug)
                                 :store-experience      (get-in app-state k/store-experience)
                                 :account-profile       (get-in app-state k/account-profile)})
          (google-analytics/track-generate-lead)))))
+
+#?(:cljs
+   (defmethod trk/perform-track e/biz|sms-capture|captured
+     [_ event {:keys [trigger-id variation-description template-content-id]} app-state]
+     (let [no-errors?     (empty? (get-in app-state k/errors))
+           captured-email (get-in app-state textfield-keypath)
+           captured-phone (get-in app-state phonefield-keypath)]
+       (when no-errors?
+         ;; TODO: CONSIDER READING THESE
+         ;; (facebook-analytics/subscribe)
+         (stringer/track-event "sms_capture-capture"
+                               {:email-capture-id      trigger-id
+                                :variation-description variation-description
+                                :template-content-id   template-content-id
+                                :email                 captured-email
+                                :phone                 captured-phone
+                                :test-variations       (get-in app-state k/features)
+                                :store-slug            (get-in app-state k/store-slug)
+                                :store-experience      (get-in app-state k/store-experience)
+                                :account-profile       (get-in app-state k/account-profile)})))))
 
 #?(:cljs
    (defmethod trk/perform-track e/biz|email-capture|dismissed
