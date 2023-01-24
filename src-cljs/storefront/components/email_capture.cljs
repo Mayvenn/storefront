@@ -126,6 +126,7 @@
   (c/html
    [:div.flex.flex-column
     {:data-test (str id "-modal")}
+    (m-header id (apply utils/fake-href (:email-capture.dismiss/target data)))
     (let [{:email-capture.photo/keys [url title description]} data]
       (when (seq url)
         (ui/aspect-ratio 4 3
@@ -158,26 +159,29 @@
        (fine-print-template-2 fine-print-lead-in)])]))
 
 (defn email-capture-modal-template-hdyhau
-  [data]
+  [{:keys [id] :as data}]
   (c/html
-   [:div.bg-cool-gray.p3.center.fixed.bottom-0
-    (let [{:email-capture.hdyhau/keys [form title subtitle target]} data]
-      [:form.content-3.col-9.mx-auto
-       {:on-submit (apply utils/send-event-callback target)}
-       [:div.pb2.content-2.bold title]
-       [:div.pb2.content-3.bold subtitle]
-       [:div
-        (for [{:keys [label keypath value]} form]
-          [:div {:key label}
-           (ui/check-box {:label    label
-                          :keypath  keypath
-                          :value    value
-                          :boxsize "10px"})])]
-       (ui/submit-button-medium "Submit" {:disabled? (every? (comp not :value) form)})
-       (ui/button-small-underline-black
-        {:on-click   (apply utils/send-event-callback (:email-capture.dismiss/target data))
-         :aria-label "skip"}
-        "Skip")])]))
+   [:div
+    {:data-test (str id "-hdyhau")}
+    (m-header id (apply utils/fake-href (:email-capture.dismiss/target data)))
+    [:div.bg-cool-gray.p3.center
+     (let [{:email-capture.hdyhau/keys [form title subtitle target]} data]
+       [:form.content-3.col-9.mx-auto
+        {:on-submit (apply utils/send-event-callback target)}
+        [:div.pb2.content-2.bold title]
+        [:div.pb2.content-3.bold subtitle]
+        [:div
+         (for [{:keys [label keypath value]} form]
+           [:div {:key label}
+            (ui/check-box {:label    label
+                           :keypath  keypath
+                           :value    value
+                           :boxsize "10px"})])]
+        (ui/submit-button-medium "Submit" {:disabled? (every? (comp not :value) form)})
+        (ui/button-small-underline-black
+         {:on-click   (apply utils/send-event-callback (:email-capture.dismiss/target data))
+          :aria-label "skip"}
+         "Skip")])]]))
 
 (c/defdynamic-component template
   (did-mount
