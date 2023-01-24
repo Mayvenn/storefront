@@ -44,20 +44,20 @@
     }
 }
 
-.carousel-2022-with-highlight {
+.carousel-2022-with-sidebar {
     display: grid;
     grid-template-columns: 7fr 1fr;
     column-gap: 0.5rem;
 }
 
-.carousel-2022-with-highlight > .exhibits {
+.carousel-2022-with-sidebar > .exhibits {
     row-gap: 0.5rem;
 }
 
-.carousel-2022-with-highlight .exhibits .exhibit {
+.carousel-2022-with-sidebar .exhibits .exhibit {
     scroll-snap-align: start;
 }
 
-.carousel-2022-with-highlight > .exhibits > .exhibit .contents {
+.carousel-2022-with-sidebar > .exhibits > .exhibit .contents {
     object-fit: cover;
 }

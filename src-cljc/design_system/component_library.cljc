@@ -33,11 +33,19 @@
                       :carousel/id                          :example-carousel}}
    {:title           "Image Carousel"
     :id              "image-carousel"
-    :query-ns        "example-image-carousel"
+    :query-ns        "example-image-and-video-carousel"
     :component-class carousel/component
     :opts            {:carousel/exhibit-thumbnail-component carousel/product-carousel-thumbnail
                       :carousel/exhibit-highlight-component carousel/product-carousel-highlight
-                      :carousel/id                          :example-image-carousel}}
+                      :carousel/id                          :example-image-and-video-carousel}}
+   {:title           "Slider Carousel"
+    :id              "slider-image-carousel"
+    :query-ns        "example-slider-image-carousel"
+    :component-class carousel/component
+
+    :opts            {:carousel/exhibit-highlight-component carousel/slider-image-exhibit
+                      :carousel/id                          :example-slider-image-carousel
+                      :carousel/slider-only-mode            true}}
    {:title           "Promises"
     :id              "promises"
     :query-ns        "example-promises"
@@ -110,7 +118,7 @@
                                                        {:class "bg-lime"}
                                                        {:class "bg-maroon"}
                                                        {:class "bg-pink"}]})
-     (within :example-image-carousel {:selected-exhibit-idx (:idx (carousel/<- app-state :example-image-carousel))
+     (within :example-image-and-video-carousel {:selected-exhibit-idx (:idx (carousel/<- app-state :example-image-and-video-carousel))
                                       :exhibits             [{:src "http://placekitten.com/400/600?image=1"
                                                               :alt "image 1"}
                                                              {:src  "http://ucarecdn.com/89a0181c-cbbe-4a66-bed5-cc90e6a886e5/"
@@ -130,6 +138,24 @@
                                                               :alt "image 7"}
                                                              {:src "http://placekitten.com/400/600?image=8"
                                                               :alt "image 8"}]})
+     (within :example-slider-image-carousel {:selected-exhibit-idx (:idx (carousel/<- app-state :example-slider-image-carousel))
+                                       :exhibits             [{:src "http://placekitten.com/400/400?image=1"
+                                                               :alt "image 1"}
+                                                              {:src "http://placekitten.com/400/400?image=2"
+                                                               :alt "image 2"}
+                                                              {:src "http://placekitten.com/400/400?image=3"
+                                                               :alt "image 3"}
+                                                              {:src "http://placekitten.com/400/400?image=4"
+                                                               :alt "image 4"}
+                                                              {:src "http://placekitten.com/400/400?image=5"
+                                                               :alt "image 5"}
+                                                              {:src "http://placekitten.com/400/400?image=6"
+                                                               :alt "image 6"}
+                                                              {:src "http://placekitten.com/400/400?image=7"
+                                                               :alt "image 7"}
+                                                              {:src "http://placekitten.com/400/400?image=8"
+                                                               :alt "image 8"}]})
+
      (within :example-promises
              {:list/icons
               [{:promises.icon/symbol :svg/hand-heart,
