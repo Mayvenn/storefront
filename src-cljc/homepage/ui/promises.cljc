@@ -8,8 +8,9 @@
    [:div.flex.flex-column-on-mb.items-center.gap-1.justify-center-on-dt
     {:key id
      :style {:flex "1 1 0"}}
-    (svg/symbolic->html [symbol {:style {:max-width  "24px"
-                                         :max-height "24px"}}])
+    (case (namespace symbol)
+      "svg" (svg/symbolic->html [symbol {:style {:max-width  "24px"
+                                                 :max-height "24px"}}]))
     [:div.shout title]]))
 
 (c/defcomponent organism
