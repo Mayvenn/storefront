@@ -35,13 +35,12 @@
 
 (defcomponent layer-hero
   [data _ opts]
-  [:div.mx-auto.relative {:style {:min-height "300px"}}
+  [:div.mx-auto.relative
    (let [{:keys [opts]} data]
      (component/build
       (if (:navigation-message opts) ui.M/hero ui.M/fullsize-image)
       (merge data
              {:opts (merge opts {:class     "block"
-                                 :style     {:min-height "300px"}
                                  :data-test "hero-link"})})))])
 
 (defcomponent free-standard-shipping-bar
@@ -596,8 +595,10 @@
 (defcomponent lp-split
   [{:keys [left-top right-bottom]} _ opts]
   [:div.flex.flex-column-on-mb
-   (layer-view left-top opts)
-   (layer-view right-bottom opts)])
+   [:div.col-6-on-tb-dt
+    (layer-view left-top opts)]
+   [:div.col-6-on-tb-dt
+    (layer-view right-bottom opts)]])
 
 (defcomponent lp-title-text-cta-background-color
   [data _ _]
@@ -607,9 +608,10 @@
         cta-url       (:cta/target data)
         bg-color      (:background/color data)
         content-color (:content/color data)]
-    [:div.p4-on-mb.p8-on-tb-dt
-     (when bg-color
-       {:class (str "bg-" bg-color " " content-color)})
+    [:div.p4-on-mb.p8-on-tb-dt.flex.flex-column.justify-center
+     (merge (when bg-color
+              {:class (str "bg-" bg-color " " content-color)})
+            {:style {:height "100%"}})
      [:div.canela.title-2.py1
       title]
      [:p.content-2.py1
