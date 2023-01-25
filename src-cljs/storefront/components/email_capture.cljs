@@ -43,15 +43,18 @@
 
 (defn phone-field [{:email-capture.phone-field/keys [id placeholder focused keypath phone]}]
   [:div.mx-auto.mb3
-   (ui/text-field {:keypath   keypath
-                   :focused   focused
-                   :label     placeholder
-                   :name      "phone"
-                   :required  false
-                   :type      "tel"
-                   :value     phone
-                   :class     "col-12 bg-white"
-                   :data-test id})])
+   (ui/text-field {:keypath    keypath
+                   :focused    focused
+                   :label      placeholder
+                   :name       "phone"
+                   :required   false
+                   :pattern    "[0-9]{10}"
+                   :type       "tel"
+                   :value      phone
+                   :max-length 10
+                   :min-length 10
+                   :class      "col-12 bg-white"
+                   :data-test  id})])
 
 (defn cta
   [{:email-capture.cta/keys [value id]}]
