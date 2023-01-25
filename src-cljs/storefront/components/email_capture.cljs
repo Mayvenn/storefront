@@ -22,7 +22,7 @@
    [:div.flex.justify-center.pt1
     ^:inline (svg/mayvenn-logo {:width "52px" :height "30px"})]
    (ui/modal-close {:data-test   (str id "-dismiss")
-                    :class       "fill-black stroke-black"
+                    :class       "mx3 fill-black stroke-black"
                     :close-attrs close-dialog-href})])
 
 (def hr-divider
@@ -178,7 +178,7 @@
                            :keypath  keypath
                            :value    value
                            :boxsize "10px"})])]
-        (ui/submit-button-medium "Submit" {:disabled? (every? (comp not :value) form)})
+        [:div.my3 (ui/submit-button-medium "Submit" {:disabled? (every? (comp not :value) form)})]
         (ui/button-small-underline-black
          {:on-click   (apply utils/send-event-callback (:email-capture.dismiss/target data))
           :aria-label "skip"}
