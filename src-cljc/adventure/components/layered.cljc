@@ -809,7 +809,7 @@
 
 (defcomponent service-list
   [_ _ _]
-  (retail.stores/wig-services-menu service-list-query))
+  (retail.stores/wig-services-menu retail.stores/service-menu-data))
 
 (def promises-omni-query
   {:list/icons
@@ -842,7 +842,7 @@
 
 (defcomponent customize-wig
   [_ _ _]
-  (retail.stores/wig-customization-spotlights retail.stores/wig-customization-data))
+  (retail.stores/wig-customization-spotlights wig-customization-query))
 
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (when type

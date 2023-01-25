@@ -153,7 +153,7 @@
    "dallas"        events/navigate-retail-walmart-dallas
    "mansfield"     events/navigate-retail-walmart-mansfield})
 
-(def wig-customization-data
+(def service-menu-data
   {:header/title "Wig Services"
    :sections     [{:header/title "Lace Customization"
                    :items        [{:title "Basic Lace"
@@ -226,7 +226,7 @@
                                    {:title "Take it home"
                                     :copy  "Rock your new unit the same day or pick it up within 2-5 days."
                                     :url   "https://ucarecdn.com/8d4b8e12-48a7-4e90-8a41-3f1ef1267a93/take_it_home.png"}]})
-     (vt/within :wig-services-menu wig-customization-data))))
+     (vt/within :wig-services-menu service-menu-data))))
 
 
 (defn built-component
