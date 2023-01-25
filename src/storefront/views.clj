@@ -217,7 +217,7 @@
             [:link {:rel "preconnect" :href "https://s.pinimg.com"}]
             [:link {:rel "preconnect" :href "https://googleads.g.doubleclick.net"}]
             [:link {:rel "preconnect" :href "https://d10lpsik1i8c69.cloudfront.net"}] ;; luckyorange
-
+            
             [:script {:defer true
                       :type  "text/javascript"
                       :src   "https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.2/min/tiny-slider.js"}]
@@ -261,25 +261,12 @@
             [:script {:type "text/javascript"}
              (raw (str "(function(d,e){function g(a){return function(){var b=Array.prototype.slice.call(arguments);b.unshift(a);c.push(b);return d.stringer}}var c=d.stringer=d.stringer||[],a=[\"init\",\"track\",\"identify\",\"clear\",\"getBrowserId\"];if(!c.snippetRan&&!c.loaded){c.snippetRan=!0;for(var b=0;b<a.length;b++){var f=a[b];c[f]=g(f)}a=e.createElement(\"script\");a.type=\"text/javascript\";a.async=!0;a.src=\"https://d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-8537ec7.js\";b=e.getElementsByTagName(\"script\")[0];b.parentNode.insertBefore(a,b);c.init({environment:\"" environment "\",sourceSite:\"storefront\"})}})(window,document);"))]
 
-            ;; Facebook Pixel
-            [:script {:type "text/javascript"}
-             (let [facebook-pixel-id (case environment
-                                       "production" "721931104522825"
-                                       "139664856621138")]
-               (raw (str
-                     "!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-document,'script','https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '" facebook-pixel-id "'); fbq('track', 'PageView');")))]
-
             ;; Google Tag Manager
             (let [gtm-container-id (case environment
                                      "production"  "GTM-NNC8T99"
                                      "acceptance"  "GTM-NNC8T99"
                                      "GTM-KLFHMCS"  ; Dev & test
-                                     )] 
+                                     )]
               [:script {:type "text/javascript"}
                (raw (str "(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -288,7 +275,7 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     })(window,document,'script','dataLayer','" gtm-container-id "');"))])
 
           ;;;;;;;;;;;;
-
+            
             ;; inline styles in production because our css file is so small and it avoids another round
             ;; trip request. At time of writing this greatly includes our pagespeed score
             (if (#{"development" "test"} environment)
