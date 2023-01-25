@@ -137,15 +137,13 @@
                            :class        "col-12"
                            :style        {:vertical-align "bottom"}
                            :alt          description}))))
-    (let [{:email-capture.copy/keys [title subtitle supertitle fine-print-lead-in]} data]
+    (let [{:email-capture.copy/keys [title fine-print-lead-in]} data]
       [:div.p4.black
        {:class (:email-capture.design/background-color data)}
        [:form.col-12.center.p1.pb3
         {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
         [:div.mb2
-         [:div.title-2.proxima.shout supertitle]
-         [:div.title-1.canela.p-color title]
-         [:div.title-2.proxima subtitle]]
+         [:div.title-2.proxima title]]
         [:div.px3
          (email-field data)
          (phone-field data)
