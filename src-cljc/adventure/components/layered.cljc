@@ -22,7 +22,9 @@
             [storefront.config :as config]
             [storefront.effects :as fx]
             [storefront.keypaths :as keypaths]
-            [homepage.ui.contact-us :as contact-us]))
+            [homepage.ui.promises :as promises]
+            [homepage.ui.contact-us :as contact-us]
+            retail.stores))
 
 (defn ^:private vertical-squiggle
   [top]
@@ -803,6 +805,81 @@
   [_ _ _]
   (divider "url('//ucarecdn.com/ac332aa1-cc58-4c1b-b610-da363203388a/-/crop/301x24/bottom/')"))
 
+(def service-list-query
+  {:header/title "Wig Services"
+   :sections     [{:header/title "Lace Customization"
+                   :items        [{:title "Basic Lace"
+                                   :price 40}
+                                  {:title "Lace Front"
+                                   :price 50}
+                                  {:title "360 Lace"
+                                   :price 60}]}
+                  {:header/title "Color Services"
+                   :items        [{:title "Roots"
+                                   :price 35}
+                                  {:title "All-Over Color"
+                                   :price 65}
+                                  {:title "Multi All-Over Color"
+                                   :price 75}
+                                  {:title "Accent Highlights"
+                                   :price 55}
+                                  {:title "Partial Highlights"
+                                   :price 75}
+                                  {:title "Full Highlights"
+                                   :price 85}]}
+                  {:header/title "Cut"
+                   :items        [{:title "Blunt Cut"
+                                   :price 25}
+                                  {:title "Layered Cut"
+                                   :price 45}]}
+                  {:header/title "Wig Styling"
+                   :items        [{:title "Advanced Styling"
+                                   :price 40}]}
+                  {:header/title "Bundle Add-On"
+                   :items        [{:title "1 Bundle"
+                                   :price 20}
+                                  {:title "2 Bundles"
+                                   :price 40}]}
+                  {:header/title "Maintainence Services"
+                   :items        [{:title "Wig Maintainence"
+                                   :price 50}]}]})
+(defcomponent service-list
+  [_ _ _]
+  (retail.stores/wig-services-menu service-list-query))
+
+(def promises-omni-query
+  {:list/icons
+   [{:promises.icon/symbol :svg/hand-heart,
+     :promises.icon/title  "100% Virgin Human Hair"}
+    {:promises.icon/symbol :svg/shield,
+     :promises.icon/title  "Custom Wig Services"}
+    {:promises.icon/symbol :svg/check-cloud,
+     :promises.icon/title  "Top Notch Service"}
+    {:promises.icon/symbol :svg/ship-truck,
+     :promises.icon/title  "30-Day Guarantee"}]})
+
+(defcomponent promises-omni
+  [_ _ _]
+  (component/build promises/organism promises-omni-query))
+
+(def wig-customization-query
+  {:header/title    "Wig Customization"
+   :header/subtitle "Here's how it works:"
+   :sections        [{:title "Select your wig"
+                      :copy  "Choose a factory-made wig or get one tailor-made by our resident Wig Artist"
+                      :url   "https://ucarecdn.com/1596ef7a-8ea8-4e2d-b98f-0e2083998cce/select_your_wig.png"}
+                     {:title "We customize it"
+                      :copy  "Tell us how you want your wig to look and we make it happen."
+                      :url   "https://ucarecdn.com/b8902af1-9262-4369-ab88-35e82fd2f3b7/we_customize_it.png"}
+                     {:title "Take it home"
+                      :copy  "Rock your new unit the same day or pick it up within 2-5 days."
+                      :url   "https://ucarecdn.com/8d4b8e12-48a7-4e90-8a41-3f1ef1267a93/take_it_home.png"}]}
+  )
+
+(defcomponent customize-wig
+  [_ _ _]
+  (retail.stores/wig-customization-spotlights wig-customization-query))
+
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (when type
     (component/build
@@ -830,6 +907,12 @@
        :shop-quote-img          shop-quote-img
        :shop-contact            shop-contact
        :video-overlay           video-overlay
+
+
+       :service-list        service-list
+       :promises-omni       promises-omni
+       :customize-wig       customize-wig
+
 
        ;; LEGACY
        :image-block                image-block

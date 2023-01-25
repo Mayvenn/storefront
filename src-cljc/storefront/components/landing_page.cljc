@@ -283,7 +283,10 @@
       "staticContent"                            {:layer/type (case (:module body-layer)
                                                                 "contact-us"          :lp-contact-us
                                                                 "divider-green-gray"  :lp-divider-green-gray
-                                                                "divider-purple-pink" :lp-divider-purple-pink)}
+                                                                "divider-purple-pink" :lp-divider-purple-pink
+                                                                "service-list"        :service-list
+                                                                "promises-omni"       :promises-omni
+                                                                "customize-wig"       :customize-wig)}
       {})))
 
 (defn landing-page-body [data]
