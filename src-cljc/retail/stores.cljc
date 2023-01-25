@@ -153,6 +153,45 @@
    "dallas"        events/navigate-retail-walmart-dallas
    "mansfield"     events/navigate-retail-walmart-mansfield})
 
+(def wig-customization-data
+  {:header/title "Wig Services"
+   :sections     [{:header/title "Lace Customization"
+                   :items        [{:title "Basic Lace"
+                                   :price 40}
+                                  {:title "Lace Front"
+                                   :price 50}
+                                  {:title "360 Lace"
+                                   :price 60}]}
+                  {:header/title "Color Services"
+                   :items        [{:title "Roots"
+                                   :price 35}
+                                  {:title "All-Over Color"
+                                   :price 65}
+                                  {:title "Multi All-Over Color"
+                                   :price 75}
+                                  {:title "Accent Highlights"
+                                   :price 55}
+                                  {:title "Partial Highlights"
+                                   :price 75}
+                                  {:title "Full Highlights"
+                                   :price 85}]}
+                  {:header/title "Cut"
+                   :items        [{:title "Blunt Cut"
+                                   :price 25}
+                                  {:title "Layered Cut"
+                                   :price 45}]}
+                  {:header/title "Wig Styling"
+                   :items        [{:title "Advanced Styling"
+                                   :price 40}]}
+                  {:header/title "Bundle Add-On"
+                   :items        [{:title "1 Bundle"
+                                   :price 20}
+                                  {:title "2 Bundles"
+                                   :price 40}]}
+                  {:header/title "Maintainence Services"
+                   :items        [{:title "Wig Maintainence"
+                                   :price 50}]}]})
+
 (defn query [app-state]
   (let [locations (get-in app-state keypaths/cms-retail-location)]
     (merge
@@ -187,27 +226,8 @@
                                    {:title "Take it home"
                                     :copy  "Rock your new unit the same day or pick it up within 2-5 days."
                                     :url   "https://ucarecdn.com/8d4b8e12-48a7-4e90-8a41-3f1ef1267a93/take_it_home.png"}]})
-     (vt/within :wig-services-menu
-                {:header/title "Wig Services"
-                 :sections     [{:header/title "Customization"
-                                 :items        [{:title "Basic Lace Customization"
-                                                 :price 25}
-                                                {:title "Wig Customization"
-                                                 :price 60}
-                                                {:title "Basic Wig Coloring"
-                                                 :price 95}
-                                                {:title "Advanced Wig Coloring"
-                                                 :price 150}]}
-                                {:header/title "Cut"
-                                 :items        [{:title "Basic Wig Cut"
-                                                 :price 35}
-                                                {:title "Advanced Wig Cut"
-                                                 :price 50}]}
-                                {:header/title "Stylist"
-                                 :items        [{:title "Basic Wig Styling"
-                                                 :price 35}
-                                                {:title "Advanced Wig Styling"
-                                                 :price 50}]}]}))))
+     (vt/within :wig-services-menu wig-customization-data))))
+
 
 (defn built-component
   [data opts]
