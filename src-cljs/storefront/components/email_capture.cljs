@@ -165,11 +165,10 @@
     {:data-test (str id "-hdyhau")}
     (m-header id (apply utils/fake-href (:email-capture.dismiss/target data)))
     [:div.bg-cool-gray.p3.center
-     (let [{:email-capture.hdyhau/keys [form title subtitle target]} data]
+     (let [{:email-capture.hdyhau/keys [form title target]} data]
        [:form.content-3.col-9.mx-auto
         {:on-submit (apply utils/send-event-callback target)}
-        [:div.pb2.content-2.bold title]
-        [:div.pb2.content-3.bold subtitle]
+        [:div.pb2.content-3.bold title]
         [:div
          (for [{:keys [label keypath value]} form]
            [:div {:key label}
