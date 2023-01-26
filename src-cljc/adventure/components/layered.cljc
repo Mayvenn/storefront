@@ -510,41 +510,54 @@
   [:div.py8.mx-auto.center
    (when title
      [:div.title-1.proxima.shout.bold title])
-   [:div.flex.flex-wrap.pt1.pb4.justify-center
-    (for [{:keys [image-url image alt label label-shout copy] :as image-data} images]
-      (when (or image image-url)
-        (if-let [navigation-message (:cta/navigation-message image-data)]
-          [:a.col-5.col-2-on-tb-dt.p1.border.border-cool-gray.m1
-           (merge (apply utils/route-to navigation-message)
-                  {:key (str image-url)})
-           (ui/screen-aware
-            ugc-image
-            {:image-url (or (:url (:file image)) image-url)
-             :max-size  400
-             :alt       alt}
-            nil)
-           [:div.black.content-2.mt2
-            (when label-shout
-              {:class "proxima shout bold"})
-            label]
-           (when copy
-             [:div.black.left-align.mt2
-              copy])]
+   [:div.pt1.pb4.grid.gap-1.mx1
+    {:class (case (count images)
+              1 "tiles-1"
+              2 "tiles-2"
+              3 "tiles-3"
+              4 "tiles-4"
+              "tiles-more")}
+    (for [{:keys [image-url image alt label label-shout copy] :as image-data} images
+          :let [navigation-message (:cta/navigation-message image-data)]]
+      (cond
+        (not (or image image-url))
+        nil
 
-          [:div.col-6.col-3-on-tb-dt.p1
-           {:key (str image-url)}
-           (ui/screen-aware
-            ugc-image
-            {:image-url (or (:url (:file image)) image-url)
-             :max-size  400
-             :alt       alt}
-            nil)
-           [:div.black.content-2
-            (when label-shout
-              {:class "proxima shout loud"})
-            label]
-           (when copy
-             [:div.black.left-align.mt2 copy])])))]
+        (:cta/navigation-message image-data)
+        [:a.p1.border.border-cool-gray
+         (merge (apply utils/route-to navigation-message)
+                {:key (str image-url)})
+         (ui/screen-aware
+          ugc-image
+          {:image-url (or (:url (:file image)) image-url)
+           :max-size  400
+           :alt       alt}
+          nil)
+         [:div.black.content-2.mt2
+          (when label-shout
+            {:class "proxima shout bold"})
+          label]
+         (when copy
+           [:div.black.left-align.mt2
+            copy])]
+
+        :else
+        [:div.col-6.col-3-on-tb-dt.p1
+         {:key (str image-url)}
+         (ui/screen-aware
+          ugc-image
+          {:image-url (or (:url (:file image)) image-url)
+           :max-size  400
+           :alt       alt}
+          nil)
+         [:div.black.content-2
+          (when label-shout
+            {:class "proxima shout loud"})
+          label]
+         (when copy
+           [:div.black.left-align.mt2 copy])]
+        )
+      )]
    (let [{:keys [cta]} data]
      (if (:id cta)
        (ui/button-small-primary (merge {:class "inline"}

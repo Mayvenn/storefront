@@ -56,3 +56,39 @@
     --font-weight: var(--medium-font-weight);
     --font-family-proxima: 'Proxima Nova', Arial, sans-serif;
 }
+
+@media (--on-mobile) {
+    .tiles-1 {
+        grid-template-columns: 1fr;
+    }
+    .tiles-2 {
+        grid-template-columns: 1fr 1fr;
+    }
+    .tiles-3 {
+        grid-template-columns: 1fr;
+    }
+    .tiles-4 {
+        grid-template-columns: 1fr 1fr;
+    }
+    .tiles-more {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (--on-desktop) {
+    .tiles-1 {
+        grid-template-columns: 1fr;
+    }
+    .tiles-2 {
+        grid-template-columns: 1fr 1fr;
+    }
+    .tiles-3 {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+    .tiles-4 {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+    .tiles-more {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
