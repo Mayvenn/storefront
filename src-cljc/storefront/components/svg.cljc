@@ -573,6 +573,13 @@
    [:svg opts
     ^:inline (svg-xlink "check-cloud")]))
 
+(defn custom-wig-services
+  "checkmark in a cloud"
+  [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "custom-wig-services")]))
+
 (defn ship-truck
   "truck with zooming motion lines"
   [opts]
@@ -623,5 +630,6 @@
        :svg/market                          ^:inline (market attrs)
        :svg/hand-heart                      ^:inline (hand-heart attrs)
        :svg/check-cloud                     ^:inline (check-cloud attrs)
+       :svg/custom-wig-services             ^:inline (custom-wig-services attrs)
        [:div])
      [:div])))

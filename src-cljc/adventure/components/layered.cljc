@@ -831,13 +831,13 @@
 
 (def promises-omni-query
   {:list/icons
-   [{:promises.icon/symbol :svg/hand-heart,
+   [{:promises.icon/symbol :svg/check-cloud,
      :promises.icon/title  "100% Virgin Human Hair"}
-    {:promises.icon/symbol :svg/shield,
+    {:promises.icon/symbol :svg/custom-wig-services,
      :promises.icon/title  "Custom Wig Services"}
-    {:promises.icon/symbol :svg/check-cloud,
+    {:promises.icon/symbol :svg/hand-heart,
      :promises.icon/title  "Top Notch Service"}
-    {:promises.icon/symbol :svg/ship-truck,
+    {:promises.icon/symbol :svg/shield,
      :promises.icon/title  "30-Day Guarantee"}]})
 
 (defcomponent promises-omni
