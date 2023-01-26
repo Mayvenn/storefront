@@ -13,3 +13,13 @@
    :saw-store       "Saw the store/Walk-in"
    :other           "Other"
    :streaming-radio "Pandora, Spotify, etc"})
+
+(defn hdyhau-answered-data
+  [hdyhau-to-submit ; map {key true}
+   hdyhau-options ;list of keys
+   user-data]
+  (merge
+   {:hdyhau (map (fn [option]
+                   {option (or (option hdyhau-to-submit) false)})
+                  hdyhau-options)}
+   user-data))

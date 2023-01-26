@@ -191,7 +191,7 @@
        [:div.title-2.proxima.py3 title]
        (when (seq form)
          [:form.mx-auto.pb3
-          {:on-submit (utils/send-event-callback events/hdyhau-post-purchase-submitted)}
+          {:on-submit (utils/send-event-callback events/hdyhau-post-purchase-submitted {:hdyhau-options (map :slug form)})}
           (for [{:keys [label keypath value]} form]
             (ui/check-box {:label   label
                            :keypath keypath
@@ -472,12 +472,13 @@
     (if submitted
       {:hdyhau/title "Thanks!"}
       #:hdyhau
-       {:title "How did you hear about us?"
-        :form  (->> awareness/hdyhau
-                    (mapv (fn [[slug label]]
-                            {:label   label
-                             :keypath (conj keypaths/models-hdyhau :to-submit slug)
-                             :value   (get to-submit slug false)})))})))
+      {:title "How did you hear about us?"
+       :form  (->> awareness/hdyhau
+                   (mapv (fn [[slug label]]
+                           {:label   label
+                            :slug    slug
+                            :keypath (conj keypaths/models-hdyhau :to-submit slug)
+                            :value   (get to-submit slug false)})))})))
 
 (defn ^:export built-component
   [state opts]
@@ -497,20 +498,12 @@
       (assoc-in [:models :hdyhau :submitted] true)))
 
 (defmethod trackings/perform-track events/hdyhau-post-purchase-submitted
-  [_ event data app-state]
-  (let [hdyhau-to-submit           (:to-submit (get-in app-state keypaths/models-hdyhau))
-        {:keys [shipping-address user
-                phone-marketing-opt-in
-                phone-txn-opt-in]} (get-in app-state keypaths/completed-order)]
+  [_ event {:keys [hdyhau-options]} app-state]
+  (let [hdyhau-to-submit                (:to-submit (get-in app-state keypaths/models-hdyhau))
+        {:keys [shipping-address user]} (get-in app-state keypaths/completed-order)]
     (stringer/track-event "hdyhau-answered"
-                          {:address                {:city    (:city shipping-address)
-                                                    :state   (:state shipping-address)
-                                                    :zipcode (:zipcode shipping-address)}
-                           :email                  (:email user)
-                           :phone                  (:phone shipping-address)
-                           :phone-marketing-opt-in phone-marketing-opt-in
-                           :phone-txn-opt-in       phone-txn-opt-in
-                           :hdyhau                 (merge
-                                                    (zipmap (keys awareness/hdyhau) (repeat false))
-                                                    hdyhau-to-submit)
-                           :form                   "post-purchase"})))
+                          (awareness/hdyhau-answered-data hdyhau-to-submit
+                                                          hdyhau-options
+                                                          {:email (:email user)
+                                                           :phone (:phone shipping-address)
+                                                           :form  "post-purchase"}))))

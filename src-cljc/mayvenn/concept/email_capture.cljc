@@ -130,8 +130,8 @@
       (assoc-in [:models :hdyhau :submitted] true)))
 
 (defmethod fx/perform-effects e/hdyhau-email-capture-submitted
-  [_ _ _ state _]
-  (publish e/biz|hdyhau-capture|captured))
+  [_ _ data state _]
+  (publish e/biz|hdyhau-capture|captured data))
 
 (defmethod fx/perform-effects e/biz|hdyhau-capture|captured
   [_ _ _ state _]
@@ -199,11 +199,13 @@
 
 #?(:cljs
    (defmethod trk/perform-track e/biz|hdyhau-capture|captured
-     [_ event data app-state]
-     (let [hdyhau-to-submit           (:to-submit (get-in app-state k/models-hdyhau))]
+     [_ event {:keys [hdyhau-options]} app-state]
+     (let [hdyhau-to-submit (:to-submit (get-in app-state k/models-hdyhau))
+           email            (get-in app-state [:models :email-capture :textfield])
+           phone            (get-in app-state [:models :email-capture :phone])]
        (stringer/track-event "hdyhau-answered"
-                             {:email  (get-in app-state [:models :email-capture :textfield])
-                              :hdyhau (merge
-                                       (zipmap (keys awareness/hdyhau) (repeat false))
-                                       hdyhau-to-submit)
-                              :form   "email-capture"}))))
+                             (awareness/hdyhau-answered-data hdyhau-to-submit
+                                                             hdyhau-options
+                                                             {:email email
+                                                              :phone phone
+                                                              :form  "email-capture"})))))

@@ -359,7 +359,7 @@
                                                             {:label   label
                                                              :keypath (conj k/models-hdyhau :to-submit slug)
                                                              :value   (get (:to-submit (get-in state k/models-hdyhau)) slug false)})))
-                :email-capture.hdyhau/target   [e/hdyhau-email-capture-submitted]})))))
+                :email-capture.hdyhau/target   [e/hdyhau-email-capture-submitted {:hdyhau-options (keys hdyhau)}]})))))
 
 ;;; Matchers and Triggers
 
