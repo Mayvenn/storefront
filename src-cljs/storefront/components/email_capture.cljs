@@ -19,7 +19,7 @@
 (defn m-header [id close-dialog-href]
   [:div.flex.justify-between.items-center.p2.bg-white
    [:div]
-   [:div.flex.justify-center.pt1
+   [:div.flex.pl10.pt1
     ^:inline (svg/mayvenn-logo {:width "52px" :height "30px"})]
    (ui/modal-close {:data-test   (str id "-dismiss")
                     :class       "mx3 fill-black stroke-black"
@@ -171,7 +171,7 @@
         {:on-submit (apply utils/send-event-callback target)}
         [:div.pb2.content-2.bold title]
         [:div.pb2.content-3.bold subtitle]
-        [:div
+        [:div.left-align
          (for [{:keys [label keypath value]} form]
            [:div {:key label}
             (ui/check-box {:label    label
