@@ -43,15 +43,13 @@
     (ui/button-small-underline-primary {:href target}
                                        "Link to Post")]])
 
-(defn query [data] {})
-
 (defcomponent component [data owner opts]
   [:div.center
-   (component/build ui.M/fullsize-image {:alt       ""
-                                         :file-name "stylist-social-media.jpg"
-                                         :dsk-uuid  "61412360-ac86-4f1d-88c7-a61d77e2ef59"
-                                         :mob-uuid  "7eb2d06a-1817-464d-a31a-35b1ba4ec600"
-                                         :ucare?    true}
+   (component/build ui.M/hero {:alt       ""
+                               :file-name "stylist-social-media.jpg"
+                               :dsk-uuid  "61412360-ac86-4f1d-88c7-a61d77e2ef59"
+                               :mob-uuid  "7eb2d06a-1817-464d-a31a-35b1ba4ec600"
+                               :ucare?    true}
                     nil)
    [:h1.proxima.bold.content-1.shout.my3 "Stylist Content Partnership"]
    [:h2.title-1.canela.my3 "Deliverable Details"]
@@ -105,4 +103,4 @@
     [:div "Thank you!"]]])
 
 (defn built-component [data opts]
-  (component/build component (query data) nil))
+  (component/build component {} nil))

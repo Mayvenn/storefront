@@ -38,10 +38,25 @@
   [:div.mx-auto.relative
    (let [{:keys [opts]} data]
      (component/build
-      (if (:navigation-message opts) ui.M/hero ui.M/fullsize-image)
+      ui.M/hero
       (merge data
+             {:off-screen? (not (:screen/seen? data true))}
              {:opts (merge opts {:class     "block"
                                  :data-test "hero-link"})})))])
+
+(defcomponent ^:private fullsize-image-component
+  "Another name for a hero without a target"
+  [{:screen/keys [seen?] :as data} owner opts]
+  [:div (component/build ui.M/hero
+                         (merge data
+                                {:off-screen? (not seen?)})
+                         nil)])
+
+(defcomponent image-block
+  [data _ _]
+  [:div.center.mx-auto {:key (str (:mob-uuid data))}
+   (ui/screen-aware fullsize-image-component data nil)])
+
 
 (defcomponent free-standard-shipping-bar
   [_ _ _]
@@ -114,16 +129,6 @@
                   :background-position "center"
                   :background-repeat   "repeat-x"
                   :height              "24px"}}]))
-
-(defcomponent ^:private fullsize-image-component
-  "Like the hero image, but not a link"
-  [{:screen/keys [seen?] :as data} owner opts]
-  [:div (component/build ui.M/fullsize-image (merge data {:off-screen? (not seen?)}) nil)])
-
-(defcomponent image-block
-  [data _ _]
-  [:div.center.mx-auto {:key (str (:mob-uuid data))}
-   (ui/screen-aware fullsize-image-component data nil)])
 
 (defcomponent video-overlay
   [{:keys [close-nav-event video] :as data} _ _]

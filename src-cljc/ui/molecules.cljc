@@ -94,20 +94,16 @@
     ucare?      (ucare-hero mob-uuid dsk-uuid file-name alt)
     :else       (image-hero mob-url dsk-url alt)))
 
-(defcomponent fullsize-image
-  "The difference between this and the hero is that there is no <a> tag. The <a> tag implies a link away
-   for screen readers and there is no link here. This exists for a11y reasons."
-  [data _ _]
-  [:div (hero-block data)])
-
 (defcomponent hero
   [{:as data
     :keys [opts]} _ _]
-  [:a (-> opts
-          (merge (apply utils/route-to (:navigation-message opts)))
-          (dissoc :navigation-message :h1?))
-   (cond->> (hero-block data)
-     (:h1? opts) (conj [:h1]))])
+  (if (seq (:navigation-message opts))
+    [:a (-> opts
+            (merge (apply utils/route-to (:navigation-message opts)))
+            (dissoc :navigation-message :h1?))
+     (cond->> (hero-block data)
+       (:h1? opts) (conj [:h1]))]
+    [:div (hero-block data)]))
 
 (defn field-reveal-molecule
   [{:field-reveal/keys [id label target]}]

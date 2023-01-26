@@ -14,10 +14,13 @@
 (defn query
   [cms-hero-data]
   (let [external-path           (:external-path cms-hero-data)
-        path'                   (or (cms-hero-data :path) "/shop/look")
-        path                    (uri/path->path-base path')
-        query-params            (uri/path->query-params path')
+        path'                   (cms-hero-data :path)
+        path                    (when (seq path') (uri/path->path-base path'))
+        query-params            (when (seq path') (uri/path->query-params path'))
         [event :as routed-path] (cond
+                                  (not (seq path))
+                                  nil
+
                                   external-path
                                   [events/external-redirect-url {:url external-path}]
 
@@ -29,9 +32,10 @@
 
                                   :else
                                   (routes/navigation-message-for path query-params))
-        link-options (assoc (if-not (= events/navigate-not-found event)
-                              {:navigation-message routed-path}
-                              {:href path}) :data-test "home-banner")]
+        link-options (assoc (if (= events/navigate-not-found event)
+                              {}
+                              {:navigation-message routed-path})
+                            :data-test "home-banner")]
     (cond->
         {:opts      link-options
          :dsk-url   (-> cms-hero-data :desktop :file :url)
