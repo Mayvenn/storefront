@@ -134,40 +134,40 @@
                                                               (partial maps/index-by :option/slug)))))
         looks-shared-carts-db (get-in data storefront.keypaths/v1-looks-shared-carts)]
     (case (:content/type body-layer)
-      "homepageHero"     (assoc (homepage-hero/query body-layer)
-                                :layer/type :hero)
-      "titleSubtitle"    {:layer/type   :shop-text-block
-                          :header/value (:title body-layer)
-                          :body/value   (:subtitle body-layer) }
-      "ugc-collection"   {:layer/type   :lp-tiles
-                          :header/value (or (:title body-layer) "Shop By Look")
-                          :images       (let [looks ((if (= "production" (get-in data keypaths/environment))
-                                                       :looks
-                                                       :acceptance-looks) body-layer)]
-                                          (if (= "HD Looks" (:name body-layer))
-                                            (->> looks
-                                                 (keep-indexed (fn [index look]
-                                                                 (merge look
-                                                                        (look<- skus-db looks-shared-carts-db facets-db look promotions :look index remove-free-install?))))
+      "homepageHero"   (assoc (homepage-hero/query body-layer)
+                              :layer/type :hero)
+      "titleSubtitle"  {:layer/type      :shop-text-block
+                        :header/value    (:title body-layer)
+                        :body/value      (:subtitle body-layer)}
+      "ugc-collection" {:layer/type   :lp-tiles
+                        :header/value (or (:title body-layer) "Shop By Look")
+                        :images       (let [looks ((if (= "production" (get-in data keypaths/environment))
+                                                     :looks
+                                                     :acceptance-looks) body-layer)]
+                                        (if (= "HD Looks" (:name body-layer))
+                                          (->> looks
+                                               (keep-indexed (fn [index look]
+                                                               (merge look
+                                                                      (look<- skus-db looks-shared-carts-db facets-db look promotions :look index remove-free-install?))))
 
-                                                 (map (fn [look]
-                                                        (when (:look/id look)
-                                                          {:image-url              (-> look :look/hero-imgs first :url)
-                                                           :alt                    ""
-                                                           :label                  (:title look)
-                                                           :cta/navigation-message (:look/target look)}))))
-                                            (map (fn [look]
-                                                   (when (:content/id look)
-                                                     {:image-url              (:photo-url look)
-                                                      :alt                    ""
-                                                      :label                  (:title look)
-                                                      :cta/navigation-message [events/navigate-shop-by-look-details
-                                                                               {:look-id       (:content/id look)
-                                                                                :album-keyword :look}]}))
-                                                 looks)))
-                          :cta          {:id      "landing-page-see-more"
-                                         :attrs   {:navigation-message [events/navigate-shop-by-look {:album-keyword :look}]}
-                                         :content (or (:cta-copy body-layer) "see more")}}
+                                               (map (fn [look]
+                                                      (when (:look/id look)
+                                                        {:image-url              (-> look :look/hero-imgs first :url)
+                                                         :alt                    ""
+                                                         :label                  (:title look)
+                                                         :cta/navigation-message (:look/target look)}))))
+                                          (map (fn [look]
+                                                 (when (:content/id look)
+                                                   {:image-url              (:photo-url look)
+                                                    :alt                    ""
+                                                    :label                  (:title look)
+                                                    :cta/navigation-message [events/navigate-shop-by-look-details
+                                                                             {:look-id       (:content/id look)
+                                                                              :album-keyword :look}]}))
+                                               looks)))
+                        :cta {:id      "landing-page-see-more"
+                              :attrs   {:navigation-message [events/navigate-shop-by-look {:album-keyword :look}]}
+                              :content (or (:cta-copy body-layer) "see more")}}
       "faq"              (merge {:layer/type :faq
                                  :title      (:title body-layer)}
                                 (faq/hd-lace-query data body-layer))
@@ -268,6 +268,7 @@
       "contentModuleTitleTextCtaBackgroundColor" {:layer/type       :lp-title-text-cta-background-color
                                                   :header/value     (:title body-layer)
                                                   :body/value       (:subtitle body-layer)
+                                                  :body.html/value  (:md.html/subtitle body-layer)
                                                   :cta/value        (:cta-copy body-layer)
                                                   :cta/id           (str "landing-page-" (:slug body-layer) "-cta")
                                                   ;; TODO: make this resilient to external or internal links

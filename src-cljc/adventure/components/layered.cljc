@@ -24,6 +24,7 @@
             [storefront.keypaths :as keypaths]
             [homepage.ui.promises :as promises]
             [homepage.ui.contact-us :as contact-us]
+            [clojure.string :as string]
             retail.stores))
 
 (defn ^:private vertical-squiggle
@@ -618,28 +619,41 @@
    [:div.col-6-on-tb-dt
     (layer-view right-bottom opts)]])
 
+(defn unescape-js-string [v]
+  (if (string? v)
+    (-> v
+        (string/replace "&lt;" "<")
+        (string/replace "&gt;" ">"))
+    v))
+
+
 (defcomponent lp-title-text-cta-background-color
   [data _ _]
-  (let [title         (:header/value data)
-        subtitle      (:body/value data)
-        cta-copy      (:cta/value data)
-        cta-url       (:cta/target data)
-        bg-color      (:background/color data)
-        content-color (:content/color data)]
-    [:div.p4-on-mb.p8-on-tb-dt.flex.flex-column.justify-center
-     (merge (when bg-color
-              {:class (str "bg-" bg-color " " content-color)})
-            {:style {:height "100%"}})
-     [:div.canela.title-2.py1
-      title]
-     [:p.content-2.py1
-      subtitle]
-     (when cta-url
-       [:div.mt2
-        ;; TODO: consider alternatives to max-width
-        {:style {:max-width "300px"}}
-        (ui/button-medium-primary (utils/route-to events/external-redirect-url {:url cta-url})
-                                  cta-copy)])]))
+  (do
+    (let [title         (:header/value data)
+          subtitle      (:body/value data)
+          md-subtitle   (:body.html/value data)
+          cta-copy      (:cta/value data)
+          cta-url       (:cta/target data)
+          bg-color      (:background/color data)
+          content-color (:content/color data)]
+      [:div.p4-on-mb.p8-on-tb-dt.flex.flex-column.justify-center
+       (merge (when bg-color
+                {:class (str "bg-" bg-color " " content-color)})
+              {:style {:height "100%"}})
+       [:div.canela.title-2.py1
+        title]
+       [:div.content-2.py1
+        {:dangerouslySetInnerHTML
+         {:__html #?(:cljs
+                     (unescape-js-string md-subtitle)
+                     :clj "")}}]
+       (when cta-url
+         [:div.mt2
+          ;; TODO: consider alternatives to max-width
+          {:style {:max-width "300px"}}
+          (ui/button-medium-primary (utils/route-to events/external-redirect-url {:url cta-url})
+                                    cta-copy)])])))
 
 (defcomponent lp-image-text-block
   [{anchor-name      :anchor/name

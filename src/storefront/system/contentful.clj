@@ -9,7 +9,8 @@
             [spice.maps :as maps]
             [tugboat.core :as tugboat]
             [clojure.string :as string]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [markdown.core :as markdown]))
 
 (defn contentful-request
   "Wrapper for the Content Delivery endpoint"
@@ -26,17 +27,34 @@
      (catch java.io.IOException ioe
        nil))))
 
+(defn markdownify [md-fields fields]
+  (into {}
+        (map (fn [md-field]
+               [(keyword "md.html" (name md-field)) (markdown/md-to-html-string (get fields md-field))]))
+        md-fields))
+
+(defn fields-to-markdown [content-type]
+  (case content-type
+    "contentModuleTitleTextCtaBackgroundColor" [:subtitle]
+    []))
+
 (defn extract-fields
   "Contentful resources are boxed.
 
   We extract the fields, merging useful meta-data."
   [{:keys [fields sys]}]
-  (merge (maps/kebabify fields)
-         {:content/updated-at (spice.date/to-millis (:updatedAt sys 0))
-          :content/type       (or
-                               (some-> sys :contentType :sys :id)
-                               "Asset")
-          :content/id         (-> sys :id)}))
+  (let [content-type (or
+                      (some-> sys :contentType :sys :id)
+                      "Asset")
+        md-fields (fields-to-markdown content-type)]
+
+
+    (merge (maps/kebabify fields)
+           (when (seq md-fields)
+             (markdownify md-fields fields))
+           {:content/updated-at (spice.date/to-millis (:updatedAt sys 0))
+            :content/type       content-type
+            :content/id         (-> sys :id)})))
 
 (defn extract-latest-by
   "Extract a resource (e.g. items), grouped by a key, and taking the latest"
