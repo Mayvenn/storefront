@@ -615,12 +615,12 @@
   [{:keys [top bottom desktop-ordering]} _ opts]
   (let [desktop-flipped? (= "Bottom|Top" desktop-ordering)]
     [:div.split-organism
-     [:div.split-top-on-mb
+     [:div.split-top-on-mb.flex
       {:class (if desktop-flipped?
                 "split-right-on-tb-dt"
                 "split-left-on-tb-dt")}
       (layer-view top opts)]
-     [:div.split-bottom-on-mb
+     [:div.split-bottom-on-mb.flex
       {:class (if desktop-flipped?
                 "split-left-on-tb-dt"
                 "split-right-on-tb-dt")}
