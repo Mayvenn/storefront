@@ -530,7 +530,7 @@
         nil
 
         (:cta/navigation-message image-data)
-        [:a.p1.border.border-cool-gray
+        [:a.p1
          (merge (apply utils/route-to navigation-message)
                 {:key (str image-url)})
          (ui/screen-aware
