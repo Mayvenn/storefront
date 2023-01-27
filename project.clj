@@ -44,6 +44,7 @@
                  [camel-snake-kebab "0.4.0"]
                  [org.clojure/spec.alpha "0.2.176"]
                  [meander/epsilon "0.0.650"]
+                 [markdown-to-hiccup "0.6.2"]
                  [markdown-clj "1.10.6"]]
   :repositories [["private" {:url "s3p://mayvenn-dependencies/releases/"}]]
   :plugins [[s3-wagon-private "1.3.1"]

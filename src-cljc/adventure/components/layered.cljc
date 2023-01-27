@@ -24,6 +24,7 @@
             [storefront.keypaths :as keypaths]
             [homepage.ui.promises :as promises]
             [homepage.ui.contact-us :as contact-us]
+            [markdown-to-hiccup.core :as markdown]
             retail.stores))
 
 (defn ^:private vertical-squiggle
@@ -632,8 +633,8 @@
             {:style {:height "100%"}})
      [:div.canela.title-2.py1
       title]
-     [:p.content-2.py1
-      subtitle]
+     [:div.content-2.py1
+      (markdown/component (markdown/md->hiccup subtitle))]
      (when cta-url
        [:div.mt2
         ;; TODO: consider alternatives to max-width
