@@ -75,7 +75,7 @@
     }
 }
 
-@media (--on-desktop) {
+@media (--on-tablet-and-desktop) {
     .tiles-1 {
         grid-template-columns: 1fr;
     }
