@@ -612,12 +612,19 @@
 
 (declare layer-view)
 (defcomponent lp-split
-  [{:keys [left-top right-bottom]} _ opts]
-  [:div.flex.flex-column-on-mb
-   [:div.col-6-on-tb-dt
-    (layer-view left-top opts)]
-   [:div.col-6-on-tb-dt
-    (layer-view right-bottom opts)]])
+  [{:keys [top bottom desktop-ordering]} _ opts]
+  (let [desktop-flipped? (= "Bottom|Top" desktop-ordering)]
+    [:div.split-organism
+     [:div.split-top-on-mb
+      {:class (if desktop-flipped?
+                "split-right-on-tb-dt"
+                "split-left-on-tb-dt")}
+      (layer-view top opts)]
+     [:div.split-bottom-on-mb
+      {:class (if desktop-flipped?
+                "split-left-on-tb-dt"
+                "split-right-on-tb-dt")}
+      (layer-view bottom opts)]]))
 
 (defcomponent lp-title-text-cta-background-color
   [data _ _]

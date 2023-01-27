@@ -134,40 +134,40 @@
                                                               (partial maps/index-by :option/slug)))))
         looks-shared-carts-db (get-in data storefront.keypaths/v1-looks-shared-carts)]
     (case (:content/type body-layer)
-      "homepageHero"     (assoc (homepage-hero/query body-layer)
-                                :layer/type :hero)
-      "titleSubtitle"    {:layer/type   :shop-text-block
-                          :header/value (:title body-layer)
-                          :body/value   (:subtitle body-layer) }
-      "ugc-collection"   {:layer/type   :lp-tiles
-                          :header/value (or (:title body-layer) "Shop By Look")
-                          :images       (let [looks ((if (= "production" (get-in data keypaths/environment))
-                                                       :looks
-                                                       :acceptance-looks) body-layer)]
-                                          (if (= "HD Looks" (:name body-layer))
-                                            (->> looks
-                                                 (keep-indexed (fn [index look]
-                                                                 (merge look
-                                                                        (look<- skus-db looks-shared-carts-db facets-db look promotions :look index remove-free-install?))))
+      "homepageHero"   (assoc (homepage-hero/query body-layer)
+                              :layer/type :hero)
+      "titleSubtitle"  {:layer/type   :shop-text-block
+                        :header/value (:title body-layer)
+                        :body/value   (:subtitle body-layer) }
+      "ugc-collection" {:layer/type   :lp-tiles
+                        :header/value (or (:title body-layer) "Shop By Look")
+                        :images       (let [looks ((if (= "production" (get-in data keypaths/environment))
+                                                     :looks
+                                                     :acceptance-looks) body-layer)]
+                                        (if (= "HD Looks" (:name body-layer))
+                                          (->> looks
+                                               (keep-indexed (fn [index look]
+                                                               (merge look
+                                                                      (look<- skus-db looks-shared-carts-db facets-db look promotions :look index remove-free-install?))))
 
-                                                 (map (fn [look]
-                                                        (when (:look/id look)
-                                                          {:image-url              (-> look :look/hero-imgs first :url)
-                                                           :alt                    ""
-                                                           :label                  (:title look)
-                                                           :cta/navigation-message (:look/target look)}))))
-                                            (map (fn [look]
-                                                   (when (:content/id look)
-                                                     {:image-url              (:photo-url look)
-                                                      :alt                    ""
-                                                      :label                  (:title look)
-                                                      :cta/navigation-message [events/navigate-shop-by-look-details
-                                                                               {:look-id       (:content/id look)
-                                                                                :album-keyword :look}]}))
-                                                 looks)))
-                          :cta          {:id      "landing-page-see-more"
-                                         :attrs   {:navigation-message [events/navigate-shop-by-look {:album-keyword :look}]}
-                                         :content (or (:cta-copy body-layer) "see more")}}
+                                               (map (fn [look]
+                                                      (when (:look/id look)
+                                                        {:image-url              (-> look :look/hero-imgs first :url)
+                                                         :alt                    ""
+                                                         :label                  (:title look)
+                                                         :cta/navigation-message (:look/target look)}))))
+                                          (map (fn [look]
+                                                 (when (:content/id look)
+                                                   {:image-url              (:photo-url look)
+                                                    :alt                    ""
+                                                    :label                  (:title look)
+                                                    :cta/navigation-message [events/navigate-shop-by-look-details
+                                                                             {:look-id       (:content/id look)
+                                                                              :album-keyword :look}]}))
+                                               looks)))
+                        :cta {:id      "landing-page-see-more"
+                              :attrs   {:navigation-message [events/navigate-shop-by-look {:album-keyword :look}]}
+                              :content (or (:cta-copy body-layer) "see more")}}
       "faq"              (merge {:layer/type :faq
                                  :title      (:title body-layer)}
                                 (faq/hd-lace-query data body-layer))
@@ -261,9 +261,12 @@
                                         :keypath     textfield-keypath
                                         :errors      (get-in data keypaths/field-errors ["email"])
                                         :email       (get-in data textfield-keypath)})))
-      "split"         {:layer/type   :lp-split
-                       :left-top     (determine-and-shape-layer data (:lefttop body-layer))
-                       :right-bottom (determine-and-shape-layer data (:rightbottom body-layer))}
+      "split"         {:layer/type       :lp-split
+                       ;; TODO: rebinding to make explicit that the IDs for these fields in contentful is
+                       ;; vestigial and that the elements are should be referred to by their mobile positions
+                       :desktop-ordering (:desktop-ordering body-layer)
+                       :top              (determine-and-shape-layer data (:lefttop body-layer))
+                       :bottom           (determine-and-shape-layer data (:rightbottom body-layer))}
 
       "contentModuleTitleTextCtaBackgroundColor" {:layer/type       :lp-title-text-cta-background-color
                                                   :header/value     (:title body-layer)
