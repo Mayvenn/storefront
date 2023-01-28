@@ -195,11 +195,7 @@
               {:method                       :email-modal/trigger
                :email-modal/template-id      template-content-id
                :email-modal/test-description variation-description
-               :email-modal/trigger-id       trigger-id})
-     (publish e/biz|email-capture|deployed
-              {:trigger-id            trigger-id
-               :variation-description variation-description
-               :template-content-id   template-content-id})))
+               :email-modal/trigger-id       trigger-id})))
   (will-unmount
    [this]
    (scroll/enable-body-scrolling))
@@ -224,7 +220,7 @@
         (template data))
        (js/console.error (str "Content-type not found: " content-type))))))
 
-(defmethod fx/perform-effects e/email-modal-submitted
+(defmethod fx/perform-effects e/capture-modal|submitted
   [_ _ {:keys [email-modal values]} _ state]
   (let [{{:keys [template-content-id hdyhau]} :email-modal-template
          variation-description                :description
@@ -233,13 +229,18 @@
 
         email-address (get values "email-capture-input")
         phone-number  (get values "phone-capture-input")]
+
+    (publish e/biz|capture-modal|finished {:id trigger-id :cause :cta})
     ;; TODO Identify with backend and publish after success
     (publish e/funnel|acquisition|succeeded
              {:prompt {:method                       :email-modal/trigger
                        :email-modal/trigger-id       trigger-id
                        :email-modal/template-id      template-content-id
                        :email-modal/test-description variation-description}
-              :action {:auth.email/id email-address}})
+              :action {:auth.email/id email-address
+                       ; when phone, :auth.sms/id phone
+                        ; and sms.optin/opted true
+                       }})
     (publish e/biz|email-capture|captured
              {:trigger-id            trigger-id
               :variation-description variation-description
@@ -274,7 +275,7 @@
               :template-content-id   template-content-id
               :email                 email-address})))
 
-(defmethod t/transition-state e/email-modal-submitted
+(defmethod t/transition-state e/capture-modal|submitted
   [_ _ {:keys [email-modal]} app-state]
   (if (and (:hdyhau (:email-modal-template email-modal))
            (experiments/hdyhau-email-capture? app-state))
@@ -285,7 +286,7 @@
   [_ _ _ app-state]
   (assoc-in app-state k/homepage-email-submitted true))
 
-(defmethod fx/perform-effects e/email-modal-dismissed
+(defmethod fx/perform-effects e/capture-modal|dismissed
   [_ _ {:keys [email-modal]} _ _]
   (let [{{:keys [template-content-id]} :email-modal-template
          variation-description         :description
@@ -296,10 +297,11 @@
                        :email-modal/trigger-id       trigger-id
                        :email-modal/template-id      template-content-id
                        :email-modal/test-description variation-description}})
-    (publish e/biz|email-capture|dismissed
+    (publish e/biz|capture-modal|finished
              {:trigger-id            trigger-id
               :variation-description variation-description
-              :template-content-id   template-content-id})))
+              :template-content-id   template-content-id
+              :cause                 :dismiss})))
 
 (defn shuffled-hdyhau-options
   []
@@ -326,8 +328,8 @@
               :email-capture/variation-description   variation-description
               :email-capture/template-content-id     template-content-id
               :email-capture/content-type            (:content/type content)
-              :email-capture.dismiss/target          [e/email-modal-dismissed {:email-modal email-modal}]
-              :email-capture.submit/target           [e/email-modal-submitted {:email-modal email-modal
+              :email-capture.dismiss/target          [e/capture-modal|dismissed {:email-modal email-modal}]
+              :email-capture.submit/target           [e/capture-modal|submitted {:email-modal email-modal
                                                                                :values      {"email-capture-input" email
                                                                                              "phone-capture-input" phone}}]
               :email-capture.design/background-color (:background-color content)
@@ -412,6 +414,7 @@
            (remove #(get short-timers (-> % :email-modal-trigger :trigger-id)))
            not-empty))))
 
+;; TODO: GROT: unused?
 (defn- hidden-email-modal-for-in-situ-email-capture?
   [state {{:keys [trigger-id]} :email-modal-trigger}]
   (= trigger-id "adv-quiz-email-capture"))

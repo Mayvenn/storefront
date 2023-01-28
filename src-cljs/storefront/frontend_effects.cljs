@@ -251,7 +251,7 @@
     (email-capture/refresh-short-timers cookie (email-capture/all-trigger-ids app-state))
     (when (:em_hash query-params)
       (email-capture/start-long-timer-if-unstarted cookie))
-    (messages/handle-message events/biz|email-capture|timer-state-observed)
+    (messages/handle-message events/biz|capture-modal|timer-state-observed)
 
     (when-not (or module-load? (#{:first-nav} caused-by))
       (api/get-promotions (get-in app-state keypaths/api-cache)

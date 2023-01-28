@@ -94,7 +94,7 @@
   [_ _ _ state]
   (assoc-in state model-keypath {}))
 
-(defmethod t/transition-state e/biz|email-capture|timer-state-observed
+(defmethod t/transition-state e/biz|capture-modal|timer-state-observed
   [_ _ _ app-state]
   #?(:cljs
      (let [cookie (get-in app-state k/cookie)]
@@ -107,6 +107,13 @@
                                                                            cookie)]))
                                                        (into {})))))))
 
+(defmethod fx/perform-effects e/funnel|acquisition|prompted
+  [_ _ {:email-modal/keys [template-content-id variation-description trigger-id]} _ _]
+  (publish e/biz|email-capture|deployed
+           {:trigger-id            trigger-id
+            :variation-description variation-description
+            :template-content-id   template-content-id}))
+
 (defmethod fx/perform-effects e/biz|email-capture|captured
   [_ _ {:keys [hdyhau]} state _]
   (when-not
@@ -115,14 +122,20 @@
            (experiments/hdyhau-email-capture? state))
         #?(:cljs
            (cookie-jar/save-email-capture-long-timer-started (get-in state k/cookie)))
-        (publish e/biz|email-capture|timer-state-observed)))
+        (publish e/biz|capture-modal|timer-state-observed)))
 
-(defmethod fx/perform-effects e/biz|email-capture|dismissed
-  [_ _ {:keys [id trigger-id]} state _]
-  #?(:cljs
-     (cookie-jar/save-email-capture-short-timer-started (email-modal-trigger-id->cookie-id trigger-id)
-                                                        (get-in state k/cookie)))
-  (publish e/biz|email-capture|timer-state-observed))
+(defmethod fx/perform-effects e/biz|capture-modal|finished
+  [_ _ {:keys [id trigger-id cause]} state _]
+  (cond
+    (= cause :cta)
+    #?(:cljs
+       (cookie-jar/save-email-capture-long-timer-started (get-in state k/cookie)))
+
+    (= cause :dismiss)
+    #?(:cljs
+       (cookie-jar/save-email-capture-short-timer-started (email-modal-trigger-id->cookie-id trigger-id)
+                                                          (get-in state k/cookie))))
+  (publish e/biz|capture-modal|timer-state-observed))
 
 (defmethod t/transition-state e/hdyhau-email-capture-submitted
   [_ _ _ app-state]
@@ -137,7 +150,7 @@
   [_ _ _ state _]
   #?(:cljs
      (cookie-jar/save-email-capture-long-timer-started (get-in state k/cookie)))
-  (publish e/biz|email-capture|timer-state-observed))
+  (publish e/biz|capture-modal|timer-state-observed))
 
 ;;; TRACKING
 
@@ -191,7 +204,7 @@
                                 :account-profile       (get-in app-state k/account-profile)})))))
 
 #?(:cljs
-   (defmethod trk/perform-track e/biz|email-capture|dismissed
+   (defmethod trk/perform-track e/biz|capture-modal|finished
      [_ events {:keys [trigger-id variation-description template-content-id]} app-state]
      (stringer/track-event "email_capture-dismiss" {:email-capture-id      trigger-id
                                                     :variation-description variation-description

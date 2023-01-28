@@ -686,8 +686,8 @@
 (defpath cart-cleared)
 
 ;; email-modal
-(defpath email-modal-submitted)
-(defpath email-modal-dismissed)
+(defpath capture-modal|submitted)
+(defpath capture-modal|dismissed)
 
 ;; homepage email
 (defpath homepage-email-submitted)
@@ -723,8 +723,8 @@
 (defpath biz|email-capture|reset)
 (defpath biz|email-capture|deployed)
 (defpath biz|email-capture|captured)
-(defpath biz|email-capture|dismissed)
-(defpath biz|email-capture|timer-state-observed)
+(defpath biz|capture-modal|finished)
+(defpath biz|capture-modal|timer-state-observed)
 (defpath biz|hdyhau-capture|captured)
 (defpath biz|sms-capture|captured)
 
