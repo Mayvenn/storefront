@@ -236,23 +236,12 @@
              {:prompt {:method                       :email-modal/trigger
                        :email-modal/trigger-id       trigger-id
                        :email-modal/template-id      template-content-id
-                       :email-modal/test-description variation-description}
-              :action {:auth.email/id email-address
-                       ; when phone, :auth.sms/id phone
-                        ; and sms.optin/opted true
-                       }})
-    (publish e/biz|email-capture|captured
-             {:trigger-id            trigger-id
-              :variation-description variation-description
-              :template-content-id   template-content-id
-              :hdyhau                hdyhau
-              :email                 email-address})
-    (when phone-number
-      (publish e/biz|sms-capture|captured
-               {:trigger-id            trigger-id
-                :variation-description variation-description
-                :template-content-id   template-content-id
-                :phone                 phone-number}))))
+                       :email-modal/test-description variation-description
+                       :email-moda/hdyhau            hdyhau}
+              :action (merge {:auth.email/id email-address}
+                             (when phone-number
+                               {:auth.sms/id     phone-number
+                                :sms.optin/opted true}))})))
 
 (defmethod fx/perform-effects e/homepage-email-submitted
   [_ _ {:keys [email-modal values]} _ _]
