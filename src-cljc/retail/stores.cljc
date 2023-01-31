@@ -133,32 +133,9 @@
        [:h3.title-3.proxima.py1.shout
         text]])]])
 
-(component/defcomponent template
-  [{:keys [retail-stores-more-info?] :as data} _ opts]
-  [:div
-   [:div.p3
-    header
-    (store-locations data)]
-   (when retail-stores-more-info?
-     [:div
-      dividers/green
-      (layered/layer-view (vt/with :customize-your-wig data) opts)
-      dividers/purple
-      (component/build wig-services-menu/component (vt/with :wig-services-menu data))
-      dividers/green])
-   why-mayvenn])
-
-(def navigate-show-page
-  {"katy"          events/navigate-retail-walmart-katy
-   "houston"       events/navigate-retail-walmart-houston
-   "grand-prairie" events/navigate-retail-walmart-grand-prairie
-   "dallas"        events/navigate-retail-walmart-dallas
-   "mansfield"     events/navigate-retail-walmart-mansfield})
-
 (def customize-your-wig-data
   ;; NOTE(le): This is copied from the omni experience landing page
-  {:layer/type :lp-split
-   :desktop-ordering "Top|Bottom"
+  {:desktop-ordering "Top|Bottom"
    :top {:layer/type :lp-split-image
          :alt "Customize Your Wig"
          :image {:title "Get a Custom Wig"
@@ -187,6 +164,26 @@
             :background/color "cool-gray"
             :content/color "black"}})
 
+(component/defcomponent template
+  [{:keys [retail-stores-more-info?] :as data} _ opts]
+  [:div
+   [:div.p3
+    header
+    (store-locations data)]
+   (when retail-stores-more-info?
+     [:div
+      dividers/green
+      (component/build layered/lp-split customize-your-wig-data opts)
+      dividers/purple
+      (component/build wig-services-menu/component (vt/with :wig-services-menu data))
+      dividers/green])])
+
+(def navigate-show-page
+  {"katy"          events/navigate-retail-walmart-katy
+   "houston"       events/navigate-retail-walmart-houston
+   "grand-prairie" events/navigate-retail-walmart-grand-prairie
+   "dallas"        events/navigate-retail-walmart-dallas
+   "mansfield"     events/navigate-retail-walmart-mansfield})
 
 (defn location-query
   [{:keys [email facebook hero state hours name phone-number instagram tiktok
