@@ -55,55 +55,56 @@
 
 (defn store-locations
   [{:keys [metro-locations]}]
-  (for [[metro locations] metro-locations
-        :let              [key (str "metro-" (string/lower-case metro))]]
-    [:div.max-960.mx-auto
-     {:key key
-      :id  key}
-     [:h1.canela.title-1.center.mb6 (str metro " Locations")]
-     [:div.flex.flex-wrap.container.justify-center-on-mb.mx-auto
-      (for [{:keys [name slug img-url address1-2 city-state-zip phone mon-sat-hours sun-hours
-                    directions instagram facebook tiktok email show-page-target]} locations]
-        [:div.col-6-on-tb-dt.col-12.px2.py3
-         [:a (merge (utils/route-to show-page-target)
-                    {:aria-label (str name " Mayvenn Beauty Lounge")})
-          (ui/aspect-ratio 3 2 (ui/img {:width "100%" :class "col-12" :alt "" :src img-url}))]
-         [:div.flex.justify-between.pt2
-          [:div
-           [:h2.canela.title-2 name]
-           [:div.proxima.content-3 "Visit us inside Walmart"]]
-          [:div
-           (ui/button-medium-primary (merge (utils/route-to show-page-target)
-                                            {:aria-label (str "Learn more about " name " Beauty Lounge")})
-                                     "Learn More")]]
-         [:div.border-top.border-gray.flex.col-12.justify-between.gap-4
-          [:div
-           [:div.title-3.proxima.shout.bold "Location"]
-           [:div.content-4 address1-2]
-           [:div.content-4 city-state-zip]
-           [:a.block.black.content-4.my2
-            {:href       (str "tel:" phone)
-             :id         (str "phone-retail-" slug)
-             :aria-label (str "Call " name " Beauty Lounge")}
-            phone]]
-          [:div
-           [:div.title-3.proxima.shout.bold "Hours"]
+  [:div.flex.flex-column.gap-8
+   (for [[metro locations] metro-locations
+         :let              [key (str "metro-" (string/lower-case metro))]]
+     [:div.col-12.max-960.mx-auto
+      {:key key
+       :id  key}
+      [:h1.canela.title-1.center.mb6 (str metro " Locations")]
+      [:div.flex.flex-wrap.container.justify-center-on-mb.mx-auto
+       (for [{:keys [name slug img-url address1-2 city-state-zip phone mon-sat-hours sun-hours
+                     directions instagram facebook tiktok email show-page-target]} locations]
+         [:div.col-6-on-tb-dt.col-12.px2.py3
+          [:a (merge (utils/route-to show-page-target)
+                     {:aria-label (str name " Mayvenn Beauty Lounge")})
+           (ui/aspect-ratio 3 2 (ui/img {:width "100%" :class "col-12" :alt "" :src img-url}))]
+          [:div.flex.justify-between.pt2
            [:div
-            [:div.content-4 mon-sat-hours]
-            [:div.content-4 sun-hours]]]]
-         [:div.flex.justify-between.gap-4
-          [:div (ui/button-small-underline-primary {:href directions
-                                                    :id   (str "directions-retail-" slug)}
-                                                   "Get Directions")]
-          [:div.flex
-           (when instagram [:a.block.mx1.flex.items-center {:href instagram :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Instagram")}
-                            [:div ^:inline (svg/instagram {:style {:height "20px" :width "20px"}})]])
-           (when facebook [:a.block.mx1.flex.items-center {:href facebook :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Facebook")}
-                           [:div ^:inline (svg/facebook-f {:style {:height "20px" :width "20px"}})]])
-           (when tiktok [:a.block.mx1.flex.items-center {:href tiktok :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Tiktok")}
-                         [:div ^:inline (svg/tiktok {:style {:height "20px" :width "20px"}})]])
-           (when email [:a.block.mx1.flex.items-center {:href (ui/email-url email) :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn email")}
-                        [:div ^:inline (svg/icon-email {:height "20px" :width "28px"})]])]]])]]))
+            [:h2.canela.title-2 name]
+            [:div.proxima.content-3 "Visit us inside Walmart"]]
+           [:div
+            (ui/button-medium-primary (merge (utils/route-to show-page-target)
+                                             {:aria-label (str "Learn more about " name " Beauty Lounge")})
+                                      "Learn More")]]
+          [:div.border-top.border-gray.flex.col-12.justify-between.gap-4
+           [:div
+            [:div.title-3.proxima.shout.bold "Location"]
+            [:div.content-4 address1-2]
+            [:div.content-4 city-state-zip]
+            [:a.block.black.content-4.my2
+             {:href       (str "tel:" phone)
+              :id         (str "phone-retail-" slug)
+              :aria-label (str "Call " name " Beauty Lounge")}
+             phone]]
+           [:div
+            [:div.title-3.proxima.shout.bold "Hours"]
+            [:div
+             [:div.content-4 mon-sat-hours]
+             [:div.content-4 sun-hours]]]]
+          [:div.flex.justify-between.gap-4
+           [:div (ui/button-small-underline-primary {:href directions
+                                                     :id   (str "directions-retail-" slug)}
+                                                    "Get Directions")]
+           [:div.flex
+            (when instagram [:a.block.mx1.flex.items-center {:href instagram :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Instagram")}
+                             [:div ^:inline (svg/instagram {:style {:height "20px" :width "20px"}})]])
+            (when facebook [:a.block.mx1.flex.items-center {:href facebook :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Facebook")}
+                            [:div ^:inline (svg/facebook-f {:style {:height "20px" :width "20px"}})]])
+            (when tiktok [:a.block.mx1.flex.items-center {:href tiktok :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Tiktok")}
+                          [:div ^:inline (svg/tiktok {:style {:height "20px" :width "20px"}})]])
+            (when email [:a.block.mx1.flex.items-center {:href (ui/email-url email) :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn email")}
+                         [:div ^:inline (svg/icon-email {:height "20px" :width "28px"})]])]]])]])])
 
 (def why-mayvenn-icons-text
   [{:icon svg/heart
