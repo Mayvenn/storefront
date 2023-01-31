@@ -545,11 +545,12 @@
 (defn ^:private acct-profile-scaffold
   [req]
   {:landfalls
-   [{:utm-params (->> req
+   [{:utm-params   (->> req
                       :query-params
                       (filter (fn [[k _v]] (re-matches #"utm_.*|_utmt\d*" k)))
                       (into {}))
-     :path        (-> req
+     :query-params (:query-params req)
+     :path         (-> req
                       :uri)}]})
 
 (defn wrap-set-user [h]

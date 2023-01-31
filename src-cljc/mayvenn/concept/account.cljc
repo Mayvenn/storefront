@@ -15,14 +15,14 @@
                                                                          (= "US" (:country_code %)))
                                                                    (get-in data keypaths/account-profile-ip-addresses)))
                             shipping-address-in-texas (= "TX" (:state (get-in data keypaths/order-shipping-address)))
-                            landfall-in-texas         (some #(or (some-> % :utm-params (get "utm_campaign") (= "foo"))
-                                                                 (some-> % :path (string/starts-with? "/info/walmart")))
+                            landfall-in-texas         (some #(or (some-> % :query-params (get "omni") (= "true"))
+                                                                 #_(some-> % :path (string/starts-with? "/info/walmart")))
                                                             (get-in data keypaths/account-profile-landfalls))]
                         (and feature-flag
                              (or #_previously-experienced
                                  ip-address-in-texas
                                  #_shipping-address-in-texas
-                                 #_landfall-in-texas))))})
+                                 landfall-in-texas))))})
 
 (defn <- [data]
   {:experiences (set (keep (fn [[exp-name exp-validator]]
