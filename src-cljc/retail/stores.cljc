@@ -13,7 +13,20 @@
             [storefront.platform.component-utils :as utils]
             [storefront.accessors.experiments :as experiments]
             [spice.maps :as maps]
+            [mayvenn.visual.ui.titles :as titles]
             [clojure.string :as string]))
+
+
+(def subheader
+  [:div.max-580.mx-auto.py6
+   (ui/defer-ucare-img {:class "col-12 mb3"
+                        :alt   "Mayvenn Beauty Lounge"}
+     "f0ac8b6a-5815-4e95-ad74-688b598498da")
+   (titles/canela
+    {:id      "retail-canela-subheader"
+     :primary (str "Shop high-quality 100% virgin human hair wigs, extensions, bundles, and more "
+                   "or get a consultation with a beauty expert! "
+                   "Personalize your next wig for as low as $25 at a Mayvenn Beauty Lounge near you!")})])
 
 (def header
   [:div.center.p3
@@ -28,7 +41,6 @@
      (ui/defer-ucare-img {:class "col-12 flex"
                           :alt "A mayvenn retail store"}
        "5ed37232-15f0-4e24-ab74-ff5a227419f9")]
-
     (component/build promises/organism {:list/icons
                                         [{:promises.icon/symbol :svg/check-cloud,
                                           :promises.icon/title  "100% Virgin Human Hair"}
@@ -39,10 +51,7 @@
                                          {:promises.icon/symbol :svg/shield,
                                           :promises.icon/title  "30-Day Guarantee"}]})]
    ;; Sub header image
-   [:div.max-580.mx-auto.py6
-    (ui/defer-ucare-img {:class "col-12 mb3"
-                         :alt "Mayvenn Beauty Lounge"}
-      "f0ac8b6a-5815-4e95-ad74-688b598498da")]])
+   subheader])
 
 (defn store-locations
   [{:keys [metro-locations]}]
