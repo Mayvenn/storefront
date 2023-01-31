@@ -16,16 +16,16 @@
             [storefront.routes :as routes]
             [storefront.ugc :as ugc]
             [spice.maps :as maps]
-            [storefront.components.homepage-hero :as homepage-hero]))
+            [storefront.components.homepage-hero :as homepage-hero]
+            lambdaisland.uri))
 
 (defn ^:private url->navigation-message [url]
   (when-not (nil? url)
-    (let [[path query-params-string] (clojure.string/split url #"\?")
-          query-params               (when (not (clojure.string/blank? query-params-string))
-                                       (->> (clojure.string/split query-params-string #"\&")
-                                            (map #(clojure.string/split % #"\="))
-                                            (into {})))]
-          (routes/navigation-message-for path query-params))))
+    (let [parsed-path                (lambdaisland.uri/uri url)]
+      (routes/navigation-message-for (:path parsed-path)
+                                     (lambdaisland.uri/query-map parsed-path)
+                                     nil
+                                     (:fragment parsed-path)))))
 
 (defn landing-page-slug [data]
   (->> (get-in data storefront.keypaths/navigation-args)
