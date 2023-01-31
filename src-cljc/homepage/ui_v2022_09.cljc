@@ -12,13 +12,20 @@
             [storefront.component :as c]
             [storefront.components.homepage-hero :as homepage-hero]
             [storefront.components.carousel :as carousel]
-            [storefront.events :as e]))
+            [storefront.events :as e]
+            [adventure.components.layered :as layered]))
 
 (c/defcomponent template
   [{:keys [hero shopping-categories blog1 blog2 zip-explanation] :as data} _ _]
   [:div
    (c/build hero/organism-without-shipping-bar hero)
    (c/build promises/organism (vt/with :promises data))
+   (when (seq (vt/with :no-your-average-hair-store data))
+     ;; TODO: this div is an expediency, these designs belong in a component that
+     ;;       contains its own layout, but this is faster right now. Come back and
+     ;;       build a component that centers and has a max-width, etc.
+     [:div.max-960.mx-auto.center
+      (c/build layered/lp-title-text-cta-background-color (vt/with :no-your-average-hair-store data))])
    (c/build shopping-categories/organism shopping-categories)
    (c/build blog/organism blog1)
    (c/build shop-these-looks/organism data)
