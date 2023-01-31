@@ -4,7 +4,7 @@
             [storefront.events :as events]
             [goog.events]
             [goog.history.EventType :as EventType]
-            [cemerick.url :as url])
+            [lambdaisland.uri :as uri])
   (:import [goog.history Html5History]))
 
 ;; Html5History transformer defaults to always appending location.search
@@ -39,13 +39,15 @@
   "Get the path from the history token,
    the rest from current location"
   []
-  (let [uri (url/url (or js/window.location.href
-                         js/document.URL
-                         ""))]
+  (let [string-uri (or js/window.location.href
+                       js/document.URL
+                       "")
+        uri (lambdaisland.uri/uri string-uri)]
     {:path      (.getToken app-history)
      :host      (:host uri)
      :query     (:query uri)
-     :subdomain (->subdomain (:host uri))}))
+     :subdomain (->subdomain (:host uri))
+     :fragment  (:fragment uri)}))
 
 (defn set-current-page
   [first-nav? browser-nav?]
@@ -74,7 +76,8 @@
                    (:timeout args 0))))
 
 (defn enqueue-navigate [navigation-event & [args]]
-  (when-let [path (routes/path-for navigation-event args)]
+
+  (when-let [path (str (routes/path-for navigation-event args) (some->> args :fragment (str "#")))]
     (js/setTimeout (fn []
                      ;; NOTE (EW) If the current token is equal to what is already there (ie navigating to where you already were),
                      ;; setToken will not trigger navigation behavior.

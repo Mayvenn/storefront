@@ -203,10 +203,12 @@
   (apply path-for (get-in app-state keypaths/navigation-message)))
 
 (defn navigation-message-for
-  ([uri] (navigation-message-for uri nil))
+  ([uri] (navigation-message-for uri nil nil nil))
   ([uri query-params]
-   (navigation-message-for uri query-params nil))
+   (navigation-message-for uri query-params nil nil))
   ([uri query-params subdomain]
+   (navigation-message-for uri query-params subdomain nil))
+  ([uri query-params subdomain fragment]
    (let [{nav-event :handler
           params    :route-params} (bidi/match-route app-routes
                                                      uri
@@ -214,6 +216,7 @@
      [(if nav-event (bidi->edn nav-event) events/navigate-not-found)
       (-> params
           (merge (when (seq query-params) {:query-params query-params}))
+          (merge (when (seq fragment) {:fragment fragment}))
           keywordize-keys)])))
 
 (defn sub-page?

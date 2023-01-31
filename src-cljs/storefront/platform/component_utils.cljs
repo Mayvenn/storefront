@@ -78,7 +78,7 @@
                                 {:navigation-event navigation-event
                                  :navigation-args  navigation-args}
                                 e))))]
-     {:href routable-path
+     {:href (str routable-path (some->> navigation-args :fragment (str "#")))
       :on-click
       (fn [e]
         (.preventDefault e)
