@@ -14,7 +14,8 @@
             [storefront.events :as events]
             [storefront.components.video :as video]
             [storefront.platform.component-utils :as utils]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [clojure.string :as string]))
 
 (defn video
   [{:video/keys [youtube-id]}]
@@ -23,8 +24,8 @@
      (ui/youtube-responsive (str "https://www.youtube.com/embed/" youtube-id "?rel=0&color=white&showinfo=0&controls=1&loop=1&modestbranding"))]))
 
 (defn store-info
-  [{:location-card/keys [name img-url address1-2 city-state-zip phone mon-sat-hours sun-hours
-                         directions instagram facebook tiktok email]}]
+  [{:keys [name img-url address1-2 city-state-zip phone mon-sat-hours sun-hours
+           directions instagram facebook tiktok email]}]
   [:div.max-960.py3.flex-wrap.flex.mx-auto
    [:div.col-6-on-tb-dt.col-12.px2
     [:div.mb2
@@ -139,7 +140,7 @@
   [{:keys [retail-stores-more-info?] :as data} _ _]
   [:div
    (video data)
-   (store-info data)
+   (store-info (vt/with :location-card data))
    (when retail-stores-more-info?
      (wig-customization-spotlights (vt/with :wig-customization-guide data)))
    (when retail-stores-more-info?
@@ -151,26 +152,34 @@
    why-mayvenn
    (follow-us data)])
 
+(defn build-google-maps-url [location address-1 address-2]
+  #?(:cljs (when (:lat location)
+             (str "https://www.google.com/maps/search/?api=1&query="
+                  (goog.string/urlEncode
+                   (str "Mayvenn Beauty Lounge " address-1 address-2) "," (:lat location)"," (:lon location))))
+     :clj ""))
+
 (defn query-all [{:keys [email facebook hero state hours name phone-number instagram tiktok location address-1 address-2
                          address-zipcode address-city store-tour-you-tube-video-id instagram-photos]}
                  retail-stores-more-info?]
   (merge {:retail-stores-more-info?     retail-stores-more-info?
           :video/youtube-id             store-tour-you-tube-video-id
-          :location-card/name           (str name ", " state)
-          :location-card/img-url        (-> hero :file :url)
-          :location-card/address1-2     (when address-1 (str address-1 (when address-2 (str ", " address-2))))
-          :location-card/city-state-zip (when address-city (str address-city ", " state " " address-zipcode))
-          :location-card/phone          phone-number
-          :location-card/mon-sat-hours  (first hours)
-          :location-card/sun-hours      (last hours)
-          :location-card/directions     #?(:cljs (when (:lat location ) (str "https://www.google.com/maps/search/?api=1&query=" (goog.string/urlEncode (str "Mayvenn Beauty Lounge " address-1 (when address-2 address-2)) "," (:lat location)"," (:lon location))))
-                                           :clj "")
-          :location-card/instagram      (when instagram (str "https://www.instagram.com/" instagram))
-          :location-card/facebook       (when facebook (str "https://business.facebook.com/" facebook))
-          :location-card/tiktok         (when tiktok (str "https://www.tiktok.com/@" tiktok))
-          :location-card/email          email
+
           :follow-us/instagram          instagram
           :follow-us/photos             instagram-photos}
+         (vt/within :location-card
+                    {:name           (str name ", " state)
+                     :img-url        (-> hero :file :url)
+                     :address1-2     (string/join ", " (keep identity [address-1 address-2]))
+                     :city-state-zip (when address-city (str address-city ", " state " " address-zipcode))
+                     :phone          phone-number
+                     :mon-sat-hours  (first hours)
+                     :sun-hours      (last hours)
+                     :directions     (build-google-maps-url location address-1 address-2)
+                     :instagram      (when instagram (str "https://www.instagram.com/" instagram))
+                     :facebook       (when facebook (str "https://business.facebook.com/" facebook))
+                     :tiktok         (when tiktok (str "https://www.tiktok.com/@" tiktok))
+                     :email          email})
          (vt/within :wig-customization-guide
                 {:header/title    "Wig Customization"
                  :header/subtitle "Here's how it works:"
