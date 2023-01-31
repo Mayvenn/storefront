@@ -1,50 +1,77 @@
 (ns ui.wig-services-menu
   (:require [storefront.components.money-formatters :as mf]
-            [storefront.component :as component]))
+            [storefront.component :as component]
+            [mayvenn.visual.tools :as vt]
+            [mayvenn.visual.ui.titles :as titles]))
 
 (def service-menu-data
   {:header/title "Wig Services"
    :sections     [{:header/title "Lace Customization"
-                   :items        [{:title "Basic Lace"
+                   :items        [{:title/primary "Basic Lace"
+                                   :title/secondary (str "Cut lace, add elastic band, bleach knots, pluck knots, and basic styling. "
+                                                         "Only available for ready-to-wear and closure wigs.")
                                    :price 40}
-                                  {:title "Lace Front"
+                                  {:title/primary "Lace Front"
+                                   :title/secondary (str "Bleach knots, tint lace, pluck hairline and/or part, add baby hairs, and basic styling.")
                                    :price 50}
-                                  {:title "360 Lace"
+                                  {:title/primary "360 Lace"
+                                   :title/secondary (str "Bleach knots, tint lace, pluck hairline and/or part, add baby hairs, and basic styling.")
                                    :price 60}]}
                   {:header/title "Color Services"
-                   :items        [{:title "Roots"
+                   :items        [{:title/primary "Roots"
+                                   :title/secondary (str "Color or lighten roots only and basic styling.")
                                    :price 35}
-                                  {:title "All-Over Color"
+                                  {:title/primary "All-Over Color"
+                                   :title/secondary (str "1 color is applied all over the unit from roots to ends or color lightening "
+                                                         "of the entire unit and basic styling.")
                                    :price 65}
-                                  {:title "Multi All-Over Color"
+                                  {:title/primary "Multi All-Over Color"
+                                   :title/secondary (str "2 to 3 colors are applied all over the unit from roots to ends and basic styling. "
+                                                         "No lightening or bleaching.")
                                    :price 75}
-                                  {:title "Accent Highlights"
+                                  {:title/primary "Accent Highlights"
+                                   :title/secondary (str "Face framing hand-painted or foil highlights and basic styling.")
                                    :price 55}
-                                  {:title "Partial Highlights"
+                                  {:title/primary "Partial Highlights"
+                                   :title/secondary (str "Hand-painted or foil highlights are applied to the crown of the unit and basic styling.")
                                    :price 75}
-                                  {:title "Full Highlights"
+                                  {:title/primary "Full Highlights"
+                                   :title/secondary (str "Hand-painted or foil highlights are applied to the crown, back, and "
+                                                         "sides of the unit and basic styling.")
                                    :price 85}]}
                   {:header/title "Cut"
-                   :items        [{:title "Blunt Cut"
+                   :items        [{:title/primary "Blunt Cut"
+                                   :title/secondary (str "Haircut without layers and basic styling.")
                                    :price 25}
-                                  {:title "Layered Cut"
+                                  {:title/primary "Layered Cut"
+                                   :title/secondary (str "Haircut with layers and basic styling.")
                                    :price 45}]}
                   {:header/title "Wig Styling"
-                   :items        [{:title "Advanced Styling"
+                   :items        [{:title/primary "Advanced Styling"
+                                   :title/secondary (str "Includes crimp styling, half-up half-down styles, full wand or small barrel curls, "
+                                                         "braid accents, updos, and trending or specific looks.")
                                    :price 40}]}
                   {:header/title "Bundle Add-On"
-                   :items        [{:title "1 Bundle"
+                   :items        [{:title/primary "1 Bundle"
+                                   :title/secondary (str "Sew in one additional bundle to the desired unit and basic styling. "
+                                                         "Additional bundle not included in the price.")
                                    :price 20}
-                                  {:title "2 Bundles"
+                                  {:title/primary "2 Bundles"
+                                   :title/secondary (str "Sew in two additional bundles to the desired unit and basic styling. "
+                                                         "Additional bundles not included in the price.")
                                    :price 40}]}
                   {:header/title "Maintainence Services"
-                   :items        [{:title "Wig Maintainence"
+                   :items        [{:title/primary "Wig Maintainence"
+                                   :title/secondary (str "Includes but is not limited to: wash, condition, detangle, dry, re-style, "
+                                                         "replacement of wig combs, clips, and/or elastic band.")
                                    :price 50}]}]})
 
 (defn wig-services-menu-item
-  [ix {:keys [title price]}]
+  [ix {:as data :keys [title price]}]
   [:div.flex.justify-between {:key ix}
-   [:div title]
+
+   [:div
+    (titles/proxima-tiny-left (vt/with :title data))]
    [:div (mf/as-money-without-cents price)]])
 
 (defn wig-services-menu-section
