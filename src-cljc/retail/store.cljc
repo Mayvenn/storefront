@@ -13,7 +13,8 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.events :as events]
             [storefront.components.video :as video]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [clojure.set :as set]))
 
 (defn video
   [{:video/keys [youtube-id]}]
@@ -204,57 +205,21 @@
                                                 {:title "Advanced Wig Styling"
                                                  :price 50}]}]})))
 
-(defn query-gp [app-state]
-  (let [retail-stores-more-info? (experiments/retail-stores-more-info? app-state)
+(def nav-event->cms-key
+  {events/navigate-retail-walmart-grand-prairie :grand-prairie
+   events/navigate-retail-walmart-katy          :katy
+   events/navigate-retail-walmart-houston       :houston
+   events/navigate-retail-walmart-mansfield     :mansfield
+   events/navigate-retail-walmart-dallas        :dallas})
+
+(defn query [app-state]
+  (let [retail-store-cms-key     (nav-event->cms-key (get-in app-state keypaths/navigation-event))
+        retail-stores-more-info? (experiments/retail-stores-more-info? app-state)
         store                    (-> app-state
                                      (get-in keypaths/cms-retail-location)
-                                     (get :grand-prairie))]
+                                     (get retail-store-cms-key))]
     (query-all store retail-stores-more-info?)))
 
-(defn query-katy [app-state]
-  (let [retail-stores-more-info? (experiments/retail-stores-more-info? app-state)
-        store                    (-> app-state
-                                     (get-in keypaths/cms-retail-location)
-                                     (get :katy))]
-    (query-all store retail-stores-more-info?)))
-
-(defn query-dallas [app-state]
-  (let [retail-stores-more-info? (experiments/retail-stores-more-info? app-state)
-        store                    (-> app-state
-                                     (get-in keypaths/cms-retail-location)
-                                     (get :dallas))]
-    (query-all store retail-stores-more-info?)))
-
-(defn query-mf [app-state]
-  (let [retail-stores-more-info? (experiments/retail-stores-more-info? app-state)
-        store                    (-> app-state
-                                     (get-in keypaths/cms-retail-location)
-                                     (get :mansfield))]
-    (query-all store retail-stores-more-info?)))
-
-(defn query-houston [app-state]
-  (let [retail-stores-more-info? (experiments/retail-stores-more-info? app-state)
-        store                    (-> app-state
-                                     (get-in keypaths/cms-retail-location)
-                                     (get :houston))]
-    (query-all store retail-stores-more-info?)))
-
-(defn built-component-grand-prairie
+(defn built-component
   [data opts]
-  (component/build template (query-gp data) opts))
-
-(defn built-component-katy
-  [data opts]
-  (component/build template (query-katy data) opts))
-
-(defn built-component-dallas
-  [data opts]
-  (component/build template (query-dallas data) opts))
-
-(defn built-component-mansfield
-  [data opts]
-  (component/build template (query-mf data) opts))
-
-(defn built-component-houston
-  [data opts]
-  (component/build template (query-houston data) opts))
+  (component/build template (query data) opts))
