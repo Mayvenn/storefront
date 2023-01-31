@@ -7,6 +7,7 @@
             [storefront.components.svg :as svg]
             [storefront.components.money-formatters :as mf]
             [storefront.components.ui :as ui]
+            [homepage.ui.promises :as promises]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
@@ -21,7 +22,16 @@
     (ui/defer-ucare-img {:class "col-12"
                          :smart-crop "1000x400"
                          :alt ""}
-      "478e43d5-d03e-45d2-adb0-7a0bc49d546f")]
+      "478e43d5-d03e-45d2-adb0-7a0bc49d546f")
+    (component/build promises/organism {:list/icons
+                                        [{:promises.icon/symbol :svg/check-cloud,
+                                          :promises.icon/title  "100% Virgin Human Hair"}
+                                         {:promises.icon/symbol :svg/custom-wig-services,
+                                          :promises.icon/title  "Custom Wig Services"}
+                                         {:promises.icon/symbol :svg/hand-heart,
+                                          :promises.icon/title  "Top Notch Service"}
+                                         {:promises.icon/symbol :svg/shield,
+                                          :promises.icon/title  "30-Day Guarantee"}]})]
    ;; Sub header image
    [:div.max-580.mx-auto.py6
     (ui/defer-ucare-img {:class "col-12 mb3"
