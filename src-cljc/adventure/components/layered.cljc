@@ -25,7 +25,8 @@
             [homepage.ui.promises :as promises]
             [homepage.ui.contact-us :as contact-us]
             [markdown-to-hiccup.core :as markdown]
-            retail.stores))
+            [ui.wig-services-menu :as wig-services-menu]
+            [ui.wig-customization-spotlights :as wig-customization-spotlights]))
 
 (defn ^:private vertical-squiggle
   [top]
@@ -833,7 +834,7 @@
 
 (defcomponent service-list
   [_ _ _]
-  (retail.stores/wig-services-menu retail.stores/service-menu-data))
+  (component/build wig-services-menu/component wig-services-menu/service-menu-data))
 
 (def promises-omni-query
   {:list/icons
@@ -861,12 +862,11 @@
                       :url   "https://ucarecdn.com/b8902af1-9262-4369-ab88-35e82fd2f3b7/we_customize_it.png"}
                      {:title "Take it home"
                       :copy  "Rock your new unit the same day or pick it up within 2-5 days."
-                      :url   "https://ucarecdn.com/8d4b8e12-48a7-4e90-8a41-3f1ef1267a93/take_it_home.png"}]}
-  )
+                      :url   "https://ucarecdn.com/8d4b8e12-48a7-4e90-8a41-3f1ef1267a93/take_it_home.png"}]})
 
 (defcomponent customize-wig
   [_ _ _]
-  (retail.stores/wig-customization-spotlights wig-customization-query))
+  (component/build wig-customization-spotlights/component wig-customization-query))
 
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (when type
