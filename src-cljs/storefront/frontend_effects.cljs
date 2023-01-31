@@ -306,7 +306,7 @@
       (messages/handle-later events/control-scroll-selector-to-top
                              {:selector (str "#" fragment)
                               ;; :y here is an offset. Passing this makes it so we scroll directly to the selector intead of a bit off
-                              :y (scroll/scroll-padding)} 100))
+                              :y scroll/scroll-padding} 100))
 
     (exception-handler/refresh)))
 
