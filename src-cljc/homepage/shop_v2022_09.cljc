@@ -60,14 +60,23 @@
                                                                      {:src "http://placekitten.com/400/400?image=1"
                                                                       :alt "image 8"}]}))
                                 (vt/within :promises {:list/icons
-                                                      [{:promises.icon/symbol :svg/hand-heart,
-                                                        :promises.icon/title  "Top-Notch Service"}
-                                                       {:promises.icon/symbol :svg/shield,
-                                                        :promises.icon/title  "30 Day Guarantee"}
-                                                       {:promises.icon/symbol :svg/check-cloud,
-                                                        :promises.icon/title  "100% Virgin Human Hair"}
-                                                       {:promises.icon/symbol :svg/ship-truck,
-                                                        :promises.icon/title  "Free Standard Shipping"}]})
+                                                      (if in-omni?
+                                                        [{:promises.icon/symbol :svg/check-cloud,
+                                                          :promises.icon/title  "100% Virgin Human Hair"}
+                                                         {:promises.icon/symbol :svg/custom-wig-services,
+                                                          :promises.icon/title  "Custom Wig Services"}
+                                                         {:promises.icon/symbol :svg/hand-heart,
+                                                          :promises.icon/title  "Top Notch Service"}
+                                                         {:promises.icon/symbol :svg/shield,
+                                                          :promises.icon/title  "30-Day Guarantee"}]
+                                                        [{:promises.icon/symbol :svg/hand-heart,
+                                                          :promises.icon/title  "Top-Notch Service"}
+                                                         {:promises.icon/symbol :svg/shield,
+                                                          :promises.icon/title  "30 Day Guarantee"}
+                                                         {:promises.icon/symbol :svg/check-cloud,
+                                                          :promises.icon/title  "100% Virgin Human Hair"}
+                                                         {:promises.icon/symbol :svg/ship-truck,
+                                                          :promises.icon/title  "Free Standard Shipping"}])})
                                 {:shop-these-looks/row-1 [{:shop-these-looks.entry.cta/copy   "Wedding Hair"
                                                            :shop-these-looks.entry.cta/target e/navigate-shop-by-look-details
                                                            :shop-these-looks.entry.cta/args   {:album-keyword :look
