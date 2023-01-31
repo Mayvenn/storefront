@@ -76,7 +76,6 @@
                    (:timeout args 0))))
 
 (defn enqueue-navigate [navigation-event & [args]]
-
   (when-let [path (str (routes/path-for navigation-event args) (some->> args :fragment (str "#")))]
     (js/setTimeout (fn []
                      ;; NOTE (EW) If the current token is equal to what is already there (ie navigating to where you already were),
