@@ -38,7 +38,7 @@
                  [comb "0.1.1"]
                  [sablono "0.8.6"]
                  [bidi "2.1.5"]
-                 [lambdaisland/uri "1.1.0"]
+                 [lambdaisland/uri "1.13.95"]
                  [com.cemerick/url "0.1.1"]
                  [overtone/at-at "1.2.0"]
                  [camel-snake-kebab "0.4.0"]
