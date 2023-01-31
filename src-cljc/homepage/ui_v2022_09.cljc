@@ -19,11 +19,6 @@
   [:div
    (c/build hero/organism-without-shipping-bar hero)
    (c/build promises/organism (vt/with :promises data))
-   (c/build carousel/component
-            (vt/with :foo-carousel data)
-            {:opts {:carousel/exhibit-highlight-component carousel/slider-image-exhibit
-                    :carousel/id                          :foo-carousel
-                    :carousel/slider-only-mode            true}})
    (c/build shopping-categories/organism shopping-categories)
    (c/build blog/organism blog1)
    (c/build shop-these-looks/organism data)
