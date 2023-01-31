@@ -67,9 +67,8 @@
                                    :price 50}]}]})
 
 (defn wig-services-menu-item
-  [ix {:as data :keys [title price]}]
+  [ix {:as data :keys [price]}]
   [:div.flex.justify-between {:key ix}
-
    [:div
     (titles/proxima-tiny-left (vt/with :title data))]
    [:div (mf/as-money-without-cents price)]])
