@@ -16,13 +16,17 @@
 
 (def header
   [:div.center.p3
+   ;; What we might call a hero elsewhere
    [:div.max-960.mx-auto
     (ui/defer-ucare-img {:class "col-12"
                          :smart-crop "1000x400"
-                         :alt ""} "991a7fac-b4ed-4d1e-95d5-f2153fe678e2")]
+                         :alt ""}
+      "478e43d5-d03e-45d2-adb0-7a0bc49d546f")]
+   ;; Sub header image
    [:div.max-580.mx-auto.py6
     (ui/defer-ucare-img {:class "col-12 mb3"
-                         :alt "Mayvenn Beauty Lounge"} "f0ac8b6a-5815-4e95-ad74-688b598498da")]])
+                         :alt "Mayvenn Beauty Lounge"}
+      "f0ac8b6a-5815-4e95-ad74-688b598498da")]])
 
 (defn store-locations
   [{:keys [metro-locations]}]
