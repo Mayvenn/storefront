@@ -19,10 +19,16 @@
   [:div.center.p3
    ;; What we might call a hero elsewhere
    [:div.max-960.mx-auto
-    (ui/defer-ucare-img {:class "col-12"
-                         :smart-crop "1000x400"
-                         :alt ""}
-      "478e43d5-d03e-45d2-adb0-7a0bc49d546f")
+    [:div.hide-on-mb
+     (ui/defer-ucare-img {:class "col-12 flex"
+                          :smart-crop "1000x400"
+                          :alt "A mayvenn retail store"}
+       "478e43d5-d03e-45d2-adb0-7a0bc49d546f")]
+    [:div.hide-on-tb-dt
+     (ui/defer-ucare-img {:class "col-12 flex"
+                          :alt "A mayvenn retail store"}
+       "5ed37232-15f0-4e24-ab74-ff5a227419f9")]
+
     (component/build promises/organism {:list/icons
                                         [{:promises.icon/symbol :svg/check-cloud,
                                           :promises.icon/title  "100% Virgin Human Hair"}
