@@ -529,7 +529,7 @@
         (not (or image image-url))
         nil
 
-        (:cta/navigation-message image-data)
+        navigation-message
         [:a.p1
          (merge (apply utils/route-to navigation-message)
                 {:key (str image-url)})
