@@ -15,7 +15,9 @@
             [storefront.components.video :as video]
             [storefront.platform.component-utils :as utils]
             [clojure.set :as set]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [ui.wig-customization-spotlights :as wig-customization-spotlights]
+            [ui.wig-services-menu :as wig-services-menu]))
 
 (defn video
   [{:video/keys [youtube-id]}]
@@ -100,55 +102,17 @@
        [:h3.title-3.proxima.py1.shout
         text]])]])
 
-(defn wig-customization-spotlight-section
-  [ix {:keys [title copy url]}]
-  [:div.flex.flex-column.items-center.pb4
-   {:style {:max-width "250px"}}
-   (ui/circle-ucare-img {:width "160" :alt ""} url)
-   [:div.col-12.pt2.canela (->> ix inc (str "0"))]
-   [:div.col-12.proxima.content-2.bold.shout title]
-   [:div copy]])
-
-(defn wig-customization-spotlights
-  [{:header/keys [title subtitle] :as data}]
-  [:div.wig-customization.flex.flex-column.items-center.p8.gap-4.bg-cool-gray
-   [:div.canela.title-1.shout title]
-   [:div.proxima.title-1.bold.shout subtitle]
-   (into [:div.grid.gap-4] (map-indexed wig-customization-spotlight-section (:sections data)))])
-
-(defn wig-services-menu-item
-  [ix {:keys [title price]}]
-  [:div.flex.justify-between {:key ix}
-   [:div title]
-   [:div (mf/as-money-without-cents price)]])
-
-(defn wig-services-menu-section
-  [ix {:keys [header/title items]}]
-  [:div.pt5 {:key ix}
-   [:div.proxima.content-2.bold.shout title]
-   (map-indexed wig-services-menu-item items)])
-
-(defn wig-services-menu
-  [{:keys [header/title sections]}]
-  [:div.bg-pale-purple.p6
-   [:div.flex.flex-column.mx-auto.col-8-on-tb-dt
-    {:style {:max-width "375px"}}
-    [:div.center.canela.title-1 title]
-    (map-indexed wig-services-menu-section sections)]])
-
 (component/defcomponent template
   [{:keys [retail-stores-more-info?] :as data} _ _]
   [:div
    (video data)
    (store-info (vt/with :location-card data))
    (when retail-stores-more-info?
-     (wig-customization-spotlights (vt/with :wig-customization-guide data)))
-   (when retail-stores-more-info?
-     dividers/purple)
-   (when retail-stores-more-info?
-     (wig-services-menu (vt/with :wig-services-menu data)))
-   (when retail-stores-more-info?
-     dividers/green)
+     [:div
+      (component/build wig-customization-spotlights/component (vt/with :wig-customization-guide data))
+      dividers/purple
+      (component/build wig-services-menu/component (vt/with :wig-services-menu data))
+      dividers/green])
    why-mayvenn
    (follow-us data)])
 
@@ -181,38 +145,9 @@
                      :tiktok         (when tiktok (str "https://www.tiktok.com/@" tiktok))
                      :email          email})
          (vt/within :wig-customization-guide
-                {:header/title    "Wig Customization"
-                 :header/subtitle "Here's how it works:"
-                 :sections        [{:title "Select your wig"
-                                    :copy  "Choose a pre-customized, factory-made, or tailor-made unit."
-                                    :url   "https://ucarecdn.com/1596ef7a-8ea8-4e2d-b98f-0e2083998cce/select_your_wig.png"}
-                                   {:title "We customize it"
-                                    :copy  "Choose from ten different customization services— we'll make your dream look come to life."
-                                    :url   "https://ucarecdn.com/b8902af1-9262-4369-ab88-35e82fd2f3b7/we_customize_it.png"}
-                                   {:title "Take it home"
-                                    :copy  "Rock your new unit the same day or pick it up within 2-5 days."
-                                    :url   "https://ucarecdn.com/8d4b8e12-48a7-4e90-8a41-3f1ef1267a93/take_it_home.png"}]})
+                    wig-customization-spotlights/standard-data)
          (vt/within :wig-services-menu
-                {:header/title "Wig Services"
-                 :sections     [{:header/title "Customization"
-                                 :items        [{:title "Basic Lace Customization"
-                                                 :price 25}
-                                                {:title "Wig Customization"
-                                                 :price 60}
-                                                {:title "Basic Wig Coloring"
-                                                 :price 95}
-                                                {:title "Advanced Wig Coloring"
-                                                 :price 150}]}
-                                {:header/title "Cut"
-                                 :items        [{:title "Basic Wig Cut"
-                                                 :price 35}
-                                                {:title "Advanced Wig Cut"
-                                                 :price 50}]}
-                                {:header/title "Stylist"
-                                 :items        [{:title "Basic Wig Styling"
-                                                 :price 35}
-                                                {:title "Advanced Wig Styling"
-                                                 :price 50}]}]})))
+                    wig-services-menu/service-menu-data)))
 
 (def nav-event->cms-key
   {events/navigate-retail-walmart-grand-prairie :grand-prairie
