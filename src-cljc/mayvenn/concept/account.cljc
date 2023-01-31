@@ -2,10 +2,12 @@
   (:require [storefront.keypaths :as keypaths]
             [storefront.transitions :as transitions]
             [storefront.effects :as effects]
+            [storefront.trackings :as trackings]
             [storefront.events :as events]
             [clojure.set :as set]
             [storefront.platform.messages :refer [handle-message] :rename {handle-message publish}]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            #?@(:cljs [[storefront.hooks.stringer :as stringer]])))
 
 (def experiences
   {:experience/omni (fn omni? [data]
@@ -42,3 +44,8 @@
   [_ _ {:keys [experience]} data]
   (-> data
       (update-in keypaths/account-profile-experiences #(conj % experience))))
+
+(defmethod trackings/perform-track events/account-profile|experience|joined
+  [_ _ {:keys [experience]} _]
+  #?(:cljs
+     (stringer/track-event "account-profile-experience-joined" {:experience experience})))
