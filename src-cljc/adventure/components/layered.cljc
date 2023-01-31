@@ -561,9 +561,7 @@
             {:class "proxima shout loud"})
           label]
          (when copy
-           [:div.black.left-align.mt2 copy])]
-        )
-      )]
+           [:div.black.left-align.mt2 copy])]))]
    (let [{:keys [cta]} data]
      (if (:id cta)
        (ui/button-small-primary (merge {:class "inline"}
