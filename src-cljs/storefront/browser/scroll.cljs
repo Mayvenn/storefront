@@ -93,3 +93,7 @@
 (defmethod fx/perform-effects e/control-scroll-to-selector
   [dispatch event {:keys [selector]} prev-app-state app-state]
   (scroll-to-selector selector))
+
+(defmethod fx/perform-effects e/control-scroll-selector-to-top
+  [dispatch event {:keys [selector y]} prev-app-state app-state]
+  (scroll-selector-to-top selector y))
