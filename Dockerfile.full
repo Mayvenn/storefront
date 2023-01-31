@@ -12,11 +12,16 @@ RUN apt-get update;
 
 RUN curl -sL https://deb.nodesource.com/setup_$NODE_VERSION | bash -
 RUN apt-get install -qqy openssh-client zip unzip curl git nodejs;
-RUN npm --version;
+
 
 
 RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
 
+
+# Print out the versions of various infrastructure
+RUN lein --version;
+RUN npm --version;
+RUN node --version;
 
 ############# BEGIN BUILD #####################
 FROM linux_setup AS builder
@@ -35,11 +40,7 @@ WORKDIR /app
 ADD project.clj project.clj
 ADD . .
 
-RUN npm --version;
-
 RUN lein clean
-
-RUN npm --version;
 
 RUN npm install && (which gulp || npm install -g gulp)
 RUN gulp compile-assets --host $CDN_HOST --sha $GIT_SHA
