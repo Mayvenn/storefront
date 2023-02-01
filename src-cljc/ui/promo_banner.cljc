@@ -94,7 +94,14 @@
   (let [no-applied-promo? (orders/no-applied-promo? (get-in data keypaths/order))
         on-shop?          (= :shop (sites/determine-site data))
         nav-event         (get-in data keypaths/navigation-event)
-        show?             (contains? (nav-allowlist-for no-applied-promo? on-shop?) nav-event)
+        ;; TODO: this is a super rushed approach to promo-banner selection, we should
+        ;;       reevaluate our approach to promo determination when we have more time.
+        on-omni-lp?       (and (= events/navigate-landing-page nav-event)
+                               (->> (get-in data keypaths/navigation-args)
+                                    :landing-page-slug
+                                    (= "omni")))
+        show?             (or (contains? (nav-allowlist-for no-applied-promo? on-shop?) nav-event)
+                              on-omni-lp?)
         hide-on-mb-tb?    (boolean (get-in data catalog.keypaths/category-panel))
         banner-data       (banner-data<- data)]
     (cond-> banner-data
