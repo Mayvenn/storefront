@@ -78,30 +78,6 @@
                                      :class "flex-auto col-12"
                                      :alt   description}))])]])
 
-(def why-mayvenn-icons-text
-  [{:icon svg/heart
-    :text "Top-Notch Customer Service"}
-   {:icon svg/calendar
-    :text "30 Day Guarantee"}
-   {:icon svg/worry-free
-    :text "100% Virgin Hair"}
-   {:icon svg/mirror
-    :text "Certified Stylists"}])
-
-(def why-mayvenn
-  [:div.bg-cool-gray.mx-auto.center.py6
-   [:h2.canela.title-1.my6 "Why Mayvenn"]
-   [:div.flex.max-580.mx-auto.center.justify-center
-    (for [{:keys [icon text]} why-mayvenn-icons-text]
-      [:div.pb1.pt6.col-2
-       [:div
-        {:width "32px"}
-        (icon {:class  "fill-p-color"
-                    :width  "32px"
-                    :height "29px"})]
-       [:h3.title-3.proxima.py1.shout
-        text]])]])
-
 (component/defcomponent template
   [{:keys [retail-stores-more-info?] :as data} _ _]
   [:div
@@ -113,7 +89,6 @@
       dividers/purple
       (component/build wig-services-menu/component (vt/with :wig-services-menu data))
       dividers/green])
-   why-mayvenn
    (follow-us data)])
 
 (defn build-google-maps-url [location address-1 address-2]
