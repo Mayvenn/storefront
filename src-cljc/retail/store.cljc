@@ -8,6 +8,7 @@
             [adventure.components.layered :as layered]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [homepage.ui.promises :as promises]
             [storefront.components.money-formatters :as mf]
             [storefront.keypaths :as keypaths]
             [storefront.accessors.experiments :as experiments]
@@ -87,6 +88,16 @@
   [{:keys [retail-stores-more-info?] :as data} _ _]
   [:div
    (video data)
+   [:div.mx-auto.max-960
+    (component/build promises/organism {:list/icons
+                                        [{:promises.icon/symbol :svg/check-cloud,
+                                          :promises.icon/title  "100% Virgin Human Hair"}
+                                         {:promises.icon/symbol :svg/custom-wig-services,
+                                          :promises.icon/title  "Custom Wig Services"}
+                                         {:promises.icon/symbol :svg/hand-heart,
+                                          :promises.icon/title  "Top Notch Service"}
+                                         {:promises.icon/symbol :svg/shield,
+                                          :promises.icon/title  "30-Day Guarantee"}]})]
    (store-info (vt/with :location-card data))
    (when retail-stores-more-info?
      [:div
