@@ -22,40 +22,43 @@
 (defn store-info
   [{:keys [name img-url address1-2 city-state-zip phone mon-sat-hours sun-hours
            directions instagram facebook tiktok email metro]}]
-  [:div.max-960.py3.flex-wrap.flex.mx-auto
-   [:div.col-6-on-tb-dt.col-12.px2
-    [:div.mb2
-     [:div.flex.justify-between
-      {:style {:align-items "start"}}
-      [:div.left
-       [:h1.canela.title-2 name]
-       [:div.proxima.content-3 "Visit us inside Walmart"]]
-      [:div.flex
-       (when instagram [:a.block.mx1.flex.items-center {:href instagram :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Instagram")}
-                        [:div ^:inline (svg/instagram {:style {:height "20px" :width "20px"}})]])
-       (when facebook [:a.block.mx1.flex.items-center {:href facebook :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Facebook")}
-                       [:div ^:inline (svg/facebook-f {:style {:height "20px" :width "20px"}})]])
-       (when tiktok [:a.block.mx1.flex.items-center {:href tiktok :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Tiktok")}
-                     [:div ^:inline (svg/tiktok {:style {:height "20px" :width "20px"}})]])
-       (when email [:a.block.mx1.flex.items-center {:href (ui/email-url email) :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn email")}
-                    [:div ^:inline (svg/icon-email {:height "20px" :width "28px"})]])]]]
+  [:div.max-960.py3.flex.mx-auto.flex-column-on-mb.flex-row.gap-4.mx4-on-mb
+   [:div.col-6-on-tb-dt.col-12.flex.flex-column.gap-4
+    [:div.flex.justify-between
+     {:style {:align-items "start"}}
+     [:div.left
+      [:h1.canela.title-2 name]
+      [:div.proxima.content-3 "Visit us inside Walmart"]]
+     [:div.flex
+      (when instagram [:a.block.mx1.flex.items-center {:href instagram :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Instagram")}
+                       [:div ^:inline (svg/instagram {:style {:height "20px" :width "20px"}})]])
+      (when facebook [:a.block.mx1.flex.items-center {:href facebook :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Facebook")}
+                      [:div ^:inline (svg/facebook-f {:style {:height "20px" :width "20px"}})]])
+      (when tiktok [:a.block.mx1.flex.items-center {:href tiktok :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Tiktok")}
+                    [:div ^:inline (svg/tiktok {:style {:height "20px" :width "20px"}})]])
+      (when email [:a.block.mx1.flex.items-center {:href (ui/email-url email) :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn email")}
+                   [:div ^:inline (svg/icon-email {:height "20px" :width "28px"})]])]]
     [:p.content-3
      (str "Welcome to Mayvenn Beauty Lounge in " metro " where we carry a large selection of 100% virgin human "
           "hair wigs, bundles and seamless hair extensions to protect your tresses and create your perfect look.")]
-    [:div.border-top.border-gray.flex.col-12.py2.justify-between.gap-4
+    [:div.border-top.border-gray.flex.col-12.justify-between.gap-4
      [:div
       [:div.title-3.proxima.shout.bold "Location"]
       [:div.content-4 address1-2]
       [:div.content-4 city-state-zip]
-      [:div.content-4.my2 phone]]
+      [:div.content-4.mt2 phone]]
      [:div
       [:div.title-3.proxima.shout.bold "Hours"]
       [:div
        [:div.content-4 mon-sat-hours]
        [:div.content-4 sun-hours]]]]
-    [:div.flex
-     [:div.pb3 (ui/button-small-underline-primary {:href directions} "Get Directions")]]]
-   [:div.col-6-on-tb-dt.col-12.px2 (ui/basic-defer-img {:width "100%" :alt ""} img-url)]])
+    (ui/button-small-underline-primary {:href directions} "Get Directions")
+    [:div.flex.flex-column.gap-2
+     (->> ["Lace Front Wigs, Closure Wigs, & More"
+           "Bundles, Closures, Clip-ins, & More"
+           "Coloring, Wig Services, & More"]
+          (map (fn [text] [:div.shout.content-3.bg-pale-purple.p2.bold text])))]]
+   [:div.col-6-on-tb-dt.col-12 (ui/basic-defer-img {:width "100%" :alt ""} img-url)]])
 
 (defn follow-us
   [{:follow-us/keys [instagram photos]}]
