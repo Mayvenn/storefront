@@ -91,6 +91,8 @@
    (when retail-stores-more-info?
      [:div
       (component/build wig-customization-spotlights/component (vt/with :wig-customization-guide data))
+      dividers/green
+      (component/build layered/lp-split (vt/with :customize-your-wig data))
       dividers/purple
       (component/build wig-services-menu/component (vt/with :wig-services-menu data))
       dividers/green])
@@ -127,6 +129,35 @@
                      :metro          metro})
          (vt/within :wig-customization-guide
                     wig-customization-spotlights/standard-data)
+         (vt/within :customize-your-wig
+                    {:desktop-ordering "Top|Bottom"
+                     :top              {:layer/type         :lp-split-image
+                                        :alt                "Customize Your Wig"
+                                        :image              {:title              "Get a Custom Wig"
+                                                             :description        ""
+                                                             :file               {:url          "//images.ctfassets.net/76m8os65degn/1XUbEPeRiokZAE9Z2Thgmk/597c421c3a0f108a29320329b5dc3420/omni_growth_get_a_custom_wig.jpg"
+                                                                                  :details      {:size  1084931
+                                                                                                 :image {:width  1400
+                                                                                                         :height 900}}
+                                                                                  :file-name    "omni_growth_get_a_custom_wig.jpg"
+                                                                                  :content-type "image/jpeg"}
+                                                             :content/updated-at 1675102861991
+                                                             :content/type       "Asset"
+                                                             :content/id         "1XUbEPeRiokZAE9Z2Thgmk"}
+                                        :navigation-message nil}
+                     :bottom           {:layer/type       :lp-title-text-cta-background-color
+                                        :header/value     "Customize Your Wig"
+                                        :body/value       (str "Mayvenn Beauty Lounges offer a variety of services to provide unlimited looks.\n\n"
+                                                               "- We'll personalize your lace to ensure a natural hairline.\n"
+                                                               "- Layers, blunt cuts, bangs—you name it, we'll cut it.\n"
+                                                               "- Pick a color, any color, and we'll achieve it for you. Highlights, balayage and all.\n"
+                                                               "- Need more volume, we'll add more hair to reach your FULL expectations.\n"
+                                                               "- We're here every step of the way, drop your wig off and we'll restyle it like new!")
+                                        :cta/value        "View Services"
+                                        :cta/id           "landing-page--cta"
+                                        :cta/target       "https://shop.diva-acceptance.com/info/walmart"
+                                        :background/color "cool-gray"
+                                        :content/color    "black"}})
          (vt/within :wig-services-menu
                     wig-services-menu/service-menu-data)))
 
