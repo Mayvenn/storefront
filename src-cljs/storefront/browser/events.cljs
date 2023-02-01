@@ -95,9 +95,8 @@
 (defmethod effects/perform-effects events/escape-key-pressed [_ event args _ app-state]
   (when-let [message-to-handle (get popup-dismiss-events (get-in app-state keypaths/popup))]
     (handle-message message-to-handle))
-  (doseq [email-capture-id (keys email-capture/email-capture-configs)]
-    (when (-> email-capture-id (email-capture/<-trigger app-state) :displayable?)
-      (handle-message events/biz|email-capture|dismissed {:id email-capture-id})))
+  (when (-> "first-pageview-email-capture" (email-capture/<-trigger app-state) :displayable?)
+    (handle-message events/biz|email-capture|dismissed {:id "first-pageview-email-capture"}))
   (when-let [message-to-handle (dismiss-stylist-filter-modal-event app-state)]
     (handle-message message-to-handle))
   (when-let [message-to-handle (dismiss-look-detail-picker-modal-event app-state)]

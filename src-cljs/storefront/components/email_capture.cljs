@@ -414,15 +414,10 @@
            (remove #(get short-timers (-> % :email-modal-trigger :trigger-id)))
            not-empty))))
 
-(defn- hidden-email-modal-for-in-situ-email-capture?
-  [state {{:keys [trigger-id]} :email-modal-trigger}]
-  (= trigger-id "adv-quiz-email-capture"))
-
 (defn ^:export built-component [state opts]
   (let [long-timer   (get-in state concept/long-timer-started-keypath)
         short-timers (get-in state concept/short-timer-starteds-keypath)
         email-modals (triggered-email-modals<- state long-timer short-timers)]
     ;; FIXME indeterminate behavior when multiple triggers are valid and active
     (when-let [email-modal (first email-modals)]
-      (when-not (hidden-email-modal-for-in-situ-email-capture? state email-modal)
-        (c/build template (query state email-modal) opts)))))
+      (c/build template (query state email-modal) opts))))

@@ -19,45 +19,11 @@
             [storefront.trackings :as trk]
             [storefront.accessors.experiments :as experiments]))
 
-(def never-show-on-these-pages
-  #{e/navigate-cart
-    e/navigate-checkout
-
-    e/navigate-mayvenn-stylist-pay
-
-    ;; Auth pages
-    e/navigate-reset-password
-    e/navigate-force-set-password
-    e/navigate-forgot-password
-    e/navigate-sign
-
-    ;; The modal links to these, so we don't show on these pages (instead of dismissing the modal).
-    e/navigate-content-sms
-    e/navigate-content-tos
-    e/navigate-content-privacy
-    e/navigate-content-privacyv1
-    e/navigate-content-privacyv2})
-
-(def adventure-and-quiz-pages
-  #{e/navigate-adventure
-    e/navigate-shopping-quiz})
-
-(def email-capture-configs
-  {"first-pageview-email-capture" {:cookie-id "1pv"
-                                   :nav-events-forbid (set/union never-show-on-these-pages adventure-and-quiz-pages)}
-   "adv-quiz-email-capture"       {:cookie-id "adv"
-                                   :nav-events-allow adventure-and-quiz-pages}})
-
 (def model-keypath [:models :email-capture])
 (def textfield-keypath (conj model-keypath :textfield))
 (def phonefield-keypath (conj model-keypath :phone))
 (def long-timer-started-keypath (conj model-keypath :long-timer-started?))
 (def short-timer-starteds-keypath (conj model-keypath :short-timer-starteds?))
-
-(defn email-modal-trigger-id->cookie-id
-  [trigger-id]
-  (or (:cookie-id (email-capture-configs trigger-id))
-      trigger-id))
 
 (defn all-trigger-ids [app-state]
   (map (comp :trigger-id :email-modal-trigger)
@@ -79,7 +45,7 @@
   #?(:clj nil
      :cljs
      (doseq [trigger-id trigger-ids
-             :let [cookie-id (email-modal-trigger-id->cookie-id trigger-id)]]
+             :let [cookie-id "1pv"]]
        ;; These cookies get refreshed on every navigate so that they expire only
        ;; after 30 minutes of inactivity
        (when (cookie-jar/retrieve-email-capture-short-timer-started? cookie-id cookie)
@@ -103,7 +69,7 @@
            (assoc-in short-timer-starteds-keypath (->> (all-trigger-ids app-state)
                                                        (map (fn [trigger-id]
                                                               [trigger-id (cookie-jar/retrieve-email-capture-short-timer-started?
-                                                                           (email-modal-trigger-id->cookie-id trigger-id)
+                                                                           "1pv"
                                                                            cookie)]))
                                                        (into {})))))))
 
@@ -120,7 +86,7 @@
 (defmethod fx/perform-effects e/biz|email-capture|dismissed
   [_ _ {:keys [id trigger-id]} state _]
   #?(:cljs
-     (cookie-jar/save-email-capture-short-timer-started (email-modal-trigger-id->cookie-id trigger-id)
+     (cookie-jar/save-email-capture-short-timer-started "1pv"
                                                         (get-in state k/cookie)))
   (publish e/biz|email-capture|timer-state-observed))
 

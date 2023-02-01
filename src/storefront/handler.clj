@@ -579,7 +579,6 @@
     (as-> {} _
       (assoc _ :stylist-results-test (feature-flags/retrieve-flag ld "stylist-results-test" :bool false))
       (assoc _ :first-pageview-email-capture (feature-flags/retrieve-flag ld "first-pageview-email-capture" :string "off"))
-      (assoc _ :adv-quiz-email-capture (feature-flags/retrieve-flag ld "adv-quiz-email-capture" :string "off"))
       (assoc _ :2022-new-products-hd-lace (feature-flags/retrieve-flag ld "2022-new-products-hd-lace" :bool false))
       (assoc _ :contentful-driven-email-capture-modal (feature-flags/retrieve-flag ld "contentful-driven-email-capture-modal" :bool false))
       (assoc _ :show-guaranteed-shipping (feature-flags/retrieve-flag ld "show-guaranteed-shipping" :bool true))
