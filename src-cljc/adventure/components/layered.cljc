@@ -633,7 +633,7 @@
         cta-url       (:cta/target data)
         bg-color      (:background/color data)
         content-color (:content/color data)]
-    [:div.p4-on-mb.p8-on-tb-dt.flex.flex-column.justify-center
+    [:div.p4-on-mb.p8-on-tb-dt.flex.flex-column.justify-center.col-12
      (merge (when bg-color
               {:class (str "bg-" bg-color " " content-color)})
             {:style {:height "100%"}})
