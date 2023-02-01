@@ -5,7 +5,7 @@
             [mayvenn.visual.ui.titles :as titles]))
 
 (def service-menu-data
-  {:header/title "Wig Services"
+  {:header/title "Service List"
    :sections     [{:header/title "Lace Customization"
                    :items        [{:title/primary "Basic Lace"
                                    :title/secondary (str "Cut lace, add elastic band, bleach knots, pluck knots, and basic styling. "
