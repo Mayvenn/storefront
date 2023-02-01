@@ -41,13 +41,15 @@
     [:p.content-3
      (str "Welcome to Mayvenn Beauty Lounge in " metro " where we carry a large selection of 100% virgin human "
           "hair wigs, bundles and seamless hair extensions to protect your tresses and create your perfect look.")]
-    [:div.border-top.border-gray.flex.col-12.justify-between.gap-4
+    [:div.border-top.border-gray.flex.col-12.gap-4
      [:div
+      {:style {:flex "1 1"}}
       [:div.title-3.proxima.shout.bold "Location"]
       [:div.content-4 address1-2]
       [:div.content-4 city-state-zip]
       [:div.content-4.mt2 phone]]
      [:div
+      {:style {:flex "1 1"}}
       [:div.title-3.proxima.shout.bold "Hours"]
       [:div
        [:div.content-4 mon-sat-hours]
