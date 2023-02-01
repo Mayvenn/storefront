@@ -27,22 +27,27 @@
 
 (defn store-info
   [{:keys [name img-url address1-2 city-state-zip phone mon-sat-hours sun-hours
-           directions instagram facebook tiktok email]}]
+           directions instagram facebook tiktok email metro]}]
   [:div.max-960.py3.flex-wrap.flex.mx-auto
    [:div.col-6-on-tb-dt.col-12.px2
     [:div.mb2
-     [:div.left
-      [:h1.canela.title-2 name]
-      [:div.proxima.content-3 "Visit us inside Walmart"]]
-     [:div.flex.right
-      (when instagram [:a.block.mx1.flex.items-center {:href instagram :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Instagram")}
-                       [:div ^:inline (svg/instagram {:style {:height "20px" :width "20px"}})]])
-      (when facebook [:a.block.mx1.flex.items-center {:href facebook :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Facebook")}
-                      [:div ^:inline (svg/facebook-f {:style {:height "20px" :width "20px"}})]])
-      (when tiktok [:a.block.mx1.flex.items-center {:href tiktok :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Tiktok")}
-                    [:div ^:inline (svg/tiktok {:style {:height "20px" :width "20px"}})]])
-      (when email [:a.block.mx1.flex.items-center {:href (ui/email-url email) :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn email")}
-                   [:div ^:inline (svg/icon-email {:height "20px" :width "28px"})]])]]
+     [:div.flex.justify-between
+      {:style {:align-items "start"}}
+      [:div.left
+       [:h1.canela.title-2 name]
+       [:div.proxima.content-3 "Visit us inside Walmart"]]
+      [:div.flex
+       (when instagram [:a.block.mx1.flex.items-center {:href instagram :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Instagram")}
+                        [:div ^:inline (svg/instagram {:style {:height "20px" :width "20px"}})]])
+       (when facebook [:a.block.mx1.flex.items-center {:href facebook :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Facebook")}
+                       [:div ^:inline (svg/facebook-f {:style {:height "20px" :width "20px"}})]])
+       (when tiktok [:a.block.mx1.flex.items-center {:href tiktok :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Tiktok")}
+                     [:div ^:inline (svg/tiktok {:style {:height "20px" :width "20px"}})]])
+       (when email [:a.block.mx1.flex.items-center {:href (ui/email-url email) :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn email")}
+                    [:div ^:inline (svg/icon-email {:height "20px" :width "28px"})]])]]]
+    [:p.content-3
+     (str "Welcome to Mayvenn Beauty Lounge in " metro " where we carry a large selection of 100% virgin human "
+          "hair wigs, bundles and seamless hair extensions to protect your tresses and create your perfect look.")]
     [:div.border-top.border-gray.flex.col-12.py2.justify-between.gap-4
      [:div
       [:div.title-3.proxima.shout.bold "Location"]
@@ -99,7 +104,7 @@
      :clj ""))
 
 (defn query-all [{:keys [email facebook hero state hours name phone-number instagram tiktok location address-1 address-2
-                         address-zipcode address-city store-tour-you-tube-video-id instagram-photos]}
+                         address-zipcode address-city store-tour-you-tube-video-id instagram-photos metro]}
                  retail-stores-more-info?]
   (merge {:retail-stores-more-info?     retail-stores-more-info?
           :video/youtube-id             store-tour-you-tube-video-id
@@ -118,7 +123,8 @@
                      :instagram      (when instagram (str "https://www.instagram.com/" instagram))
                      :facebook       (when facebook (str "https://business.facebook.com/" facebook))
                      :tiktok         (when tiktok (str "https://www.tiktok.com/@" tiktok))
-                     :email          email})
+                     :email          email
+                     :metro          metro})
          (vt/within :wig-customization-guide
                     wig-customization-spotlights/standard-data)
          (vt/within :wig-services-menu
