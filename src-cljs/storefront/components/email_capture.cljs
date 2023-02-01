@@ -278,8 +278,7 @@
 
 (defmethod t/transition-state e/email-modal-submitted
   [_ _ {:keys [email-modal]} app-state]
-  (if (and (:hdyhau (:email-modal-template email-modal))
-           (experiments/hdyhau-email-capture? app-state))
+  (if (:hdyhau (:email-modal-template email-modal))
     (assoc-in app-state k/show-hdyhau true)
     (assoc-in app-state k/show-hdyhau false)))
 

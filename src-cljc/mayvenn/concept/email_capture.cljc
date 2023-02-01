@@ -77,8 +77,7 @@
   [_ _ {:keys [hdyhau]} state _]
   (when-not
       ;; if getting hdyhau, don't set timer until after hdyhau is collected
-      (and hdyhau
-           (experiments/hdyhau-email-capture? state))
+      hdyhau
         #?(:cljs
            (cookie-jar/save-email-capture-long-timer-started (get-in state k/cookie)))
         (publish e/biz|email-capture|timer-state-observed)))
@@ -86,8 +85,7 @@
 (defmethod fx/perform-effects e/biz|email-capture|dismissed
   [_ _ {:keys [id trigger-id]} state _]
   #?(:cljs
-     (cookie-jar/save-email-capture-short-timer-started "1pv"
-                                                        (get-in state k/cookie)))
+     (cookie-jar/save-email-capture-short-timer-started "1pv" (get-in state k/cookie)))
   (publish e/biz|email-capture|timer-state-observed))
 
 (defmethod t/transition-state e/hdyhau-email-capture-submitted
