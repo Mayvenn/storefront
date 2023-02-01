@@ -134,12 +134,12 @@
       (when (seq url)
         (ui/aspect-ratio 4 3
                          (ui/img
-                          {:max-size     500
-                           :src          url
-                           :title        title
-                           :class        "col-12"
-                           :style        {:vertical-align "bottom"}
-                           :alt          description}))))
+                          {:max-size 500
+                           :src      url
+                           :title    title
+                           :class    "col-12"
+                           :style    {:vertical-align "bottom"}
+                           :alt      description}))))
     (let [{:email-capture.copy/keys [title fine-print-lead-in]} data]
       [:div.p4.black
        {:class (:email-capture.design/background-color data)}
@@ -174,11 +174,13 @@
         [:div.left-align
          (for [{:keys [label keypath value]} form]
            [:div {:key label}
-            (ui/check-box {:label    label
-                           :keypath  keypath
-                           :value    value
-                           :boxsize "10px"})])]
-        [:div.my3 (ui/submit-button-medium "Submit" {:disabled? (every? (comp not :value) form)})]
+            (ui/check-box {:label     label
+                           :keypath   keypath
+                           :data-test (name (last keypath))
+                           :value     value
+                           :boxsize   "10px"})])]
+        [:div.my3 (ui/submit-button-medium "Submit" {:disabled? (every? (comp not :value) form)
+                                                     :data-test  "submit-hdyhau"})]
         (ui/button-small-underline-black
          {:on-click   (apply utils/send-event-callback (:email-capture.dismiss/target data))
           :aria-label "skip"}
@@ -343,7 +345,7 @@
               :email-capture.email-field/focused     focused
               :email-capture.email-field/keypath     textfield-keypath
               :email-capture.email-field/email       email
-              :email-capture.phone-field/id          "email-capture-input"
+              :email-capture.phone-field/id          "phone-capture-input"
               :email-capture.phone-field/placeholder (:sms-input-field-placeholder-copy content)
               :email-capture.phone-field/focused     focused
               :email-capture.phone-field/keypath     phonefield-keypath
