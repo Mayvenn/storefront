@@ -6,6 +6,7 @@
 
 (def service-menu-data
   {:header/title "Service List"
+   :header/id    "service-list"
    :sections     [{:header/title "Lace Customization"
                    :items        [{:title/primary "Basic Lace"
                                    :title/secondary (str "Cut lace, add elastic band, bleach knots, pluck knots, and basic styling. "
@@ -79,8 +80,9 @@
    [:div.proxima.content-2.bold.shout title]
    (map-indexed wig-services-menu-item items)])
 
-(component/defcomponent component [{:keys [header/title sections]} _owner _opts]
+(component/defcomponent component [{:keys [header/title header/id sections]} _owner _opts]
   [:div.bg-pale-purple.p6
+   {:id id}
    [:div.flex.flex-column.mx-auto.col-8-on-tb-dt
     {:style {:max-width "375px"}}
     [:div.center.canela.title-1 title]
