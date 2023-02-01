@@ -639,7 +639,7 @@
             {:style {:height "100%"}})
      [:div.canela.title-2.py1
       title]
-     [:div.content-2.py1
+     [:div.content-2.py1.markdown
       (markdown/component (markdown/md->hiccup subtitle))]
      (when cta-url
        [:div.mt2
