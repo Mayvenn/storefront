@@ -44,15 +44,7 @@
      (ui/defer-ucare-img {:class "col-12 flex"
                           :alt "A mayvenn retail store"}
        "5ed37232-15f0-4e24-ab74-ff5a227419f9")]
-    (component/build promises/organism {:list/icons
-                                        [{:promises.icon/symbol :svg/check-cloud,
-                                          :promises.icon/title  "100% Virgin Human Hair"}
-                                         {:promises.icon/symbol :svg/custom-wig-services,
-                                          :promises.icon/title  "Custom Wig Services"}
-                                         {:promises.icon/symbol :svg/hand-heart,
-                                          :promises.icon/title  "Top Notch Service"}
-                                         {:promises.icon/symbol :svg/shield,
-                                          :promises.icon/title  "30-Day Guarantee"}]})]
+    (component/build layered/promises-omni)]
    ;; Sub header image
    subheader])
 

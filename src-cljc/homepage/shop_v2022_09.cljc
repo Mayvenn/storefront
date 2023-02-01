@@ -6,6 +6,7 @@
             [mayvenn.visual.tools :as vt]
             [storefront.keypaths :as k]
             [storefront.accessors.experiments :as experiments]
+            [adventure.components.layered :as layered]
             [storefront.components.carousel :as carousel]
             [mayvenn.concept.account :as accounts]))
 
@@ -54,14 +55,7 @@
                                                         "High-quality 100% virgin human hair wigs, extensions, bundles, and more in stock!")}))
                     (vt/within :promises {:list/icons
                                           (if in-omni?
-                                            [{:promises.icon/symbol :svg/check-cloud,
-                                              :promises.icon/title  "100% Virgin Human Hair"}
-                                             {:promises.icon/symbol :svg/custom-wig-services,
-                                              :promises.icon/title  "Custom Wig Services"}
-                                             {:promises.icon/symbol :svg/hand-heart,
-                                              :promises.icon/title  "Top Notch Service"}
-                                             {:promises.icon/symbol :svg/shield,
-                                              :promises.icon/title  "30-Day Guarantee"}]
+                                            layered/promises-omni-query
                                             [{:promises.icon/symbol :svg/hand-heart,
                                               :promises.icon/title  "Top-Notch Service"}
                                              {:promises.icon/symbol :svg/shield,

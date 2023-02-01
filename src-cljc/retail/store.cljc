@@ -87,15 +87,7 @@
   [:div
    (video data)
    [:div.mx-auto.max-960
-    (component/build promises/organism {:list/icons
-                                        [{:promises.icon/symbol :svg/check-cloud,
-                                          :promises.icon/title  "100% Virgin Human Hair"}
-                                         {:promises.icon/symbol :svg/custom-wig-services,
-                                          :promises.icon/title  "Custom Wig Services"}
-                                         {:promises.icon/symbol :svg/hand-heart,
-                                          :promises.icon/title  "Top Notch Service"}
-                                         {:promises.icon/symbol :svg/shield,
-                                          :promises.icon/title  "30-Day Guarantee"}]})]
+    (component/build layered/promises-omni)]
    (store-info (vt/with :location-card data))
    (when retail-stores-more-info?
      [:div
