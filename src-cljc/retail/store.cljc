@@ -1,23 +1,16 @@
 (ns retail.store
   (:require #?@(:cljs [[storefront.hooks.google-maps :as google-maps]])
             [storefront.component :as component]
-            [storefront.effects :as effects]
-            [storefront.components.formatters :as formatters]
             [mayvenn.visual.tools :as vt]
             [mayvenn.visual.ui.dividers :as dividers]
             [adventure.components.layered :as layered]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [homepage.ui.promises :as promises]
-            [storefront.components.money-formatters :as mf]
             [storefront.keypaths :as keypaths]
             [storefront.accessors.experiments :as experiments]
             [storefront.events :as events]
-            [storefront.components.video :as video]
-            [storefront.platform.component-utils :as utils]
-            [clojure.set :as set]
             [clojure.string :as string]
-            [ui.wig-customization-spotlights :as wig-customization-spotlights]
             [ui.wig-services-menu :as wig-services-menu]))
 
 (defn video
@@ -101,7 +94,6 @@
    (store-info (vt/with :location-card data))
    (when retail-stores-more-info?
      [:div
-      (component/build wig-customization-spotlights/component (vt/with :wig-customization-guide data))
       dividers/green
       (component/build layered/lp-split (vt/with :customize-your-wig data))
       dividers/purple
@@ -138,8 +130,6 @@
                      :tiktok         (when tiktok (str "https://www.tiktok.com/@" tiktok))
                      :email          email
                      :metro          metro})
-         (vt/within :wig-customization-guide
-                    wig-customization-spotlights/standard-data)
          (vt/within :customize-your-wig
                     {:desktop-ordering "Top|Bottom"
                      :top              {:layer/type         :lp-split-image
