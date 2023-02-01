@@ -54,9 +54,6 @@
         omni?           (-> data account/<- :experiences :experience/omni)
         cms-omni-banner (when omni? (get-in data (conj keypaths/cms-copy-url-slug "banner-omni")))]
     (cond
-      (contains? walmart-retail-pages (get-in data keypaths/navigation-event)) ; on a walmart page
-      {}
-
       (first applied) ; on the order
       (promo->banner-data (promos/find-promotion-by-code promotion-db (first applied)))
 
