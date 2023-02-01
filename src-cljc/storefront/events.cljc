@@ -723,6 +723,8 @@
 (defpath biz|email-capture|reset)
 (defpath biz|email-capture|deployed)
 (defpath biz|email-capture|captured)
+(defpath biz|capture-modal|started)
+(defpath biz|capture-modal|determined)
 (defpath biz|capture-modal|finished)
 (defpath biz|capture-modal|timer-state-observed)
 (defpath biz|hdyhau-capture|captured)

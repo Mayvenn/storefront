@@ -352,67 +352,7 @@
                                                              :value   (get (:to-submit (get-in state k/models-hdyhau)) slug false)})))
                 :email-capture.hdyhau/target   [e/hdyhau-email-capture-submitted {:hdyhau-options (keys hdyhau)}]})))))
 
-;;; Matchers and Triggers
-
-;; TODO(corey) defmulti?
-(defn matcher-matches? [app-state matcher]
-  (case (:content/type matcher)
-    "matchesAny"              (->> matcher
-                                   :must-satisfy-any-match
-                                   (map (partial matcher-matches? app-state))
-                                   (some true?))
-    "matchesAll"              (->> matcher
-                                   :must-satisfy-all-matches
-                                   (map (partial matcher-matches? app-state))
-                                   (every? true?))
-    "matchesNot"              (->> matcher
-                                   :must-not-satisfy
-                                   (matcher-matches? app-state)
-                                   not)
-    "matchesPath"             (let [cur-path (-> app-state
-                                                 (get-in k/navigation-uri)
-                                                 :path)]
-                                (case (:path-matches matcher)
-                                  "starts with"         (clojure.string/starts-with? cur-path (:path matcher))
-                                  "contains"            (clojure.string/includes? cur-path (:path matcher))
-                                  "exactly matches"     (= cur-path (:path matcher))
-                                  "does not start with" (not (clojure.string/starts-with? cur-path (:path matcher)))))
-    ;; TODO: Does not provide segmentation for customers who arrive organically. Only deals with UTM params
-    ;; which rely on marketing segmentation.
-    ;; TODO: With many landfalls, it's easily possible for multiple triggers to apply. There is still no prioritization
-    ;; to resolve these conflicts, and the issue becomes more pronounced with the marketing trackers.
-    "matchesMarketingTracker" (->> (get-in app-state k/account-profile)
-                                   :landfalls
-                                   (map :utm-params)
-                                   (some #(= (:value matcher) (get % (:tracker-type matcher)))))
-    ;; TODO: there are other path matchers not accounted for yet.
-    (when matcher (js/console.error (str "No matching content/type for matcher " (pr-str matcher))))))
-
-(defn triggered-email-modals<-
-  [state long-timer short-timers]
-  (when-not long-timer
-    (let [modals (vals (get-in state k/cms-email-modal))]
-      (->> modals
-           ;; Verify modal has trigger, for acceptance env
-           (filter #(-> % :email-modal-trigger :trigger-id))
-           ;; Verify modal has content, for acceptance env
-           (filter #(-> % :email-modal-template :template-content-id))
-           ;; Matches trigger
-           (filter #(matcher-matches? state (-> % :email-modal-trigger :matcher)))
-           ;; Removes triggers under timers
-           (remove #(get short-timers (-> % :email-modal-trigger :trigger-id)))
-           not-empty))))
-
-;; TODO: GROT: unused?
-(defn- hidden-email-modal-for-in-situ-email-capture?
-  [state {{:keys [trigger-id]} :email-modal-trigger}]
-  (= trigger-id "adv-quiz-email-capture"))
-
 (defn ^:export built-component [state opts]
-  (let [long-timer   (get-in state concept/long-timer-started-keypath)
-        short-timers (get-in state concept/short-timer-starteds-keypath)
-        email-modals (triggered-email-modals<- state long-timer short-timers)]
-    ;; FIXME indeterminate behavior when multiple triggers are valid and active
-    (when-let [email-modal (first email-modals)]
-      (when-not (hidden-email-modal-for-in-situ-email-capture? state email-modal)
-        (c/build template (query state email-modal) opts)))))
+  (let [email-modal (get-in state [:models :modal :started])]
+    (when email-modal
+      (c/build template (query state email-modal) opts))))

@@ -107,6 +107,93 @@
                                                                            cookie)]))
                                                        (into {})))))))
 
+(defmethod fx/perform-effects e/biz|capture-modal|timer-state-observed
+  [_ _ _ state _]
+  (publish e/biz|capture-modal|started))
+
+;;; Matchers and Triggers
+
+;; TODO(corey) defmulti?
+(defn matcher-matches? [app-state matcher]
+  (case (:content/type matcher)
+    "matchesAny"              (->> matcher
+                                   :must-satisfy-any-match
+                                   (map (partial matcher-matches? app-state))
+                                   (some true?))
+    "matchesAll"              (->> matcher
+                                   :must-satisfy-all-matches
+                                   (map (partial matcher-matches? app-state))
+                                   (every? true?))
+    "matchesNot"              (->> matcher
+                                   :must-not-satisfy
+                                   (matcher-matches? app-state)
+                                   not)
+    "matchesPath"             (let [cur-path (-> app-state
+                                                 (get-in k/navigation-uri)
+                                                 :path)]
+                                (case (:path-matches matcher)
+                                  "starts with"         (clojure.string/starts-with? cur-path (:path matcher))
+                                  "contains"            (clojure.string/includes? cur-path (:path matcher))
+                                  "exactly matches"     (= cur-path (:path matcher))
+                                  "does not start with" (not (clojure.string/starts-with? cur-path (:path matcher)))))
+    ;; TODO: Does not provide segmentation for customers who arrive organically. Only deals with UTM params
+    ;; which rely on marketing segmentation.
+    ;; TODO: With many landfalls, it's easily possible for multiple triggers to apply. There is still no prioritization
+    ;; to resolve these conflicts, and the issue becomes more pronounced with the marketing trackers.
+    "matchesMarketingTracker" (->> (get-in app-state k/account-profile)
+                                   :landfalls
+                                   (map :utm-params)
+                                   (some #(= (:value matcher) (get % (:tracker-type matcher)))))
+    ;; TODO: there are other path matchers not accounted for yet.
+    #?(:cljs (when matcher (js/console.error (str "No matching content/type for matcher " (pr-str matcher)))))))
+
+(defn triggered-email-modals<-
+  [state long-timer short-timers]
+  (when-not long-timer
+    (let [modals (vals (get-in state k/cms-email-modal))]
+      (->> modals
+           ;; Verify modal has trigger, for acceptance env
+           (filter #(-> % :email-modal-trigger :trigger-id))
+           ;; Verify modal has content, for acceptance env
+           (filter #(-> % :email-modal-template :template-content-id))
+           ;; Matches trigger
+           (filter #(matcher-matches? state (-> % :email-modal-trigger :matcher)))
+           ;; Removes triggers under timers
+           (remove #(get short-timers (-> % :email-modal-trigger :trigger-id)))
+           not-empty))))
+
+(defmethod t/transition-state e/biz|capture-modal|started
+  [_ _ _ app-state]
+  (let [long-timer       (get-in app-state long-timer-started-keypath)
+        short-timers     (get-in app-state short-timer-starteds-keypath)
+        query-params     (get-in app-state k/navigation-query-params)
+        signed-in?       (get-in app-state k/user-id)
+        email-modals     (when-not (or signed-in? (:em_hash query-params))
+                           (triggered-email-modals<- app-state long-timer short-timers))
+        ;; FIXME indeterminate behavior when multiple triggers are valid and active
+        determined-modal (spice.core/spy (first email-modals))]
+    (when determined-modal
+      (-> app-state
+          (assoc-in [:models :modal :started]
+                    determined-modal)))))
+
+;; RACE CONDITION: add another event for determining modal, so we can separate these
+
+(defmethod fx/perform-effects e/biz|capture-modal|started
+  [_ _ _ state _]
+  (publish e/biz|capture-modal|determined))
+
+(defmethod fx/perform-effects e/biz|capture-modal|determined
+  [_ _ _ state _]
+  (let [started-modal (get-in state [:models :modal :started])]
+    (when-not started-modal
+      (publish e/biz|capture-modal|finished {:cause :no-matching-modal}))))
+
+(defmethod t/transition-state e/biz|capture-modal|finished
+  [_ _ _ app-state]
+  (-> app-state
+      (update-in [:models :modal] dissoc :started)))
+
 (defmethod fx/perform-effects e/funnel|acquisition|prompted
   [_ _ {:email-modal/keys [template-content-id variation-description trigger-id]} _ _]
   (publish e/biz|email-capture|deployed
@@ -126,16 +213,20 @@
 
 (defmethod fx/perform-effects e/biz|capture-modal|finished
   [_ _ {:keys [id trigger-id cause]} state _]
-  (cond
-    (= cause :cta)
+  (case cause
+    :cta
     #?(:cljs
-       (cookie-jar/save-email-capture-long-timer-started (get-in state k/cookie)))
+       (do
+         (cookie-jar/save-email-capture-long-timer-started (get-in state k/cookie))
+         (publish e/biz|capture-modal|timer-state-observed)))
 
-    (= cause :dismiss)
+    :dismiss
     #?(:cljs
-       (cookie-jar/save-email-capture-short-timer-started (email-modal-trigger-id->cookie-id trigger-id)
-                                                          (get-in state k/cookie))))
-  (publish e/biz|capture-modal|timer-state-observed))
+       (do (cookie-jar/save-email-capture-short-timer-started (email-modal-trigger-id->cookie-id trigger-id)
+                                                              (get-in state k/cookie))
+           (publish e/biz|capture-modal|timer-state-observed)))
+
+    nil))
 
 (defmethod t/transition-state e/hdyhau-email-capture-submitted
   [_ _ _ app-state]
