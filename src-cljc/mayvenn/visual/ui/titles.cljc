@@ -44,6 +44,7 @@
    :primary/myj1        {:primary/padding "myj1"}
    :primary/strike      {:primary/strike "strike"}
    :secondary/proxima   {:secondary/font "proxima"}
+   :secondary/content-1 {:secondary/size "content-1"}
    :secondary/content-2 {:secondary/size "content-2"}
    :secondary/content-3 {:secondary/size "content-3"}
    :secondary/content-4 {:secondary/size "content-4"}
@@ -271,5 +272,17 @@
           :primary/canela
           :primary/myj1
           :secondary/content-2
+          :secondary/myj1]
+         text))
+
+(defn
+  ^{:usages [:experience.omni/subhero-section]}
+  canela-huge-with-large-secondary [text]
+  (title [:align/center
+          :icon/myj1
+          :primary/title-1
+          :primary/canela
+          :primary/myj1
+          :secondary/content-1
           :secondary/myj1]
          text))

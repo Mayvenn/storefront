@@ -47,11 +47,11 @@
                                                :blog/ucare-id  "70f4e431-6726-4484-b91f-1a2b294aee00"}}
 
                     (when in-omni?
-                      (vt/within :no-your-average-hair-store
-                                 {:header/value "Not Your Average Hair Store"
-                                  :body/value (str "Visit us today and get a FREE consultation, or personalize your next "
-                                                   "wig for as low as $25 at a Mayvenn Beauty Lounge near you! "
-                                                   "High-quality 100% virgin human hair wigs, extensions, bundles, and more in stock!")}))
+                      (vt/within :not-your-average-hair-store
+                                 {:primary "Not Your Average Hair Store"
+                                  :secondary (str "Visit us today and get a FREE consultation, or personalize your next "
+                                                        "wig for as low as $25 at a Mayvenn Beauty Lounge near you! "
+                                                        "High-quality 100% virgin human hair wigs, extensions, bundles, and more in stock!")}))
                     (vt/within :promises {:list/icons
                                           (if in-omni?
                                             [{:promises.icon/symbol :svg/check-cloud,

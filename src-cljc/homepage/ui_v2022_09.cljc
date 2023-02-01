@@ -8,6 +8,7 @@
             [catalog.ui.shop-these-looks :as shop-these-looks]
             [homepage.ui.zip-explanation :as zip-explanation]
             [mayvenn.visual.tools :as vt]
+            [mayvenn.visual.ui.titles :as titles]
             [storefront.component :as c]
             [storefront.components.homepage-hero :as homepage-hero]
             [storefront.events :as e]
@@ -18,12 +19,13 @@
   [:div
    (c/build hero/organism-without-shipping-bar hero)
    (c/build promises/organism (vt/with :promises data))
-   (when (seq (vt/with :no-your-average-hair-store data))
+   (when (seq (vt/with :not-your-average-hair-store data))
      ;; TODO: this div is an expediency, these designs belong in a component that
      ;;       contains its own layout, but this is faster right now. Come back and
      ;;       build a component that centers and has a max-width, etc.
-     [:div.max-960.mx-auto.center
-      (c/build layered/lp-title-text-cta-background-color (vt/with :no-your-average-hair-store data))])
+     [:div.max-960.mx-auto.center.p4-on-mb.p8-on-tb-dt
+      (titles/canela-huge-with-large-secondary
+       (vt/with :not-your-average-hair-store data))])
    (c/build shopping-categories/organism shopping-categories)
    (c/build blog/organism blog1)
    (c/build shop-these-looks/organism data)
