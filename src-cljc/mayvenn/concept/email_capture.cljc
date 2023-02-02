@@ -187,9 +187,9 @@
   [_ _ _ state _]
   (let [started-modal (get-in state [:models :modal :started])]
     (when-not started-modal
-      (publish e/biz|capture-modal|finished {:cause :no-matching-modal}))))
+      (publish e/modal|finished {:cause :no-matching-modal}))))
 
-(defmethod t/transition-state e/biz|capture-modal|finished
+(defmethod t/transition-state e/modal|finished
   [_ _ _ app-state]
   (-> app-state
       (update-in [:models :modal] dissoc :started)))
@@ -211,7 +211,7 @@
            (cookie-jar/save-email-capture-long-timer-started (get-in state k/cookie)))
         (publish e/biz|capture-modal|timer-state-observed)))
 
-(defmethod fx/perform-effects e/biz|capture-modal|finished
+(defmethod fx/perform-effects e/modal|finished
   [_ _ {:keys [id trigger-id cause]} state _]
   (case cause
     :cta
@@ -295,7 +295,7 @@
                                 :account-profile       (get-in app-state k/account-profile)})))))
 
 #?(:cljs
-   (defmethod trk/perform-track e/biz|capture-modal|finished
+   (defmethod trk/perform-track e/modal|finished
      [_ events {:keys [trigger-id variation-description template-content-id]} app-state]
      (stringer/track-event "email_capture-dismiss" {:email-capture-id      trigger-id
                                                     :variation-description variation-description

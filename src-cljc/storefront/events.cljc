@@ -685,6 +685,9 @@
 (defpath biz|shared-cart|hydrated)
 (defpath cart-cleared)
 
+;; general modal
+(defpath modal|finished)
+
 ;; email-modal
 (defpath capture-modal|submitted)
 (defpath capture-modal|dismissed)
@@ -725,7 +728,6 @@
 (defpath biz|email-capture|captured)
 (defpath biz|capture-modal|started)
 (defpath biz|capture-modal|determined)
-(defpath biz|capture-modal|finished)
 (defpath biz|capture-modal|timer-state-observed)
 (defpath biz|hdyhau-capture|captured)
 (defpath biz|sms-capture|captured)

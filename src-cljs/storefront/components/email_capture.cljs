@@ -230,7 +230,7 @@
         email-address (get values "email-capture-input")
         phone-number  (get values "phone-capture-input")]
 
-    (publish e/biz|capture-modal|finished {:id trigger-id :cause :cta})
+    (publish e/modal|finished {:id trigger-id :cause :cta})
     ;; TODO Identify with backend and publish after success
     (publish e/funnel|acquisition|succeeded
              {:prompt {:method                       :email-modal/trigger
@@ -286,7 +286,7 @@
                        :email-modal/trigger-id       trigger-id
                        :email-modal/template-id      template-content-id
                        :email-modal/test-description variation-description}})
-    (publish e/biz|capture-modal|finished
+    (publish e/modal|finished
              {:trigger-id            trigger-id
               :variation-description variation-description
               :template-content-id   template-content-id
