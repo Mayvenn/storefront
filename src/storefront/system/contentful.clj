@@ -1,7 +1,6 @@
 (ns storefront.system.contentful
   (:require [clojure.walk :as walk]
             [com.stuartsierra.component :as component]
-            [lambdaisland.uri :as uri]
             [storefront.system.scheduler :as scheduler]
             [storefront.utils :as utils]
             [ring.util.response :as util.response]

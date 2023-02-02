@@ -8,7 +8,6 @@
             [mayvenn.concept.hard-session :as hard-session]
             [spice.maps :as maps]
             [spice.date :as date]
-            [lambdaisland.uri :as uri]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.credit-cards :as cc]
             [storefront.accessors.experiments :as experiments]

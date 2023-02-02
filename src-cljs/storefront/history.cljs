@@ -4,7 +4,7 @@
             [storefront.events :as events]
             [goog.events]
             [goog.history.EventType :as EventType]
-            [lambdaisland.uri :as uri])
+            lambdaisland.uri)
   (:import [goog.history Html5History]))
 
 ;; Html5History transformer defaults to always appending location.search
@@ -42,7 +42,7 @@
   (let [string-uri (or js/window.location.href
                        js/document.URL
                        "")
-        uri (lambdaisland.uri/uri string-uri)]
+        uri        (lambdaisland.uri/uri string-uri)]
     {:path      (.getToken app-history)
      :host      (:host uri)
      :query     (lambdaisland.uri/query-map uri)

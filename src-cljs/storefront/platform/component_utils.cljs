@@ -1,6 +1,5 @@
 (ns storefront.platform.component-utils
-  (:require [lambdaisland.uri :as uri]
-            [storefront.events :as events]
+  (:require [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.history :as history]
