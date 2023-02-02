@@ -94,7 +94,7 @@
   [_ _ _ state]
   (assoc-in state model-keypath {}))
 
-(defmethod t/transition-state e/biz|capture-modal|timer-state-observed
+(defmethod t/transition-state e/countdown-trigger|observed
   [_ _ _ app-state]
   #?(:cljs
      (let [cookie (get-in app-state k/cookie)]
@@ -107,9 +107,9 @@
                                                                            cookie)]))
                                                        (into {})))))))
 
-(defmethod fx/perform-effects e/biz|capture-modal|timer-state-observed
+(defmethod fx/perform-effects e/countdown-trigger|observed
   [_ _ _ state _]
-  (publish e/biz|capture-modal|determined))
+  (publish e/modal|determined))
 
 ;;; Matchers and Triggers
 
@@ -162,7 +162,7 @@
            (remove #(get short-timers (-> % :email-modal-trigger :trigger-id)))
            not-empty))))
 
-(defmethod t/transition-state e/biz|capture-modal|determined
+(defmethod t/transition-state e/modal|determined
   [_ _ _ app-state]
   (let [long-timer       (get-in app-state long-timer-started-keypath)
         short-timers     (get-in app-state short-timer-starteds-keypath)
@@ -179,14 +179,9 @@
 
 ;; RACE CONDITION: add another event for determining modal, so we can separate these
 
-(defmethod fx/perform-effects e/biz|capture-modal|determined
+(defmethod fx/perform-effects e/modal|determined
   [_ _ _ state _]
-  (publish e/biz|capture-modal|started))
-
-;; (defmethod fx/perform-effects e/biz|capture-modal|started
-;;   [_ _ _ state _]
-;;   (let [started-modal (get-in state [:models :modal :started])]
-;;     ))
+  (publish e/modal|started))
 
 (defmethod t/transition-state e/modal|finished
   [_ _ _ app-state]
@@ -208,7 +203,7 @@
            (experiments/hdyhau-email-capture? state))
         #?(:cljs
            (cookie-jar/save-email-capture-long-timer-started (get-in state k/cookie)))
-        (publish e/biz|capture-modal|timer-state-observed)))
+        (publish e/countdown-trigger|observed)))
 
 (defmethod fx/perform-effects e/modal|finished
   [_ _ {:keys [id trigger-id cause]} state _]
@@ -217,13 +212,13 @@
     #?(:cljs
        (do
          (cookie-jar/save-email-capture-long-timer-started (get-in state k/cookie))
-         (publish e/biz|capture-modal|timer-state-observed)))
+         (publish e/countdown-trigger|observed)))
 
     :dismiss
     #?(:cljs
        (do (cookie-jar/save-email-capture-short-timer-started (email-modal-trigger-id->cookie-id trigger-id)
                                                               (get-in state k/cookie))
-           (publish e/biz|capture-modal|timer-state-observed)))
+           (publish e/countdown-trigger|observed)))
 
     nil))
 
@@ -241,7 +236,7 @@
   [_ _ _ state _]
   #?(:cljs
      (cookie-jar/save-email-capture-long-timer-started (get-in state k/cookie)))
-  (publish e/biz|capture-modal|timer-state-observed))
+  (publish e/countdown-trigger|observed))
 
 ;;; TRACKING
 
