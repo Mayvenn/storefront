@@ -53,9 +53,9 @@
                                   :secondary (str "Visit us today and get a FREE consultation, or personalize your next "
                                                         "wig for as low as $25 at a Mayvenn Beauty Lounge near you! "
                                                         "High-quality 100% virgin human hair wigs, extensions, bundles, and more in stock!")}))
-                    (vt/within :promises {:list/icons
-                                          (if in-omni?
-                                            layered/promises-omni-query
+                    (vt/within :promises (if in-omni?
+                                           layered/promises-omni-query
+                                           {:list/icons
                                             [{:promises.icon/symbol :svg/hand-heart,
                                               :promises.icon/title  "Top-Notch Service"}
                                              {:promises.icon/symbol :svg/shield,
@@ -63,7 +63,7 @@
                                              {:promises.icon/symbol :svg/check-cloud,
                                               :promises.icon/title  "100% Virgin Human Hair"}
                                              {:promises.icon/symbol :svg/ship-truck,
-                                              :promises.icon/title  "Free Standard Shipping"}])})
+                                              :promises.icon/title  "Free Standard Shipping"}]}))
                     {:shop-these-looks/row-1 [{:shop-these-looks.entry.cta/copy   "Wedding Hair"
                                                :shop-these-looks.entry.cta/target e/navigate-shop-by-look-details
                                                :shop-these-looks.entry.cta/args   {:album-keyword :look
