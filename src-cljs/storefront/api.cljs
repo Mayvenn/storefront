@@ -1236,7 +1236,7 @@
 
 (defn fetch-geo-location-from-ip
   [cache]
-  (let [path    "http://api.ipstack.com/check"
+  (let [path    "https://api.ipstack.com/check"
         params  {:access_key "e53fd9c4e2f6f73161821bb7b0df0069"
                  :fields     "main"}
         handler (fn [res]
