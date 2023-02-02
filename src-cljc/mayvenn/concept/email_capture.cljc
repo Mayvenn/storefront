@@ -109,7 +109,7 @@
 
 (defmethod fx/perform-effects e/biz|capture-modal|timer-state-observed
   [_ _ _ state _]
-  (publish e/biz|capture-modal|started))
+  (publish e/biz|capture-modal|determined))
 
 ;;; Matchers and Triggers
 
@@ -162,7 +162,7 @@
            (remove #(get short-timers (-> % :email-modal-trigger :trigger-id)))
            not-empty))))
 
-(defmethod t/transition-state e/biz|capture-modal|started
+(defmethod t/transition-state e/biz|capture-modal|determined
   [_ _ _ app-state]
   (let [long-timer       (get-in app-state long-timer-started-keypath)
         short-timers     (get-in app-state short-timer-starteds-keypath)
@@ -171,7 +171,7 @@
         email-modals     (when-not (or signed-in? (:em_hash query-params))
                            (triggered-email-modals<- app-state long-timer short-timers))
         ;; FIXME indeterminate behavior when multiple triggers are valid and active
-        determined-modal (spice.core/spy (first email-modals))]
+        determined-modal (first email-modals)]
     (when determined-modal
       (-> app-state
           (assoc-in [:models :modal :started]
@@ -179,15 +179,14 @@
 
 ;; RACE CONDITION: add another event for determining modal, so we can separate these
 
-(defmethod fx/perform-effects e/biz|capture-modal|started
-  [_ _ _ state _]
-  (publish e/biz|capture-modal|determined))
-
 (defmethod fx/perform-effects e/biz|capture-modal|determined
   [_ _ _ state _]
-  (let [started-modal (get-in state [:models :modal :started])]
-    (when-not started-modal
-      (publish e/modal|finished {:cause :no-matching-modal}))))
+  (publish e/biz|capture-modal|started))
+
+;; (defmethod fx/perform-effects e/biz|capture-modal|started
+;;   [_ _ _ state _]
+;;   (let [started-modal (get-in state [:models :modal :started])]
+;;     ))
 
 (defmethod t/transition-state e/modal|finished
   [_ _ _ app-state]
@@ -228,16 +227,17 @@
 
     nil))
 
-(defmethod t/transition-state e/hdyhau-email-capture-submitted
+(defmethod t/transition-state e/modal|hdyhau|cta-clicked
   [_ _ _ app-state]
   (-> app-state
       (assoc-in [:models :hdyhau :submitted] true)))
 
-(defmethod fx/perform-effects e/hdyhau-email-capture-submitted
+(defmethod fx/perform-effects e/modal|hdyhau|cta-clicked
   [_ _ data state _]
-  (publish e/biz|hdyhau-capture|captured data))
+  (publish e/modal|finished {:id "hdyhau" :cause :cta})
+  (publish e/funnel|awareness|succeeded data))
 
-(defmethod fx/perform-effects e/biz|hdyhau-capture|captured
+(defmethod fx/perform-effects e/funnel|awareness|succeeded
   [_ _ _ state _]
   #?(:cljs
      (cookie-jar/save-email-capture-long-timer-started (get-in state k/cookie)))
@@ -302,7 +302,7 @@
                                                     :template-content-id   template-content-id})))
 
 #?(:cljs
-   (defmethod trk/perform-track e/biz|hdyhau-capture|captured
+   (defmethod trk/perform-track e/funnel|awareness|succeeded
      [_ event {:keys [hdyhau-options]} app-state]
      (let [hdyhau-to-submit (:to-submit (get-in app-state k/models-hdyhau))
            email            (get-in app-state [:models :email-capture :textfield])

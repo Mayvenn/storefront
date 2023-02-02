@@ -687,6 +687,7 @@
 
 ;; general modal
 (defpath modal|finished)
+(defpath modal|determine-if-finished)
 
 ;; email-modal
 (defpath capture-modal|submitted)
@@ -729,7 +730,6 @@
 (defpath biz|capture-modal|started)
 (defpath biz|capture-modal|determined)
 (defpath biz|capture-modal|timer-state-observed)
-(defpath biz|hdyhau-capture|captured)
 (defpath biz|sms-capture|captured)
 
 ;; Shopping Quiz iterations
@@ -842,4 +842,5 @@
 (defpath account-profile|experience|joined)
 
 (defpath hdyhau-post-purchase-submitted)
-(defpath hdyhau-email-capture-submitted)
+(defpath modal|hdyhau|cta-clicked)
+(defpath funnel|awareness|succeeded)

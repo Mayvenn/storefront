@@ -226,11 +226,9 @@
          variation-description                :description
          {:keys [trigger-id]}                 :email-modal-trigger}
         email-modal
-
         email-address (get values "email-capture-input")
         phone-number  (get values "phone-capture-input")]
-
-    (publish e/modal|finished {:id trigger-id :cause :cta})
+    (publish e/modal|determine-if-finished {:email-modal email-modal})
     ;; TODO Identify with backend and publish after success
     (publish e/funnel|acquisition|succeeded
              {:prompt {:method                       :email-modal/trigger
@@ -242,6 +240,11 @@
                              (when phone-number
                                {:auth.sms/id     phone-number
                                 :sms.optin/opted true}))})))
+
+(defmethod fx/perform-effects e/modal|determine-if-finished
+  [_ _ {:keys [email-modal]} _ state]
+  (when-not (get-in state k/show-hdyhau)
+    (publish e/modal|finished {:id (:trigger-id (:email-modal-trigger email-modal)) :cause :cta})))
 
 (defmethod fx/perform-effects e/homepage-email-submitted
   [_ _ {:keys [email-modal values]} _ _]
@@ -266,8 +269,7 @@
 
 (defmethod t/transition-state e/capture-modal|submitted
   [_ _ {:keys [email-modal]} app-state]
-  (if (and (:hdyhau (:email-modal-template email-modal))
-           (experiments/hdyhau-email-capture? app-state))
+  (if (:hdyhau (:email-modal-template email-modal))
     (assoc-in app-state k/show-hdyhau true)
     (assoc-in app-state k/show-hdyhau false)))
 
@@ -350,7 +352,7 @@
                                                             {:label   label
                                                              :keypath (conj k/models-hdyhau :to-submit slug)
                                                              :value   (get (:to-submit (get-in state k/models-hdyhau)) slug false)})))
-                :email-capture.hdyhau/target   [e/hdyhau-email-capture-submitted {:hdyhau-options (keys hdyhau)}]})))))
+                :email-capture.hdyhau/target   [e/modal|hdyhau|cta-clicked {:hdyhau-options (keys hdyhau)}]})))))
 
 (defn ^:export built-component [state opts]
   (let [email-modal (get-in state [:models :modal :started])]
