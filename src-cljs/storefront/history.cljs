@@ -45,7 +45,7 @@
         uri (lambdaisland.uri/uri string-uri)]
     {:path      (.getToken app-history)
      :host      (:host uri)
-     :query     (:query uri)
+     :query     (lambdaisland.uri/query-map uri)
      :subdomain (->subdomain (:host uri))
      :fragment  (:fragment uri)}))
 
