@@ -6,7 +6,7 @@
 (defn longform-timeframe [rate-sku drop-shipping?]
   (case rate-sku
     "WAITER-SHIPPING-1" (if drop-shipping?
-                          nil ; "7-10 days (Weekend Delivery Included)"
+                          "7-10 days (Weekend Delivery Included)"
                           "4-6 days (Weekend Delivery Included)")
     "WAITER-SHIPPING-7" "2-4 days (Weekend Delivery Included)"
     "WAITER-SHIPPING-2" "1-2 business days (No Weekend & No P.O. Box)"
@@ -17,7 +17,7 @@
 (defn names-with-time-range [rate-sku-id drop-shipping?]
   (case rate-sku-id
     "WAITER-SHIPPING-1" (if drop-shipping?
-                          nil ; "Free 7-10 Days Standard Shipping"
+                          "Free 7-10 Days Standard Shipping"
                           "Free 4-6 Days Standard Shipping")
     "WAITER-SHIPPING-7" "Priority 2-4 Days Shipping"
     "WAITER-SHIPPING-2" "Express 1-2 Days Shipping"
@@ -34,13 +34,24 @@
 (defn timeframe [rate-sku drop-shipping?]
   (case rate-sku
     "WAITER-SHIPPING-1" (if drop-shipping?
-                          nil ; "7-10 days"
+                          "7-10 days"
                           "4-6 days")
     "WAITER-SHIPPING-7" "2-4 days"
     "WAITER-SHIPPING-2" "1-2 business days"
     "WAITER-SHIPPING-4" "1 business day"
     "WAITER-SHIPPING-8" "In Store Pick-Up"
     nil))
+
+(defn shipping-method-rules
+  [rate-sku drop-shipping?]
+  (case rate-sku
+    "WAITER-SHIPPING-1" (if drop-shipping?
+                          {:min-delivery 7 :max-delivery 10 :saturday-delivery? true}
+                          {:min-delivery 4 :max-delivery 6 :saturday-delivery? true})
+    "WAITER-SHIPPING-7" {:min-delivery 2 :max-delivery 4 :saturday-delivery? true}
+    "WAITER-SHIPPING-2" {:min-delivery 1 :max-delivery 2 :saturday-delivery? false}
+    "WAITER-SHIPPING-4" {:min-delivery 1 :max-delivery 1 :saturday-delivery? false}))
+
 
 (defn shipping-details [shipment]
   (let [shipping-line-item    (->> shipment
