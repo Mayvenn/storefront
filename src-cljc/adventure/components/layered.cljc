@@ -879,17 +879,17 @@
   [_ _ _]
   [:div.flex.flex-column.bg-refresh-gray.px2.py8.gap-6
    [:div.title-1.canela.center "Why Mayvenn"]
-   (map (fn [[icon title body]]
-          [:div.flex.flex-column.center
-           ;; (str icon)
-           (svg/symbolic->html [icon {:class "mx-auto"
-                                      :style {:width "80px"
-                                              :height "80px"}}])
-           [:div.proxima.title-2 title]
-           [:p body]])
-        [[:svg/gem    "Value"       "High-quality, virgin 100% human hair at a fair price."]
-         [:svg/ribbon "Expertise"   "Our beauty experts will sit down with you, consult you in your exact situation, and deliver a highly personalized look."]
-         [:svg/lock   "Convenience" "Buy from anywhere, have an elevated experience, and enjoy our legendary customer service."]])])
+   [:div.flex.flex-column-on-mb.gap-6.justify-center.px8
+    (map (fn [[icon title body]]
+           [:div.flex.flex-column.center.col-4-on-tb-dt
+            (svg/symbolic->html [icon {:class "mx-auto"
+                                       :style {:width "80px"
+                                               :height "80px"}}])
+            [:div.proxima.title-2 title]
+            [:p.content-2 body]])
+         [[:svg/gem    "Value"       "High-quality, virgin 100% human hair at a fair price."]
+          [:svg/ribbon "Expertise"   "Our beauty experts will sit down with you, consult you in your exact situation, and deliver a highly personalized look."]
+          [:svg/lock   "Convenience" "Buy from anywhere, have an elevated experience, and enjoy our legendary customer service."]])]])
 
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (when type
