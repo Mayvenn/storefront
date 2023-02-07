@@ -594,6 +594,20 @@
    [:svg opts
     ^:inline (svg-xlink "market")]))
 
+(defn ribbon
+  "A stall in a market"
+  [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "ribbon")]))
+
+(defn gem
+  "A stall in a market"
+  [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "gem")]))
+
 (defn symbolic->html
   "Converts a data from query that describes an svg to the appropriate html.
 
@@ -631,5 +645,8 @@
        :svg/hand-heart                      ^:inline (hand-heart attrs)
        :svg/check-cloud                     ^:inline (check-cloud attrs)
        :svg/custom-wig-services             ^:inline (custom-wig-services attrs)
+       :svg/gem                             ^:inline (gem attrs)
+       :svg/ribbon                          ^:inline (ribbon attrs)
+       :svg/lock                            ^:inline (lock attrs)
        [:div])
      [:div])))
