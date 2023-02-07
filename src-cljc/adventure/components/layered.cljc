@@ -856,17 +856,19 @@
   (component/build promises/organism promises-omni-query))
 
 (def wig-customization-query
-  {:header/title    "Wig Customization"
-   :header/subtitle "Here's how it works:"
-   :sections        [{:title "Select your wig"
-                      :copy  "Choose a factory-made wig or get one tailor-made by our resident Wig Artist"
-                      :url   "https://ucarecdn.com/1596ef7a-8ea8-4e2d-b98f-0e2083998cce/select_your_wig.png"}
-                     {:title "We customize it"
-                      :copy  "Tell us how you want your wig to look and we make it happen."
-                      :url   "https://ucarecdn.com/b8902af1-9262-4369-ab88-35e82fd2f3b7/we_customize_it.png"}
-                     {:title "Take it home"
-                      :copy  "Rock your new unit the same day or pick it up within 2-5 days."
-                      :url   "https://ucarecdn.com/8d4b8e12-48a7-4e90-8a41-3f1ef1267a93/take_it_home.png"}]})
+  {:header/supertitle "Available In-Store Only"
+   :header/title      "Make Your Dream Look a Reality"
+   :header/subtitle   "Customize your wig with endless cut, color, and stylist possibilities."
+   :sections/title    "Here's How It Works:"
+   :sections          [{:title "Select your wig"
+                        :copy  "Start with an in-stock wig or get one tailor-made by our resident Wig Artist."
+                        :url   "https://ucarecdn.com/686bd480-8dd0-4b9e-bd29-d4a1f8652e87/select_your_wig.png"}
+                       {:title "We customize it"
+                        :copy  "Our experts can create a variety of one-of-a-kind customization for a style that's all your own."
+                        :url   "https://ucarecdn.com/16c43ab7-d3ce-42f2-bef4-37674c59ca6b/we_customize_it.png"}
+                       {:title "Take it home"
+                        :copy  "Rock your new unit the same day, or choose a convenient 2-5 day pickup window."
+                        :url   "https://ucarecdn.com/8d4b8e12-48a7-4e90-8a41-3f1ef1267a93/take_it_home.png"}]})
 
 (defcomponent customize-wig
   [_ _ _]
