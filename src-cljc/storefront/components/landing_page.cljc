@@ -183,6 +183,7 @@
                           :cta/target   (url->navigation-message (:cta-url body-layer))}
       "layerTilesAndCta" {:layer/type   :lp-tiles
                           :header/value (:title body-layer)
+                          :subtitle     (:subtitle body-layer)
                           :images       (map (fn [tile]
                                                (case (:content/type tile)
                                                  "imageTextLink"

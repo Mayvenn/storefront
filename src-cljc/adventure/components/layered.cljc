@@ -511,12 +511,15 @@
    (shop-cta-with-icon data)])
 
 (defcomponent lp-tiles
-  [{title  :header/value
-    images :images
-    :as    data} _ _]
-  [:div.py8.mx-auto.center
+  [{title    :header/value
+    subtitle :subtitle
+    images   :images
+    :as      data} _ _]
+  [:div.py8.mx-auto.center.flex.flex-column.gap-2
    (when title
-     [:div.title-1.proxima.shout.bold title])
+     [:div.title-1.canela.mx1 title])
+   (when subtitle
+     [:div.title-2.canela.mx1 subtitle])
    [:div.pt1.pb4.grid.gap-1.mx1
     {:class (case (count images)
               1 "tiles-1"
@@ -525,7 +528,7 @@
               4 "tiles-4"
               "tiles-more")}
     (for [{:keys [image-url image alt label label-shout copy] :as image-data} images
-          :let [navigation-message (:cta/navigation-message image-data)]]
+          :let                                                                [navigation-message (:cta/navigation-message image-data)]]
       (cond
         (not (or image image-url))
         nil
@@ -565,9 +568,10 @@
            [:div.black.left-align.mt2 copy])]))]
    (let [{:keys [cta]} data]
      (if (:id cta)
-       (ui/button-small-primary (merge {:class "inline"}
-                                       (:attrs cta))
-                                (:content cta))
+       [:div
+        (ui/button-medium-primary (merge {:class "inline"}
+                                         (:attrs cta))
+                                  (:content cta))]
        [:span]))])
 
 (defcomponent lp-images-with-copy
