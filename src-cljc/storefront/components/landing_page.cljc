@@ -290,7 +290,8 @@
                                                                 "divider-purple-pink" :lp-divider-purple-pink
                                                                 "service-list"        :service-list
                                                                 "promises-omni"       :promises-omni
-                                                                "customize-wig"       :customize-wig)}
+                                                                "customize-wig"       :customize-wig
+                                                                nil)}
       {})))
 
 (defn landing-page-body [data]
