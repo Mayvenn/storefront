@@ -7,7 +7,7 @@
 (def standard-data
   {:header/supertitle "Available In-Store Only"
    :header/title      "Make Your Dream Look a Reality"
-   :header/subtitle   "Customize your wig with endless cut, color, and stylist possibilities."
+   :header/subtitle   "Customize your wig with endless cut, color, and styling possibilities."
    :sections/title    "Here's How It Works:"
    :sections          [{:title "Select your wig"
                         :copy  "Start with an in-stock wig or get one tailor-made by our resident Wig Artist."
