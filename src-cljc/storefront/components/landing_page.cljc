@@ -284,6 +284,9 @@
                                                   :alt                (:alt body-layer)
                                                   :image              (:image body-layer)
                                                   :navigation-message (url->navigation-message (:url body-layer))}
+      "text"                                     (-> body-layer
+                                                     (select-keys [:url :font :size :alignment :content])
+                                                     (assoc :layer/type :text))
       "staticContent"                            {:layer/type (case (:module body-layer)
                                                                 "contact-us"          :lp-contact-us
                                                                 "divider-green-gray"  :lp-divider-green-gray
@@ -293,6 +296,12 @@
                                                                 "customize-wig"       :customize-wig
                                                                 "why-mayvenn"         :why-mayvenn
                                                                 nil)}
+      "section"                                  (-> body-layer
+                                                     (select-keys [:contents :mobile-columns :desktop-columns
+                                                                   :desktop-reverse-order :background-color
+                                                                   :horizontal-padding :vertical-padding :gap])
+                                                     (update :contents (partial map #(determine-and-shape-layer data %)))
+                                                     (assoc :layer/type :section))
       {})))
 
 (defn landing-page-body [data]

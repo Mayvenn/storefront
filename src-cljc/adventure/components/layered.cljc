@@ -891,6 +891,26 @@
           [:svg/ribbon "Expertise"   "Our beauty experts will sit down with you, consult you in your exact situation, and deliver a highly personalized look."]
           [:svg/lock   "Convenience" "Buy from anywhere, have an elevated experience, and enjoy our legendary customer service."]])]])
 
+(defcomponent section [{:keys [contents mobile-columns desktop-columns desktop-reverse-order background-color horizontal-padding vertical-padding gap]} _ opts]
+  [:div.grid
+   {:class (cond->> [(str "columns-" mobile-columns) (str "columns-" desktop-columns "-on-tb-dt")]
+             background-color      (cons (str "bg-" background-color))
+             horizontal-padding    (cons (str "px" horizontal-padding))
+             vertical-padding      (cons (str "py" vertical-padding))
+             gap                   (cons (str "gap-" gap))
+             :always               (clojure.string/join " "))}
+   (map-indexed
+    (fn [idx content]
+      [:div
+       (layer-view content opts)])
+     contents)])
+
+(defcomponent text [{:keys [url font size alignment content]} _ _]
+  [:div
+   {:class (clojure.string/join " " [font size])
+    :style {:text-align alignment}}
+   content])
+
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (when type
     (component/build
@@ -924,7 +944,8 @@
        :promises-omni       promises-omni
        :customize-wig       customize-wig
        :why-mayvenn         why-mayvenn
-
+       :section             section
+       :text                text
 
        ;; LEGACY
        :image-block                image-block
