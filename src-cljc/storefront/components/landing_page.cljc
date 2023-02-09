@@ -302,6 +302,10 @@
                                                                    :horizontal-padding :vertical-padding :gap])
                                                      (update :contents (partial map #(determine-and-shape-layer data %)))
                                                      (assoc :layer/type :section))
+      "button"                                   (-> body-layer
+                                                     (select-keys [:contents :color :size :url])
+                                                     (update :contents (partial determine-and-shape-layer data))
+                                                     (assoc :layer/type :button))
       {})))
 
 (defn landing-page-body [data]

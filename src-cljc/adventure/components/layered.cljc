@@ -891,7 +891,8 @@
           [:svg/ribbon "Expertise"   "Our beauty experts will sit down with you, consult you in your exact situation, and deliver a highly personalized look."]
           [:svg/lock   "Convenience" "Buy from anywhere, have an elevated experience, and enjoy our legendary customer service."]])]])
 
-(defcomponent section [{:keys [contents mobile-columns desktop-columns desktop-reverse-order background-color horizontal-padding vertical-padding gap]} _ opts]
+(defcomponent section [{:keys [contents mobile-columns desktop-columns desktop-reverse-order
+                               background-color horizontal-padding vertical-padding gap]} _ opts]
   [:div.grid
    {:class (cond->> [(str "columns-" mobile-columns) (str "columns-" desktop-columns "-on-tb-dt")]
              background-color      (cons (str "bg-" background-color))
@@ -904,6 +905,10 @@
       [:div
        (layer-view content opts)])
      contents)])
+
+(defcomponent button [{:keys [contents color size url]} _ opts]
+  [:div.flex.justify-center
+   (ui/button (str "btn-" size " btn-" color " button-font-1") {:href url} (layer-view contents opts))])
 
 (defcomponent text [{:keys [url font size alignment content]} _ _]
   [:div
@@ -946,6 +951,7 @@
        :why-mayvenn         why-mayvenn
        :section             section
        :text                text
+       :button              button
 
        ;; LEGACY
        :image-block                image-block
