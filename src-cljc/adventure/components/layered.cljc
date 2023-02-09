@@ -893,7 +893,7 @@
 
 (defcomponent section [{:keys [contents mobile-columns desktop-columns desktop-reverse-order
                                background-color horizontal-padding vertical-padding gap]} _ opts]
-  [:div.grid
+  [:div.grid.my-auto
    {:class (cond->> [(str "columns-" mobile-columns) (str "columns-" desktop-columns "-on-tb-dt")]
              background-color      (cons (str "bg-" background-color))
              horizontal-padding    (cons (str "px" horizontal-padding))
@@ -902,8 +902,7 @@
              :always               (clojure.string/join " "))}
    (map-indexed
     (fn [idx content]
-      [:div
-       (layer-view content opts)])
+      (layer-view content opts))
      contents)])
 
 (defcomponent button [{:keys [contents color size url]} _ opts]
