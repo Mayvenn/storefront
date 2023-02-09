@@ -118,7 +118,7 @@
         grid-template-columns: 1fr;
     }
     .columns-2-on-tb-dt {
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr;
     }
     .columns-3-on-tb-dt {
         grid-template-columns: 1fr 1fr 1fr;
