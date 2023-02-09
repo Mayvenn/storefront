@@ -128,7 +128,7 @@
 (def customize-your-wig-data
   ;; NOTE(le): This is copied from the omni experience landing page
   {:desktop-ordering "Top|Bottom"
-   :top {:layer/type :lp-split-image
+   :top {:layer/type :image
          :alt "Customize Your Wig"
          :image {:title "Get a Custom Wig"
                  :description ""

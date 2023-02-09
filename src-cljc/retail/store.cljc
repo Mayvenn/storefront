@@ -129,7 +129,7 @@
                      :metro          metro})
          (vt/within :customize-your-wig
                     {:desktop-ordering "Top|Bottom"
-                     :top              {:layer/type         :lp-split-image
+                     :top              {:layer/type         :image
                                         :alt                "Customize Your Wig"
                                         :image              {:title              "Get a Custom Wig"
                                                              :description        ""
