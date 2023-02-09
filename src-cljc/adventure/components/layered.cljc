@@ -787,14 +787,14 @@
       reviews)]
     [:div.rotate-180 (svg/quotation-mark {:class "fill-gray" :width "35px" :height "30px"})]]])
 
-(defcomponent lp-split-image
+(defcomponent image
   [{:keys [alt image navigation-message]} _ _]
-  (ui/img {:src   (:url (:file image))
-           :style {:object-fit "cover"
-                   :min-width  "50%"}
-           :class "flex-auto col-12"
+  (ui/img {:src      (:url (:file image))
+           :style    {:object-fit "cover"
+                      :display    "block"}
+           :class    "flex-auto col-12"
            :max-size 1024
-           :alt   alt}))
+           :alt      alt}))
 
 ;; Duplicated from src-cljc/homepage/ui_v2020_07.cljc to avoid circular dep
 (def contact-us-query
@@ -928,7 +928,7 @@
        :lp-email-capture                   lp-email-capture
        :lp-split                           lp-split
        :lp-title-text-cta-background-color lp-title-text-cta-background-color
-       :lp-split-image                     lp-split-image
+       :image                              image
        :lp-contact-us                      lp-contact-us
        :lp-divider-green-gray              lp-divider-green-gray
        :lp-divider-purple-pink             lp-divider-purple-pink

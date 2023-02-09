@@ -280,7 +280,7 @@
                                                   :content/color    (if (= "black" (:background-color body-layer))
                                                                       "white"
                                                                       "black")}
-      "image"                                    {:layer/type         :lp-split-image
+      "image"                                    {:layer/type         :image
                                                   :alt                (:alt body-layer)
                                                   :image              (:image body-layer)
                                                   :navigation-message (url->navigation-message (:url body-layer))}
