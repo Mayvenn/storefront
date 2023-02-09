@@ -21,11 +21,14 @@
 
 (defn ^:private url->navigation-message [url]
   (when-not (nil? url)
-    (let [parsed-path                (lambdaisland.uri/uri url)]
-      (routes/navigation-message-for (:path parsed-path)
-                                     (lambdaisland.uri/query-map parsed-path)
-                                     nil
-                                     (:fragment parsed-path)))))
+    events/navigate-not-found
+    (let [parsed-path (lambdaisland.uri/uri url)
+          nav-message (routes/navigation-message-for (:path parsed-path)
+                                                     (lambdaisland.uri/query-map parsed-path)
+                                                     nil
+                                                     (:fragment parsed-path))]
+      (when (not= events/navigate-not-found (first nav-message))
+        nav-message))))
 
 (defn landing-page-slug [data]
   (->> (get-in data storefront.keypaths/navigation-args)
@@ -283,9 +286,9 @@
       "image"                                    {:layer/type         :image
                                                   :alt                (:alt body-layer)
                                                   :image              (:image body-layer)
-                                                  :navigation-message (url->navigation-message (:url body-layer))}
+                                                  :desktop-image      (:desktop-image body-layer)}
       "text"                                     (-> body-layer
-                                                     (select-keys [:url :font :size :alignment :content])
+                                                     (select-keys [:font :size :alignment :content])
                                                      (assoc :layer/type :text))
       "staticContent"                            {:layer/type (case (:module body-layer)
                                                                 "contact-us"          :lp-contact-us
@@ -298,13 +301,14 @@
                                                                 nil)}
       "section"                                  (-> body-layer
                                                      (select-keys [:contents :mobile-columns :desktop-columns
-                                                                   :desktop-reverse-order :background-color
+                                                                   :desktop-reverse-order :background-color :url
                                                                    :horizontal-padding :vertical-padding :gap])
                                                      (update :contents (partial map #(determine-and-shape-layer data %)))
+                                                     (assoc :navigation-message (url->navigation-message (:url body-layer)))
                                                      (assoc :layer/type :section))
       "button"                                   (-> body-layer
-                                                     (select-keys [:contents :color :size :url])
-                                                     (update :contents (partial determine-and-shape-layer data))
+                                                     (select-keys [:copy :color :size :url])
+                                                     (assoc :navigation-message (url->navigation-message (:url body-layer)))
                                                      (assoc :layer/type :button))
       {})))
 

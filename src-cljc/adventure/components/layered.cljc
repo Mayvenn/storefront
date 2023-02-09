@@ -788,13 +788,20 @@
     [:div.rotate-180 (svg/quotation-mark {:class "fill-gray" :width "35px" :height "30px"})]]])
 
 (defcomponent image
-  [{:keys [alt image navigation-message]} _ _]
-  (ui/img {:src      (:url (:file image))
-           :style    {:object-fit "cover"
-                      :display    "block"}
-           :class    "flex-auto col-12"
-           :max-size 1024
-           :alt      alt}))
+  [{:keys [alt image desktop-image]} _ _]
+  [(ui/img {:src      (:url (:file image))
+            :style    {:object-fit "cover"
+                       :display    "block"}
+            :class    (str "flex-auto col-12" (when desktop-image " hide-on-tb-dt"))
+            :max-size 1024
+            :alt      alt})
+   (when desktop-image
+     (ui/img {:src      (:url (:file desktop-image))
+              :style    {:object-fit "cover"
+                         :display    "block"}
+              :class    "flex-auto col-12 hide-on-mb"
+              :max-size 1024
+              :alt      alt}))])
 
 ;; Duplicated from src-cljc/homepage/ui_v2020_07.cljc to avoid circular dep
 (def contact-us-query
@@ -892,25 +899,36 @@
           [:svg/lock   "Convenience" "Buy from anywhere, have an elevated experience, and enjoy our legendary customer service."]])]])
 
 (defcomponent section [{:keys [contents mobile-columns desktop-columns desktop-reverse-order
-                               background-color horizontal-padding vertical-padding gap]} _ opts]
-  [:div.grid.my-auto
-   {:class (cond->> [(str "columns-" mobile-columns) (str "columns-" desktop-columns "-on-tb-dt")]
-             background-color      (cons (str "bg-" background-color))
-             horizontal-padding    (cons (str "px" horizontal-padding))
-             vertical-padding      (cons (str "py" vertical-padding))
-             gap                   (cons (str "gap-" gap))
-             :always               (clojure.string/join " "))}
+                               url navigation-message background-color horizontal-padding
+                               vertical-padding gap]} _ opts]
+  [(if url :a :div)
+   (merge {:class (cond->> ["grid"
+                            "my-auto"
+                            (str "columns-" mobile-columns)
+                            (str "columns-" desktop-columns "-on-tb-dt")]
+                    background-color      (cons (str "bg-" background-color))
+                    horizontal-padding    (cons (str "px" horizontal-padding))
+                    vertical-padding      (cons (str "py" vertical-padding))
+                    gap                   (cons (str "gap-" gap))
+                    :always               (clojure.string/join " "))}
+
+          (when url
+            {:href url})
+          (when navigation-message
+            (apply utils/route-to navigation-message)))
    (map-indexed
     (fn [idx content]
       (layer-view content opts))
-     contents)])
+    contents)])
 
-(defcomponent button [{:keys [contents color size url]} _ opts]
+(defcomponent button [{:keys [copy color size url navigation-message]} _ _]
   [:div.flex.justify-center
-   (ui/button (str "btn-" size " btn-" color " button-font-1") {:href url} (layer-view contents opts))])
+   (ui/button (str "btn-" size " btn-" color " button-font-1")
+              (merge {:href url} (when navigation-message (apply utils/route-to navigation-message)))
+              copy)])
 
 (defcomponent text [{:keys [url font size alignment content]} _ _]
-  [:div
+  [:div.black
    {:class (clojure.string/join " " [font size])
     :style {:text-align alignment}}
    content])
