@@ -397,7 +397,7 @@
       :sub-cta/learn-more-copy   "Find my store"
       :sub-cta/learn-more-target [events/navigate-retail-walmart {}]})))
 
-(def details-render-slots
+(def old-pdp-details-render-slots
   [{:pdp.details/hair-info
     [:pdp.details.hair-info/model-wearing
      ;; TODO: length guide
@@ -420,6 +420,21 @@
    {:pdp.details/care
     [:pdp.details.care/maintenance-level
      :pdp.details.care/can-it-be-colored?]}])
+
+(def pdp-details-render-slots
+  [{:pdp.details/overview
+    [:pdp.details.overview/description
+     :pdp.details.overview/whats-included
+     :pdp.details.overview/model-wearing]}
+   {:pdp.details/product-details
+    [:pdp.details.product-details/unit-weight
+     :pdp.details.product-details/density
+     :pdp.details.product-details/hair-type
+     :pdp.details.product-details/hair-quality
+     :pdp.details.product-details/cap-size]}
+   {:pdp.details/hair-info
+    [:pdp.details.hair-info/maintenance-level
+     :pdp.details.hair-info/can-this-wig-be-colored]}])
 
 (defn legacy-content-from-cellar
   "Converts cellar SKU and cellar Product to template-slots"
@@ -449,6 +464,26 @@
                  [k (str "<div>" (when heading (str "<h3>" heading "</h3>")) "<p>" (apply str content) "</p></div>")])))
        (into {})))
 
+(defn hack--legacy-content-from-cellar--with-new-drawers
+  "Converts cellar SKU and cellar Product to template-slots"
+  [current-product selected-sku model-image]
+  (->> [:pdp.details.overview/description              "Description"              (->> current-product :copy/description)
+        :pdp.details.overview/what's-included          "What's Included"          (->> current-product :copy/whats-included)
+        :pdp.details.overview/model-wearing            "Model Wearing"            (or (:copy/model-wearing model-image)
+                                                                                      (:copy/model-wearing current-product))
+        :pdp.details.product-details/unit-weight       "Unit Weight"              (or (->> selected-sku :hair/weight)
+                                                                                      (->> current-product :copy/weights))
+        :pdp.details.product-details/density           "Wig Density"              (->> current-product :copy/density)
+        :pdp.details.product-details/hair-type         "Hair Type"                (->> current-product :copy/hair-type)
+        :pdp.details.product-details/hair-quality      "Hair Quality"             (->> current-product :copy/quality)
+        :pdp.details.product-details/cap-size          "Cap Size"                 (->> current-product :copy/cap-size)
+        :pdp.details.hair-info/maintenance-level       "Maintenance Level"        (->> current-product :copy/maintenance-level)]
+       (partition 3)
+       (keep (fn [[k heading content]]
+               (when content
+                 [k (str "<div>" (when heading (str "<h3>" heading "</h3>")) "<p>" (apply str content) "</p></div>")])))
+       (into {})))
+
 (defn content-slots<
   [current-product selected-sku model-image cms-pdp-content fake-cms-content]
   (merge (legacy-content-from-cellar current-product selected-sku model-image)
@@ -456,12 +491,17 @@
          (cms-dynamic-content/derive-product-details cms-pdp-content selected-sku)))
 
 (defn content-slots->accordion-slots
-  [content-slot-data product length-guide-image open-drawers]
+  [details-render-slots content-slot-data product length-guide-image open-drawers]
   (merge
    ;; TODO drive initial-open-drawers off of Contentful Data?
-   (if (contains? (:catalog/department product) "stylist-exclusives")
+   (cond
+     (contains? (:catalog/department product) "stylist-exclusives")
      {:allow-all-closed?    false
       :initial-open-drawers #{:pdp.details/description}}
+     (select {:hair/family #{"ready-wigs"}} [product])
+     {:allow-all-closed?    true
+      :initial-open-drawers #{:pdp.details/overview}}
+     :else
      {:allow-all-closed?    true
       :initial-open-drawers #{:pdp.details/hair-info}})
    {:allow-multi-open?    false
@@ -489,6 +529,7 @@
                                                    (clojure.string/split #"/")
                                                    last
                                                    (clojure.string/replace #"-" " "))}}))))
+
                   vec)
     :id                   :info-accordion
     :open-drawers         open-drawers}))
@@ -723,14 +764,25 @@
                                            selected-sku
                                            model-image
                                            (get-in state keypaths/cms-pdp-content)
-                                           fake-contentful-product-details-data)]
+                                           fake-contentful-product-details-data)
+        ready-wigs-content-slot-data (hack--legacy-content-from-cellar--with-new-drawers detailed-product
+                                                                                         selected-sku
+                                                                                         model-image)]
     (accordion-neue/accordion-query
-     (cond-> (content-slots->accordion-slots content-slot-data
-                                             detailed-product
-                                             length-guide-image
-                                             (:accordion/open-drawers info-accordion))
-                                             ;; In a perfect world the FAQ would be modeled with Filled Content Slots.
-                                             ;; Instead, we shoehorn it into the accordion if we can find the data.
+     (cond->
+         (if (select {:hair/family #{"ready-wigs"}} [detailed-product]) ;;HACK
+           (content-slots->accordion-slots pdp-details-render-slots
+                                           ready-wigs-content-slot-data
+                                           detailed-product
+                                           length-guide-image
+                                           (:accordion/open-drawers info-accordion))
+           (content-slots->accordion-slots old-pdp-details-render-slots
+                                           content-slot-data
+                                           detailed-product
+                                           length-guide-image
+                                           (:accordion/open-drawers info-accordion)))
+       ;; In a perfect world the FAQ would be modeled with Filled Content Slots.
+       ;; Instead, we shoehorn it into the accordion if we can find the data.
        (and pdp-faq-accordion?
             faq)
        (update :drawers conj (let [{:keys [question-answers]} faq]
