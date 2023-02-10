@@ -424,17 +424,30 @@
 (def pdp-details-render-slots
   [{:pdp.details/overview
     [:pdp.details.overview/description
-     :pdp.details.overview/whats-included
-     :pdp.details.overview/model-wearing]}
+     :pdp.details.overview/what's-included
+     :pdp.details.overview/model-wearing
+     :pdp.details.overview/length-guide]}
    {:pdp.details/product-details
     [:pdp.details.product-details/unit-weight
      :pdp.details.product-details/density
      :pdp.details.product-details/hair-type
+     :pdp.details.product-details/hair-weft-type
      :pdp.details.product-details/hair-quality
-     :pdp.details.product-details/cap-size]}
-   {:pdp.details/hair-info
-    [:pdp.details.hair-info/maintenance-level
-     :pdp.details.hair-info/can-this-wig-be-colored]}])
+     :pdp.details.product-details/part-design
+     :pdp.details.product-details/lace-material
+     :pdp.details.product-details/lace-size
+     :pdp.details.product-details/silk-size
+     :pdp.details.product-details/features
+     :pdp.details.product-details/cap-size
+     :pdp.details.product-details/tape--in-glue-information]}
+   {:pdp.details/care
+    [:pdp.details.care/maintenance-level
+     :pdp.details.care/needs-install-by-stylist?
+     :pdp.details.care/can-it-be-colored?
+     :pdp.details.care/view-care-guide]}
+   {:pdp.details/customize-your-wig
+    [:pdp.details.customize-your-wig/in-store-services
+     :pdp.details.customize-your-wig/video-tutorial]}])
 
 (defn legacy-content-from-cellar
   "Converts cellar SKU and cellar Product to template-slots"
@@ -467,17 +480,32 @@
 (defn hack--legacy-content-from-cellar--with-new-drawers
   "Converts cellar SKU and cellar Product to template-slots"
   [current-product selected-sku model-image]
-  (->> [:pdp.details.overview/description              "Description"              (->> current-product :copy/description)
-        :pdp.details.overview/what's-included          "What's Included"          (->> current-product :copy/whats-included)
-        :pdp.details.overview/model-wearing            "Model Wearing"            (or (:copy/model-wearing model-image)
-                                                                                      (:copy/model-wearing current-product))
-        :pdp.details.product-details/unit-weight       "Unit Weight"              (or (->> selected-sku :hair/weight)
-                                                                                      (->> current-product :copy/weights))
-        :pdp.details.product-details/density           "Wig Density"              (->> current-product :copy/density)
-        :pdp.details.product-details/hair-type         "Hair Type"                (->> current-product :copy/hair-type)
-        :pdp.details.product-details/hair-quality      "Hair Quality"             (->> current-product :copy/quality)
-        :pdp.details.product-details/cap-size          "Cap Size"                 (->> current-product :copy/cap-size)
-        :pdp.details.hair-info/maintenance-level       "Maintenance Level"        (->> current-product :copy/maintenance-level)]
+  (->> [:pdp.details.overview/description                      "Description"                                      (->> current-product :copy/description)
+        :pdp.details.overview/what's-included                  "What's Included"                                  (->> current-product :copy/whats-included)
+        :pdp.details.overview/model-wearing                    "Model Wearing"                                    (or (:copy/model-wearing model-image)
+                                                                                                                      (:copy/model-wearing current-product))
+        :pdp.details.overview/length-guide                     "Length Guide"                                     nil
+
+        :pdp.details.product-details/unit-weight               "Unit Weight"                                      (or (->> selected-sku :hair/weight)
+                                                                                                                      (->> current-product :copy/weights))
+        :pdp.details.product-details/density                   "Wig Density"                                      (->> current-product :copy/density)
+        :pdp.details.product-details/hair-origin               "Hair Origin"                                      (->> current-product :copy/origin)
+        :pdp.details.product-details/hair-weft-type            "Hair Weft Type"                                   (->> current-product :copy/weft-type)
+        :pdp.details.product-details/hair-type                 "Hair Type"                                        (->> current-product :copy/hair-type)
+        :pdp.details.product-details/hair-quality              "Hair Quality"                                     (->> current-product :copy/quality)
+        :pdp.details.product-details/part-design               "Part Design"                                      (->> current-product :copy/part-design)
+        :pdp.details.product-details/lace-marterial            "Lace Materials"                                   (->> current-product :copy/materials)
+        :pdp.details.product-details/lace-size                 "Lace Size"                                        (->> current-product :copy/lace-size)
+        :pdp.details.product-details/silk-size                 "Silk Size"                                        (->> current-product :copy/silk-size)
+        :pdp.details.product-details/features                  "Features"                                         (->> current-product :copy/features)
+        :pdp.details.product-details/cap-size                  "Cap Size"                                         (->> current-product :copy/cap-size)
+        :pdp.details.product-details/tape--in-glue-information "Tape-in Glue Information"                         (->> current-product :copy/tape-in-glue)
+        :pdp.details.care/maintenance-level                    "Maintenance Level"                                (->> current-product :copy/maintenance-level)
+        :pdp.details.care/needs-install-by-stylist?            "Does this wig need to be installed by a stylist?" nil
+        :pdp.details.care/can-it-be-colored?                   "Can this wig be colored?"                         nil
+        :pdp.details.care/view-care-guide                      "View Care Guide"                                  nil
+        :pdp.details.customize-your-wig/in-store-services      "In Store Services"                                nil
+        :pdp.details.customize-your-wig/video-tutorial         "Video Tutorial"                                   nil]
        (partition 3)
        (keep (fn [[k heading content]]
                (when content
