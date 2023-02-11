@@ -15,6 +15,8 @@
             [storefront.components.accordions.product-info :as product-info]
             [storefront.accessors.auth :as auth]))
 
+(def ^:private dns-url "https://mayvenn.wirewheel.io/privacy-page/5f22b71054ee7d0012420211")
+
 (c/defcomponent info-accordion-drawer-links-list [{:keys [links row-count column-count]} _ _]
   [:div.grid.gap-4.content-3.p4-on-mb
    {:style {:grid-template-columns (str "repeat(" column-count ", 1fr)")
@@ -141,6 +143,9 @@
                                      :data-test "content-privacy") "Privacy")
      ^:inline (underfoot-link {:href (str (routes/path-for e/navigate-content-privacy) "#ca-privacy-rights")}
                               "CA Privacy Rights")
+     ^:inline (underfoot-link {:href      dns-url
+                               :data-test "do-not-sell-my-personal-information"}
+                              "Do Not Sell My Personal Information")
      ^:inline (underfoot-link (assoc (utils/route-to e/navigate-content-tos)
                                      :data-test "content-tos") "Terms")
      ;; use traditional page load so anchors work
