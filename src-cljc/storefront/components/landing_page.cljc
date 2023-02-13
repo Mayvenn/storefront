@@ -302,7 +302,7 @@
       "section"                                  (-> body-layer
                                                      (select-keys [:contents :mobile-columns :desktop-columns
                                                                    :desktop-reverse-order :background-color :url
-                                                                   :horizontal-padding :vertical-padding :gap])
+                                                                   :padding :gap])
                                                      (update :contents (partial map #(determine-and-shape-layer data %)))
                                                      (assoc :navigation-message (url->navigation-message (:url body-layer)))
                                                      (assoc :layer/type :section))
