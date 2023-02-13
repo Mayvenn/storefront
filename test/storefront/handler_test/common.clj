@@ -684,8 +684,8 @@
                               :sku/name     "360 Wig"
                               :filter/order 6}
                              {:option/slug  "ready-wigs"
-                              :option/name  "Ready-to-Wear Wigs"
-                              :sku/name     "Ready-to-Wear Wig"
+                              :option/name  "Ready to Wear Wigs"
+                              :sku/name     "Ready to Wear Wig"
                               :filter/order 7}
                              {:option/slug  "seamless-clip-ins"
                               :option/name  "Seamless Clip-Ins"

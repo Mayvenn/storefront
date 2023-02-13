@@ -10,7 +10,7 @@
    :sections     [{:header/title "Lace Customization"
                    :items        [{:title/primary "Basic Lace"
                                    :title/secondary (str "Cut lace, add elastic band, bleach knots, pluck knots, and basic styling. "
-                                                         "Only available for ready-to-wear and closure wigs.")
+                                                         "Only available for Ready to Wear and closure wigs.")
                                    :price 40}
                                   {:title/primary "Lace Front"
                                    :title/secondary (str "Bleach knots, tint lace, pluck hairline and/or part, add baby hairs, and basic styling.")

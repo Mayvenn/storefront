@@ -169,7 +169,7 @@
   [data]
   {:header/title "Installing a Wig"
    :header/copy  ["Installing a wig can feel intimidating, especially if you’re new to wearing a wig. But we’re here to tell you all about how to install a wig (for beginners or experienced individuals) so you can rock your new unit without worry."
-                  "Depending on the type of wig you purchase, there are a number of options for installing. There are lace front wigs, full lace, 360 lace, and ready-to-wear wigs, all with different benefits. Before you go at the install on your own, make sure you check out our wig installation guide, which will help you cut a lace front wig, secure it, install, and choose the best wig to get a natural look that will last."]
+                  "Depending on the type of wig you purchase, there are a number of options for installing. There are lace front wigs, full lace, 360 lace, and Ready to Wear wigs, all with different benefits. Before you go at the install on your own, make sure you check out our wig installation guide, which will help you cut a lace front wig, secure it, install, and choose the best wig to get a natural look that will last."]
    :footer/route [events/navigate-wig-installation-guide]
    :sections     [{:blog/ucare-id "7187632b-3a7a-495e-8841-e1f8e1c24a37"
                    :blog/heading  "Stocking Cap Method"

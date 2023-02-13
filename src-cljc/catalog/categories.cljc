@@ -653,7 +653,7 @@
                                                :subsection/selector {:hair/family #{"lace-front-wigs"}}}
                                               {:subsection/title    "360 Wigs"
                                                :subsection/selector {:hair/family #{"360-wigs"}}}
-                                              {:subsection/title    "Ready-to-Wear Wigs"
+                                              {:subsection/title    "Ready to Wear Wigs"
                                                :subsection/selector {:hair/family #{"ready-wigs"}}}
                                               {:subsection/title    "Headband Wigs"
                                                :subsection/selector {:hair/family #{"headband-wigs"}}}
@@ -713,7 +713,7 @@
 
            :copy/title "Ready to Wear Wigs"
            :page/slug  "ready-wear-wigs"
-           :seo/title  "Ready-to-Wear Wigs"
+           :seo/title  "Ready to Wear Wigs"
 
            :category/description (copy "Made of authentic and high-quality human hair,"
                                        "ready to wear wigs are a quick,"
@@ -733,8 +733,8 @@
                                             :seo/title
                                             " allow you to change up and achieve your desired look."
                                             " Shop our collection of virgin hair wigs today."]}
-          (category->seo "Ready-to-Wear Wigs: Short, Bob, Side-Part & More"
-                         (copy "Mayvenn’s ready-to-wear human hair lace wigs provide a quick style switch-up and"
+          (category->seo "Ready to Wear Wigs: Short, Bob, Side-Part & More"
+                         (copy "Mayvenn’s Ready to Wear human hair lace wigs provide a quick style switch-up and"
                                "come in different variations such as Brazilian, straight, and loose wave.")
                          "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"))
    (merge {:catalog/category-id "26"
@@ -1342,7 +1342,7 @@
                                         :subsection/selector {:hair/family #{"lace-front-wigs"}}}
                                        {:subsection/title    "360 Wigs"
                                         :subsection/selector {:hair/family #{"360-wigs"}}}
-                                       {:subsection/title    "Ready-to-Wear Wigs"
+                                       {:subsection/title    "Ready to Wear Wigs"
                                         :subsection/selector {:hair/family #{"ready-wigs"}}}]}])
 
 (def nb-hyphen "‑")
