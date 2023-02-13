@@ -899,8 +899,14 @@
           [:svg/lock   "Convenience" "Buy from anywhere, have an elevated experience, and enjoy our legendary customer service."]])]])
 
 (def padding-classes
-  {"none" []
+  {"none" ["px0" "py0"]
    "medium" ["px4" "py8"]})
+
+(def gap-classes
+  {"none" ["gap-0"]
+   "small" ["gap-2"]
+   "medium" ["gap-4"]
+   "large" ["gap-8"]})
 
 (defcomponent section [{:keys [contents mobile-columns desktop-columns desktop-reverse-order
                                url navigation-message background-color padding gap]} _ opts]
@@ -909,10 +915,10 @@
                             "my-auto"
                             (str "columns-" mobile-columns)
                             (str "columns-" desktop-columns "-on-tb-dt")]
-                    background-color      (cons (str "bg-" background-color))
-                    padding               (concat (get padding-classes padding))
-                    gap                   (cons (str "gap-" gap))
-                    :always               (clojure.string/join " "))}
+                    background-color (cons (str "bg-" background-color))
+                    padding          (concat (get padding-classes padding))
+                    gap              (concat (get gap-classes gap))
+                    :always          (clojure.string/join " "))}
 
           (when url
             {:href url})
