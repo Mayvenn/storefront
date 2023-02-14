@@ -943,8 +943,7 @@
            :homepage.ui-v2022-09/image-id    "16029dd0-285c-4bc6-803c-0c201c3d402c"
            :footer/order                     4
            :footer/title                     "Hair Bundles"
-           :category/description             (copy "Have a hairstyle in mind and want more volume, length, and texture? Add our 100% Virgin hair bundles."
-                                                   "Purchase three high-quality human hair bundles and the install is free.")
+           :category/description             "Have a hairstyle in mind and want more volume, length, and texture? Add our 100% virgin hair bundles."
            :category/image-url               "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
            :copy/title                       "Virgin Hair Bundles"
            :hair/family                      #{"bundles"}
