@@ -912,13 +912,13 @@
                                url navigation-message background-color padding gap]} _ opts]
   [(if url :a :div)
    (merge {:class (cond->> ["grid"
-                            "my-auto"
                             (str "columns-" mobile-columns)
                             (str "columns-" desktop-columns "-on-tb-dt")]
                     background-color (cons (str "bg-" background-color))
                     padding          (concat (get padding-classes padding))
                     gap              (concat (get gap-classes gap))
-                    :always          (clojure.string/join " "))}
+                    :always          (clojure.string/join " "))
+           :style {:height "fit-content"}}
 
           (when url
             {:href url})
