@@ -941,6 +941,29 @@
     :style {:text-align alignment}}
    content])
 
+(defn title-standard [{:keys [primary secondary tertiary]}]
+  [:div.black.center.flex.flex-column.gap-2
+   (when primary
+     [:div.title-1.canela primary])
+   (when secondary
+     [:div.title-2.canela secondary])
+   (when tertiary
+     [:div.title-2.proxima.shout tertiary])])
+
+(defn title-reversed [{:keys [primary secondary tertiary]}]
+  [:div.black.center.flex.flex-column.gap-2
+   (when tertiary
+     [:div.title-2.proxima.shout tertiary])
+   (when primary
+     [:div.title-1.canela primary])
+   (when secondary
+     [:div.title-2.canela secondary])])
+
+(defcomponent title [{:keys [template] :as data} _ _]
+  (case template
+    "reversed" (title-reversed data)
+    (title-standard data)))
+
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (when type
     (component/build
@@ -977,6 +1000,7 @@
        :section             section
        :text                text
        :button              button
+       :title               title
 
        ;; LEGACY
        :image-block                image-block

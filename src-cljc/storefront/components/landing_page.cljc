@@ -310,6 +310,9 @@
                                                      (select-keys [:copy :color :size :url])
                                                      (assoc :navigation-message (url->navigation-message (:url body-layer)))
                                                      (assoc :layer/type :button))
+      "title"                                    (-> body-layer
+                                                     (select-keys [:primary :secondary :tertiary :template])
+                                                     (assoc :layer/type :title))
       {})))
 
 (defn landing-page-body [data]
