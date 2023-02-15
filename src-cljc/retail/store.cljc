@@ -151,9 +151,6 @@
                                                                "- Pick a color, any color, and we'll achieve it for you. Highlights, balayage and all.\n"
                                                                "- Need more volume, we'll add more hair to reach your FULL expectations.\n"
                                                                "- We're here every step of the way, drop your wig off and we'll restyle it like new!")
-                                        :cta/value        "View Services"
-                                        :cta/id           "landing-page--cta"
-                                        :cta/target       "https://shop.diva-acceptance.com/info/walmart"
                                         :background/color "cool-gray"
                                         :content/color    "black"}})
          (vt/within :wig-services-menu
