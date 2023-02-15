@@ -85,4 +85,4 @@
                 ;; If the product has a length, return a length. Same for color.
                 ;; This is to show colors and lengths for products with essential colors/lengths
                                       (seq (:hair/length product)) (conj :hair/length)
-                                      (seq (spice.core/spy (:hair/color product))) (conj :hair/color)))))))
+                                      (seq (:hair/color product)) (conj :hair/color)))))))
