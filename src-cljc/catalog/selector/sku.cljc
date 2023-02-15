@@ -81,4 +81,8 @@
                   (sort-by :filter/order)
                   (assoc acc-options facet-slug)))
            {}
-           (select-keys facets electives))))
+           (select-keys facets (set (cond-> electives
+                ;; If the product has a length, return a length. Same for color.
+                ;; This is to show colors and lengths for products with essential colors/lengths
+                                      (seq (:hair/length product)) (conj :hair/length)
+                                      (seq (spice.core/spy (:hair/color product))) (conj :hair/color)))))))
