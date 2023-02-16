@@ -574,7 +574,7 @@
     :content-value "<h3>Can It Be Colored?</h3><p>Yes - Keep in mind pre-lightened blonde should not be lifted (bleached) any further, but can be professionally colored with deposit-only products or toners.</p>"}
    :ctf-id-3
    {:content-slot-id "pdp/colorable"
-    :selector        {"hair/color" #{"#1-jet-black" "vibrant-burgundy"}}
+    :selector        {"hair/color" #{"#1-jet-black" "vibrant-burgundy" "ash-blonde-dark-roots" "tt-1b-orange" "hl-1b-blonde"}}
     :content-value   "<h3>Can It Be Colored?</h3><p>No - Since this hair has already been professionally processed, we don't recommend any lifting (bleaching) or coloring.</p>"}})
 
 (defn query [data]
@@ -793,9 +793,10 @@
                                            model-image
                                            (get-in state keypaths/cms-pdp-content)
                                            fake-contentful-product-details-data)
-        ready-wigs-content-slot-data (hack--legacy-content-from-cellar--with-new-drawers detailed-product
-                                                                                         selected-sku
-                                                                                         model-image)]
+        ready-wigs-content-slot-data (merge (hack--legacy-content-from-cellar--with-new-drawers detailed-product
+                                                                                          selected-sku
+                                                                                          model-image)
+                                            (cms-dynamic-content/derive-product-details fake-contentful-product-details-data selected-sku))]
     (accordion-neue/accordion-query
      (cond->
          (if (select {:hair/family #{"ready-wigs"}} [detailed-product]) ;;HACK
