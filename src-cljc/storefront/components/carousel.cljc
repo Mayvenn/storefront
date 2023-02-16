@@ -105,8 +105,8 @@
   #?(:cljs
      (let [dt-exhibits-el  (c/get-ref carousel "dt-exhibits")
            dt-exhibits-els (some-> dt-exhibits-el .-children array-seq)
-           mb-exhibits-el  (c/get-ref carousel "mb-exhibits")
-           mb-exhibits-els (some->> mb-exhibits-el
+           slider-exhibits-el  (c/get-ref carousel "slider-exhibits")
+           slider-exhibits-els (some->> slider-exhibits-el
                                     .-children
                                     array-seq
                                     (filter #(-> %
@@ -125,13 +125,13 @@
                                         .-offsetTop)
                           :behavior "smooth"}))
 
-       (when (and (seq mb-exhibits-els)
-                  (< -1 target-idx (count mb-exhibits-els)))
-         (.scrollTo mb-exhibits-el
-                    (- (-> mb-exhibits-els
+       (when (and (seq slider-exhibits-els)
+                  (< -1 target-idx (count slider-exhibits-els)))
+         (.scrollTo slider-exhibits-el
+                    (- (-> slider-exhibits-els
                            (nth target-idx)
                            .-offsetLeft)
-                       (-> mb-exhibits-el
+                       (-> slider-exhibits-el
                            .-offsetLeft))
                     0)))))
 
@@ -224,11 +224,11 @@
   "A carousel "
   [carousel]
   #?(:cljs
-     (let [{:keys [exhibits]} (c/get-props carousel)
+     (let [{:keys [exhibits]}              (c/get-props carousel)
            {:carousel/keys
             [exhibit-highlight-component]} (c/get-opts carousel)]
        [:div.carousel-2022-slider.hide-scroll-bar
-        {:ref (c/use-ref carousel "mb-exhibits")}
+        {:ref (c/use-ref carousel "slider-exhibits")}
         [:div.spacer]
         (map-indexed (fn [index exhibit]
                        [:div.exhibit
@@ -244,14 +244,14 @@
   (constructor
    [this props]
    (c/create-ref! this "dt-exhibits")
-   (c/create-ref! this "mb-exhibits"))
+   (c/create-ref! this "slider-exhibits"))
   (did-mount
    [this]
    (let [{:carousel/keys [id]} (c/get-opts this)]
      #?(:cljs
         ;; TODO (le): This is currently disabled on slider-only-mode because of the bug below
         (when-not (:carousel/slider-only-mode (c/get-opts this))
-          (let [mb-exhibits-el (c/get-ref this "mb-exhibits")
+          (let [slider-exhibits-el (c/get-ref this "slider-exhibits")
                 observer       (js/IntersectionObserver.
                                 (fn carousel-intersection-observer-handler [entries]
                                   ;; NOTE (le): Currently there is a bug when on desktop slider-mode-only.
@@ -283,9 +283,9 @@
                                                          (publish events/carousel|jumped {:id  id
                                                                                           :idx index})))))
                                            400)))
-                                #js {:root      mb-exhibits-el
+                                #js {:root      slider-exhibits-el
                                      :threshold 0.9})]
-            (attach-intersection-observers mb-exhibits-el observer))))))
+            (attach-intersection-observers slider-exhibits-el observer))))))
   (did-update
    [this]
    (scroll-to-exhibit-idx this (:selected-exhibit-idx (c/get-props this))))
