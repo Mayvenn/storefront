@@ -518,6 +518,14 @@
          (cms-dynamic-content/derive-product-details fake-cms-content selected-sku)
          (cms-dynamic-content/derive-product-details cms-pdp-content selected-sku)))
 
+(defn content-slots--testing-cms<
+  [current-product selected-sku model-image cms-pdp-content fake-cms-content]
+  (merge (hack--legacy-content-from-cellar--with-new-drawers current-product
+                                                             selected-sku
+                                                             model-image)
+         (cms-dynamic-content/derive-product-details fake-cms-content selected-sku)
+         (cms-dynamic-content/derive-product-details cms-pdp-content selected-sku)))
+
 (defn content-slots->accordion-slots
   [details-render-slots content-slot-data product length-guide-image open-drawers]
   (merge
@@ -788,15 +796,16 @@
                                                  selected-sku)
         model-image        (first (filter :copy/model-wearing carousel-images))
 
+
+
         content-slot-data  (content-slots< detailed-product
                                            selected-sku
                                            model-image
                                            (get-in state keypaths/cms-pdp-content)
                                            fake-contentful-product-details-data)
-        ready-wigs-content-slot-data (merge (hack--legacy-content-from-cellar--with-new-drawers detailed-product
-                                                                                          selected-sku
-                                                                                          model-image)
-                                            (cms-dynamic-content/derive-product-details fake-contentful-product-details-data selected-sku))]
+        ready-wigs-content-slot-data (hack--legacy-content-from-cellar--with-new-drawers detailed-product
+                                                                                         selected-sku
+                                                                                         model-image)]
     (accordion-neue/accordion-query
      (cond->
          (if (select {:hair/family #{"ready-wigs"}} [detailed-product]) ;;HACK
@@ -990,7 +999,7 @@
                                    (:catalog/product-id prev-args))
                              (= :first-nav (:navigate/caused-by args)))]
        (when (experiments/pdp-content-slots? app-state)
-         (effects/fetch-cms2 app-state [:filledContentSlot]))
+         (effects/fetch-cms2 app-state [:filledContentDrawer]))
        (when (nil? product)
          (fetch-product-details app-state product-id))
        (when just-arrived?

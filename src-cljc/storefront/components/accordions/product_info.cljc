@@ -3,7 +3,8 @@
             [storefront.components.accordion-v2022-10 :as accordion]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
-            [mayvenn.visual.tools :refer [with within]]))
+            [mayvenn.visual.tools :refer [with within]]
+            [markdown-to-hiccup.core :as markdown]))
 
 (c/defcomponent question-open [{:keys [copy]} _ _]
   [:div.content-3.px2.py4.bold copy])
@@ -34,7 +35,7 @@
          [:div.my2.pr2
           {:style {:min-width "50%"}
            :key   idx}
-          [:div {:dangerouslySetInnerHTML {:__html content}}]
+          [:div (markdown/component (markdown/md->hiccup content))]
           (when-let [link-content (:link/content section)]
             (ui/button-small-underline-primary
              (assoc

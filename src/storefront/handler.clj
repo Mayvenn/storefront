@@ -331,11 +331,11 @@
            :else                 resolved-node))))
 
 (def content-type->id-path
-  {:landingPageV2     [:slug]
-   :homepage          [:experience]
-   :retailLocation    [:slug]
-   :filledContentSlot [:content/id]
-   :copyUrlSlug       [:slug]})
+  {:landingPageV2       [:slug]
+   :homepage            [:experience]
+   :retailLocation      [:slug]
+   :filledContentDrawer [:content/id]
+   :copyUrlSlug         [:slug]})
 
 (defn find-cms-nodes
   ([nodes-db content-type]
@@ -417,9 +417,9 @@
                                             contentful/derive-all-looks)
 
                                         :always
-                                        (assoc-in [:filledContentSlot]
+                                        (assoc-in [:filledContentDrawer]
                                                   (some->>
-                                                   (assemble-cms-node normalized-cms-cache :filledContentSlot)
+                                                   (assemble-cms-node normalized-cms-cache :filledContentDrawer)
                                                    (mapv (fn [filled-content-slot]
                                                            (update filled-content-slot :content-value markdown/md-to-html-string)))
                                                    (maps/index-by :content/id)))))
