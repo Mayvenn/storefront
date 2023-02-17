@@ -515,8 +515,7 @@
 (defn content-slots<
   [current-product selected-sku model-image cms-pdp-content fake-cms-content]
   (merge (legacy-content-from-cellar current-product selected-sku model-image)
-         (cms-dynamic-content/derive-product-details fake-cms-content selected-sku)
-         (cms-dynamic-content/derive-product-details cms-pdp-content selected-sku)))
+         (cms-dynamic-content/derive-product-details fake-cms-content selected-sku)))
 
 (defn content-slots--testing-cms<
   [current-product selected-sku model-image cms-pdp-content fake-cms-content]
