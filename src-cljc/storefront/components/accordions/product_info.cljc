@@ -3,7 +3,8 @@
             [storefront.components.accordion-v2022-10 :as accordion]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
-            [mayvenn.visual.tools :refer [with within]]))
+            [mayvenn.visual.tools :refer [with within]]
+            [markdown-to-hiccup.core :as markdown]))
 
 (c/defcomponent question-open [{:keys [copy]} _ _]
   [:div.content-3.px2.py4.bold copy])
@@ -23,7 +24,7 @@
   [:div.shout.content-3.px2.py4.bold copy])
 (c/defcomponent face-closed [{:keys [copy]} _ _]
   [:div.shout.content-3.px2.py4 copy])
-(c/defcomponent contents [{:keys [id primary sections faq]} _ _]
+(c/defcomponent contents [{:as data :keys [id primary sections faq]} _ _]
   [:div.bg-cool-gray
    {:key (str id "-tab")}
    [:div primary]
@@ -34,7 +35,10 @@
          [:div.my2.pr2
           {:style {:min-width "50%"}
            :key   idx}
-          [:div {:dangerouslySetInnerHTML {:__html content}}]
+          (conj [:div]
+                (if (string? content)
+                  (markdown/component (markdown/md->hiccup content))
+                  content))
           (when-let [link-content (:link/content section)]
             (ui/button-small-underline-primary
              (assoc
@@ -44,7 +48,7 @@
        sections)])
    (when (not-empty faq)
      [:div.flex-auto.bg-pale-purple
-       (c/build accordion/component
+      (c/build accordion/component
                (with :pdp-faq faq)
                {:opts
                 {:accordion.drawer.open/face-component   question-open

@@ -155,6 +155,7 @@
 
 (defn fetch-all
   [{:keys [logger exception-handler cache env-param] :as contentful}]
+  (logger :event {:event {:name :cms.normalized/fetched-all}})
   (let [limit 500]
     (->> ["entries" "assets"]
          (map
@@ -196,6 +197,7 @@
      :or   {item-tx-fn       identity
             collection-tx-fn identity}
      :as   content-params} attempt-number]
+   (logger :event {:event {:name :cms.legacy/did-fetch-entries}})
    (when (<= attempt-number 2)
      (let [{:keys [status body]} (contentful-request
                                   contentful
@@ -267,6 +269,7 @@
 (defrecord ContentfulContext [logger exception-handler environment cache-timeout api-key space-id endpoint scheduler]
   component/Lifecycle
   (start [c]
+    (logger :event {:event {:name :cms.lifecycle/started}})
     (let [production?             (= environment "production")
           cache                   (atom {})
           normalized-cache        (atom {})
@@ -318,7 +321,12 @@
              :cache cache
              :normalized-cache normalized-cache)))
   (stop [c]
-    (dissoc c :cache))
+    (logger :event {:event {:name :component.contentful.lifecycle/stopped}})
+    (reset! (:cache c) nil)
+    (reset! (:normalized-cache c) nil)
+    (dissoc c
+            :cache
+            :normalized-cache))
   CMSCache
   (read-cache [c] (deref (:cache c))) ;; GROT: deprecated in favor of separate retrieval and processing using the normalized cache
   (read-normalized-cache [c] (deref (:normalized-cache c)))

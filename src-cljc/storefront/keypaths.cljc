@@ -16,7 +16,7 @@
 (def cms-landing-page (conj cms :landingPage))
 (def cms-landing-page-v2 (conj cms :landingPageV2))
 (def cms-retail-location (conj cms :retailLocation))
-(def cms-pdp-content (conj cms :filledContentSlot))
+(def cms-template-slots (conj cms :templateSlot))
 (def cms-copy-url-slug (conj cms :copyUrlSlug))
 
 (def cms-faq (conj cms :faq))
