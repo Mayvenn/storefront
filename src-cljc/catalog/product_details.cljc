@@ -888,7 +888,6 @@
   "Selections are ultimately a function of three inputs:
    1. options of the cheapest sku
    2. prior selections on another product, but validated for this product
-   3. essentials (:hair/length and :hair/color) of the sku from the URI
    3. options of the sku from the URI
 
    They are merged together each (possibly partially) overriding the
@@ -911,13 +910,7 @@
                      (when (= #{"service"} department)
                        electives))
                    (get-in app-state catalog.keypaths/detailed-product-selections)
-                   (reduce-kv (fn [acc k v]
-                                (cond-> acc
-                                  (#{:hair/length :hair/color} k) (assoc k (first v))))
-                              {}
-                              (select-keys sku (:selector/essentials product)))
-                   (reduce-kv (fn [acc k v] 
-                                (assoc acc k (first v)))
+                   (reduce-kv #(assoc %1 %2 (first %3))
                               {}
                               (select-keys sku (:selector/electives product))))))))
 
