@@ -250,7 +250,7 @@
    (let [{:carousel/keys [id]} (c/get-opts this)]
      #?(:cljs
         ;; TODO (le): This is currently disabled on slider-only-mode because of the bug below
-        (when-not (:carousel/slider-only-mode (c/get-opts this))
+        (when-not (= :slider (:carousel/desktop-layout (c/get-opts this)))
           (let [slider-exhibits-el (c/get-ref this "slider-exhibits")
                 observer       (js/IntersectionObserver.
                                 (fn carousel-intersection-observer-handler [entries]
@@ -291,11 +291,12 @@
    (scroll-to-exhibit-idx this (:selected-exhibit-idx (c/get-props this))))
   (render
    [this]
-   (let [{:carousel/keys [slider-only-mode]} (c/get-opts this)]
+   (let [desktop-layout (or (:carousel/desktop-layout (c/get-opts this))
+                            :vertical-sidebar)]
      (c/html
       [:div
-       (when (not slider-only-mode)
+       (when (= :vertical-sidebar desktop-layout)
          [:div.hide-on-mb
           (carousel-with-sidebar this)])
-       [:div {:class (when (not slider-only-mode) "hide-on-tb-dt")}
+       [:div {:class (when (not= :slider desktop-layout) "hide-on-tb-dt")}
         (slider-carousel this)]]))))

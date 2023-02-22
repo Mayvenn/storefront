@@ -42,10 +42,9 @@
     :id              "slider-image-carousel"
     :query-ns        "example-slider-image-carousel"
     :component-class carousel/component
-
     :opts            {:carousel/exhibit-highlight-component carousel/slider-image-exhibit
                       :carousel/id                          :example-slider-image-carousel
-                      :carousel/slider-only-mode            true}}
+                      :carousel/desktop-layout              :slider}}
    {:title           "Promises"
     :id              "promises"
     :query-ns        "example-promises"
