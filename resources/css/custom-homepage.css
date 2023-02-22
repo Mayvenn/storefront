@@ -2,7 +2,8 @@
     .shop-these-looks           {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.5rem;
+        grid-row-gap: 1.5rem;
+        grid-column-gap: 0.5rem;
     }
     .shop-these-looks-highlight {flex: 0 1 calc(50% - 0.25rem)}
     .shop-these-looks-lowlight  {flex: 0 1 calc(20% - 0.4rem)}

@@ -64,17 +64,14 @@
                                               :promises.icon/title  "100% Virgin Human Hair"}
                                              {:promises.icon/symbol :svg/ship-truck,
                                               :promises.icon/title  "Free Standard Shipping"}]}))
-                    {:shop-these-looks/row-1 [{:shop-these-looks.entry.cta/copy   "Wedding Hair"
-                                               :shop-these-looks.entry.cta/target e/navigate-shop-by-look-details
-                                               :shop-these-looks.entry.cta/args   {:album-keyword :look
-                                                                                   :look-id       "7e4F9lGZHmTphADJxRFL6a"}
-                                               :shop-these-looks.entry.img/src    "//ucarecdn.com/f4cfa086-edb1-4e8c-8245-6b68e93546b7/"}
+                    {:shop-these-looks/row-1 [{:shop-these-looks.entry.cta/copy   "Everyday Glam"
+                                               :shop-these-looks.entry.cta/target e/navigate-shared-cart
+                                               :shop-these-looks.entry.cta/args   {:shared-cart-id "1NmziARQgM"}
+                                               :shop-these-looks.entry.img/src    "//ucarecdn.com/9a8497da-72ee-4ebe-80f5-91dfbd3e5ae6/"}
                                               {:shop-these-looks.entry.cta/copy   "Quick & Easy Wigs"
-                                               :shop-these-looks.entry.cta/target e/navigate-product-details
-                                               :shop-these-looks.entry.cta/args   {:catalog/product-id "236"
-                                                                                   :page/slug          "brazilian-straight-headband-wig"
-                                                                                   :query-params       {:SKU "BNSHBW26"}}
-                                               :shop-these-looks.entry.img/src    "//ucarecdn.com/c0fab4a2-9778-4d78-b375-7fa6cfbdf73a/"}]
+                                               :shop-these-looks.entry.cta/target e/navigate-shared-cart
+                                               :shop-these-looks.entry.cta/args   {:shared-cart-id "Rpiyh1zRC4"}
+                                               :shop-these-looks.entry.img/src    "//ucarecdn.com/cfedbeb2-d113-4dc5-a5fe-d033455ca575/"}]
                      :shop-these-looks/row-2 [{:shop-these-looks.entry.cta/copy   "HD Lace"
                                                :shop-these-looks.entry.cta/target e/navigate-shop-by-look-details
                                                :shop-these-looks.entry.cta/args   {:album-keyword :look
