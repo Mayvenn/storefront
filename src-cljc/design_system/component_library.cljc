@@ -45,6 +45,13 @@
     :opts            {:carousel/exhibit-highlight-component carousel/slider-image-exhibit
                       :carousel/id                          :example-slider-image-carousel
                       :carousel/desktop-layout              :slider}}
+   {:title           "No Scroll Carousel"
+    :id              "no-scroll-carousel"
+    :query-ns        "example-no-scroll-carousel"
+    :component-class carousel/component
+    :opts            {:carousel/exhibit-highlight-component carousel/slider-image-exhibit
+                      :carousel/id                          :example-slider-image-carousel
+                      :carousel/desktop-layout              :no-scroll}}
    {:title           "Promises"
     :id              "promises"
     :query-ns        "example-promises"
@@ -118,42 +125,57 @@
                                                        {:class "bg-maroon"}
                                                        {:class "bg-pink"}]})
      (within :example-image-and-video-carousel {:selected-exhibit-idx (:idx (carousel/<- app-state :example-image-and-video-carousel))
-                                      :exhibits             [{:src "http://placekitten.com/400/600?image=1"
-                                                              :alt "image 1"}
-                                                             {:src  "http://ucarecdn.com/89a0181c-cbbe-4a66-bed5-cc90e6a886e5/"
-                                                              :type "video"
-                                                              :alt  "video 1"}
-                                                             {:src "http://placekitten.com/400/600?image=2"
-                                                              :alt "image 2"}
-                                                             {:src "http://placekitten.com/400/600?image=3"
-                                                              :alt "image 3"}
-                                                             {:src "http://placekitten.com/400/600?image=4"
-                                                              :alt "image 4"}
-                                                             {:src "http://placekitten.com/400/600?image=5"
-                                                              :alt "image 5"}
-                                                             {:src "http://placekitten.com/400/600?image=6"
-                                                              :alt "image 6"}
-                                                             {:src "http://placekitten.com/400/600?image=7"
-                                                              :alt "image 7"}
-                                                             {:src "http://placekitten.com/400/600?image=8"
-                                                              :alt "image 8"}]})
+                                                :exhibits             [{:src "http://placekitten.com/400/600?image=1"
+                                                                        :alt "image 1"}
+                                                                       {:src  "http://ucarecdn.com/89a0181c-cbbe-4a66-bed5-cc90e6a886e5/"
+                                                                        :type "video"
+                                                                        :alt  "video 1"}
+                                                                       {:src "http://placekitten.com/400/600?image=2"
+                                                                        :alt "image 2"}
+                                                                       {:src "http://placekitten.com/400/600?image=3"
+                                                                        :alt "image 3"}
+                                                                       {:src "http://placekitten.com/400/600?image=4"
+                                                                        :alt "image 4"}
+                                                                       {:src "http://placekitten.com/400/600?image=5"
+                                                                        :alt "image 5"}
+                                                                       {:src "http://placekitten.com/400/600?image=6"
+                                                                        :alt "image 6"}
+                                                                       {:src "http://placekitten.com/400/600?image=7"
+                                                                        :alt "image 7"}
+                                                                       {:src "http://placekitten.com/400/600?image=8"
+                                                                        :alt "image 8"}]})
      (within :example-slider-image-carousel {:selected-exhibit-idx (:idx (carousel/<- app-state :example-slider-image-carousel))
-                                       :exhibits             [{:src "http://placekitten.com/400/400?image=1"
-                                                               :alt "image 1"}
-                                                              {:src "http://placekitten.com/400/400?image=2"
-                                                               :alt "image 2"}
-                                                              {:src "http://placekitten.com/400/400?image=3"
-                                                               :alt "image 3"}
-                                                              {:src "http://placekitten.com/400/400?image=4"
-                                                               :alt "image 4"}
-                                                              {:src "http://placekitten.com/400/400?image=5"
-                                                               :alt "image 5"}
-                                                              {:src "http://placekitten.com/400/400?image=6"
-                                                               :alt "image 6"}
-                                                              {:src "http://placekitten.com/400/400?image=7"
-                                                               :alt "image 7"}
-                                                              {:src "http://placekitten.com/400/400?image=8"
-                                                               :alt "image 8"}]})
+                                             :exhibits             [{:src "http://placekitten.com/400/400?image=1"
+                                                                     :alt "image 1"}
+                                                                    {:src "http://placekitten.com/400/400?image=2"
+                                                                     :alt "image 2"}
+                                                                    {:src "http://placekitten.com/400/400?image=3"
+                                                                     :alt "image 3"}
+                                                                    {:src "http://placekitten.com/400/400?image=4"
+                                                                     :alt "image 4"}
+                                                                    {:src "http://placekitten.com/400/400?image=5"
+                                                                     :alt "image 5"}
+                                                                    {:src "http://placekitten.com/400/400?image=6"
+                                                                     :alt "image 6"}
+                                                                    {:src "http://placekitten.com/400/400?image=7"
+                                                                     :alt "image 7"}
+                                                                    {:src "http://placekitten.com/400/400?image=8"
+                                                                     :alt "image 8"}]})
+     (within :example-no-scroll-carousel {:selected-exhibit-idx (:idx (carousel/<- app-state :example-slider-image-carousel))
+                                          :exhibits             [{:src "http://placekitten.com/400/400?image=1"
+                                                                  :alt "image 1"}
+                                                                 {:src "http://placekitten.com/400/400?image=2"
+                                                                  :alt "image 2"}
+                                                                 {:src "http://placekitten.com/400/400?image=3"
+                                                                  :alt "image 3"}
+                                                                 {:src "http://placekitten.com/400/400?image=4"
+                                                                  :alt "image 4"}
+                                                                 {:src "http://placekitten.com/400/400?image=5"
+                                                                  :alt "image 5"}
+                                                                 {:src "http://placekitten.com/400/400?image=6"
+                                                                  :alt "image 6"}
+                                                                 {:src "http://placekitten.com/400/400?image=7"
+                                                                  :alt "image 7"}]})
 
      (within :example-promises
              {:list/icons

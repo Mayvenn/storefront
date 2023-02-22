@@ -240,6 +240,41 @@
 
 (def intersection-debounce-timer (atom nil))
 
+(defn entry [ix src alt highlight?]
+  [:div.grid.shop-these-looks-entry
+   {:key   ix
+    :style {:grid-template-rows "auto 100px"
+            :justify-items      "center"
+            :align-items        "center"}
+    :class (str "shop-these-looks-" (if highlight? "highlight" "lowlight"))}
+   (ui/img {:src   src
+            :class "container-size"
+            :alt   alt
+            :style {:grid-row    "1 / 3"
+                    :grid-column "1 / 2"
+                    :object-fit  "cover"}})])
+
+(defn no-scroll-carousel
+  [carousel]
+  (let [{:keys [exhibits]} (c/get-props carousel)
+        row-1              (take 2 exhibits)
+        row-2              (take 5 (drop 2 exhibits))]
+    [:div.shop-these-looks
+     [:div.shop-these-looks-spacer]
+     (map-indexed (fn [ix e]
+                    (entry ix
+                           (:src e)
+                           (:alt e)
+                           true))
+                  row-1)
+     (map-indexed (fn [ix e]
+                    (entry ix
+                           (:src e)
+                           (:alt e)
+                           false))
+                  row-2)
+     [:div.shop-these-looks-spacer]]))
+
 (c/defdynamic-component component
   (constructor
    [this props]
@@ -298,5 +333,8 @@
        (when (= :vertical-sidebar desktop-layout)
          [:div.hide-on-mb
           (carousel-with-sidebar this)])
+       (when (= :no-scroll desktop-layout)
+         [:div.hide-on-mb
+          (no-scroll-carousel this)])
        [:div {:class (when (not= :slider desktop-layout) "hide-on-tb-dt")}
         (slider-carousel this)]]))))
