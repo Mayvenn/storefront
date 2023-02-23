@@ -1052,6 +1052,8 @@
     {:catalog/category-id "21"
      :catalog/department  #{"hair"}
      :category/new?       false
+     :desktop-menu/title  "Clip-ins"
+     :desktop-menu/order  4
 
      :subsections/subsection-selectors [{:subsection/title    "Seamless Clip-Ins"
                                          :subsection/selector {:hair/family #{"seamless-clip-ins"}}}]
@@ -1118,7 +1120,6 @@
      :selector/essentials [:catalog/department :hair/family]
      :selector/electives  [:hair/weight :hair/color :hair/texture]
      :desktop-menu/title  "Hair Extensions"
-     :desktop-menu/order   4
 
      :homepage.ui-v2022-09/order    4
      :homepage.ui-v2022-09/image-id "4c9af3d0-3672-4550-9e9f-1a69833b2fe3"

@@ -356,21 +356,26 @@
    :header-menu-item/navigation-target "#" ; needed for tab navigation through menu
    :header-menu-item/content           "Hair Shop"
    :header-menu-item/id                "desktop-hair-shop"
-   :flyout/items                       (->> (get-in data keypaths/categories)
-                                            (filter :desktop-menu/order)
-                                            (filter (fn [category]
-                                                      (or (auth/stylist? (auth/signed-in data))
-                                                          (not (-> category
-                                                                   :catalog/department
-                                                                   (contains? "stylist-exclusives"))))))
-                                            (sort-by :desktop-menu/order)
-                                            (mapv (fn category->icp-flyout-option
-                                                    [{:as   category
-                                                      :keys [:page/slug desktop-menu/title category/new?]}]
-                                                    {:key         slug
-                                                     :nav-message [events/navigate-category category]
-                                                     :copy        title
-                                                     :new?        new?})))
+   :flyout/items                       (concat (->> (get-in data keypaths/categories)
+                                                    (filter :desktop-menu/order)
+                                                    (filter (fn [category]
+                                                              (or (auth/stylist? (auth/signed-in data))
+                                                                  (not (-> category
+                                                                           :catalog/department
+                                                                           (contains? "stylist-exclusives"))))))
+                                                    (sort-by :desktop-menu/order)
+                                                    (mapv (fn category->icp-flyout-option
+                                                            [{:as   category
+                                                              :keys [:page/slug desktop-menu/title category/new?]}]
+                                                            {:key         slug
+                                                             :nav-message [events/navigate-category category]
+                                                             :copy        title
+                                                             :new?        new?})))
+                                               [{:copy        "Tape-ins"
+                                                 :key         "tape-ins"
+                                                 :nav-message [events/navigate-product-details {:page/slug          "50g-straight-tape-ins"
+                                                                                                :catalog/product-id "111"}]
+                                                 :new?        false}])
    :flyout/id                          (when (get-in data keypaths/shop-a-la-carte-menu-expanded)
                                          "shop-a-la-carte-menu-expanded")})
 
@@ -440,6 +445,9 @@
                                        :slide-out-nav-menu-item/id      "menu-shop-wigs"
                                        :slide-out-nav-menu-item/nested? true
                                        :slide-out-nav-menu-item/primary "Wigs"}
+                                      {:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug "seamless-clip-ins" :catalog/category-id "21"}]
+                                       :slide-out-nav-menu-item/id      "menu-shop-clip-ins"
+                                       :slide-out-nav-menu-item/primary "Clip-ins"}
                                       {:slide-out-nav-menu-item/target  [events/navigate-landing-page {:landing-page-slug "new-arrivals"}]
                                        :slide-out-nav-menu-item/nested? false
                                        :slide-out-nav-menu-item/id      "menu-new-arrivals"
@@ -471,6 +479,10 @@
                                             :header-menu-item/content           "Home"}]
                                           [(hair-shop-query data)]
                                           [(shop-wigs-query data)]
+                                          [{:header-menu-item/navigation-target [events/navigate-category {:page/slug "seamless-clip-ins" 
+                                                                                                           :catalog/category-id "21"}]
+                                            :header-menu-item/id                "desktop-shop-clip-ins"
+                                            :header-menu-item/content           "Clip-ins"}]
                                           [{:header-menu-item/navigation-target [events/navigate-landing-page {:landing-page-slug "new-arrivals"}]
                                             :header-menu-item/id                "desktop-new-arrivals"
                                             :header-menu-item/content           "New Arrivals!"}]
