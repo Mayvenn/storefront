@@ -3,7 +3,6 @@
             [homepage.ui.promises :as promises]
             [homepage.ui.blog :as blog]
             [homepage.ui.hero :as hero]
-            [homepage.ui.email-capture :as email-capture]
             [homepage.ui.shopping-categories :as shopping-categories]
             [catalog.ui.shop-these-looks :as shop-these-looks]
             [homepage.ui.zip-explanation :as zip-explanation]
@@ -31,9 +30,7 @@
    (c/build shop-these-looks/organism data)
    (c/build blog/organism blog2)
    [:div.mt8
-    (c/build zip-explanation/organism zip-explanation)
-    (when (:email-capture/show? data)
-      (c/build email-capture/organism (vt/with :email-capture data)))]])
+    (c/build zip-explanation/organism zip-explanation)]])
 
 (defn hero-query
   "TODO homepage hero query is reused and complected

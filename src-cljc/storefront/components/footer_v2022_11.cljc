@@ -9,7 +9,6 @@
             [storefront.platform.component-utils :as utils]
             [storefront.routes :as routes]
             [mayvenn.visual.tools :as vt]
-            [homepage.ui.email-capture :as email-capture]
             [storefront.components.accordion-v2022-10 :as accordion]
             [storefront.platform.component-utils :as util]
             [storefront.components.accordions.product-info :as product-info]
@@ -279,8 +278,7 @@
 
 (c/defcomponent component
   [{:keys [] :as data} owner opts]
-  [:div.mt8
-   (c/build email-capture/organism (vt/with :email-capture data))
+  [:div
    (c/build layered/lp-divider-purple-pink)
    [:div.hide-on-tb-dt
     (c/build accordion/component
