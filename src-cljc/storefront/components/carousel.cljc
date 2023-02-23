@@ -243,9 +243,6 @@
 (defn entry [ix src alt highlight?]
   [:div.grid.shop-these-looks-entry
    {:key   ix
-    :style {:grid-template-rows "auto 100px"
-            :justify-items      "center"
-            :align-items        "center"}
     :class (str "shop-these-looks-" (if highlight? "highlight" "lowlight"))}
    (ui/img {:src   src
             :class "container-size"
@@ -258,9 +255,10 @@
   [carousel]
   (let [{:keys [exhibits]} (c/get-props carousel)
         row-1              (take 2 exhibits)
-        row-2              (take 5 (drop 2 exhibits))]
-    [:div.shop-these-looks
-     [:div.shop-these-looks-spacer]
+        row-2              (take 5 (drop 2  exhibits))]
+    [:div.flex.flex-wrap
+     {:style {:grid-row-gap    "1.5rem"
+              :grid-column-gap "0.5rem"}}
      (map-indexed (fn [ix e]
                     (entry ix
                            (:src e)
@@ -272,8 +270,7 @@
                            (:src e)
                            (:alt e)
                            false))
-                  row-2)
-     [:div.shop-these-looks-spacer]]))
+                  row-2)]))
 
 (c/defdynamic-component component
   (constructor
@@ -287,46 +284,47 @@
         ;; TODO (le): This is currently disabled on slider-only-mode because of the bug below
         (when-not (= :slider (:carousel/desktop-layout (c/get-opts this)))
           (let [slider-exhibits-el (c/get-ref this "slider-exhibits")
-                observer       (js/IntersectionObserver.
-                                (fn carousel-intersection-observer-handler [entries]
-                                  ;; NOTE (le): Currently there is a bug when on desktop slider-mode-only.
-                                  ;; When we scroll one element to the right, there is a loop which causes scrolling all
-                                  ;; the way to the right of the carousel, with two indecies per 400ms step.
+                observer           (js/IntersectionObserver.
+                                    (fn carousel-intersection-observer-handler [entries]
+                                      ;; NOTE (le): Currently there is a bug when on desktop slider-mode-only.
+                                      ;; When we scroll one element to the right, there is a loop which causes scrolling all
+                                      ;; the way to the right of the carousel, with two indecies per 400ms step.
 
-                                  ;; This is caused by intersection observer only including entries whose intersection
-                                  ;; have changed. Because we are showing three images on the screen at a time
-                                  ;; when we scroll one image to the right, the next "selected exhibit"'s intersection
-                                  ;; has not changed but rather the element two exhibits down has.
-                                  ;; This causes this code to identify the proper index as the right-most exhibit.
-                                  ;; Then it sends the `carousel|jumped` event to be published which
-                                  ;; then causes the `:selected-exhibit-idx` to be set to the right-most exhibit.
-                                  ;; Which causes component `did-update` to fire, which scrolls to that incorrect index.
-                                  ;; Scrolling to that incorrect index then causes the visibility to change, starting the
-                                  ;; loop over again.
-                                  (js/clearTimeout @intersection-debounce-timer)
-                                  (reset! intersection-debounce-timer
-                                          (js/setTimeout
-                                           (fn carousel-intersection-observer-timer []
-                                             (some->> entries
-                                                      (filter #(.-isIntersecting %))
-                                                      first
-                                                      .-target
-                                                      .-dataset
-                                                      .-index
-                                                      spice.core/parse-int
-                                                      ((fn [index]
-                                                         (publish events/carousel|jumped {:id  id
-                                                                                          :idx index})))))
-                                           400)))
-                                #js {:root      slider-exhibits-el
-                                     :threshold 0.9})]
+                                      ;; This is caused by intersection observer only including entries whose intersection
+                                      ;; have changed. Because we are showing three images on the screen at a time
+                                      ;; when we scroll one image to the right, the next "selected exhibit"'s intersection
+                                      ;; has not changed but rather the element two exhibits down has.
+                                      ;; This causes this code to identify the proper index as the right-most exhibit.
+                                      ;; Then it sends the `carousel|jumped` event to be published which
+                                      ;; then causes the `:selected-exhibit-idx` to be set to the right-most exhibit.
+                                      ;; Which causes component `did-update` to fire, which scrolls to that incorrect index.
+                                      ;; Scrolling to that incorrect index then causes the visibility to change, starting the
+                                      ;; loop over again.
+                                      (js/clearTimeout @intersection-debounce-timer)
+                                      (reset! intersection-debounce-timer
+                                              (js/setTimeout
+                                               (fn carousel-intersection-observer-timer []
+                                                 (some->> entries
+                                                          (filter #(.-isIntersecting %))
+                                                          first
+                                                          .-target
+                                                          .-dataset
+                                                          .-index
+                                                          spice.core/parse-int
+                                                          ((fn [index]
+                                                             (publish events/carousel|jumped {:id  id
+                                                                                              :idx index})))))
+                                               400)))
+                                    #js {:root      slider-exhibits-el
+                                         :threshold 0.9})]
             (attach-intersection-observers slider-exhibits-el observer))))))
   (did-update
    [this]
    (scroll-to-exhibit-idx this (:selected-exhibit-idx (c/get-props this))))
   (render
    [this]
-   (let [desktop-layout (or (:carousel/desktop-layout (c/get-opts this))
+   (let [opts           (c/get-opts this)
+         desktop-layout (or (:carousel/desktop-layout opts)
                             :vertical-sidebar)]
      (c/html
       [:div

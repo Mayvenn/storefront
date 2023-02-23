@@ -161,7 +161,7 @@
                                                                      :alt "image 7"}
                                                                     {:src "http://placekitten.com/400/400?image=8"
                                                                      :alt "image 8"}]})
-     (within :example-no-scroll-carousel {:selected-exhibit-idx (:idx (carousel/<- app-state :example-slider-image-carousel))
+     (within :example-no-scroll-carousel {:selected-exhibit-idx (:idx (carousel/<- app-state :example-no-scroll-carousel))
                                           :exhibits             [{:src "http://placekitten.com/400/400?image=1"
                                                                   :alt "image 1"}
                                                                  {:src "http://placekitten.com/400/400?image=2"
