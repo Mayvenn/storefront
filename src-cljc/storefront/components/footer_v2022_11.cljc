@@ -223,32 +223,23 @@
                                  {:id       "shop"
                                   :face     {:copy "Shop"}
                                   :contents {:info-accordion.contents/type :links-list
-                                             :row-count                    6
+                                             :row-count                    5
                                              :column-count                 2
                                              :links                        [{:target [e/navigate-category
-                                                                                      {:page/slug           "wigs"
-                                                                                       :catalog/category-id "13"}]
+                                                                                      {:page/slug "wigs" :catalog/category-id "13"}]
                                                                              :copy   "Wigs"}
                                                                             {:target [e/navigate-category
-                                                                                      {:page/slug           "human-hair-bundles"
-                                                                                       :catalog/category-id "27"}]
+                                                                                      {:page/slug "human-hair-bundles" :catalog/category-id "27"}]
                                                                              :copy   "Hair Bundles"}
                                                                             {:target [e/navigate-category
-                                                                                      {:page/slug           "closures"
-                                                                                       :catalog/category-id "0"}]
+                                                                                      {:page/slug "closures" :catalog/category-id "0"}]
                                                                              :copy   "Closures"}
                                                                             {:target [e/navigate-category
-                                                                                      {:page/slug           "frontals"
-                                                                                       :catalog/category-id "1"}]
+                                                                                      {:page/slug "frontals" :catalog/category-id "1"}]
                                                                              :copy   "Frontals"}
                                                                             {:target [e/navigate-category
-                                                                                      {:page/slug           "seamless-clip-ins" 
-                                                                                       :catalog/category-id "21"}]
-                                                                             :copy   "Clip-ins"}
-                                                                            {:target [e/navigate-product-details 
-                                                                                      {:page/slug          "50g-straight-tape-ins"
-                                                                                       :catalog/product-id "111"}]
-                                                                             :copy   "Tape-ins"}
+                                                                                      {:page/slug "hair-extensions" :catalog/category-id "28"}]
+                                                                             :copy   "Hair Extensions"}
                                                                             {:target [e/navigate-wigs-101-guide]
                                                                              :copy   "Wigs 101"}
                                                                             {:target [e/navigate-category {:page/slug           "ready-wear-wigs"
