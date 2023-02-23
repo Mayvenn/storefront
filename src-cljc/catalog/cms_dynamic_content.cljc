@@ -11,7 +11,9 @@
                        vals
                        (filter #(seq (selector/match-all {} (-> %
                                                                 :selector
-                                                                clojure.walk/keywordize-keys) [sku])))
+                                                                clojure.walk/keywordize-keys) [sku]))) 
+                       (remove (fn [{:keys [content-value]}]
+                                 (nil? content-value)))
                        (map (juxt (comp keyword :content-slot-id) (fn [{:keys [content-value]}]
                                                                     (goog.string/unescapeEntities content-value))))
                        (group-by first)
