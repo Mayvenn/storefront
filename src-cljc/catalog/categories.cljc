@@ -53,7 +53,7 @@
    #:subsection{:title "Deep Wave" :selector #:hair{:texture #{"deep-wave"}}}
    #:subsection{:title "Curly" :selector #:hair{:texture #{"curly"}}}])
 
-(def clip-in-tape-in-templates
+(def hair-extensions-templates
   {:page/title-template            [:computed/selected-facet-string " Virgin " :seo/title " | Mayvenn"]
    :page.meta/description-template ["Get the hair of your dreams with our "
                                     :computed/selected-facet-string
@@ -919,7 +919,7 @@
     :category/show-title?             true
     :category/description             "Choose From All of Our Hair Products"
     :copy/title                       "All Products"
-    :hair/family                      #{"bundles" "closures" "frontals" "360-frontals" "seamless-clip-ins" "tape-ins"
+    :hair/family                      #{"bundles" "closures" "frontals" "360-frontals" "seamless-clip-ins"
                                         "360-wigs" "lace-front-wigs" "ready-wigs" "headband-wigs" "closure-wigs"}
     :page/slug                        "all-products"
     :page/title                       "100% Virgin Hair | Mayvenn"
@@ -1081,7 +1081,7 @@
 
      :header/title "Seamless Clip Ins"
      :seo/sitemap  true}
-    clip-in-tape-in-templates)])
+    hair-extensions-templates)])
 
 (def the-only-tape-in-category
   (merge {:catalog/category-id "22"
@@ -1105,7 +1105,7 @@
           :header/title   "Tape Ins"
           :page/redirect? true
           :seo/sitemap    false}
-         clip-in-tape-in-templates))
+         hair-extensions-templates))
 
 (def tape-ins-category
   [the-only-tape-in-category])
@@ -1116,7 +1116,7 @@
      :catalog/department  #{"hair"}
      :category/new?       false
      :page/icp?           true
-     :hair/family         #{"seamless-clip-ins" "tape-ins"}
+     :hair/family         #{"seamless-clip-ins"}
      :selector/essentials [:catalog/department :hair/family]
      :selector/electives  [:hair/weight :hair/color :hair/texture]
      :desktop-menu/title  "Hair Extensions"
@@ -1142,24 +1142,24 @@
                                             " Shop now.")
      :category/image-url               "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
      :opengraph/title                  "Real Human Hair Extensions - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
-     :opengraph/description            "Blending flawlessly with your own hair and backed by our 30 Day Quality Guarantee, our seamless clip-in and tape-in extensions are the best quality products on the market and ships free!"
+     :opengraph/description            "Blending flawlessly with your own hair and backed by our 30 Day Quality Guarantee, our seamless clip-in extensions are the best quality products on the market and ships free!"
      :subcategories/ids                ["21" "22"]
      :subcategories/layout             :list
      :subsections/subsection-selectors [{:subsection/title    "Seamless Clip-Ins"
                                          :subsection/selector {:hair/family #{"seamless-clip-ins"}}}
-                                        {:subsection/title    "Tape-Ins"
+                                        #_{:subsection/title    "Tape-Ins"
                                          :subsection/selector {:hair/family #{"tape-ins"}}}]
      :content-block/type               :about-attributes
      :content-block/title              "Hair Extensions 101:"
      :content-block/header             "How to Choose"
-     :content-block/summary            "No matter what kind of transformation you’re looking for, our seamless clip-in & tape-in hair extensions will help you achieve your desired look in an instant. Our clip-ins & tape-ins are perfect for when you want a natural-looking appearance that complements your own hair while giving that much coveted oomph-factor."
-     :content-block/sections           [{:title "Tape-In Hair Extensions"
+     :content-block/summary            "No matter what kind of transformation you’re looking for, our seamless clip-in hair extensions will help you achieve your desired look in an instant. Our clip-ins are perfect for when you want a natural-looking appearance that complements your own hair while giving that much coveted oomph-factor."
+     :content-block/sections           [#_{:title "Tape-In Hair Extensions"
                                          :body  [{:text "Our seamless tape-in hair extensions have a thin weft that flawlessly blends with your own hair, so you can have the hair of your dreams."}]}
                                         {:title "Clip-In Hair Extensions"
                                          :body  [{:text "With a thin weft that blends into your hair seamlessly, our clip-in human hair extensions help you create the hair of your dreams."}]}
                                         {:title "Human Hair Extensions"
                                          :body  [{:text "Our human hair extensions are a must-have for creating the hair you’ve always wanted. Our high-quality extensions are easy to install and available in many textures like Straight, Yaki Straight, Kinky Straight, Body Wave, Loose Wave, Water Wave, Deep Wave, and Curly, plus multiple lengths for all kinds of hairstyles."}]}]}
-    clip-in-tape-in-templates)])
+    hair-extensions-templates)])
 
 (def base-materials-categories
   [{:catalog/category-id "44"
@@ -1359,7 +1359,6 @@
           virgin-hair-nav-roots
           menu-categories
           seamless-clip-ins-category
-          tape-ins-category
           human-hair-bundles
           base-materials-categories
           special-wigs-promo))

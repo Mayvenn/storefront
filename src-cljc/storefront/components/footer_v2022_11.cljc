@@ -222,7 +222,7 @@
                                  {:id       "shop"
                                   :face     {:copy "Shop"}
                                   :contents {:info-accordion.contents/type :links-list
-                                             :row-count                    6
+                                             :row-count                    5
                                              :column-count                 2
                                              :links                        [{:target [e/navigate-category
                                                                                       {:page/slug           "wigs"
@@ -244,10 +244,6 @@
                                                                                       {:page/slug           "seamless-clip-ins" 
                                                                                        :catalog/category-id "21"}]
                                                                              :copy   "Clip-ins"}
-                                                                            {:target [e/navigate-product-details 
-                                                                                      {:page/slug          "50g-straight-tape-ins"
-                                                                                       :catalog/product-id "111"}]
-                                                                             :copy   "Tape-ins"}
                                                                             {:target [e/navigate-wigs-101-guide]
                                                                              :copy   "Wigs 101"}
                                                                             {:target [e/navigate-category {:page/slug           "ready-wear-wigs"

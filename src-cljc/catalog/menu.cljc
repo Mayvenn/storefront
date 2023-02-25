@@ -98,12 +98,7 @@
                                 {:nav-message [events/navigate-category {:page/slug "seamless-clip-ins" :catalog/category-id "21"}]
                                  :key "clip-ins"
                                  :copy "Clip-ins"
-                                 :new? false}
-                                {:copy        "Tape-ins"
-                                 :key         "tape-ins"
-                                 :nav-message [events/navigate-product-details {:page/slug          "50g-straight-tape-ins"
-                                                                                :catalog/product-id "111" }]
-                                 :new?        false} ])})
+                                 :new? false}])})
 
 (defn wigs-query [data]
   {:return-link/event-message [events/menu-home]
