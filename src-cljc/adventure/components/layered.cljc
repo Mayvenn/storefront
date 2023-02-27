@@ -803,6 +803,15 @@
               :max-size 1024
               :alt      alt}))])
 
+(defcomponent icon
+  [{:keys [icon size]} _ _]
+  [(ui/img {:src      (:url (:file icon))
+            :style    {:width      size
+                       :height     size
+                       :display    "block"}
+            :class    "mx-auto flex-auto col-12"
+            :max-size 1024})])
+
 ;; Duplicated from src-cljc/homepage/ui_v2020_07.cljc to avoid circular dep
 (def contact-us-query
   {:contact-us.title/primary   "Contact Us"
@@ -900,6 +909,7 @@
 
 (def padding-classes
   {"none" ["px0" "py0"]
+   "small" ["px2" "py4"]
    "medium" ["px4" "py8"]})
 
 (def gap-classes
@@ -978,6 +988,7 @@
        :lp-split                           lp-split
        :lp-title-text-cta-background-color lp-title-text-cta-background-color
        :image                              image
+       :icon                               icon
        :lp-contact-us                      lp-contact-us
        :lp-divider-green-gray              lp-divider-green-gray
        :lp-divider-purple-pink             lp-divider-purple-pink

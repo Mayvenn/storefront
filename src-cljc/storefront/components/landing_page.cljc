@@ -283,10 +283,17 @@
                                                   :content/color    (if (= "black" (:background-color body-layer))
                                                                       "white"
                                                                       "black")}
-      "image"                                    {:layer/type         :image
-                                                  :alt                (:alt body-layer)
-                                                  :image              (:image body-layer)
-                                                  :desktop-image      (:desktop-image body-layer)}
+      "image"                                    {:layer/type    :image
+                                                  :alt           (:alt body-layer)
+                                                  :image         (:image body-layer)
+                                                  :desktop-image (:desktop-image body-layer)}
+      "icon"                                     {:layer/type :icon
+                                                  :size       (case (:size body-layer)
+                                                                "Small (1 rem)"   "1rem"
+                                                                "Medium (2 rem)"  "2rem"
+                                                                "Large (4 rem)"   "4rem"
+                                                                "X-Large (8 rem)" "8rem")
+                                                  :icon       (:icon body-layer)}
       "text"                                     (-> body-layer
                                                      (select-keys [:font :size :alignment :content])
                                                      (assoc :layer/type :text))
