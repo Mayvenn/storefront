@@ -145,12 +145,12 @@
                                         :navigation-message nil}
                      :bottom           {:layer/type       :lp-title-text-cta-background-color
                                         :header/value     "Customize Your Wig"
-                                        :body/value       (str "Mayvenn Beauty Lounges offer a variety of services to provide unlimited looks.\n\n"
+                                        :body/value       (str "Mayvenn Beauty Lounges offer a variety of services to provide limitless looks.\n\n"
                                                                "- We'll personalize your lace to ensure a natural hairline.\n"
-                                                               "- Layers, blunt cuts, bangs—you name it, we'll cut it.\n"
-                                                               "- Pick a color, any color, and we'll achieve it for you. Highlights, balayage and all.\n"
-                                                               "- Need more volume, we'll add more hair to reach your FULL expectations.\n"
-                                                               "- We're here every step of the way, drop your wig off and we'll restyle it like new!")
+                                                               "- Layers, precision cuts, bangs, - you name it, we'll cut it.\n"
+                                                               "- Pick a color, any color, and we'll achieve it for you. Highlights, balayage, and more.\n"
+                                                               "- Craving volume? We'll add more hair to reach your full expectations.\n"
+                                                               "- We're here every step of the way, drop your wig off, and let us bring your look to life")
                                         :background/color "cool-gray"
                                         :content/color    "black"}})
          (vt/within :wig-services-menu

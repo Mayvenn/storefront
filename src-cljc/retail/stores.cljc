@@ -27,9 +27,10 @@
      "f0ac8b6a-5815-4e95-ad74-688b598498da")
    (titles/canela
     {:id      "retail-canela-subheader"
-     :primary (str "Shop high-quality 100% virgin human hair wigs, extensions, bundles, and more "
-                   "or get a consultation with a beauty expert! "
-                   "Personalize your next wig for as low as $25 at a Mayvenn Beauty Lounge near you!")})])
+     :primary (str "Shop high-quality, 100% virgin human hair wigs, bundles, extensions, and more. "
+                   "Visit a Mayvenn Beauty Lounge near you to customize your next wig for as low "
+                   "as $25. See us in-store to receive a complimentary consultation with our "
+                   "Beauty Experts.")})])
 
 (def header
   [:div.center.p3
@@ -144,12 +145,12 @@
          :navigation-message nil}
    :bottom {:layer/type :lp-title-text-cta-background-color
             :header/value "Customize Your Wig"
-            :body/value (str "Mayvenn Beauty Lounges offer a variety of services to provide unlimited looks.\n\n"
+            :body/value (str "Mayvenn Beauty Lounges offer a variety of services to provide limitless looks.\n\n"
                              "- We'll personalize your lace to ensure a natural hairline.\n"
-                             "- Layers, blunt cuts, bangs—you name it, we'll cut it.\n"
-                             "- Pick a color, any color, and we'll achieve it for you. Highlights, balayage and all.\n"
-                             "- Need more volume, we'll add more hair to reach your FULL expectations.\n"
-                             "- We're here every step of the way, drop your wig off and we'll restyle it like new!")
+                             "- Layers, precision cuts, bangs, - you name it, we'll cut it.\n"
+                             "- Pick a color, any color, and we'll achieve it for you. Highlights, balayage, and more.\n"
+                             "- Craving volume? We'll add more hair to reach your full expectations.\n"
+                             "- We're here every step of the way, drop your wig off, and let us bring your look to life")
             :background/color "cool-gray"
             :content/color "black"}})
 
