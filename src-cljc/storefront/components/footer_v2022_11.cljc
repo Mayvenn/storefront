@@ -1,9 +1,10 @@
 (ns storefront.components.footer-v2022-11
   (:require [spice.date :as date]
+            [storefront.accessors.experiments :as experiments]
             [storefront.component :as c]
             [adventure.components.layered :as layered]
             [storefront.components.svg :as svg]
-            [storefront.components.ui :as ui]
+            [storefront.components.ui :as ui] 
             [storefront.events :as e]
             [storefront.keypaths :as k]
             [storefront.platform.component-utils :as utils]
@@ -187,9 +188,9 @@
   [app-state]
   (merge
    (let [textfield-keypath k/footer-email-value
-         email             (get-in app-state textfield-keypath)
-         submitted?        (get-in app-state k/footer-email-submitted)
-         signed-in?        (auth/signed-in-or-initiated-guest-checkout? app-state)]
+         email              (get-in app-state textfield-keypath)
+         submitted?         (get-in app-state k/footer-email-submitted)
+         signed-in?         (auth/signed-in-or-initiated-guest-checkout? app-state)]
      (vt/within :email-capture
                 {:id                        (when (not signed-in?) "footer-email-capture")
                  :submit/target             [e/control-footer-email-submit {:email email}]
@@ -243,7 +244,8 @@
                                                                             {:target [e/navigate-category
                                                                                       {:page/slug           "seamless-clip-ins" 
                                                                                        :catalog/category-id "21"}]
-                                                                             :copy   "Clip-ins"}
+                                                                             :copy   (str (when (experiments/clearance-clipins? app-state) "Clearance ")
+                                                                                          "Clip-ins")}
                                                                             {:target [e/navigate-wigs-101-guide]
                                                                              :copy   "Wigs 101"}
                                                                             {:target [e/navigate-category {:page/slug           "ready-wear-wigs"

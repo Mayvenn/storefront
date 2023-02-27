@@ -97,7 +97,9 @@
                                  :copy "Frontals"}
                                 {:nav-message [events/navigate-category {:page/slug "seamless-clip-ins" :catalog/category-id "21"}]
                                  :key "clip-ins"
-                                 :copy "Clip-ins"
+                                 :copy (str (when (experiments/clearance-clipins? data)
+                                              "Clearance ")
+                                            "Clip-ins")
                                  :new? false}])})
 
 (defn wigs-query [data]

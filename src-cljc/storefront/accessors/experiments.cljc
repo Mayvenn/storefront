@@ -145,3 +145,7 @@
 (defn hdyhau-post-purchase?
   [data]
   (display-feature? data "hdyhau-post-purchase"))
+
+(defn clearance-clipins?
+  [data]
+  (display-feature? data "clearance-clipins"))
