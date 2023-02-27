@@ -150,7 +150,7 @@
                                                                "- Layers, precision cuts, bangs, - you name it, we'll cut it.\n"
                                                                "- Pick a color, any color, and we'll achieve it for you. Highlights, balayage, and more.\n"
                                                                "- Craving volume? We'll add more hair to reach your full expectations.\n"
-                                                               "- We're here every step of the way, drop your wig off, and let us bring your look to life")
+                                                               "- We're here every step of the way. Drop your wig off, and let us bring your look to life.")
                                         :background/color "cool-gray"
                                         :content/color    "black"}})
          (vt/within :wig-services-menu
