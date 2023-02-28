@@ -4,7 +4,6 @@
             catalog.keypaths
             [catalog.skuers :as skuers]
             [catalog.ui.category-hero :as category-hero]
-            [catalog.ui.category-filters :as category-filters]
             [catalog.ui.content-box :as content-box]
             [catalog.ui.facet-filters :as facet-filters]
             [catalog.ui.product-card-listing :as product-card-listing]
@@ -14,10 +13,8 @@
             [mayvenn.visual.ui.dividers :as dividers]
             [spice.maps :as maps]
             [storefront.accessors.categories :as accessors.categories]
-            [storefront.accessors.experiments :as experiments]
             [storefront.assets :as assets]
             [storefront.component :as component :refer [defcomponent]]
-            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
