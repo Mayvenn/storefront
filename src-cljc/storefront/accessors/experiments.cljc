@@ -3,6 +3,8 @@
             [spice.date :as date]
             [storefront.accessors.sites :as sites]))
 
+;; IMPORTANT: Don't forget to add your feature flag to storefront.handler/wrap-add-feature-flags!
+
 #_(defn bucketing-example
     [data]
     (let [stylist-id    (get-in data keypaths/store-stylist-id)
