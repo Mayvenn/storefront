@@ -222,7 +222,7 @@
    _
    opts]
   (let [unavailable? (not (seq selected-sku))
-        sold-out?    (not (spice.core/spy (:inventory/in-stock? selected-sku)))]
+        sold-out?    (not (:inventory/in-stock? selected-sku))]
     (c/html
      [:div
       [:div.container.pdp-on-tb
