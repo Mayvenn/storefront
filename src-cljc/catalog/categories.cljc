@@ -1052,7 +1052,7 @@
     {:catalog/category-id "21"
      :catalog/department  #{"hair"}
      :category/new?       false
-     :desktop-menu/title  "Clip-ins"
+     :desktop-menu/title  "Clip-Ins"
      :desktop-menu/order  4
 
      :subsections/subsection-selectors [{:subsection/title    "Seamless Clip-Ins"

@@ -57,7 +57,7 @@
     (ui/button-small-underline-primary {:href directions} "Get Directions")
     [:div.flex.flex-column.gap-2
      (->> ["Lace Front Wigs, Closure Wigs, & More"
-           "Bundles, Closures, Clip-ins, & More"
+           "Bundles, Closures, Clip-Ins, & More"
            "Coloring, Wig Services, & More"]
           (map (fn [text] [:div.shout.content-3.bg-pale-purple.p2.bold text])))]]
    [:div.col-6-on-tb-dt.col-12 (ui/basic-defer-img {:width "100%" :alt ""} img-url)]])

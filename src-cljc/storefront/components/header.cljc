@@ -442,7 +442,7 @@
                                        :slide-out-nav-menu-item/primary "Wigs"}
                                       {:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug "seamless-clip-ins" :catalog/category-id "21"}]
                                        :slide-out-nav-menu-item/id      "menu-shop-clip-ins"
-                                       :slide-out-nav-menu-item/primary (str "Clearance " "Clip-ins")}
+                                       :slide-out-nav-menu-item/primary (str "Clearance " "Clip-Ins")}
                                       {:slide-out-nav-menu-item/target  [events/navigate-landing-page {:landing-page-slug "new-arrivals"}]
                                        :slide-out-nav-menu-item/nested? false
                                        :slide-out-nav-menu-item/id      "menu-new-arrivals"
@@ -477,7 +477,7 @@
                                           [{:header-menu-item/navigation-target [events/navigate-category {:page/slug "seamless-clip-ins" 
                                                                                                            :catalog/category-id "21"}]
                                             :header-menu-item/id                "desktop-shop-clip-ins"
-                                            :header-menu-item/content           (str "Clearance " "Clip-ins")}]
+                                            :header-menu-item/content           (str "Clearance " "Clip-Ins")}]
                                           [{:header-menu-item/navigation-target [events/navigate-landing-page {:landing-page-slug "new-arrivals"}]
                                             :header-menu-item/id                "desktop-new-arrivals"
                                             :header-menu-item/content           "New Arrivals!"}]
