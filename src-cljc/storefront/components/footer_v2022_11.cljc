@@ -244,8 +244,7 @@
                                                                             {:target [e/navigate-category
                                                                                       {:page/slug           "seamless-clip-ins" 
                                                                                        :catalog/category-id "21"}]
-                                                                             :copy   (str (when (experiments/clearance-clipins? app-state) "Clearance ")
-                                                                                          "Clip-ins")}
+                                                                             :copy   (str "Clearance " "Clip-ins")}
                                                                             {:target [e/navigate-wigs-101-guide]
                                                                              :copy   "Wigs 101"}
                                                                             {:target [e/navigate-category {:page/slug           "ready-wear-wigs"

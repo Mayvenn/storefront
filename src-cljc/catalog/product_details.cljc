@@ -222,7 +222,7 @@
    _
    opts]
   (let [unavailable? (not (seq selected-sku))
-        sold-out?    (not (:inventory/in-stock? selected-sku))]
+        sold-out?    (not (spice.core/spy (:inventory/in-stock? selected-sku)))]
     (c/html
      [:div
       [:div.container.pdp-on-tb
@@ -667,19 +667,19 @@
        (within :reviews.summary yotpo-data-attributes)))))
 
 (defn zip-payment<
-  [selected-sku loaded-quadpay? clearance-clipins?]
+  [selected-sku loaded-quadpay?]
   (when (and loaded-quadpay? (seq selected-sku))
-    {:zip-payments/sku-price (if (some-> selected-sku :promo.clearance/eligible first (and clearance-clipins?))
+    {:zip-payments/sku-price (if (some-> selected-sku :promo.clearance/eligible first)
                                (* 0.65 (:sku/price selected-sku))
                                (:sku/price selected-sku))
      :zip-payments/loaded?   loaded-quadpay?}))
 
 (defn price-block<
-  [selected-sku clearance-clipins?]
+  [selected-sku]
   (when selected-sku
     (let [price (or (:product/essential-price selected-sku)
                     (:sku/price selected-sku))]
-      (if (some-> selected-sku :promo.clearance/eligible first (and clearance-clipins?))
+      (if (some-> selected-sku :promo.clearance/eligible first)
         {:price-block/primary-struck (mf/as-money price)
          :price-block/new-primary    (mf/as-money (* 0.65 price))
          :price-block/secondary      "each"}
@@ -850,7 +850,6 @@
         ;; Flags
         carousel-redesign? (experiments/carousel-redesign? state)
         pdp-faq-accordion? (experiments/pdp-faq-in-accordion? state)
-        clearance-clipins? (experiments/clearance-clipins? state)
         ;; Focus
         detailed-product   (products/current-product state)
         selected-sku       (get-in state catalog.keypaths/detailed-product-selected-sku)]
@@ -859,8 +858,8 @@
                     (options-picker< state facets-db options-accordion)
                     {:add-to-cart (add-to-cart-query state)}
                     (product-carousel<- images-db product-carousel detailed-product carousel-redesign?)
-                    (price-block< selected-sku clearance-clipins?)
-                    (zip-payment< selected-sku loaded-quadpay? clearance-clipins?)
+                    (price-block< selected-sku)
+                    (zip-payment< selected-sku loaded-quadpay?)
                     (information< state images-db
                                   info-accordion faq-accordion
                                   detailed-product selected-sku
