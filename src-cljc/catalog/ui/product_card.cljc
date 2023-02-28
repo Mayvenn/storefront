@@ -68,7 +68,8 @@
         image (->> epitome
                    (images/for-skuer images-catalog)
                    (filter (comp #{"catalog"} :use-case))
-                   first)]
+                   first) 
+        clearance-clipins? (experiments/clearance-clipins? data)]
     {:sort/value                   (:sku/price cheapest-sku)
      :card/type                    :product
      :react/key                    (str "product-" product-slug)
@@ -92,7 +93,9 @@
                                       (if (= 1 (count product-colors))
                                         [:text (:option/name (first product-colors))]
                                         [:swatches [product-slug product-colors]])
-                                      [:pricing [(:sku/price cheapest-sku)]]])
+                                      [:pricing [(:sku/price cheapest-sku)
+                                                 (when (-> cheapest-sku :promo.clearance/eligible first (and clearance-clipins?))
+                                                   (* 0.65 (:sku/price cheapest-sku)))]]])
      :card-image/src               (str (:url image) "-/format/auto/" (:filename image))
      :card-image/alt               (:alt image)}))
 
