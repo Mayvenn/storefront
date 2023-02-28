@@ -924,7 +924,7 @@
    (merge {:class (cond->> ["grid"
                             (str "columns-" mobile-columns)
                             (str "columns-" desktop-columns "-on-tb-dt")
-                            "align-middle"]
+                            "items-center"]
                     background-color (cons (str "bg-" background-color))
                     padding          (concat (get padding-classes padding))
                     gap              (concat (get gap-classes gap))
