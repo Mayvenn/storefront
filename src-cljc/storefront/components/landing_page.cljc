@@ -313,6 +313,13 @@
                                                      (update :contents (partial map #(determine-and-shape-layer data %)))
                                                      (assoc :navigation-message (url->navigation-message (:url body-layer)))
                                                      (assoc :layer/type :section))
+      "tiles"                                    (-> body-layer
+                                                     (select-keys [:contents :mobile-columns :desktop-columns
+                                                                   :desktop-reverse-order :background-color :url
+                                                                   :padding :gap])
+                                                     (update :contents (partial map #(determine-and-shape-layer data %)))
+                                                     (assoc :navigation-message (url->navigation-message (:url body-layer)))
+                                                     (assoc :layer/type :tiles))
       "button"                                   (-> body-layer
                                                      (select-keys [:copy :color :size :url])
                                                      (assoc :navigation-message (url->navigation-message (:url body-layer)))

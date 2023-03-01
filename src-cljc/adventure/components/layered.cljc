@@ -940,6 +940,28 @@
       (layer-view content opts))
     contents)])
 
+(defcomponent tiles [{:keys [contents mobile-columns desktop-columns desktop-reverse-order
+                             url navigation-message background-color padding gap]} _ opts]
+  [(if url :a :div)
+   (merge {:class (cond->> ["grid"
+                            (str "columns-" mobile-columns)
+                            (str "columns-" desktop-columns "-on-tb-dt")
+                            "items-baseline"]
+                    background-color (cons (str "bg-" background-color))
+                    padding          (concat (get padding-classes padding))
+                    gap              (concat (get gap-classes gap))
+                    :always          (clojure.string/join " "))
+           :style {:height "fit-content"}}
+
+          (when url
+            {:href url})
+          (when navigation-message
+            (apply utils/route-to navigation-message)))
+   (map-indexed
+    (fn [idx content]
+      (layer-view content opts))
+    contents)])
+
 (defcomponent button [{:keys [copy color size url navigation-message]} _ _]
   [:div.flex.justify-center
    (ui/button (str "btn-" size " btn-" color " button-font-1")
@@ -1010,6 +1032,7 @@
        :customize-wig       customize-wig
        :why-mayvenn         why-mayvenn
        :section             section
+       :tiles               tiles
        :text                text
        :button              button
        :title               title
