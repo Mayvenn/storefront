@@ -452,6 +452,7 @@
 (defn legacy-content-from-cellar
   "Converts cellar SKU and cellar Product to template-slots"
   [current-product selected-sku model-image]
+  ;;    Key                                               Title                Sub Text
   (->> [:pdp.details.description/description              nil                       (->> current-product :copy/description)
         :pdp.details.description/what's-included          "What's Included"         (->> current-product :copy/whats-included)
         :pdp.details.description/hair-type               "Hair Type"                (->> current-product :copy/hair-type)
@@ -480,6 +481,7 @@
 (defn hack--legacy-content-from-cellar--with-new-drawers
   "Converts cellar SKU and cellar Product to template-slots"
   [current-product selected-sku model-image]
+  ;;    Key                                                    Title                                               Sub Text
   (->> [:pdp.details.overview/description                      "Description"                                      (->> current-product :copy/description)
         :pdp.details.overview/what's-included                  "What's Included"                                  (->> current-product :copy/whats-included)
         :pdp.details.overview/model-wearing                    "Model Wearing"                                    (or (:copy/model-wearing model-image)
@@ -512,18 +514,19 @@
                  [k (str "<div>" (when heading (str "<h3>" heading "</h3>")) "<p>" (apply str content) "</p></div>")])))
        (into {})))
 
+
 (defn content-slots<
-  [current-product selected-sku model-image cms-pdp-content fake-cms-content]
+  [current-product selected-sku model-image cms-template-slots fake-cms-content]
   (merge (legacy-content-from-cellar current-product selected-sku model-image)
          (cms-dynamic-content/derive-product-details fake-cms-content selected-sku)))
 
 (defn content-slots--testing-cms<
-  [current-product selected-sku model-image cms-pdp-content fake-cms-content]
+  [current-product selected-sku model-image cms-template-slots fake-cms-content]
   (merge (hack--legacy-content-from-cellar--with-new-drawers current-product
                                                              selected-sku
                                                              model-image)
-         (cms-dynamic-content/derive-product-details fake-cms-content selected-sku)
-         (cms-dynamic-content/derive-product-details cms-pdp-content selected-sku)))
+         #_(cms-dynamic-content/derive-product-details fake-cms-content selected-sku)
+         (cms-dynamic-content/derive-product-details cms-template-slots selected-sku)))
 
 (defn content-slots->accordion-slots
   [details-render-slots content-slot-data product length-guide-image open-drawers]
@@ -784,7 +787,7 @@
                                 (select {:use-case #{"length-guide"}})
                                 first)
 
-        ;; Selections through model-image is so that we can display model wearing 
+        ;; Selections through model-image is so that we can display model wearing
         ;; in the information section for the old carousel
         selections         (get-in state catalog.keypaths/detailed-product-selections)
         product-skus       (products/extract-product-skus state detailed-product)
@@ -797,14 +800,21 @@
 
 
 
-        content-slot-data  (content-slots< detailed-product
+        content-slot-data  nil #_(content-slots< detailed-product
                                            selected-sku
                                            model-image
-                                           (get-in state keypaths/cms-pdp-content)
+                                           (get-in state keypaths/cms-template-slots)
                                            fake-contentful-product-details-data)
-        ready-wigs-content-slot-data (hack--legacy-content-from-cellar--with-new-drawers detailed-product
-                                                                                         selected-sku
-                                                                                         model-image)]
+        ready-wigs-content-slot-data (content-slots--testing-cms< detailed-product
+                                                                  selected-sku
+                                                                  model-image
+                                                                  (get-in state keypaths/cms-template-slots)
+                                                                  fake-contentful-product-details-data)
+        #_(merge (hack--legacy-content-from-cellar--with-new-drawers detailed-product
+                                                                                                selected-sku
+                                                                                                model-image)
+                                            (cms-dynamic-content/derive-product-details fake-contentful-product-details-data selected-sku))
+        ]
     (accordion-neue/accordion-query
      (cond->
          (if (select {:hair/family #{"ready-wigs"}} [detailed-product]) ;;HACK
@@ -998,7 +1008,7 @@
                                    (:catalog/product-id prev-args))
                              (= :first-nav (:navigate/caused-by args)))]
        (when (experiments/pdp-content-slots? app-state)
-         (effects/fetch-cms2 app-state [:filledContentDrawer]))
+         (effects/fetch-cms2 app-state [:templateSlot]))
        (when (nil? product)
          (fetch-product-details app-state product-id))
        (when just-arrived?

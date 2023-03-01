@@ -334,8 +334,9 @@
   {:landingPageV2       [:slug]
    :homepage            [:experience]
    :retailLocation      [:slug]
-   :filledContentDrawer [:content/id]
+   :templateSlot        [:slug]
    :copyUrlSlug         [:slug]})
+
 
 (defn find-cms-nodes
   ([nodes-db content-type]
@@ -361,6 +362,13 @@
    (assoc-in data
              keypath
              (get-in cms-data keypath))))
+
+(defn include-content [data normalized-cms-cache key]
+  (assoc-in data [key]
+            (some->>
+             (assemble-cms-node normalized-cms-cache key)
+             (maps/index-by (first (get content-type->id-path key)))
+             (walk/keywordize-keys))))
 
 (defn wrap-set-cms-cache
   [h contentful]
@@ -417,12 +425,7 @@
                                             contentful/derive-all-looks)
 
                                         :always
-                                        (assoc-in [:filledContentDrawer]
-                                                  (some->>
-                                                   (assemble-cms-node normalized-cms-cache :filledContentDrawer)
-                                                   (mapv (fn [filled-content-slot]
-                                                           (update filled-content-slot :content-value markdown/md-to-html-string)))
-                                                   (maps/index-by :content/id)))))
+                                        (include-content normalized-cms-cache :templateSlot)))
 
                                     (= events/navigate-landing-page nav-event)
                                     (-> {}
