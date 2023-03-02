@@ -26,7 +26,8 @@
             [homepage.ui.contact-us :as contact-us]
             [markdown-to-hiccup.core :as markdown]
             [ui.wig-services-menu :as wig-services-menu]
-            [ui.wig-customization-spotlights :as wig-customization-spotlights]))
+            [ui.wig-customization-spotlights :as wig-customization-spotlights]
+            [storefront.components.animated-value-props :as animated-value-props]))
 
 (defn ^:private vertical-squiggle
   [top]
@@ -918,8 +919,8 @@
    "medium" ["gap-4"]
    "large" ["gap-8"]})
 
-(defcomponent section [{:keys [contents mobile-columns desktop-columns desktop-reverse-order
-                               url navigation-message background-color padding gap]} _ opts]
+(defcomponent section [{:keys [contents mobile-columns desktop-columns url
+                               navigation-message background-color padding gap]} _ opts]
   [(if url :a :div)
    (merge {:class (cond->> ["grid"
                             (str "columns-" mobile-columns)
@@ -1015,6 +1016,7 @@
        :lp-contact-us                      lp-contact-us
        :lp-divider-green-gray              lp-divider-green-gray
        :lp-divider-purple-pink             lp-divider-purple-pink
+       :animated-value-props               animated-value-props/component
 
        ;; REBRAND
        :shop-text-block         shop-text-block

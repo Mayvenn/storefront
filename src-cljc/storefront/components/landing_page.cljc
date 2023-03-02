@@ -298,13 +298,14 @@
                                                      (select-keys [:font :size :alignment :content])
                                                      (assoc :layer/type :text))
       "staticContent"                            {:layer/type (case (:module body-layer)
-                                                                "contact-us"          :lp-contact-us
-                                                                "divider-green-gray"  :lp-divider-green-gray
-                                                                "divider-purple-pink" :lp-divider-purple-pink
-                                                                "service-list"        :service-list
-                                                                "promises-omni"       :promises-omni
-                                                                "customize-wig"       :customize-wig
-                                                                "why-mayvenn"         :why-mayvenn
+                                                                "contact-us"           :lp-contact-us
+                                                                "divider-green-gray"   :lp-divider-green-gray
+                                                                "divider-purple-pink"  :lp-divider-purple-pink
+                                                                "service-list"         :service-list
+                                                                "promises-omni"        :promises-omni
+                                                                "customize-wig"        :customize-wig
+                                                                "why-mayvenn"          :why-mayvenn
+                                                                "animated-value-props" :animated-value-props
                                                                 nil)}
       "section"                                  (-> body-layer
                                                      (select-keys [:contents :mobile-columns :desktop-columns
