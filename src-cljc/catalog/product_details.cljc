@@ -521,7 +521,7 @@
          (cms-dynamic-content/derive-product-details fake-cms-content selected-sku)))
 
 (defn content-slots--testing-cms<
-  [current-product selected-sku model-image cms-template-slots fake-cms-content]
+  [current-product selected-sku model-image cms-template-slots]
   (merge (hack--legacy-content-from-cellar--with-new-drawers current-product
                                                              selected-sku
                                                              model-image)
@@ -809,7 +809,7 @@
                                                                   selected-sku
                                                                   model-image
                                                                   (get-in state keypaths/cms-template-slots)
-                                                                  fake-contentful-product-details-data)
+                                                                  #_fake-contentful-product-details-data)
         #_(merge (hack--legacy-content-from-cellar--with-new-drawers detailed-product
                                                                                                 selected-sku
                                                                                                 model-image)
