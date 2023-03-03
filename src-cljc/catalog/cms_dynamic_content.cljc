@@ -14,39 +14,39 @@
       (derive :content/heading-5 :content/heading)
       (derive :content/heading-6 :content/heading)))
 
-(defmulti render-node
+(defmulti build-hiccup-tag
   (fn [{:as node
         :keys [content data node-type]}]
     (keyword "content" node-type))
-  :hierarchy content-hierarchy)
+  :hierarchy #'content-hierarchy)
 
-(defn render-content [content data]
+(defn build-hiccup-content [content data]
   (into []
-        (map render-node)
+        (map build-hiccup-tag)
         content))
 
-(defmethod render-node :content/heading [{:as _node
+(defmethod build-hiccup-tag :content/heading [{:as _node
                                           :keys [content data]}]
-  [:h3 (render-content content data)])
+  [:h3 (build-hiccup-content content data)])
 
-(defmethod render-node :content/paragraph [{:as _node
+(defmethod build-hiccup-tag :content/paragraph [{:as _node
                                             :keys [content data]}]
-  [:p (render-content content data)])
+  [:p (build-hiccup-content content data)])
 
-(defmethod render-node :content/text [{:as _node
+(defmethod build-hiccup-tag :content/text [{:as _node
                                        :keys [value]}]
   ;; TODO: Strip initial newlines?
   value)
 
-(defmethod render-node :default [{:as node
+(defmethod build-hiccup-tag :default [{:as node
                                   :keys [content data]}]
   ;; TODO: Productionalize this error message
   (println "Attempting to render unknown node type" node)
   nil)
 
-(defn build-rich-text [selected-value]
-  (render-content (:content (:value selected-value))
-                  (:data (:value selected-value))))
+(defn render-selected-value [selected-value]
+  (build-hiccup-content (:content (:value selected-value))
+                        (:data (:value selected-value))))
 
 (defn derive-product-details
   [cms-dynamic-content-data sku]
@@ -72,6 +72,6 @@
                     ;; TODO Move the code responsible for merging the selector attributes into the top level
                     ;; of the selectable value to the API / Handler areas)
                     first
-                    build-rich-text)))))))
+                    render-selected-value)))))))
 
 ;; TODO: Remap keys from contentful to our keys
