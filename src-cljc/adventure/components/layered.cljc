@@ -964,10 +964,9 @@
     contents)])
 
 (defcomponent button [{:keys [copy color size url navigation-message]} _ _]
-  [:div.flex.justify-center
-   (ui/button (str "btn-" size " btn-" color " button-font-1")
-              (merge {:href url} (when navigation-message (apply utils/route-to navigation-message)))
-              copy)])
+  (ui/button (str "btn-" size " btn-" color " button-font-1")
+             (merge {:href url} (when navigation-message (apply utils/route-to navigation-message)))
+             copy))
 
 (defcomponent text [{:keys [url font size alignment content]} _ _]
   [:div.black.my-auto
