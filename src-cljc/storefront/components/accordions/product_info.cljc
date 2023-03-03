@@ -35,9 +35,9 @@
          [:div.my2.pr2
           {:style {:min-width "50%"}
            :key   idx}
-          (into [:div]
+          (conj [:div]
                 (if (string? content)
-                  [(markdown/component (markdown/md->hiccup content))]
+                  (markdown/component (markdown/md->hiccup content))
                   content))
           (when-let [link-content (:link/content section)]
             (ui/button-small-underline-primary

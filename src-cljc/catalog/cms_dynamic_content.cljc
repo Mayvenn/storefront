@@ -5,37 +5,39 @@
              [spice.maps :as maps]
              [clojure.walk :as walk]))
 
-(def content-hierarchy
+(def rich-text-hierarchy
   (-> (make-hierarchy)
       ;; NOTE: This basically is just setting it up so that the keyword on the left gets built as the entity on the right
       ;;      child              parent
-      (derive :content/heading-1 :content/heading)
-      (derive :content/heading-2 :content/heading)
-      (derive :content/heading-3 :content/heading)
-      (derive :content/heading-4 :content/heading)
-      (derive :content/heading-5 :content/heading)
-      (derive :content/heading-6 :content/heading)))
+      (derive :rich-text/heading-1 :rich-text/heading)
+      (derive :rich-text/heading-2 :rich-text/heading)
+      (derive :rich-text/heading-3 :rich-text/heading)
+      (derive :rich-text/heading-4 :rich-text/heading)
+      (derive :rich-text/heading-5 :rich-text/heading)
+      (derive :rich-text/heading-6 :rich-text/heading)))
 
 (defmulti build-hiccup-tag
-  (fn [{:as node
-        :keys [content data node-type]}]
-    (keyword "content" node-type))
-  :hierarchy #'content-hierarchy)
+  (fn [{:as _node
+        :keys [node-type]}]
+    (keyword "rich-text" node-type))
+  :hierarchy #'rich-text-hierarchy)
 
-;;NOTE This is currently split out because I suspect data will be important here,
-;; but if it continues to left unused we should remove this whole function and inline what it does.
-(defn build-hiccup-content [content data]
-  (into []
+(defn build-hiccup-content [tag content]
+  (into tag
         (map build-hiccup-tag)
         content))
 
-(defmethod build-hiccup-tag :content/heading [{:keys [content data]}]
-  (into [:h3] (build-hiccup-content content data)))
+(defmethod build-hiccup-tag :rich-text/heading [{:keys [content]}]
+  (build-hiccup-content [:h3] content))
 
-(defmethod build-hiccup-tag :content/paragraph [{:keys [content data]}]
-  (into [:p] (build-hiccup-content content data)))
+(defmethod build-hiccup-tag :rich-text/paragraph [{:keys [content]}]
+  (build-hiccup-content [:p] content))
 
-(defmethod build-hiccup-tag :content/text [{:keys [value]}]
+(defmethod build-hiccup-tag :rich-text/hyperlink [{:keys [content data]}]
+  ;; TODO: Strip initial newlines?
+  (build-hiccup-content [:a {:href (:uri data)}] content))
+
+(defmethod build-hiccup-tag :rich-text/text [{:keys [value]}]
   ;; TODO: Strip initial newlines?
   value)
 
@@ -43,10 +45,6 @@
   ;; TODO: Productionalize this error message
   (println "Attempting to render unknown node type" node)
   nil)
-
-(defn render-selected-value [selected-value]
-  (build-hiccup-content (:content (:value selected-value))
-                        (:data (:value selected-value))))
 
 (defn derive-product-details
   [cms-dynamic-content-data sku]
@@ -72,6 +70,9 @@
                     ;; TODO Move the code responsible for merging the selector attributes into the top level
                     ;; of the selectable value to the API / Handler areas)
                     first
-                    render-selected-value)))))))
+                    :value
+                    :content
+                    (into [:div]
+                          (map build-hiccup-tag)))))))))
 
 ;; TODO: Remap keys from contentful to our keys
