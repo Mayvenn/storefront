@@ -22,8 +22,8 @@
     (keyword "content" node-type))
   :hierarchy #'content-hierarchy)
 
-;;NOTE This is currently split out because I suspect data will be important here, but if it continues to because
-;; left unused we should remove this whole function and inline what it does.
+;;NOTE This is currently split out because I suspect data will be important here,
+;; but if it continues to left unused we should remove this whole function and inline what it does.
 (defn build-hiccup-content [content data]
   (into []
         (map build-hiccup-tag)
