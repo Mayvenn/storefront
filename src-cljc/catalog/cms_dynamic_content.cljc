@@ -7,6 +7,8 @@
 
 (def content-hierarchy
   (-> (make-hierarchy)
+      ;; NOTE: This basically is just setting it up so that the keyword on the left gets built as the entity on the right
+      ;;      child              parent
       (derive :content/heading-1 :content/heading)
       (derive :content/heading-2 :content/heading)
       (derive :content/heading-3 :content/heading)
@@ -20,26 +22,24 @@
     (keyword "content" node-type))
   :hierarchy #'content-hierarchy)
 
+;;NOTE This is currently split out because I suspect data will be important here, but if it continues to because
+;; left unused we should remove this whole function and inline what it does.
 (defn build-hiccup-content [content data]
   (into []
         (map build-hiccup-tag)
         content))
 
-(defmethod build-hiccup-tag :content/heading [{:as _node
-                                          :keys [content data]}]
-  [:h3 (build-hiccup-content content data)])
+(defmethod build-hiccup-tag :content/heading [{:keys [content data]}]
+  (into [:h3] (build-hiccup-content content data)))
 
-(defmethod build-hiccup-tag :content/paragraph [{:as _node
-                                            :keys [content data]}]
-  [:p (build-hiccup-content content data)])
+(defmethod build-hiccup-tag :content/paragraph [{:keys [content data]}]
+  (into [:p] (build-hiccup-content content data)))
 
-(defmethod build-hiccup-tag :content/text [{:as _node
-                                       :keys [value]}]
+(defmethod build-hiccup-tag :content/text [{:keys [value]}]
   ;; TODO: Strip initial newlines?
   value)
 
-(defmethod build-hiccup-tag :default [{:as node
-                                  :keys [content data]}]
+(defmethod build-hiccup-tag :default [node]
   ;; TODO: Productionalize this error message
   (println "Attempting to render unknown node type" node)
   nil)
