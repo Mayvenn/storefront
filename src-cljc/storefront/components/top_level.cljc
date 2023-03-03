@@ -42,7 +42,8 @@
             [storefront.keypaths :as keypaths]
             stylist-directory.keypaths
             [storefront.routes :as routes]
-            [mayvenn.live-help.core :as live-help]))
+            [mayvenn.live-help.core :as live-help]
+            [storefront.components.privacy :as privacy]))
 
 ;; HACK until the day there are no more built-components
 (defn ^:private first-arg-only [inner-fn]
@@ -105,7 +106,7 @@
    events/navigate-retail-walmart-dallas        (constantly retail.store/built-component)
    events/navigate-content-guarantee            (constantly content/built-component)
    events/navigate-content-help                 (constantly content/built-component)
-   events/navigate-content-privacy              (constantly content/built-component)
+   events/navigate-content-privacy              (constantly privacy/page)
    events/navigate-content-privacyv2            (constantly content/built-component)
    events/navigate-content-privacyv1            (constantly content/built-component)
    events/navigate-content-tos                  (constantly content/built-component)

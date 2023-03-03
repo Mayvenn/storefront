@@ -147,3 +147,7 @@
 (defn hdyhau-post-purchase?
   [data]
   (display-feature? data "hdyhau-post-purchase"))
+
+(defn ww-upcp?
+  [data]
+  (display-feature? data "ww-upcp"))
