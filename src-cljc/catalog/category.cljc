@@ -14,6 +14,7 @@
    [catalog.skuers :as skuers]
    [catalog.ui.category-hero :as category-hero]
    [catalog.ui.content-box :as content-box]
+   [catalog.ui.skuer-card-listing :as skuer-card-listing]
    [catalog.ui.product-card-listing :as product-card-listing]
    [homepage.ui.faq :as faq]
    [storefront.accessors.categories :as accessors.categories]
@@ -25,6 +26,7 @@
    [storefront.events :as e]
    [storefront.keypaths :as k]
    [storefront.platform.component-utils :as utils]
+   [storefront.request-keys :as request-keys]
    [storefront.trackings :as trackings]
    [storefront.transitions :as transitions]
    [catalog.ui.facet-filters :as facet-filters]))
@@ -96,34 +98,40 @@
 
 (defn page
   [app-state _]
-  (let [current                             (accessors.categories/current-category app-state)
+  (let [category                             (accessors.categories/current-category app-state)
         facet-filtering-state               (merge (get-in app-state catalog.keypaths/k-models-facet-filtering)
                                                    {:facet-filtering/item-label "item"})
         loaded-category-products            (->> (get-in app-state k/v2-products)
                                                  vals
                                                  (select (merge
-                                                          (skuers/electives current)
-                                                          (skuers/essentials current))))
+                                                          (skuers/electives< category)
+                                                          (skuers/essentials< category))))
+        skus                                (->> (get-in app-state k/v2-skus)
+                                                 vals
+                                                 (select (merge
+                                                          (skuers/electives< category)
+                                                          (skuers/essentials< category))))
         shop?                               (or (= "shop" (get-in app-state k/store-slug))
                                                 (= "retail-location" (get-in app-state k/store-experience)))
         selections                          (:facet-filtering/filters facet-filtering-state)
         category-products-matching-criteria (->> loaded-category-products
                                                  (select
-                                                  (merge (skuers/essentials current)
+                                                  (merge (skuers/essentials< category)
                                                          selections)))
-        faq                                 (get-in app-state (conj storefront.keypaths/cms-faq (:contentful/faq-id current)))]
+        faq                                 (get-in app-state (conj storefront.keypaths/cms-faq (:contentful/faq-id category)))]
     (c/build template
-             (merge
-              (when-let [filter-title (:product-list/title current)]
+             (merge 
+              (when-let [filter-title (:product-list/title category)]
                 {:title filter-title})
-              {:category-hero          (category-hero-query current)
+              {:category-hero          (category-hero-query category)
                :video                  (when-let [video (get-in app-state adventure.keypaths/adventure-home-video)] video)
-               :content-box            (when (and shop? (:content-block/type current))
-                                         {:title    (:content-block/title current)
-                                          :header   (:content-block/header current)
-                                          :summary  (:content-block/summary current)
-                                          :sections (:content-block/sections current)})
-               :product-card-listing   (product-card-listing/query app-state current category-products-matching-criteria)
+               :content-box            (when (and shop? (:content-block/type category))
+                                         (let [{:content-block/keys [title header summary sections]} category]
+                                           {:title    title
+                                            :header   header
+                                            :summary  summary
+                                            :sections sections}))
+               :product-card-listing   (product-card-listing/query app-state category category-products-matching-criteria)
                :faq-section            (when (and shop? faq)
                                          (let [{:keys [question-answers]} faq]
                                            {:faq/expanded-index (get-in app-state storefront.keypaths/faq-expanded-section)
@@ -134,12 +142,12 @@
                {:facets-db             (get-in app-state storefront.keypaths/v2-facets)
                 :faceted-models        loaded-category-products
                 :facet-filtering-state facet-filtering-state
-                :facets-to-filter-on   (:selector/electives current)
+                :facets-to-filter-on   (:selector/electives category)
                 :navigation-event      e/navigate-category
-                :navigation-args       (select-keys current [:catalog/category-id :page/slug])
+                :navigation-args       (select-keys category [:catalog/category-id :page/slug])
                 :child-component-data  {:product-card-listing
                                         (product-card-listing/query app-state
-                                                                    current
+                                                                    category
                                                                     category-products-matching-criteria)}})))))
 
 (defn ^:export built-component
@@ -188,7 +196,7 @@
          (effects/redirect e/navigate-home))
        (if (auth/permitted-category? app-state category)
          (api/get-products (get-in app-state k/api-cache)
-                           (skuers/essentials category)
+                           (skuers/essentials< category)
                            success-fn)
          (effects/redirect e/navigate-home))
        (when-let [subsection-key (:subsection query-params)]

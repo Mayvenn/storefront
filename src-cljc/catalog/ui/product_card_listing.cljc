@@ -71,4 +71,4 @@
     {:id                "product-card-listing"
      :subsections       subsections
      :loading-products? (utils/requesting? app-state (conj request-keys/get-products
-                                                           (skuers/essentials category)))}))
+                                                           (skuers/essentials< category)))}))

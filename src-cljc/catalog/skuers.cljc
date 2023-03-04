@@ -1,15 +1,15 @@
 (ns catalog.skuers
   (:require [spice.maps :as maps]))
 
-(defn essentials ;; TODO Name this better
+(defn essentials<
   ([skuer]
-   (essentials skuer skuer))
+   (essentials< skuer skuer))
   ([skuer target]
    (select-keys target (:selector/essentials skuer))))
 
-(defn electives ;; TODO Name this better
+(defn electives<
   ([skuer]
-   (electives skuer skuer))
+   (electives< skuer skuer))
   ([skuer target]
    (select-keys target (:selector/electives skuer))))
 
@@ -45,3 +45,10 @@
     (->> (select-keys value ks)
          (maps/map-values set)
          (merge value))))
+
+#_(defn skus->skuer 
+  "Given a list of skus, return the skuer that contains all of them."
+  [skus]
+  
+  
+  )

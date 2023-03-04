@@ -879,7 +879,7 @@
 (defn- assoc-category-route-data [data storeback-config params]
   (let [category                       (accessors.categories/id->category (:catalog/category-id params)
                                                                           (get-in data keypaths/categories))
-        {:keys [skus products images]} (api/fetch-v3-products storeback-config (maps/map-values vec (skuers/essentials category)))]
+        {:keys [skus products images]} (api/fetch-v3-products storeback-config (maps/map-values vec (skuers/essentials< category)))]
     (-> data
         (assoc-in catalog.keypaths/category-id (:catalog/category-id params))
         (update-in keypaths/v2-images merge images)
@@ -965,14 +965,14 @@
    (for [category                categories
          :let                    [category-id (:catalog/category-id category)
                                   slug (:page/slug category)
-                                  electives (skuers/electives category)
-                                  essentials (skuers/essentials category)
+                                  electives (skuers/electives< category)
+                                  essentials (skuers/essentials< category)
                                   category-products (selector/match-all {:selector/strict? true}
                                                                         (merge
                                                                          electives
                                                                          essentials)
                                                                         products)
-                                  facet->values (maps/map-values set (apply merge-with into (map #(skuers/electives category %)
+                                  facet->values (maps/map-values set (apply merge-with into (map #(skuers/electives< category %)
                                                                                                  category-products)))]
          [facet-id facet-values] facet->values
          facet-value             facet-values

@@ -9,6 +9,7 @@
             [catalog.ui.product-card-listing :as product-card-listing]
             [catalog.ui.spotlighting :as spotlighting]
             [catalog.ui.return-address-labels :as return-address-labels]
+            [clojure.string]
             [homepage.ui.faq :as faq]
             [mayvenn.visual.ui.dividers :as dividers]
             [spice.maps :as maps]
@@ -201,15 +202,15 @@
         loaded-category-products            (->> (get-in state keypaths/v2-products)
                                                  vals
                                                  (select (merge
-                                                          (skuers/electives interstitial-category)
-                                                          (skuers/essentials interstitial-category))))
+                                                          (skuers/electives< interstitial-category)
+                                                          (skuers/essentials< interstitial-category))))
         categories                          (get-in state keypaths/categories)
         subcategories                       (category->subcategories categories interstitial-category)
         spotlight-subcategories             (map #(accessors.categories/id->category % categories)
                                                  (:spotlighting/category-ids interstitial-category))
         category-products-matching-criteria (->> loaded-category-products
                                                  (select (merge
-                                                          (skuers/essentials interstitial-category)
+                                                          (skuers/essentials< interstitial-category)
                                                           selections)))
         shop?                               (or (= "shop" (get-in state keypaths/store-slug))
                                                 (= "retail-location" (get-in state keypaths/store-experience)))
