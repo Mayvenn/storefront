@@ -482,7 +482,6 @@
 (defn v2-default-template-slots<
   "Converts cellar SKU and cellar Product to template-slots"
   [current-product selected-sku model-image]
-  (spice.core/spy "Current Product" current-product)
   ;;    Key                                                    Title                                               Sub Text
   (->> [:pdp.details.overview/description                      "Description"                                      (->> current-product :copy/description)
         :pdp.details.overview/what's-included                  "What's Included"                                  (->> current-product :copy/whats-included)
