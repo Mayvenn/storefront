@@ -37,6 +37,21 @@
   ;; TODO: Strip initial newlines?
   (build-hiccup-content [:a {:href (:uri data)}] content))
 
+(defmethod build-hiccup-tag :rich-text/unordered-list [{:keys [content]}]
+  (build-hiccup-content [:ul] content))
+
+;;TODO Needs styling before we enable this in production
+(defmethod build-hiccup-tag :rich-text/ordered-list [{:keys [content]}]
+  (build-hiccup-content [:ol] content))
+
+(defmethod build-hiccup-tag :rich-text/list-item [{:keys [content]}]
+  (build-hiccup-content [:li] content))
+
+
+(defmethod build-hiccup-tag :rich-text/embedded-asset-block [{ :as v :keys [content data]}]
+  [:a {:href (->> data :target :file :url)}
+   (->> data :target :title)])
+
 (defmethod build-hiccup-tag :rich-text/text [{:keys [value]}]
   ;; TODO: Strip initial newlines?
   value)
@@ -74,5 +89,3 @@
                     :content
                     (into [:div]
                           (map build-hiccup-tag)))))))))
-
-;; TODO: Remap keys from contentful to our keys
