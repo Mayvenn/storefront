@@ -24,9 +24,7 @@
        ^:inline (ui.M/field-reveal-molecule promo-field-data)
        (when (and text-input-attrs button-attrs)
          ^:inline (ui/input-group text-input-attrs
-                                  button-attrs))])
-
-    ^:inline (checkout.M/remove-freeinstall-informational query)]
+                                  button-attrs))])]
 
    [:div.pt2.px4.bg-white-on-mb
     ^:inline (checkout.M/cart-summary-total-line query)

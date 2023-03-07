@@ -636,17 +636,6 @@
                                   "Hide promo code"
                                   "Add promo code")}))})))
 
-(defn remove-freeinstall-informational<-
-  [order items]
-  (when (and (not (orders/discountable-services-on-order? order))
-             (some (comp #{"bundles" "closures" "frontals" "360-frontals"} first :hair/family)
-                   (filter (comp (partial = "spree") :item/source) items) ))
-    {:remove-freeinstall-informational/id                    "sunset-freeinstall-informational"
-     :remove-freeinstall-informational/button-id             "sunset-free-mayvenn-service"
-     :remove-freeinstall-informational/primary               "Looking for Free Install?"
-     :remove-freeinstall-informational/cta-label             "Learn More"
-     :remove-freeinstall-informational/cta-target            [events/navigate-landing-page {:landing-page-slug "free-install"}]}))
-
 (defn cart-summary<-
   [order items]
   (if-let [free-service (first (select ?discountable items))]
@@ -781,7 +770,6 @@
 
                              :checkout-caption            (checkout-caption<- items easy-booking? booking)
                              :cart-summary                (merge (cart-summary<- waiter-order items)
-                                                                 (remove-freeinstall-informational<- waiter-order items)
                                                                  (promo-input<- app-state
                                                                                 waiter-order
                                                                                 pending-requests?))

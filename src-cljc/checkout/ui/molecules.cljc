@@ -50,24 +50,6 @@
           [:span.bold.p-color {:data-test "total-savings"}
            savings]])]])))
 
-(defn remove-freeinstall-informational
-  [{:remove-freeinstall-informational/keys
-    [id primary cta-label cta-target]}]
-  (component/html
-   (when id
-     [:div.flex.py2 {:data-test id}
-      [:div.flex.pl1
-       [:div.content-3.proxima primary]
-       [:div.flex.justify-left
-        [:div.p-color.px2.button-font-3.shout
-         [:a
-          ^:attrs (merge
-                   (apply utils/route-to cta-target)
-                   {:class      "inherit-color border-bottom border-width-2"
-                    :data-test  id
-                    :aria-label "Learn More about Free Install"})
-          cta-label]]]]])))
-
 (defn free-install-added-atom
   [{:free-install-added/keys [primary]}]
   (when primary
