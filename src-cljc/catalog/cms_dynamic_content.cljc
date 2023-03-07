@@ -65,10 +65,10 @@
   [cms-dynamic-content-data sku]
   #?(:cljs
      (do
-       (->> {:product-overview-description :pdp.details.overview/description
-             ;:pdp/colorable                :pdp.details.care/can-it-be-colored?
-             ;:pdp/in-store-services        :pdp.details.customize-your-wig/in-store-services
-             ;:pdp/maintenance-level        :pdp.details.care/maintenance-level
+       (->> {:product-overview-description   :pdp.details.overview/description
+             :product-care-colorable         :pdp.details.care/can-it-be-colored?
+             ;:product-in-store-services      :pdp.details.customize-your-wig/in-store-services
+             ;:product-care-maintenance-level :pdp.details.care/maintenance-level
              }
             (set/rename-keys cms-dynamic-content-data)
             (maps/map-values
