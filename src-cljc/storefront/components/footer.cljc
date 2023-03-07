@@ -166,25 +166,11 @@
                                       (comp (filter not-services-icp?)
                                             (filter sort-key)
                                             (filter (partial auth/permitted-category? data)))))
-        non-category-links   (concat (if (and shop?
-                                              (not remove-free-install?))
-                                       [{:title       "Start Hair Quiz"
-                                         :sort-order  1
-                                         :id          "quiz-unified-fi"
-                                         :nav-message [events/navigate-shopping-quiz-unified-freeinstall-intro {:query-params {:location "footer"}}]}
-                                        {:title       "Find a Stylist"
-                                         :sort-order  1
-                                         :id          "find-a-stylist"
-                                         :nav-message [events/navigate-adventure-find-your-stylist]}]
-                                       [{:title       "Looking for Free Install?"
-                                         :sort-order  1
-                                         :id          "sunset-fi"
-                                         :nav-message [events/navigate-landing-page {:landing-page-slug "free-install"}]}])
-                                     (when (not classic?)
-                                       [{:title       "Shop By Look"
-                                         :sort-order  3
-                                         :id          "shop-by-look"
-                                         :nav-message [events/navigate-shop-by-look {:album-keyword :look}]}]))
+        non-category-links   (when (not classic?)
+                               [{:title       "Shop By Look"
+                                 :sort-order  3
+                                 :id          "shop-by-look"
+                                 :nav-message [events/navigate-shop-by-look {:album-keyword :look}]}])
         links                (->> categories
                                 (mapv (partial category->link))
                                 (concat non-category-links)
