@@ -56,7 +56,8 @@
             [storefront.transitions :as transitions]
             storefront.ugc
             [spice.core :as spice]
-            [spice.maps]))
+            [spice.maps]
+            [clojure.set :as set]))
 
 (defn two-column-layout [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
@@ -397,7 +398,7 @@
       :sub-cta/learn-more-copy   "Find my store"
       :sub-cta/learn-more-target [events/navigate-retail-walmart {}]})))
 
-(def old-pdp-details-render-slots
+(def drawer-and-template-slot-ordering-v1
   [{:pdp.details/hair-info
     [:pdp.details.hair-info/model-wearing
      ;; TODO: length guide
@@ -421,7 +422,7 @@
     [:pdp.details.care/maintenance-level
      :pdp.details.care/can-it-be-colored?]}])
 
-(def pdp-details-render-slots
+(def drawer-and-template-slot-ordering-v2
   [{:pdp.details/overview
     [:pdp.details.overview/description
      :pdp.details.overview/what's-included
@@ -449,7 +450,7 @@
     [:pdp.details.customize-your-wig/in-store-services
      :pdp.details.customize-your-wig/video-tutorial]}])
 
-(defn legacy-content-from-cellar
+(defn v1-default-template-slots<
   "Converts cellar SKU and cellar Product to template-slots"
   [current-product selected-sku model-image]
   ;;    Key                                               Title                Sub Text
@@ -478,9 +479,10 @@
                  [k (str "<div>" (when heading (str "<h3>" heading "</h3>")) "<p>" (apply str content) "</p></div>")])))
        (into {})))
 
-(defn hack--legacy-content-from-cellar--with-new-drawers
+(defn v2-default-template-slots<
   "Converts cellar SKU and cellar Product to template-slots"
   [current-product selected-sku model-image]
+  (spice.core/spy "Current Product" current-product)
   ;;    Key                                                    Title                                               Sub Text
   (->> [:pdp.details.overview/description                      "Description"                                      (->> current-product :copy/description)
         :pdp.details.overview/what's-included                  "What's Included"                                  (->> current-product :copy/whats-included)
@@ -514,22 +516,38 @@
                  [k (str "<div>" (when heading (str "<h3>" heading "</h3>")) "<p>" (apply str content) "</p></div>")])))
        (into {})))
 
+(defn cms-override-template-slots< [cms-template-slot-data selected-sku]
+  (cms-dynamic-content/cms-and-sku->template-slot-hiccup cms-template-slot-data selected-sku))
 
-(defn content-slots<
-  [current-product selected-sku model-image cms-template-slots fake-cms-content]
-  (merge (legacy-content-from-cellar current-product selected-sku model-image)
-         (cms-dynamic-content/derive-product-details fake-cms-content selected-sku)))
+(defn ^:private template-slot-sections< [template-slot-data length-guide-image slot-id]
+  (merge
+   (when-let [content (get template-slot-data slot-id)]
+     {:content content})
+   (when (and (= slot-id :pdp.details.hair-info/model-wearing)
+              length-guide-image)
+     {:link/content "Length Guide"
+      :link/target  [events/popup-show-length-guide
+                     {:length-guide-image length-guide-image
+                      :location           "hair-info-tab"}]
+      :link/id      "hair-info-tab-length-guide"})))
 
-(defn content-slots--testing-cms<
-  [current-product selected-sku model-image cms-template-slots]
-  (merge (hack--legacy-content-from-cellar--with-new-drawers current-product
-                                                             selected-sku
-                                                             model-image)
-         #_(cms-dynamic-content/derive-product-details fake-cms-content selected-sku)
-         (cms-dynamic-content/derive-product-details cms-template-slots selected-sku)))
+(defn ^:private template-slot-drawer< [template-slot-data length-guide-image drawer-orderings]
+  (let [[drawer-id slot-ids] (first drawer-orderings)
+        sections             (keep (partial template-slot-sections< template-slot-data
+                                            length-guide-image)
+                                   slot-ids)]
+    (when (seq sections)
+      {:contents {:sections sections}
+       :id       drawer-id
+       ;; TODO: drive drawer face copy from Contentful data?
+       :face     {:copy (-> drawer-id
+                            str
+                            (clojure.string/split #"/")
+                            last
+                            (clojure.string/replace #"-" " "))}})))
 
-(defn content-slots->accordion-slots
-  [details-render-slots content-slot-data product length-guide-image open-drawers]
+(defn template-slots->accordion-slots
+  [accordion-ordering template-slot-data product length-guide-image open-drawers]
   (merge
    ;; TODO drive initial-open-drawers off of Contentful Data?
    (cond
@@ -542,50 +560,13 @@
      :else
      {:allow-all-closed?    true
       :initial-open-drawers #{:pdp.details/hair-info}})
-   {:allow-multi-open?    false
-    :drawers (->> details-render-slots
-                  (keep (fn [drawer]
-                          (let [[drawer-id slot-ids] (first drawer)
-                                sections             (keep (fn [slot-id]
-                                                             (merge
-                                                              (when-let [content (get content-slot-data slot-id)]
-                                                                {:content content})
-                                                              (when (and (= slot-id :pdp.details.hair-info/model-wearing)
-                                                                         length-guide-image)
-                                                                {:link/content "Length Guide"
-                                                                 :link/target  [events/popup-show-length-guide
-                                                                                {:length-guide-image length-guide-image
-                                                                                 :location           "hair-info-tab"}]
-                                                                 :link/id      "hair-info-tab-length-guide"})))
-                                                           slot-ids)]
-                           (when (seq sections)
-                             {:contents {:sections sections}
-                              :id       drawer-id
-                              ;; TODO: drive drawer face copy from Contentful data?
-                              :face     {:copy (-> drawer-id
-                                                   str
-                                                   (clojure.string/split #"/")
-                                                   last
-                                                   (clojure.string/replace #"-" " "))}}))))
 
-                  vec)
+   {:allow-multi-open?    false
+    :drawers (into []
+                   (keep (partial template-slot-drawer< template-slot-data length-guide-image))
+                   accordion-ordering)
     :id                   :info-accordion
     :open-drawers         open-drawers}))
-
-(def ^:private fake-contentful-product-details-data
-  {:ctf-id-1
-   {:content-slot-id "pdp/colorable"
-    :selector        {"hair/color" #{"black" "1b-soft-black"}}
-    :content-value   "<h3>Can It Be Colored?</h3><p>Yes - This virgin human hair can be lifted (bleached) and colored with professional products.</p>"}
-   :ctf-id-2
-   {:content-slot-id "pdp/colorable"
-    :selector        {"hair/color" #{"blonde" "blonde-dark-roots" "dark-blonde" "dark-blonde-dark-roots" "1c-mocha-brown" "#2-chocolate-brown"
-                                     "#4-caramel-brown" "6-hazelnut-brown" "18-chestnut-blonde" "60-golden-ash-blonde" "613-bleach-blonde"}}
-    :content-value "<h3>Can It Be Colored?</h3><p>Yes - Keep in mind pre-lightened blonde should not be lifted (bleached) any further, but can be professionally colored with deposit-only products or toners.</p>"}
-   :ctf-id-3
-   {:content-slot-id "pdp/colorable"
-    :selector        {"hair/color" #{"#1-jet-black" "vibrant-burgundy" "ash-blonde-dark-roots" "tt-1b-orange" "hl-1b-blonde"}}
-    :content-value   "<h3>Can It Be Colored?</h3><p>No - Since this hair has already been professionally processed, we don't recommend any lifting (bleaching) or coloring.</p>"}})
 
 (defn query [data]
   (let [selections      (get-in data catalog.keypaths/detailed-product-selections)
@@ -795,45 +776,39 @@
 
         ;; Selections through model-image is so that we can display model wearing
         ;; in the information section for the old carousel
-        selections         (get-in state catalog.keypaths/detailed-product-selections)
-        product-skus       (products/extract-product-skus state detailed-product)
-        carousel-images    (find-carousel-images detailed-product product-skus images-db
-                                                 ;;TODO These selection election keys should not be hard coded
-                                                 (select-keys selections [:hair/color
-                                                                          :hair/base-material])
-                                                 selected-sku)
-        model-image        (first (filter :copy/model-wearing carousel-images))
+        selections      (get-in state catalog.keypaths/detailed-product-selections)
+        product-skus    (products/extract-product-skus state detailed-product)
+        carousel-images (find-carousel-images detailed-product product-skus images-db
+                                              ;;TODO These selection election keys should not be hard coded
+                                              (select-keys selections [:hair/color
+                                                                       :hair/base-material])
+                                              selected-sku)
+        model-image     (first (filter :copy/model-wearing carousel-images))
 
-
-
-        content-slot-data  nil #_(content-slots< detailed-product
-                                           selected-sku
-                                           model-image
-                                           (get-in state keypaths/cms-template-slots)
-                                           fake-contentful-product-details-data)
-        ready-wigs-content-slot-data (content-slots--testing-cms< detailed-product
-                                                                  selected-sku
-                                                                  model-image
-                                                                  (get-in state keypaths/cms-template-slots)
-                                                                  #_fake-contentful-product-details-data)
-        #_(merge (hack--legacy-content-from-cellar--with-new-drawers detailed-product
-                                                                                                selected-sku
-                                                                                                model-image)
-                                            (cms-dynamic-content/derive-product-details fake-contentful-product-details-data selected-sku))
-        ]
+        ;; NOTE: V2 is basically an experient related to the product launches of March 2023
+        ;;       with the idea that we should be able to fill these template slots from CMS for new products
+        ;;       at the time of writing this comment (2023-03-07) it's only enabled for ready wigs
+        use-v2-drawers?              (and (experiments/pdp-template-slots? state)
+                                          (contains? (:hair/family detailed-product) "ready-wigs"))
+        accordion-ordering           (if use-v2-drawers?
+                                       drawer-and-template-slot-ordering-v2
+                                       drawer-and-template-slot-ordering-v1)
+        accordion-template-slot-data (merge (v1-default-template-slots< detailed-product
+                                                                        selected-sku
+                                                                        model-image)
+                                            (when use-v2-drawers?
+                                              (v2-default-template-slots< detailed-product
+                                                                          selected-sku
+                                                                          model-image))
+                                            (when use-v2-drawers?
+                                              (cms-override-template-slots< (get-in state keypaths/cms-template-slots)
+                                                                            selected-sku)))]
     (accordion-neue/accordion-query
-     (cond->
-         (if (select {:hair/family #{"ready-wigs"}} [detailed-product]) ;;HACK
-           (content-slots->accordion-slots pdp-details-render-slots
-                                           ready-wigs-content-slot-data
-                                           detailed-product
-                                           length-guide-image
-                                           (:accordion/open-drawers info-accordion))
-           (content-slots->accordion-slots old-pdp-details-render-slots
-                                           content-slot-data
-                                           detailed-product
-                                           length-guide-image
-                                           (:accordion/open-drawers info-accordion)))
+     (cond-> (template-slots->accordion-slots accordion-ordering
+                                              accordion-template-slot-data
+                                              detailed-product
+                                              length-guide-image
+                                              (:accordion/open-drawers info-accordion))
        ;; In a perfect world the FAQ would be modeled with Filled Content Slots.
        ;; Instead, we shoehorn it into the accordion if we can find the data.
        (and pdp-faq-accordion?
@@ -1013,7 +988,7 @@
                              (not= (:catalog/product-id args)
                                    (:catalog/product-id prev-args))
                              (= :first-nav (:navigate/caused-by args)))]
-       (when (experiments/pdp-content-slots? app-state)
+       (when (experiments/pdp-template-slots? app-state)
          (effects/fetch-cms2 app-state [:templateSlot]))
        (when (nil? product)
          (fetch-product-details app-state product-id))

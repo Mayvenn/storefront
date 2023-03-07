@@ -61,7 +61,7 @@
   (println "Attempting to render unknown node type" node)
   nil)
 
-(defn derive-product-details
+(defn cms-and-sku->template-slot-hiccup
   [cms-dynamic-content-data sku]
   #?(:cljs
      (do

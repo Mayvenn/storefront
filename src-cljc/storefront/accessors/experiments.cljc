@@ -132,9 +132,13 @@
   [data]
   (display-feature? data "footer-v22"))
 
-(defn pdp-content-slots?
+(defn pdp-template-slots?
   [data]
-  (display-feature? data "pdp-content-slots"))
+  ;;NOTE: Originally these were called content slots, but we changed their name to template slots
+  ;;      so we honor both flags here to prevent mixups
+  (or
+   (display-feature? data "pdp-content-slots")
+   (display-feature? data "pdp-template-slots")))
 
 (defn footer-email-capture?
   [data]
