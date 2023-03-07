@@ -73,7 +73,7 @@
             (set/rename-keys cms-dynamic-content-data)
             (maps/map-values
              (fn [template-slot]
-               (->> (template-slot :selectable-values)
+               (some->> (template-slot :selectable-values)
                     (map (fn [selectable-value ]
                            (merge selectable-value
                                   (:selector selectable-value))))
@@ -88,4 +88,5 @@
                     :value
                     :content
                     (into [:div]
-                          (map build-hiccup-tag)))))))))
+                          (map build-hiccup-tag)))))
+            (maps/deep-remove-nils)))))

@@ -785,11 +785,7 @@
                                               selected-sku)
         model-image     (first (filter :copy/model-wearing carousel-images))
 
-        ;; NOTE: V2 is basically an experient related to the product launches of March 2023
-        ;;       with the idea that we should be able to fill these template slots from CMS for new products
-        ;;       at the time of writing this comment (2023-03-07) it's only enabled for ready wigs
-        use-v2-drawers?              (and (experiments/pdp-template-slots? state)
-                                          (contains? (:hair/family detailed-product) "ready-wigs"))
+        use-v2-drawers?              (experiments/pdp-template-slots? state)
         accordion-ordering           (if use-v2-drawers?
                                        drawer-and-template-slot-ordering-v2
                                        drawer-and-template-slot-ordering-v1)
