@@ -98,14 +98,17 @@
   [cms-dynamic-content-data sku]
   #?(:cljs
      (do
-       (->> {:product-overview-description :pdp.details.overview/description
-             :product-care-colorable       :pdp.details.care/can-it-be-colored?
-             :product-tutorial-video       :pdp.details.customize-your-wig/video-tutorial
-
-             ;;:product-in-store-services      :pdp.details.customize-your-wig/in-store-services
-             ;;:product-care-maintenance-level :pdp.details.care/maintenance-level
-             }
-            (set/rename-keys cms-dynamic-content-data)
+       (->> (set/rename-keys cms-dynamic-content-data
+                             ;; NOTE: This should only really be used when we can't or won't
+                             ;;       dictate the slugs of template slots in contentful. If
+                             ;;       the slugs in contenful match the slugs here no rename
+                             ;;       is necessary. This allows us to overwrite the older cellar
+                             ;;       entries without having to add a mapping here; no deploy needed
+                             ;;
+                             ;;       See existing template-slot entries in contentful for examples
+                             {:product-overview-description          :pdp.details.overview/description
+                              :product-care-colorable                :pdp.details.care/can-it-be-colored?
+                              :product-tutorial-video                :pdp.details.customize-your-wig/video-tutorial})
             (maps/map-values
              (fn [template-slot]
                (some->> (template-slot :selectable-values)
