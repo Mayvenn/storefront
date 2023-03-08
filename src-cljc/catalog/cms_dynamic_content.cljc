@@ -75,12 +75,11 @@
 (defmethod build-hiccup-tag :rich-text/embedded-video-block [{:as _node :keys [data]}]
   (let [target (:target data)
         file   (:file target)]
-    [:div.relative
-     [:video.relative
+    [:div.mt2.relative
+     [:video.relative.z0
       {:controls true
        :autoplay true
-       :style    {:width   "100%"
-                  :z-index 0}}
+       :style    {:width "100%"}}
       [:source {:src (:url file)}]]
      [:div.white.absolute.left-0.top-0.z1.px2.py1
       [:span.h3.bold.pr1 "Watch:"]
