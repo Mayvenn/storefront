@@ -3,7 +3,7 @@
              [clojure.set :as set]
              [spice.selector :as selector]
              [spice.maps :as maps]
-             [clojure.walk :as walk]))
+             [clojure.string :as string]))
 
 (def rich-text-hierarchy
   (-> (make-hierarchy)
@@ -17,9 +17,19 @@
       (derive :rich-text/heading-6 :rich-text/heading)))
 
 (defmulti build-hiccup-tag
-  (fn [{:as _node
-        :keys [node-type]}]
-    (keyword "rich-text" node-type))
+  (fn [{:as   _node
+        :keys [data node-type]}]
+    (cond
+      (and (= node-type "embedded-asset-block")
+           (some-> data
+                   :target
+                   :file
+                   :content-type
+                   (string/starts-with? "video")))
+      :rich-text/embedded-video-block
+
+      :else
+      (keyword "rich-text" node-type)))
   :hierarchy #'rich-text-hierarchy)
 
 (defn build-hiccup-content [tag content]
@@ -47,10 +57,23 @@
 (defmethod build-hiccup-tag :rich-text/list-item [{:keys [content]}]
   (build-hiccup-content [:li] content))
 
+(defmethod build-hiccup-tag :rich-text/embedded-asset-block [{:as _node :keys [data]}]
+  [:a {:href (:url (:file (:target data)))}
+   (:title (:target data))])
 
-(defmethod build-hiccup-tag :rich-text/embedded-asset-block [{ :as v :keys [content data]}]
-  [:a {:href (->> data :target :file :url)}
-   (->> data :target :title)])
+(defmethod build-hiccup-tag :rich-text/embedded-video-block [{:as _node :keys [data]}]
+  (let [target (:target data)
+        file   (:file target)]
+    [:div.relative
+     [:video.relative
+      {:controls true
+       :autoplay true
+       :style    {:width   "100%"
+                  :z-index 0}}
+      [:source {:src (:url file)}]]
+     [:div.white.absolute.left-0.top-0.z1.px2.py1
+      [:span.h3.bold.pr1 "Watch:"]
+      (:title target)]]))
 
 (defmethod build-hiccup-tag :rich-text/text [{:keys [value]}]
   ;; TODO: Strip initial newlines?
@@ -65,10 +88,12 @@
   [cms-dynamic-content-data sku]
   #?(:cljs
      (do
-       (->> {:product-overview-description   :pdp.details.overview/description
-             :product-care-colorable         :pdp.details.care/can-it-be-colored?
-             ;:product-in-store-services      :pdp.details.customize-your-wig/in-store-services
-             ;:product-care-maintenance-level :pdp.details.care/maintenance-level
+       (->> {:product-overview-description :pdp.details.overview/description
+             :product-care-colorable       :pdp.details.care/can-it-be-colored?
+             :product-tutorial-video       :pdp.details.customize-your-wig/video-tutorial
+
+             ;;:product-in-store-services      :pdp.details.customize-your-wig/in-store-services
+             ;;:product-care-maintenance-level :pdp.details.care/maintenance-level
              }
             (set/rename-keys cms-dynamic-content-data)
             (maps/map-values
