@@ -330,6 +330,30 @@
        (merge default-tagmap
               {:title "Our Hair: Virgin and Colored Virgin Human Hair | Mayvenn"})
 
+       events/navigate-retail-walmart
+       (merge default-tagmap
+              {:title "Mayvenn Beauty Lounge - Texas"})
+
+       events/navigate-retail-walmart-houston
+       (merge default-tagmap
+              {:title "Mayvenn Beauty Lounge - Houston"})
+
+       events/navigate-retail-walmart-katy
+       (merge default-tagmap
+              {:title "Mayvenn Beauty Lounge - Katy"})
+
+       events/navigate-retail-walmart-dallas
+       (merge default-tagmap
+              {:title "Mayvenn Beauty Lounge - Dallas"})
+
+       events/navigate-retail-walmart-grand-prairie
+       (merge default-tagmap
+              {:title "Mayvenn Beauty Lounge - Grand Prairie"})
+
+       events/navigate-retail-walmart-mansfield
+       (merge default-tagmap
+              {:title "Mayvenn Beauty Lounge - Mansfield"})
+
        events/navigate-adventure-stylist-profile
        (let [{:stylist/keys [salon] :stylist.address/keys [city state]}
              (api.stylist/by-id data (get-in data adventure.keypaths/stylist-profile-id))]
