@@ -1,5 +1,6 @@
 (ns catalog.skuers
-  (:require [spice.maps :as maps]))
+  (:require [clojure.string :as string]
+            [spice.maps :as maps]))
 
 (defn essentials<
   ([skuer]
@@ -44,11 +45,27 @@
                  (:selector/electives value))]
     (->> (select-keys value ks)
          (maps/map-values set)
-         (merge value))))
+         (merge value)))) 
 
-#_(defn skus->skuer 
-  "Given a list of skus, return the skuer that contains all of them."
-  [skus]
-  
-  
-  )
+(defn skus->skuers
+  "Given a list of skus, group the skus into skuers according to a supplied list of dimensions."
+  [dimensions skus]
+  (->> skus
+       (reduce (fn [acc sku]
+                  ;; TODO(jjh): generate slug better by ordering dimensions
+                 (let [slug (->> (select-keys sku dimensions) vals (map first) (string/join "-"))]
+                   (if-let [skuer (get acc slug)]
+                     (assoc acc slug (-> skuer
+                                         (update :selector/skus conj (:catalog/sku-id sku))
+                                         (update :selector/image-cases conj (:selector/image-cases sku))))
+                     (assoc acc slug (assoc (select-keys sku (concat dimensions
+                                                                     [:selector/from-products
+                                                                      :selector/image-cases]))
+                                            :selector/skus [(:catalog/sku-id sku)]
+                                            :copy/title slug ; TODO(jjh): generate better title
+                                            ;; TODO(jjh): get product id by querying catalog
+                                            :catalog/product-id (first (:selector/from-products sku))
+                                            :page/slug slug))))) {})
+       vals
+       ;; TODO(jjh): sort properly
+       (sort-by :copy/title)))

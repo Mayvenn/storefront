@@ -14,7 +14,6 @@
    [catalog.skuers :as skuers]
    [catalog.ui.category-hero :as category-hero]
    [catalog.ui.content-box :as content-box]
-   [catalog.ui.skuer-card-listing :as skuer-card-listing]
    [catalog.ui.product-card-listing :as product-card-listing]
    [homepage.ui.faq :as faq]
    [storefront.accessors.categories :as accessors.categories]
@@ -106,21 +105,22 @@
                                                  (select (merge
                                                           (skuers/electives< category)
                                                           (skuers/essentials< category))))
-        skus                                (->> (get-in app-state k/v2-skus)
+        selections                          (:facet-filtering/filters facet-filtering-state)
+        category-skus-matching-criteria     (->> (get-in app-state k/v2-skus)
                                                  vals
                                                  (select (merge
                                                           (skuers/electives< category)
-                                                          (skuers/essentials< category))))
+                                                          (skuers/essentials< category)))
+                                                 (select selections))
+        card-skuers                         (skuers/skus->skuers (:selector/dimensions category)
+                                                                 category-skus-matching-criteria)
         shop?                               (or (= "shop" (get-in app-state k/store-slug))
                                                 (= "retail-location" (get-in app-state k/store-experience)))
-        selections                          (:facet-filtering/filters facet-filtering-state)
-        category-products-matching-criteria (->> loaded-category-products
-                                                 (select
-                                                  (merge (skuers/essentials< category)
-                                                         selections)))
+        category-products-matching-criteria (select selections loaded-category-products)
+
         faq                                 (get-in app-state (conj storefront.keypaths/cms-faq (:contentful/faq-id category)))]
     (c/build template
-             (merge 
+             (merge
               (when-let [filter-title (:product-list/title category)]
                 {:title filter-title})
               {:category-hero          (category-hero-query category)
@@ -131,7 +131,6 @@
                                             :header   header
                                             :summary  summary
                                             :sections sections}))
-               :product-card-listing   (product-card-listing/query app-state category category-products-matching-criteria)
                :faq-section            (when (and shop? faq)
                                          (let [{:keys [question-answers]} faq]
                                            {:faq/expanded-index (get-in app-state storefront.keypaths/faq-expanded-section)
@@ -148,7 +147,10 @@
                 :child-component-data  {:product-card-listing
                                         (product-card-listing/query app-state
                                                                     category
-                                                                    category-products-matching-criteria)}})))))
+                                                                    (if (and (seq (:selector/dimensions category))       
+                                                                             (experiments/splay-tation? app-state))
+                                                                      card-skuers
+                                                                      category-products-matching-criteria))}})))))
 
 (defn ^:export built-component
   [app-state opts]

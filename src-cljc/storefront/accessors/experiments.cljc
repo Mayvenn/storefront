@@ -155,3 +155,7 @@
 (defn ww-upcp?
   [data]
   (display-feature? data "ww-upcp"))
+
+(defn splay-tation?
+  [data]
+  (display-feature? data "splay-tation"))
