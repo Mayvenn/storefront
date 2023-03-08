@@ -332,27 +332,33 @@
 
        events/navigate-retail-walmart
        (merge default-tagmap
-              {:title "Mayvenn Beauty Lounge - Texas"})
+              {:title "Mayvenn Beauty Lounge - Texas"
+               :description    "Visit our Texas' stores for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look"})
 
        events/navigate-retail-walmart-houston
        (merge default-tagmap
-              {:title "Mayvenn Beauty Lounge - Houston"})
+              {:title "Mayvenn Beauty Lounge - Houston"
+               :description    "Visit our Houston store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."})
 
        events/navigate-retail-walmart-katy
        (merge default-tagmap
-              {:title "Mayvenn Beauty Lounge - Katy"})
+              {:title "Mayvenn Beauty Lounge - Katy"
+               :description "Visit our Katy store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."})
 
        events/navigate-retail-walmart-dallas
        (merge default-tagmap
-              {:title "Mayvenn Beauty Lounge - Dallas"})
+              {:title "Mayvenn Beauty Lounge - Dallas"
+               :description "Visit our Dallas store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."})
 
        events/navigate-retail-walmart-grand-prairie
        (merge default-tagmap
-              {:title "Mayvenn Beauty Lounge - Grand Prairie"})
+              {:title "Mayvenn Beauty Lounge - Grand Prairie"
+               :description "Visit our Grand Praire store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."})
 
        events/navigate-retail-walmart-mansfield
        (merge default-tagmap
-              {:title "Mayvenn Beauty Lounge - Mansfield"})
+              {:title "Mayvenn Beauty Lounge - Mansfield"
+               :description "Visit our Mansfield store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."})
 
        events/navigate-adventure-stylist-profile
        (let [{:stylist/keys [salon] :stylist.address/keys [city state]}
