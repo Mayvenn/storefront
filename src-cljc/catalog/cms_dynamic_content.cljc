@@ -7,8 +7,10 @@
 
 (def rich-text-hierarchy
   (-> (make-hierarchy)
-      ;; NOTE: This basically is just setting it up so that the keyword on the left gets built as the entity on the right
-      ;;      child              parent
+      ;; NOTE: This basically is just setting it up so that the keyword
+      ;;       on the left gets built as the entity on the right
+
+      ;;            child                 parent
       (derive :rich-text/heading-1 :rich-text/heading)
       (derive :rich-text/heading-2 :rich-text/heading)
       (derive :rich-text/heading-3 :rich-text/heading)
@@ -18,7 +20,7 @@
 
 (defmulti build-hiccup-tag
   (fn [{:as   _node
-        :keys [data node-type]}]
+        :keys [data content node-type]}]
     (cond
       (and (= node-type "embedded-asset-block")
            (some-> data
@@ -27,6 +29,13 @@
                    :content-type
                    (string/starts-with? "video")))
       :rich-text/embedded-video-block
+
+      (and (= node-type "paragraph")
+           (some-> content
+                   first
+                   :value
+                   empty?))
+      :rich-text/spacer
 
       :else
       (keyword "rich-text" node-type)))
@@ -43,8 +52,10 @@
 (defmethod build-hiccup-tag :rich-text/paragraph [{:keys [content]}]
   (build-hiccup-content [:p] content))
 
+(defmethod build-hiccup-tag :rich-text/spacer [{:keys []}]
+  [:div.py4])
+
 (defmethod build-hiccup-tag :rich-text/hyperlink [{:keys [content data]}]
-  ;; TODO: Strip initial newlines?
   (build-hiccup-content [:a {:href (:uri data)}] content))
 
 (defmethod build-hiccup-tag :rich-text/unordered-list [{:keys [content]}]
