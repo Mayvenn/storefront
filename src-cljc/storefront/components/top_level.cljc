@@ -32,6 +32,7 @@
             [storefront.components.header :as header]
             [ui.promo-banner :as promo-banner]
             storefront.components.shared-cart
+            [storefront.components.pixels :as pixels]
             [storefront.components.sign-in :as sign-in]
             [storefront.components.sign-up :as sign-up]
             [storefront.components.order-details-sign-up :as order-details-sign-up]
@@ -238,7 +239,7 @@
       (contains? #{events/navigate-shop-by-look} nav-event)
       ((main-component nav-event) data nil)
 
-      :else
+      :else 
       (main-layout data nav-event))))
 
 (defn shop-site
@@ -285,6 +286,7 @@
   [data owner opts]
   [:div
    #?(:cljs (email-capture/built-component data nil))
+   (pixels/built-component data nil)
    (cond
      (= events/navigate-mayvenn-stylist-pay (get-in data keypaths/navigation-event))
      (stylist-pay/page data)
