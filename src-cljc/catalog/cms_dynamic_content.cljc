@@ -106,9 +106,7 @@
                              ;;       entries without having to add a mapping here; no deploy needed
                              ;;
                              ;;       See existing template-slot entries in contentful for examples
-                             {:product-overview-description          :pdp.details.overview/description
-                              :product-care-colorable                :pdp.details.care/can-it-be-colored?
-                              :product-tutorial-video                :pdp.details.customize-your-wig/video-tutorial})
+                             {})
             (maps/map-values
              (fn [template-slot]
                (some->> (template-slot :selectable-values)
