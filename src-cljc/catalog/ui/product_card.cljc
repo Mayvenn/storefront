@@ -9,8 +9,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.component :as component :refer [defcomponent]]
-            [storefront.components.ui :as ui]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.components.ui :as ui]))
 
 (defn- slug->facet [facet facets]
   (->> facets
@@ -71,7 +70,7 @@
                    first)]
     {:sort/value                   (:sku/price cheapest-sku)
      :card/type                    :product
-     :react/key                    (str "product-" product-slug)
+     :react/key                    (str "product-" product-slug "-" (:catalog/sku-id cheapest-sku))
      :product-card-title/id        (some->> product-slug (str "product-card-title-")) ;; TODO: better display-decision id
      :product-card-title/primary   (:copy/title product)
      :product-card/target          [events/navigate-product-details

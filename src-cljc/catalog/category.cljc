@@ -97,7 +97,7 @@
 
 (defn page
   [app-state _]
-  (let [category                             (accessors.categories/current-category app-state)
+  (let [category                            (accessors.categories/current-category app-state)
         facet-filtering-state               (merge (get-in app-state catalog.keypaths/k-models-facet-filtering)
                                                    {:facet-filtering/item-label "item"})
         loaded-category-products            (->> (get-in app-state k/v2-products)
@@ -106,19 +106,26 @@
                                                           (skuers/electives< category)
                                                           (skuers/essentials< category))))
         selections                          (:facet-filtering/filters facet-filtering-state)
-        category-skus-matching-criteria     (->> (get-in app-state k/v2-skus)
+
+        category-skus                       (->> (get-in app-state k/v2-skus)
                                                  vals
                                                  (select (merge
                                                           (skuers/electives< category)
-                                                          (skuers/essentials< category)))
-                                                 (select selections))
+                                                          (skuers/essentials< category))))
+        category-skus-matching-criteria     (select selections category-skus)
+        category-products-matching-criteria (select selections loaded-category-products)
+        category-skuers                     (skuers/skus->skuers (:selector/dimensions category)
+                                                                 category-skus
+                                                                 loaded-category-products)
         card-skuers                         (skuers/skus->skuers (:selector/dimensions category)
-                                                                 category-skus-matching-criteria)
+                                                                 category-skus-matching-criteria
+                                                                 category-products-matching-criteria)
+
         shop?                               (or (= "shop" (get-in app-state k/store-slug))
                                                 (= "retail-location" (get-in app-state k/store-experience)))
-        category-products-matching-criteria (select selections loaded-category-products)
-
-        faq                                 (get-in app-state (conj storefront.keypaths/cms-faq (:contentful/faq-id category)))]
+        faq                                 (get-in app-state (conj storefront.keypaths/cms-faq (:contentful/faq-id category)))
+        splay?                              (and (seq (:selector/dimensions category))
+                                                 (experiments/splay-tation? app-state))]
     (c/build template
              (merge
               (when-let [filter-title (:product-list/title category)]
@@ -139,7 +146,7 @@
                                                                    :faq/content answer})}))}
               (facet-filters/filters<-
                {:facets-db             (get-in app-state storefront.keypaths/v2-facets)
-                :faceted-models        loaded-category-products
+                :faceted-models        (if splay? category-skuers loaded-category-products)
                 :facet-filtering-state facet-filtering-state
                 :facets-to-filter-on   (:selector/electives category)
                 :navigation-event      e/navigate-category
@@ -147,10 +154,7 @@
                 :child-component-data  {:product-card-listing
                                         (product-card-listing/query app-state
                                                                     category
-                                                                    (if (and (seq (:selector/dimensions category))       
-                                                                             (experiments/splay-tation? app-state))
-                                                                      card-skuers
-                                                                      category-products-matching-criteria))}})))))
+                                                                    (if splay? card-skuers category-products-matching-criteria))}})))))
 
 (defn ^:export built-component
   [app-state opts]

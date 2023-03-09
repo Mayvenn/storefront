@@ -1,6 +1,5 @@
 (ns catalog.skuers
-  (:require [clojure.string :as string]
-            [spice.maps :as maps]))
+  (:require [spice.maps :as maps]))
 
 (defn essentials<
   ([skuer]
@@ -49,23 +48,21 @@
 
 (defn skus->skuers
   "Given a list of skus, group the skus into skuers according to a supplied list of dimensions."
-  [dimensions skus]
-  (->> skus
-       (reduce (fn [acc sku]
-                  ;; TODO(jjh): generate slug better by ordering dimensions
-                 (let [slug (->> (select-keys sku dimensions) vals (map first) (string/join "-"))]
-                   (if-let [skuer (get acc slug)]
-                     (assoc acc slug (-> skuer
-                                         (update :selector/skus conj (:catalog/sku-id sku))
-                                         (update :selector/image-cases conj (:selector/image-cases sku))))
-                     (assoc acc slug (assoc (select-keys sku (concat dimensions
-                                                                     [:selector/from-products
-                                                                      :selector/image-cases]))
-                                            :selector/skus [(:catalog/sku-id sku)]
-                                            :copy/title slug ; TODO(jjh): generate better title
-                                            ;; TODO(jjh): get product id by querying catalog
-                                            :catalog/product-id (first (:selector/from-products sku))
-                                            :page/slug slug))))) {})
-       vals
-       ;; TODO(jjh): sort properly
-       (sort-by :copy/title)))
+  ([dimensions skus]
+   (skus->skuers dimensions skus nil))
+  ;; This arity is for when we need a matching product for title, product-id, and slug
+  ([dimensions skus products]
+   (->> skus
+        (reduce (fn [acc sku] 
+                  (let [ix (select-keys sku dimensions)]
+                    (if-let [skuer (get acc ix)]
+                      (assoc acc ix (-> skuer
+                                        (update :selector/skus conj (:catalog/sku-id sku))
+                                        (update :selector/image-cases conj (:selector/image-cases sku))))
+                      (assoc acc ix (merge (select-keys sku (concat dimensions
+                                                                    [:selector/image-cases]))
+                                           (when products 
+                                             (let [product (->> products (filter #(get (set (:selector/skus %)) (:catalog/sku-id sku))) first)]
+                                               (select-keys product [:copy/title :catalog/product-id :page/slug])))
+                                           {:selector/skus [(:catalog/sku-id sku)]}))))) {})
+        vals)))
