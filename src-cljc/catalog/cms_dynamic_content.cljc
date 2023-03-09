@@ -91,7 +91,7 @@
 
 (defmethod build-hiccup-tag :rich-text/document [{:keys [content]}]
   ;; TODO: Strip initial newlines?
-  (build-hiccup-content [:div] content))
+  (build-hiccup-content [:div.template-slot-value] content))
 
 (defmethod build-hiccup-tag :default [node]
   ;; TODO: Productionalize this error message
@@ -124,8 +124,10 @@
                                                            (:selectable-values template-slot))))
                     ;; TODO Move the code responsible for merging the selector attributes into the top level
                     ;; of the selectable value to the API / Handler areas)
-                    (into [:div]
+                    (into []
                           (comp
                            (map :value)
+                           (map (fn [node]
+                                  (assoc node :template-slot/slug (:slug template-slot))))
                            (map build-hiccup-tag))))))
             (maps/deep-remove-nils)))))

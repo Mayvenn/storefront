@@ -29,6 +29,7 @@
             [catalog.reviews :as reviews]
             [clojure.string]
             [homepage.ui.faq :as faq]
+            [markdown-to-hiccup.core :as markdown]
             [mayvenn.visual.tools :refer [with within]]
             [mayvenn.visual.ui.titles :as titles]
             [spice.selector :as selector]
@@ -518,10 +519,15 @@
 (defn cms-override-template-slots< [cms-template-slot-data selected-sku]
   (cms-dynamic-content/cms-and-sku->template-slot-hiccup cms-template-slot-data selected-sku))
 
-(defn ^:private template-slot-sections< [template-slot-data length-guide-image slot-id]
+(defn ^:private template-slot-sections< [template-slot-data length-guide-image debug-template-slots? slot-id]
   (merge
    (when-let [content (get template-slot-data slot-id)]
-     {:content content})
+     {:content [:div
+                (cond-> {:data-template-slot-slug (spice/kw-name slot-id)}
+                  debug-template-slots? (assoc :class "debug-template-slot"))
+                (if (string? content)
+                  (markdown/component (markdown/md->hiccup content))
+                  content)]})
    (when (and (= slot-id :pdp.details.hair-info/model-wearing)
               length-guide-image)
      {:link/content "Length Guide"
@@ -530,10 +536,12 @@
                       :location           "hair-info-tab"}]
       :link/id      "hair-info-tab-length-guide"})))
 
-(defn ^:private template-slot-drawer< [template-slot-data length-guide-image drawer-orderings]
+(defn ^:private template-slot-drawer< [template-slot-data length-guide-image debug-template-slots? drawer-orderings]
   (let [[drawer-id slot-ids] (first drawer-orderings)
-        sections             (keep (partial template-slot-sections< template-slot-data
-                                            length-guide-image)
+        sections             (keep (partial template-slot-sections<
+                                            template-slot-data
+                                            length-guide-image
+                                            debug-template-slots?)
                                    slot-ids)]
     (when (seq sections)
       {:contents {:sections sections}
@@ -546,7 +554,7 @@
                             (clojure.string/replace #"-" " "))}})))
 
 (defn template-slots->accordion-slots
-  [accordion-ordering template-slot-data product length-guide-image open-drawers]
+  [accordion-ordering template-slot-data product length-guide-image open-drawers debug-template-slots?]
   (merge
    ;; TODO drive initial-open-drawers off of Contentful Data?
    (cond
@@ -562,7 +570,7 @@
 
    {:allow-multi-open?    false
     :drawers (into []
-                   (keep (partial template-slot-drawer< template-slot-data length-guide-image))
+                   (keep (partial template-slot-drawer< template-slot-data length-guide-image debug-template-slots?))
                    accordion-ordering)
     :id                   :info-accordion
     :open-drawers         open-drawers}))
@@ -575,20 +583,20 @@
         facets          (facets/by-slug data)
         selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
         carousel-images (find-carousel-images product product-skus images-catalog
-                                                        ;;TODO These selection election keys should not be hard coded
+                                              ;;TODO These selection election keys should not be hard coded
                                               (select-keys selections [:hair/color
                                                                        :hair/base-material])
                                               selected-sku)
 
-        product-options (get-in data catalog.keypaths/detailed-product-options)
-        ugc             (ugc-query product selected-sku data)
-        shop?           (or (= "shop" (get-in data keypaths/store-slug))
-                            (= "retail-location" (get-in data keypaths/store-experience)))
-        faq             (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
-                          (-> data
-                              (get-in (conj keypaths/cms-faq pdp-faq-id))
-                              (assoc :open-drawers (:accordion/open-drawers (accordion-neue/<- data :pdp-faq)))))
-        selected-picker (get-in data catalog.keypaths/detailed-product-selected-picker)]
+        product-options      (get-in data catalog.keypaths/detailed-product-options)
+        ugc                  (ugc-query product selected-sku data)
+        shop?                (or (= "shop" (get-in data keypaths/store-slug))
+                                 (= "retail-location" (get-in data keypaths/store-experience)))
+        faq                  (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
+                               (-> data
+                                   (get-in (conj keypaths/cms-faq pdp-faq-id))
+                                   (assoc :open-drawers (:accordion/open-drawers (accordion-neue/<- data :pdp-faq)))))
+        selected-picker      (get-in data catalog.keypaths/detailed-product-selected-picker)]
     {:title/primary     (:copy/title product)
      :ugc               ugc
      :fetching-product? (utils/requesting? data (conj request-keys/get-products
@@ -766,9 +774,10 @@
 
 (defn information<
   [state images-db info-accordion detailed-product selected-sku]
-  (let [length-guide-image (->> (images/for-skuer images-db detailed-product)
-                                (select {:use-case #{"length-guide"}})
-                                first)
+  (let [length-guide-image    (->> (images/for-skuer images-db detailed-product)
+                                   (select {:use-case #{"length-guide"}})
+                                  first)
+        debug-template-slots? (experiments/debug-template-slots? state)
 
         ;; Selections through model-image is so that we can display model wearing
         ;; in the information section for the old carousel
@@ -803,7 +812,8 @@
                                       accordion-template-slot-data
                                       detailed-product
                                       length-guide-image
-                                      (:accordion/open-drawers info-accordion)))))
+                                      (:accordion/open-drawers info-accordion)
+                                      debug-template-slots?))))
 
 (defn ^:export page
   [state opts]
