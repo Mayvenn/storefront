@@ -784,14 +784,17 @@
                                               selected-sku)
         model-image     (first (filter :copy/model-wearing carousel-images))
 
+        use-cms-only?                (experiments/pdp-template-slots-from-cms-only? state)
         use-v2-drawers?              (experiments/pdp-template-slots? state)
         accordion-ordering           (if use-v2-drawers?
                                        drawer-and-template-slot-ordering-v2
                                        drawer-and-template-slot-ordering-v1)
-        accordion-template-slot-data (merge (v1-default-template-slots< detailed-product
-                                                                        selected-sku
-                                                                        model-image)
-                                            (when use-v2-drawers?
+        accordion-template-slot-data (merge (when-not use-cms-only?
+                                              (v1-default-template-slots< detailed-product
+                                                                          selected-sku
+                                                                          model-image))
+                                            (when (and use-v2-drawers?
+                                                       (not use-cms-only?))
                                               (v2-default-template-slots< detailed-product
                                                                           selected-sku
                                                                           model-image))
