@@ -124,10 +124,6 @@
   [data]
   (display-feature? data "carousel-redesign"))
 
-(defn pdp-faq-in-accordion?
-  [data]
-  (display-feature? data "pdp-faq-in-accordion"))
-
 (defn footer-v22?
   [data]
   (display-feature? data "footer-v22"))
