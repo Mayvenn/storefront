@@ -89,6 +89,10 @@
   ;; TODO: Strip initial newlines?
   value)
 
+(defmethod build-hiccup-tag :rich-text/document [{:keys [content]}]
+  ;; TODO: Strip initial newlines?
+  (build-hiccup-content [:div] content))
+
 (defmethod build-hiccup-tag :default [node]
   ;; TODO: Productionalize this error message
   (println "Attempting to render unknown node type" node)
@@ -120,9 +124,8 @@
                                                            (:selectable-values template-slot))))
                     ;; TODO Move the code responsible for merging the selector attributes into the top level
                     ;; of the selectable value to the API / Handler areas)
-                    first
-                    :value
-                    :content
                     (into [:div]
-                          (map build-hiccup-tag)))))
+                          (comp
+                           (map :value)
+                           (map build-hiccup-tag))))))
             (maps/deep-remove-nils)))))
