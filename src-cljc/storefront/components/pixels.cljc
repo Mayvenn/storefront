@@ -5,18 +5,16 @@
 
 (defn query
   [app-state]
-  ;; TODO: Gate by GTM Consent State (driven by WireWheel)
-  (let [gpc? #?(:clj  true 
-                :cljs (= 1 js/navigator.globalPrivacyControl))]
-    (when-not gpc?
-      {:artsai
-       {:action (condp = (get-in app-state k/navigation-event)
-                  e/navigate-cart "content"
-                  e/navigate-checkout-returning-or-guest "lead"
-                  e/navigate-checkout-payment "signup"
-                  e/navigate-checkout-confirmation "registration"
-                  e/navigate-order-complete "purchase"
-                  nil)}}))) 
+  (when-not #?(:clj  true
+               :cljs js/window.consentDenied)
+    {:artsai
+     {:action (condp = (get-in app-state k/navigation-event)
+                e/navigate-cart "content"
+                e/navigate-checkout-returning-or-guest "lead"
+                e/navigate-checkout-payment "signup"
+                e/navigate-checkout-confirmation "registration"
+                e/navigate-order-complete "purchase"
+                nil)}})) 
      
 (c/defcomponent component
   [{:keys [artsai]} _ _]
