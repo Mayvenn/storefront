@@ -974,6 +974,11 @@
     :style {:text-align alignment}}
    content])
 
+(defcomponent rich-text [{:keys [alignment content]} _ _]
+  [:div.black.my-auto
+   {:style {:text-align alignment}}
+   content])
+
 (defn title-standard [{:keys [primary secondary tertiary]}]
   [:div.black.center.flex.flex-column.gap-2
    (when primary
@@ -1035,6 +1040,7 @@
        :section             section
        :tiles               tiles
        :text                text
+       :rich-text           rich-text
        :button              button
        :title               title
 

@@ -17,7 +17,8 @@
             [storefront.ugc :as ugc]
             [spice.maps :as maps]
             [storefront.components.homepage-hero :as homepage-hero]
-            lambdaisland.uri))
+            lambdaisland.uri
+            [catalog.cms-dynamic-content :as cms-dynamic-content]))
 
 (defn ^:private url->navigation-message [url]
   (when-not (nil? url)
@@ -297,6 +298,12 @@
       "text"                                     (-> body-layer
                                                      (select-keys [:font :size :alignment :content])
                                                      (assoc :layer/type :text))
+      "richText"                                 (-> body-layer
+                                                     (update :content #(->> %
+                                                                            :content
+                                                                            (map cms-dynamic-content/build-hiccup-tag)
+                                                                            (into [:div])))
+                                                     (assoc :layer/type :rich-text))
       "staticContent"                            {:layer/type (case (:module body-layer)
                                                                 "contact-us"           :lp-contact-us
                                                                 "divider-green-gray"   :lp-divider-green-gray
