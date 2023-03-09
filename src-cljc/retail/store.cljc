@@ -28,19 +28,19 @@
      {:style {:align-items "start"}}
      [:div.left
       [:h1.canela.title-2 name]
-      [:div.proxima.content-3 "Visit us inside Walmart"]]
-     [:div.flex
-      (when instagram [:a.block.mx1.flex.items-center {:href instagram :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Instagram")}
-                       [:div ^:inline (svg/instagram {:style {:height "20px" :width "20px"}})]])
-      (when facebook [:a.block.mx1.flex.items-center {:href facebook :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Facebook")}
-                      [:div ^:inline (svg/facebook-f {:style {:height "20px" :width "20px"}})]])
-      (when tiktok [:a.block.mx1.flex.items-center {:href tiktok :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Tiktok")}
-                    [:div ^:inline (svg/tiktok {:style {:height "20px" :width "20px"}})]])
-      (when email [:a.block.mx1.flex.items-center {:href (ui/email-url email) :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn email")}
-                   [:div ^:inline (svg/icon-email {:height "20px" :width "28px"})]])]]
+      [:div.proxima.content-3 "Visit us inside Walmart"]]]
     [:p.content-3
      (str "Welcome to Mayvenn Beauty Lounge in " metro " where we carry a large selection of 100% virgin human "
           "hair wigs, bundles and seamless hair extensions to protect your tresses and create your perfect look.")]
+    [:div.flex
+     (when instagram [:a.block.mx1.flex.items-center {:href instagram :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Instagram")}
+                      [:div ^:inline (svg/instagram {:style {:height "20px" :width "20px"}})]])
+     (when facebook [:a.block.mx1.flex.items-center {:href facebook :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Facebook")}
+                     [:div ^:inline (svg/facebook-f {:style {:height "20px" :width "20px"}})]])
+     (when tiktok [:a.block.mx1.flex.items-center {:href tiktok :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn Tiktok")}
+                   [:div ^:inline (svg/tiktok {:style {:height "20px" :width "20px"}})]])
+     (when email [:a.block.mx1.flex.items-center {:href (ui/email-url email) :rel "noopener" :target "_blank" :aria-label (str name " Mayvenn email")}
+                  [:div ^:inline (svg/icon-email {:height "20px" :width "28px"})]])]
     [:div.border-top.border-gray.flex.col-12.gap-4
      [:div
       {:style {:flex "1 1"}}
@@ -114,7 +114,7 @@
           :follow-us/instagram          instagram
           :follow-us/photos             instagram-photos}
          (vt/within :location-card
-                    {:name           (str name ", " state)
+                    {:name           (str "Mayvenn Beauty Lounge - " name)
                      :img-url        (-> hero :file :url)
                      :address1-2     (string/join ", " (keep identity [address-1 address-2]))
                      :city-state-zip (when address-city (str address-city ", " state " " address-zipcode))
