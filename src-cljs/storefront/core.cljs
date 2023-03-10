@@ -173,7 +173,7 @@
 
 (defn ^:export enable-feature [feature]
   (handle-message app-state
-                  ["enable" "feature"]
+                  [:enable :feature]
                   {:feature feature}))
 
 (loader/set-loaded! :main)
