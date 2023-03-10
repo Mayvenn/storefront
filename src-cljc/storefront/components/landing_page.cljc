@@ -131,6 +131,7 @@
         images-db             (get-in data storefront.keypaths/v2-images)
         promotions            (get-in data storefront.keypaths/promotions)
         remove-free-install?  (:remove-free-install (get-in data storefront.keypaths/features))
+        migrate-to-rich-text? (:migrate-to-rich-text (get-in data storefront.keypaths/features))
         facets-db             (->> (get-in data storefront.keypaths/v2-facets)
                                    (maps/index-by (comp keyword :facet/slug))
                                    (maps/map-values (fn [facet]
@@ -298,12 +299,13 @@
       "text"                                     (-> body-layer
                                                      (select-keys [:font :size :alignment :content])
                                                      (assoc :layer/type :text))
-      "richText"                                 (-> body-layer
-                                                     (update :content #(->> %
-                                                                            :content
-                                                                            (map cms-dynamic-content/build-hiccup-tag)
-                                                                            (into [:div])))
-                                                     (assoc :layer/type :rich-text))
+      "richText"                                 (when migrate-to-rich-text?
+                                                   (-> body-layer
+                                                       (update :content #(->> %
+                                                                              :content
+                                                                              (map cms-dynamic-content/build-hiccup-tag)
+                                                                              (into [:div])))
+                                                       (assoc :layer/type :rich-text)))
       "staticContent"                            {:layer/type (case (:module body-layer)
                                                                 "contact-us"           :lp-contact-us
                                                                 "divider-green-gray"   :lp-divider-green-gray

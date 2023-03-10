@@ -586,6 +586,7 @@
       (assoc _ :contentful-driven-email-capture-modal (feature-flags/retrieve-flag ld "contentful-driven-email-capture-modal" :bool false))
       (assoc _ :show-guaranteed-shipping (feature-flags/retrieve-flag ld "show-guaranteed-shipping" :bool true))
       (assoc _ :remove-free-install (feature-flags/retrieve-flag ld "remove-free-install" :bool true))
+      (assoc _ :migrate-to-rich-text (feature-flags/retrieve-flag ld "migrate-to-rich-text" :bool false))
       (assoc _ :new-homepage-2022-09 (feature-flags/retrieve-flag ld "new-homepage-2022-09" :bool true))
       (assoc _ :carousel-redesign (feature-flags/retrieve-flag ld "carousel-redesign" :bool false))
       (assoc _ :pdp-faq-in-accordion (feature-flags/retrieve-flag ld "pdp-faq-in-accordion" :bool false))
