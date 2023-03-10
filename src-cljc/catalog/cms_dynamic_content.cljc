@@ -5,19 +5,6 @@
              [spice.maps :as maps]
              [clojure.string :as string]))
 
-(def rich-text-hierarchy
-  (-> (make-hierarchy)
-      ;; NOTE: This basically is just setting it up so that the keyword
-      ;;       on the left gets built as the entity on the right
-
-      ;;            child                 parent
-      (derive :rich-text/heading-1 :rich-text/heading)
-      (derive :rich-text/heading-2 :rich-text/heading)
-      (derive :rich-text/heading-3 :rich-text/heading)
-      (derive :rich-text/heading-4 :rich-text/heading)
-      (derive :rich-text/heading-5 :rich-text/heading)
-      (derive :rich-text/heading-6 :rich-text/heading)))
-
 (defmulti build-hiccup-tag
   (fn [{:as   _node
         :keys [data content node-type]}]
@@ -38,16 +25,31 @@
       :rich-text/spacer
 
       :else
-      (keyword "rich-text" node-type)))
-  :hierarchy #'rich-text-hierarchy)
+      (keyword "rich-text" node-type))))
 
 (defn build-hiccup-content [tag content]
   (into tag
         (map build-hiccup-tag)
         content))
 
-(defmethod build-hiccup-tag :rich-text/heading [{:keys [content]}]
-  (build-hiccup-content [:h3] content))
+;; Not Currently Used
+;; (defmethod build-hiccup-tag :rich-text/heading-1 [{:keys [content]}]
+;;   (build-hiccup-content [:h1] content))
+
+(defmethod build-hiccup-tag :rich-text/heading-2 [{:keys [content]}]
+  (build-hiccup-content [:h2.canela.title-2] content))
+
+(defmethod build-hiccup-tag :rich-text/heading-3 [{:keys [content]}]
+  (build-hiccup-content [:h3.proxima.title-1] content))
+
+(defmethod build-hiccup-tag :rich-text/heading-4 [{:keys [content]}]
+  (build-hiccup-content [:h4.proxima.title-2] content))
+
+(defmethod build-hiccup-tag :rich-text/heading-5 [{:keys [content]}]
+  (build-hiccup-content [:h5.canela.title-3] content))
+
+(defmethod build-hiccup-tag :rich-text/heading-6 [{:keys [content]}]
+  (build-hiccup-content [:h6.proxima.title-3] content))
 
 (defmethod build-hiccup-tag :rich-text/paragraph [{:keys [content]}]
   (build-hiccup-content [:p] content))
@@ -85,9 +87,16 @@
       [:span.h3.bold.pr1 "Watch:"]
       (:title target)]]))
 
-(defmethod build-hiccup-tag :rich-text/text [{:keys [value]}]
+
+(defmethod build-hiccup-tag :rich-text/text [{:keys [marks value]}]
   ;; TODO: Strip initial newlines?
-  value)
+  (let [mark-set (into #{} (comp (map :type)
+                                 (map keyword)) marks)]
+    [:p {:class (cond-> #{}
+                  (:bold mark-set) (conj "bold")
+                  (:italic mark-set) (conj "italic"))}
+
+     value]))
 
 (defmethod build-hiccup-tag :rich-text/document [{:keys [content]}]
   ;; TODO: Strip initial newlines?
