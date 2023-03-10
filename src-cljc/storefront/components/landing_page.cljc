@@ -296,9 +296,10 @@
                                                                 "Large (4 rem)"   "4rem"
                                                                 "X-Large (8 rem)" "8rem")
                                                   :icon       (:icon body-layer)}
-      "text"                                     (-> body-layer
-                                                     (select-keys [:font :size :alignment :content])
-                                                     (assoc :layer/type :text))
+      "text"                                     (when-not migrate-to-rich-text?
+                                                   (-> body-layer
+                                                       (select-keys [:font :size :alignment :content])
+                                                       (assoc :layer/type :text)))
       "richText"                                 (when migrate-to-rich-text?
                                                    (-> body-layer
                                                        (update :content #(->> %
