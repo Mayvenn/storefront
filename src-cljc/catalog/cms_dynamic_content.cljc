@@ -54,11 +54,18 @@
 (defmethod build-hiccup-tag :rich-text/paragraph [{:keys [content]}]
   (build-hiccup-content [:p] content))
 
-(defmethod build-hiccup-tag :rich-text/spacer [{:keys []}]
-  [:div.py4])
+(defmethod build-hiccup-tag :rich-text/spacer [{:keys [content]}]
+  (build-hiccup-content [:div.py4] content))
 
 (defmethod build-hiccup-tag :rich-text/hyperlink [{:keys [content data]}]
   (build-hiccup-content [:a {:href (:uri data)}] content))
+
+(defmethod build-hiccup-tag :rich-text/asset-hyperlink [{:as _node :keys [content data]}]
+  (let [content-nodes (if (empty? content)
+                        [{:value (:title (:target data))
+                          :node-type "text"}]
+                        content)]
+    (build-hiccup-content [:a {:href (:url (:file (:target data)))}] content-nodes)))
 
 (defmethod build-hiccup-tag :rich-text/unordered-list [{:keys [content]}]
   (build-hiccup-content [:ul] content))
