@@ -1,15 +1,15 @@
 (ns storefront.components.privacy
-  (:require [storefront.component :as component]
+  (:require #?@(:cljs [[storefront.hooks.wirewheel-upcp :as wirewheel-upcp]])
+            [storefront.component :as component]
             [storefront.keypaths :as keypaths]
+            [storefront.effects :as effects]
+            [storefront.events :as events]
             [storefront.accessors.experiments :as experiments]))
 
 (component/defdynamic-component wirewheel-upcp-iframe
   (did-mount
    [this]
-   #?(:cljs
-      (let [iframe (js/document.getElementById "wwiframe")]
-        (js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent
-         #js {:targetIframe iframe}) )))
+   #?(:cljs (wirewheel-upcp/init-iframe)))
   (render
    [this]
    (component/html
@@ -32,3 +32,7 @@
 
 (defn page [data opts]
   (component/build component (query data) opts))
+
+(defmethod effects/perform-effects events/navigate-content-privacy [_ event _ _ app-state]
+  #?(:cljs
+     (wirewheel-upcp/insert)))
