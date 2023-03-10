@@ -67,13 +67,13 @@
                  (apply utils/fake-href target))
           primary)]))
 
-(defn header-done-molecule
-  [{:header.done/keys [primary id target]}]
+(defn header-close-molecule
+  [{:header.close/keys [id target]}]
   (c/html
-   [:div (ui/button-medium-underline-primary
-          (merge {:data-test id}
-                 (apply utils/fake-href target))
-          primary)]))
+   [:a.block (merge {:data-test id}
+                    (apply utils/fake-href target))
+    (svg/x-sharp {:style {:width  "14px"
+                          :height "14px"}})]))
 
 (c/defcomponent section-filter-molecule
   [{:facet-filtering.section.filter/keys [primary target value icon-url]
@@ -165,7 +165,7 @@
    (header-reset-molecule data)
    (c/html
     [:div.center.proxima.content-1 "Filters"])
-   (header-done-molecule data)))
+   (header-close-molecule data)))
 
 (c/defcomponent panel-template
   [{:keys [header sections]} _ _]
@@ -239,9 +239,8 @@
    :header.reset/target  [e/flow|facet-filtering|reset
                           {:navigation-event navigation-event
                            :navigation-args  navigation-args}]
-   :header.done/primary  "DONE"
-   :header.done/id       "filters-done"
-   :header.done/target   [e/flow|facet-filtering|panel-toggled false]})
+   :header.close/id      "filters-close"
+   :header.close/target  [e/flow|facet-filtering|panel-toggled false]})
 
 (defn sections<-
   "Takes (Biz)
