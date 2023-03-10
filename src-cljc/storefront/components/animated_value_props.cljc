@@ -38,7 +38,7 @@
 (component/defdynamic-component component
   (render [this]
           (component/html
-           (let [current-target (:target (spice.core/spy "the state" (component/get-state this)))]
+           (let [current-target (:target (component/get-state this))]
              [:div.grid.columns-1.columns-2-on-tb-dt
               (ui/img {:src   (->> props
                                   (filter #(= current-target (:index %)))
@@ -51,7 +51,7 @@
                [:div.title-1.canela "Finding your perfect look has never been easier"]
                [:div.flex.flex-column.gap-2
                 (for [{:keys [index icon copy]} props
-                      :let [targeted? (= index (spice.core/spy current-target))]]
+                      :let [targeted? (= index current-target)]]
 
                   [:a.flex.gap-2.items-center.pointer
                    (merge
