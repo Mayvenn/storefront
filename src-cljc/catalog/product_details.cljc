@@ -795,7 +795,8 @@
         accordion-ordering           (if use-v2-drawers?
                                        drawer-and-template-slot-ordering-v2
                                        drawer-and-template-slot-ordering-v1)
-        accordion-template-slot-data (merge (when-not use-cms-only?
+        accordion-template-slot-data (merge (when (and (not use-v2-drawers?)
+                                                       (not use-cms-only?))
                                               (v1-default-template-slots< detailed-product
                                                                           selected-sku
                                                                           model-image))

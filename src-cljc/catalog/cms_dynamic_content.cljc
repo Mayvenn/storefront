@@ -98,36 +98,45 @@
   (println "Attempting to render unknown node type" node)
   nil)
 
+(defn template-slot-kv->hiccup-content
+  "Takes CMS template-slot key-value from contentful and tur"
+  ([sku template-slot-kv]
+   (let [[template-slot-id template-slot-data] template-slot-kv]
+     (some->> (template-slot-data :selectable-values)
+              (into []
+                    (comp
+                     (map (fn [selectable-value ]
+                            (merge selectable-value
+                                   (:selector selectable-value))))
+                     (selector/match-essentials
+                      ;; TODO Move the code responsible for merging the selector attributes into the top level
+                      ;; of the selectable value to the API / Handler areas)
+                      (assoc sku :selector/essentials (into #{} (comp
+                                                                 (map :selector)
+                                                                 (mapcat keys))
+                                                            (:selectable-values template-slot-data))))
+                     (map :value)
+                     (map (fn [node]
+                            (assoc node :template-slot/slug (:slug template-slot-data))))
+                     (map build-hiccup-tag)))
+              (not-empty)
+              (conj [template-slot-id])))))
+
+
+(defn rename-template-slot-ids [cms-dynamic-content-data]
+  ;; NOTE: This should only really be used when we can't or won't
+  ;;       dictate the slugs of template slots in contentful. If
+  ;;       the slugs in contenful match the slugs here no rename
+  ;;       is necessary. This allows us to overwrite the older cellar
+  ;;       entries without having to add a mapping here; no deploy needed
+  ;;
+  ;;       See existing template-slot entries in contentful for examples
+  (set/rename-keys cms-dynamic-content-data
+                   {}))
+
 (defn cms-and-sku->template-slot-hiccup
   [cms-dynamic-content-data sku]
   #?(:cljs
-     (do
-       (->> (set/rename-keys cms-dynamic-content-data
-                             ;; NOTE: This should only really be used when we can't or won't
-                             ;;       dictate the slugs of template slots in contentful. If
-                             ;;       the slugs in contenful match the slugs here no rename
-                             ;;       is necessary. This allows us to overwrite the older cellar
-                             ;;       entries without having to add a mapping here; no deploy needed
-                             ;;
-                             ;;       See existing template-slot entries in contentful for examples
-                             {})
-            (maps/map-values
-             (fn [template-slot]
-               (some->> (template-slot :selectable-values)
-                    (map (fn [selectable-value ]
-                           (merge selectable-value
-                                  (:selector selectable-value))))
-                    (selector/match-essentials
-                     (assoc sku :selector/essentials (into #{} (comp
-                                                                (map :selector)
-                                                                (mapcat keys))
-                                                           (:selectable-values template-slot))))
-                    ;; TODO Move the code responsible for merging the selector attributes into the top level
-                    ;; of the selectable value to the API / Handler areas)
-                    (into []
-                          (comp
-                           (map :value)
-                           (map (fn [node]
-                                  (assoc node :template-slot/slug (:slug template-slot))))
-                           (map build-hiccup-tag))))))
-            (maps/deep-remove-nils)))))
+     (into {}
+           (keep (partial template-slot-kv->hiccup-content sku))
+           (rename-template-slot-ids cms-dynamic-content-data))))
