@@ -171,5 +171,10 @@
                     event
                     (js->clj args :keywordize-keys true))))
 
+(defn ^:export enable-feature [feature]
+  (handle-message app-state
+                  ["enable" "feature"]
+                  {:feature feature}))
+
 (loader/set-loaded! :main)
 (dom-ready #(main app-state))
