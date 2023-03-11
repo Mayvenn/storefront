@@ -89,8 +89,8 @@
     ;;mark    class
     "bold"   "bold"
     "italic" "italic"
-    #?(:clj (println "Unable to determine a class to use for CMS rich text 'mark':" mark)
-       :cljs (js/console.warn "Unable to determine a class to use for CMS rich text 'mark':" mark))))
+    #?(:clj (println "Unable to determine a css class to use for CMS rich text 'mark':" mark)
+       :cljs (js/console.warn "Unable to determine a css class to use for CMS rich text 'mark':" mark))))
 
 (defmethod build-hiccup-tag :rich-text/text [{:keys [marks value]}]
   ;; TODO: Strip initial newlines?
