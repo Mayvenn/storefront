@@ -6,6 +6,7 @@
             [api.catalog :refer [select]]
             [catalog.facets :as facets]
             catalog.keypaths
+            [mayvenn.visual.tools :refer [with within]]
             [storefront.component :as c]
             storefront.keypaths
             clojure.set
@@ -73,6 +74,22 @@
                     (apply utils/fake-href target))
     (svg/x-sharp {:style {:width  "14px"
                           :height "14px"}})]))
+
+(c/defcomponent footer-organism
+  [data _ _]
+  [:div.px2.py6.flex.flex-column.items-center
+   (let [{:apply/keys [id primary target]} data]
+     (ui/button-medium-primary
+      (merge {:data-test id
+              :class "col-5 my2"}
+             (apply utils/fake-href target))
+      primary))
+   (let [{:clear/keys [id primary target]} data]
+     (ui/button-medium-underline-black
+      (merge {:data-test id
+              :class "my2"}
+             (apply utils/fake-href target))
+      primary))])
 
 (c/defcomponent section-filter-molecule
   [{:facet-filtering.section.filter/keys [primary target value icon-url]
@@ -164,20 +181,22 @@
   [data _ _]
   (header/nav-header
    {:class "border-bottom border-gray"}
-   (header-reset-molecule data)
+   nil
    (c/html
     [:div.center.proxima.content-1 "Filters"])
    (header-close-molecule data)))
 
 (c/defcomponent panel-template
-  [{:keys [header sections]} _ _]
+  [{:keys [header sections footer]} _ _]
   [:div.fixed.overlay.col-12.bg-white.z6.overflow-scroll
    {:key "panel-template"}
    (c/build header-organism header)
    [:div.mynp1.bg-refresh-gray
     (c/elements section-organism
                 sections
-                :facet-filtering/sections)]])
+                :facet-filtering/sections)]
+   [:div.absolute.bottom-0.left-0.right-0
+    (c/build footer-organism footer)]])
 
 (c/defcomponent desktop-header-organism
   [{:as                            data
@@ -236,13 +255,6 @@
      :filtering-summary.status/secondary (ui/pluralize-with-amount item-count item-label)
      :filtering-summary/pills            pills}))
 
-(defn header<- [navigation-event navigation-args]
-  {:header.reset/primary "RESET"
-   :header.reset/target  [e/flow|facet-filtering|reset
-                          {:navigation-event navigation-event
-                           :navigation-args  navigation-args}]
-   :header.close/id      "filters-close"
-   :header.close/target  [e/flow|facet-filtering|panel-toggled false]})
 
 (defn sections<-
   "Takes (Biz)
@@ -343,13 +355,15 @@
      sections
      child-component-data
      no-matches
-     facet-filtering-state]} _ {:keys [child-component]}]
+     facet-filtering-state]
+    :as data} _ {:keys [child-component]}]
   (if header
     (list
      (when (:facet-filtering/panel facet-filtering-state)
        (c/build panel-template
                 {:header header
-                 :sections sections}))
+                 :sections sections
+                 :footer (with :filtering.footer data)}))
      [:div
       {:key "filtering-component"}
       [:div.hide-on-dt
@@ -386,14 +400,19 @@
     (cond-> {:filtering/child-component-data  child-component-data}
 
       (seq facets-to-filter-on)
-            
+      
       (merge
        {:filtering/summary               (summary<- indexed-facets
                                                     item-count
                                                     navigation-event
                                                     navigation-args
                                                     facet-filtering-state)
-        :filtering/header                (header<- navigation-event navigation-args)
+        :filtering/header                {:header.reset/primary "RESET"
+                                          :header.reset/target  [e/flow|facet-filtering|reset
+                                                                 {:navigation-event navigation-event
+                                                                  :navigation-args  navigation-args}]
+                                          :header.close/id      "filters-close"
+                                          :header.close/target  [e/flow|facet-filtering|panel-toggled false]}
         :filtering/sections              (sections<- indexed-facets
                                                      (->> faceted-models
                                                           (mapv #(select-keys % facets-to-filter-on))
@@ -401,6 +420,14 @@
                                                      navigation-event
                                                      navigation-args
                                                      facet-filtering-state)
+        :filtering.footer.apply/primary  "Apply"
+        :filtering.footer.apply/id       "filters-apply"
+        :filtering.footer.apply/target   [e/flow|facet-filtering|panel-toggled false]
+        :filtering.footer.clear/primary  "Clear"
+        :filtering.footer.clear/id       "filters-clear"
+        :filtering.footer.clear/target   [e/flow|facet-filtering|reset
+                                          {:navigation-event navigation-event
+                                           :navigation-args  navigation-args}]
         :filtering/facet-filtering-state facet-filtering-state})
 
       (zero? item-count)
