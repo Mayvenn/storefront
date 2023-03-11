@@ -9,7 +9,6 @@
             [storefront.component :as c]
             storefront.keypaths
             clojure.set
-            clojure.string
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
             [storefront.components.svg :as svg]
@@ -18,7 +17,7 @@
             [storefront.events :as e]
             [storefront.effects :as effects]
             [spice.maps :as maps]
-            [clojure.string :as str]))
+            [clojure.string :as string]))
 
 (defn summary-status-molecule
   [{:filtering-summary.status/keys [primary secondary]}]
@@ -83,7 +82,10 @@
     :href      "#"
     :data-test (:facet-filtering.section.filter/id data)
     :key       id}
-   [:div (ui/check-box {:value value :id (str "filter-" (str/escape primary {\" "\\\""}) "-mobile")})]
+   [:div (ui/check-box {:value value 
+                        :id (str "filter-" 
+                                 (string/escape primary {\" "\\\""}) 
+                                 "-mobile")})]
    (when icon-url
      [:img.block.pr2
       {:style {:width  "50px"
@@ -310,7 +312,7 @@
   {:no-matches.title/primary    "😞"
    :no-matches.title/secondary  "Sorry, we couldn’t find any matches."
    :no-matches.action/primary   "Clear all filters"
-   :no-matches.action/secondary (clojure.string/lower-case (str " to see more " item-label "s."))
+   :no-matches.action/secondary (string/lower-case (str " to see more " item-label "s."))
    :no-matches.action/target    [e/flow|facet-filtering|reset
                                  {:navigation-event navigation-event
                                   :navigation-args  navigation-args}]})
@@ -384,6 +386,7 @@
     (cond-> {:filtering/child-component-data  child-component-data}
 
       (seq facets-to-filter-on)
+            
       (merge
        {:filtering/summary               (summary<- indexed-facets
                                                     item-count
