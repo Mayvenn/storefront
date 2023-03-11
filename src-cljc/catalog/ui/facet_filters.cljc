@@ -177,13 +177,19 @@
    [:div.mynp1.bg-refresh-gray
     (c/elements desktop-section-organism sections :facet-filtering/sections)]])
 
+(defn header-filter-count-molecule
+  [{:header.title/keys [primary secondary]}]
+  (c/html
+   [:div
+    [:div.center.proxima.content-1 primary]
+    [:div.center.proxima.content-2 secondary]]))
+
 (c/defcomponent header-organism
   [data _ _]
-  (header/nav-header
+  (header/nav-header 
    {:class "border-bottom border-gray"}
+   (header-filter-count-molecule data) 
    nil
-   (c/html
-    [:div.center.proxima.content-1 "Filters"])
    (header-close-molecule data)))
 
 (c/defcomponent panel-template
@@ -412,7 +418,9 @@
                                                                  {:navigation-event navigation-event
                                                                   :navigation-args  navigation-args}]
                                           :header.close/id      "filters-close"
-                                          :header.close/target  [e/flow|facet-filtering|panel-toggled false]}
+                                          :header.close/target  [e/flow|facet-filtering|panel-toggled false]
+                                          :header.title/primary "Filters"
+                                          :header.title/secondary (str item-count " items")}
         :filtering/sections              (sections<- indexed-facets
                                                      (->> faceted-models
                                                           (mapv #(select-keys % facets-to-filter-on))
