@@ -52,7 +52,7 @@
   (build-hiccup-content [:h6.proxima.title-3] content))
 
 (defmethod build-hiccup-tag :rich-text/paragraph [{:keys [content]}]
-  (build-hiccup-content [:span] content))
+  (build-hiccup-content [:div] content))
 
 (defmethod build-hiccup-tag :rich-text/spacer [{:keys [content]}]
   (build-hiccup-content [:div.py4] content))
@@ -91,7 +91,7 @@
        :style    {:width "100%"}}
       [:source {:src (:url file)}]]
      [:div.white.absolute.left-0.top-0.z1.px2.py1
-      [:span.h3.bold.pr1 "Watch:"]
+      [:div.h3.bold.pr1 "Watch:"]
       (:title target)]]))
 
 
@@ -99,7 +99,7 @@
   ;; TODO: Strip initial newlines?
   (let [mark-set (into #{} (comp (map :type)
                                  (map keyword)) marks)]
-    [:span {:class (cond-> #{}
+    [:div {:class (cond-> #{}
                   (:bold mark-set) (conj "bold")
                   (:italic mark-set) (conj "italic"))}
 
