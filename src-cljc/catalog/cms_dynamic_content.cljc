@@ -7,7 +7,7 @@
 
 (defmulti build-hiccup-tag
   (fn [{:as   _node
-        :keys [data content node-type]}]
+        :keys [value data content node-type]}]
     (cond
       (and (= node-type "embedded-asset-block")
            (some-> data
@@ -16,13 +16,6 @@
                    :content-type
                    (string/starts-with? "video")))
       :rich-text/embedded-video-block
-
-      (and (= node-type "paragraph")
-           (some-> content
-                   first
-                   :value
-                   empty?))
-      :rich-text/spacer
 
       :else
       (keyword "rich-text" node-type))))
@@ -53,9 +46,6 @@
 
 (defmethod build-hiccup-tag :rich-text/paragraph [{:keys [content]}]
   (build-hiccup-content [:div] content))
-
-(defmethod build-hiccup-tag :rich-text/spacer [{:keys [content]}]
-  (build-hiccup-content [:div.py4] content))
 
 (defmethod build-hiccup-tag :rich-text/hyperlink [{:keys [content data]}]
   (build-hiccup-content [:a {:href (:uri data)}] content))
