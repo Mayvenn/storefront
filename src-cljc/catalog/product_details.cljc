@@ -441,6 +441,7 @@
      :pdp.details.product-details/silk-size
      :pdp.details.product-details/features
      :pdp.details.product-details/cap-size
+     :pdp.details.product-details/cap-sizing-guide
      :pdp.details.product-details/tape--in-glue-information]}
    {:pdp.details/care
     [:pdp.details.care/maintenance-level
