@@ -52,7 +52,7 @@
   (build-hiccup-content [:h6.proxima.title-3] content))
 
 (defmethod build-hiccup-tag :rich-text/paragraph [{:keys [content]}]
-  (build-hiccup-content [:p] content))
+  (build-hiccup-content [:span] content))
 
 (defmethod build-hiccup-tag :rich-text/spacer [{:keys [content]}]
   (build-hiccup-content [:div.py4] content))
@@ -99,7 +99,7 @@
   ;; TODO: Strip initial newlines?
   (let [mark-set (into #{} (comp (map :type)
                                  (map keyword)) marks)]
-    [:p {:class (cond-> #{}
+    [:span {:class (cond-> #{}
                   (:bold mark-set) (conj "bold")
                   (:italic mark-set) (conj "italic"))}
 
