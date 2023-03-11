@@ -84,16 +84,18 @@
       [:div.h3.bold.pr1 "Watch:"]
       (:title target)]]))
 
+(defn contentful-mark->css-class [mark]
+  (case mark
+    ;;mark    class
+    "bold"   "bold"
+    "italic" "italic"
+    #?(:clj (println "Unable to determine a class to use for CMS rich text 'mark':" mark)
+       :cljs (js/console.warn "Unable to determine a class to use for CMS rich text 'mark':" mark))))
 
 (defmethod build-hiccup-tag :rich-text/text [{:keys [marks value]}]
   ;; TODO: Strip initial newlines?
-  (let [mark-set (into #{} (comp (map :type)
-                                 (map keyword)) marks)]
-    [:div {:class (cond-> #{}
-                  (:bold mark-set) (conj "bold")
-                  (:italic mark-set) (conj "italic"))}
-
-     value]))
+  [:div {:class (map (comp contentful-mark->css-class :type) marks)}
+   value])
 
 (defmethod build-hiccup-tag :rich-text/document [{:keys [content]}]
   ;; TODO: Strip initial newlines?
