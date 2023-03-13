@@ -25,9 +25,8 @@
         (map build-hiccup-tag)
         content))
 
-;; Not Currently Used
-;; (defmethod build-hiccup-tag :rich-text/heading-1 [{:keys [content]}]
-;;   (build-hiccup-content [:h1] content))
+(defmethod build-hiccup-tag :rich-text/heading-1 [{:keys [content]}]
+  (build-hiccup-content [:h1.canela.title-1] content))
 
 (defmethod build-hiccup-tag :rich-text/heading-2 [{:keys [content]}]
   (build-hiccup-content [:h2.canela.title-2] content))
