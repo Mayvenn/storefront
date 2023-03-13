@@ -13,7 +13,6 @@
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
             [storefront.components.svg :as svg]
-            [storefront.components.header :as header]
             [storefront.transitions :as t]
             [storefront.events :as e]
             [storefront.effects :as effects]
@@ -118,7 +117,7 @@
    (cond-> {:data-test id}
      target
      (merge (apply utils/fake-href target)))
-   [:div.shout.title-2.proxima
+   [:div.title-2.proxima
     primary]
    [:div.flex.items-center
     (when rotated?
@@ -161,7 +160,7 @@
   [{:facet-filtering.section.title/keys [primary target id]} _ _]
   [:div.block.flex.justify-between.inherit-color.items-center
    {:data-test (str id "-desktop")}
-   [:div.shout.title-2.proxima primary]])
+   [:div.title-2.proxima primary]])
 
 (c/defcomponent desktop-section-organism
   [data _ {:keys [id]}]
@@ -180,13 +179,24 @@
 (defn header-filter-count-molecule
   [{:header.title/keys [primary secondary]}]
   (c/html
-   [:div
-    [:div.center.proxima.content-1 primary]
-    [:div.center.proxima.content-2 secondary]]))
+   [:div.pl5
+    [:div.proxima.content-1.my2 primary]
+    [:div.proxima.content-2.dark-dark-gray secondary]]))
+
+;; storefront.components.header/nav-header, but with
+;; taller and wider left and right elements
+(defn nav-header [attrs left center right]
+  (let [size {:width "90px" :height "95px"}]
+    (c/html
+     [:div.flex.items-center
+      ^:attrs attrs
+      [:div.mx-auto.flex.items-center.justify-around {:style size} ^:inline left]
+      [:div.flex-auto.py3 ^:inline center]
+      [:div.mx-auto.flex.items-center.justify-around {:style size} ^:inline right]])))
 
 (c/defcomponent header-organism
   [data _ _]
-  (header/nav-header 
+  (nav-header 
    {:class "border-bottom border-gray"}
    (header-filter-count-molecule data) 
    nil
