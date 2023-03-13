@@ -17,6 +17,10 @@
                    (string/starts-with? "video")))
       :rich-text/embedded-video-block
 
+      (and (= node-type "text")
+           (= "" value))
+      :rich-text/spacer
+
       :else
       (keyword "rich-text" node-type))))
 
@@ -27,6 +31,9 @@
 
 (defmethod build-hiccup-tag :rich-text/heading-1 [{:keys [content]}]
   (build-hiccup-content [:h1.canela.title-1] content))
+
+(defmethod build-hiccup-tag :rich-text/spacer [{:keys [content]}]
+  (build-hiccup-content [:div {:style {:visibility "hidden"}} "[SPACE]"] content))
 
 (defmethod build-hiccup-tag :rich-text/heading-2 [{:keys [content]}]
   (build-hiccup-content [:h2.canela.title-2] content))
