@@ -294,46 +294,48 @@
                               facet-name    :facet/name
                               facet-options :facet/options}]
            (let [section-toggled?    (contains? sections facet-slug)
-                 represented-options (get represented-facets (keyword facet-slug))]
+                 represented-options (get represented-facets (keyword facet-slug))
+                 checked-count       (some-> filters (get facet-slug) seq count)]
              {:id                                     (some->> facet-slug
                                                                name
                                                                (str "filter-"))
               :facet-filtering.section/toggled?       section-toggled?
-              :facet-filtering.section.title/primary  (cond->> facet-name
-                                                        (contains? #{:hair/origin :hair/color :hair/texture} facet-slug)
-                                                        (str "Hair "))
-              :facet-filtering.section.title/target   [e/flow|facet-filtering|section-toggled {:facet-key facet-slug :toggled? (not section-toggled?)}]
+              :facet-filtering.section.title/primary  (str (cond->> facet-name
+                                                             (contains? #{:hair/origin :hair/color :hair/texture} facet-slug)
+                                                             (str "Hair ")) (when checked-count 
+                                                                              (str " (" checked-count ")")))
+              :facet-filtering.section.title/target   [e/flow|facet-filtering|section-toggled {:facet-key facet-slug
+                                                                                               :toggled?  (not section-toggled?)}]
               :facet-filtering.section.title/id       (some->> facet-slug name (str "filter-"))
               :facet-filtering.section.title/rotated? section-toggled?
-              :facet-filtering.section/filters
-              (->> (vals facet-options)
-                   (sort-by :filter/order)
-                   (keep
-                    (fn option->filter [{option-slug   :option/slug
-                                         option-name   :option/name
-                                         option-swatch :option/rectangle-swatch}]
-                      (when (contains? represented-options option-slug)
-                        (let [filter-toggled? (contains?
-                                               (get filters facet-slug)
-                                               option-slug)]
-                          (cond->
-                              #:facet-filtering.section.filter
-                              {:primary option-name
-                               :id      (str "filter-option-" (facets/hacky-fix-of-bad-slugs-on-facets option-slug))
-                               :target  [e/flow|facet-filtering|filter-toggled
-                                         {:facet-key  facet-slug
-                                          :navigation-event navigation-event
-                                          :navigation-args navigation-args
-                                          :option-key option-slug
-                                          :toggled?   (not filter-toggled?)}]
-                               :value   filter-toggled?
-                               :url     option-name}
-                            option-swatch
-                            (assoc :facet-filtering.section.filter/icon-url
-                                   (str "https://ucarecdn.com/"
-                                        (ui/ucare-img-id option-swatch)
-                                        "/-/format/auto/-/resize/50x/")))))))
-                   vec)}))))})
+              :facet-filtering.section/filters        (->> (vals facet-options)
+                                                           (sort-by :filter/order)
+                                                           (keep
+                                                            (fn option->filter [{option-slug   :option/slug
+                                                                                 option-name   :option/name
+                                                                                 option-swatch :option/rectangle-swatch}]
+                                                              (when (contains? represented-options option-slug)
+                                                                (let [filter-toggled? (contains?
+                                                                                       (get filters facet-slug)
+                                                                                       option-slug)]
+                                                                  (cond->
+                                                                   #:facet-filtering.section.filter
+                                                                    {:primary option-name
+                                                                     :id      (str "filter-option-" (facets/hacky-fix-of-bad-slugs-on-facets option-slug))
+                                                                     :target  [e/flow|facet-filtering|filter-toggled
+                                                                               {:facet-key        facet-slug
+                                                                                :navigation-event navigation-event
+                                                                                :navigation-args  navigation-args
+                                                                                :option-key       option-slug
+                                                                                :toggled?         (not filter-toggled?)}]
+                                                                     :value   filter-toggled?
+                                                                     :url     option-name}
+                                                                    option-swatch
+                                                                    (assoc :facet-filtering.section.filter/icon-url
+                                                                           (str "https://ucarecdn.com/"
+                                                                                (ui/ucare-img-id option-swatch)
+                                                                                "/-/format/auto/-/resize/50x/")))))))
+                                                           vec)}))))})
 
 (defn no-matches<-
   [item-label navigation-event navigation-args]
