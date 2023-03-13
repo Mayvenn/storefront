@@ -123,7 +123,7 @@
                      :sun-hours      (last hours)
                      :directions     (build-google-maps-url location address-1 address-2)
                      :instagram      (when instagram (str "https://www.instagram.com/" instagram))
-                     :facebook       (when facebook (str "https://business.facebook.com/" facebook))
+                     :facebook       (when facebook (str "https://www.facebook.com/" facebook))
                      :tiktok         (when tiktok (str "https://www.tiktok.com/@" tiktok))
                      :email          email
                      :metro          metro})

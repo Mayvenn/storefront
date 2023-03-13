@@ -199,7 +199,7 @@
                                                               (:lon location))))
                           :clj "")
      :instagram        (when instagram (str "https://www.instagram.com/" instagram))
-     :facebook         (when facebook (str "https://business.facebook.com/" facebook))
+     :facebook         (when facebook (str "https://www.facebook.com/" facebook))
      :tiktok           (when tiktok (str "https://www.tiktok.com/@" tiktok))
      :email            email}))
 
