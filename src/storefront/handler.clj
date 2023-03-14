@@ -191,9 +191,10 @@
           ;;  - a date for when this response is considered stale, an invalid
           ;;    date (like 0) indicates already expired.
           (update res :headers merge
-                  {"cache-control" "no-store, must-revalidate"
-                   "pragma"        "no-cache"
-                   "expires"       "0"}))))))
+                  {"cache-control"           "no-store, must-revalidate"
+                   "content-security-policy" "frame-src self ui.upcp.wirewheel.io ui.uat.upcp.wirewheel.io"
+                   "pragma"                  "no-cache"
+                   "expires"                 "0"}))))))
 
 (defn wrap-set-cache-header
   [f cache-header-val]
