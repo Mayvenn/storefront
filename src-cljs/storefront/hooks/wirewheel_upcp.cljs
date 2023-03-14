@@ -1,10 +1,9 @@
 (ns storefront.hooks.wirewheel-upcp
   (:require [storefront.browser.tags :as tags]
+            cljs.core
             spice.core))
 
-(defn ^:private loaded? [] (and (.hasOwnProperty js/window "cmpJavascriptSdk")
-                                (.hasOwnProperty js/window.cmpJavascriptSdk "WireWheelSDK")
-                                (.hasOwnProperty js/window.cmpJavascriptSdk.WireWheelSDK "initEmbeddedParent")))
+(defn ^:private loaded? [] (cljs.core/exists? js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent))
 (defn ^:private iframe-mounted? [] (js/document.getElementById "wwiframe"))
 
 (defn init-iframe []
