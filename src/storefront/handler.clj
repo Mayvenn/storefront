@@ -192,9 +192,15 @@
           ;;    date (like 0) indicates already expired.
           (update res :headers merge
                   {"cache-control"           "no-store, must-revalidate"
-                   "content-security-policy" "frame-src self ui.upcp.wirewheel.io ui.uat.upcp.wirewheel.io"
                    "pragma"                  "no-cache"
                    "expires"                 "0"}))))))
+
+(defn wrap-set-content-security-policy-header
+  [h]
+  (fn set-content-security-policy-header [req]
+    (when-let [res (f req)]
+      (update res :headers merge
+              {"content-security-policy" "frame-src self ui.upcp.wirewheel.io ui.uat.upcp.wirewheel.io"}))) )
 
 (defn wrap-set-cache-header
   [f cache-header-val]
@@ -1273,6 +1279,7 @@
        (wrap-filter-params)
        (wrap-params)
        (wrap-no-cache)
+       (wrap-set-content-security-policy-header)
        (#(if (#{"development" "test"} environment)
            (wrap-exceptions %)
            (wrap-internal-error %
