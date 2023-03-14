@@ -332,33 +332,75 @@
 
        events/navigate-retail-walmart
        (merge default-tagmap
-              {:title "Mayvenn Beauty Lounge - Texas"
-               :description    "Visit our Texas' stores for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look"})
+              {:title       "Mayvenn Beauty Lounge - Texas"
+               :description "Visit our Texas' stores for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look"})
 
        events/navigate-retail-walmart-houston
        (merge default-tagmap
-              {:title "Mayvenn Beauty Lounge - Houston"
-               :description    "Visit our Houston store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."})
+              {:title           "Mayvenn Beauty Lounge - Houston"
+               :description     "Visit our Houston store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."
+               :structured-data [{"@context" "https://schema.org/"
+                                  "@type"    "LocalBusiness"
+                                  :name      "Mayvenn Beauty Lounge - Houston"
+                                  :address   {"@type"          "PostalAddress"
+                                              :postalCode      "77063"
+                                              :streetAddress   "7730 Westheimer Rd"
+                                              :addressCountry  "USA"
+                                              :addressRegion   "Texas"
+                                              :addressLocality "Houston"}
+                                  :image     "https://images.ctfassets.net/76m8os65degn/2ociJFkykzbVBXt3CljXWN/1e391e524ff685cbe9b88b7b921c8ed2/retail_location_houston.JPG"}]})
 
        events/navigate-retail-walmart-katy
        (merge default-tagmap
-              {:title "Mayvenn Beauty Lounge - Katy"
-               :description "Visit our Katy store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."})
+              {:title           "Mayvenn Beauty Lounge - Katy"
+               :description     "Visit our Katy store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."
+               :structured-data [{:name    "Mayvenn Beauty Lounge - Katy"
+                                  :address {"@type"          "PostalAddress"
+                                                     :postalCode      "77449"
+                                                     :streetAddress   "6060 N Fry Rd"
+                                                     :addressCountry  "USA"
+                                                     :addressRegion   "Texas"
+                                                     :addressLocality "Katy"}
+                                  :image   "https://images.ctfassets.net/76m8os65degn/UJfZqE5IKmBJ5bQtYHXeM/52cc0862c0e610f834dddff82c7da0f9/retail_location_katy.jpg"}]})
 
        events/navigate-retail-walmart-dallas
        (merge default-tagmap
-              {:title "Mayvenn Beauty Lounge - Dallas"
-               :description "Visit our Dallas store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."})
+              {:title           "Mayvenn Beauty Lounge - Dallas"
+               :description     "Visit our Dallas store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."
+               :structured-data [{:name    "Mayvenn Beauty Lounge - Dallas"
+                                  :address {"@type"          "PostalAddress"
+                                            :postalCode      "75248"
+                                            :streetAddress   "15220 Montfort Dr"
+                                            :addressCountry  "USA"
+                                            :addressRegion   "Texas"
+                                            :addressLocality "Dallas"}
+                                  :image   "https://images.ctfassets.net/76m8os65degn/7wGfTNYZ4WObvpq6GqkBnq/25f7fe59e8b321d391196ce891e8640a/retail_location_dallas.jpg"}]})
 
        events/navigate-retail-walmart-grand-prairie
        (merge default-tagmap
-              {:title "Mayvenn Beauty Lounge - Grand Prairie"
-               :description "Visit our Grand Praire store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."})
+              {:title           "Mayvenn Beauty Lounge - Grand Prairie"
+               :description     "Visit our Grand Praire store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."
+               :structured-data [{:name    "Mayvenn Beauty Lounge - Grand Prairie"
+                                  :address {"@type"          "PostalAddress"
+                                            :postalCode      "75052"
+                                            :streetAddress   "2650 State Hwy 161"
+                                            :addressCountry  "USA"
+                                            :addressRegion   "Texas"
+                                            :addressLocality "Grand Prairie"}
+                                  :image   "https://images.ctfassets.net/76m8os65degn/4NVplD0TZUtN6K4iwoSEyM/bddc6848a3209ab7f6bedae17419cfa4/retail_location_grand_prairie.jpg"}]})
 
        events/navigate-retail-walmart-mansfield
        (merge default-tagmap
-              {:title "Mayvenn Beauty Lounge - Mansfield"
-               :description "Visit our Mansfield store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."})
+              {:title           "Mayvenn Beauty Lounge - Mansfield"
+               :description     "Visit our Mansfield store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."
+               :structured-data [{:name    "Mayvenn Beauty Lounge - Mansfield"
+                                  :address {"@type"          "PostalAddress"
+                                            :postalCode      "76063"
+                                            :streetAddress   "930 N Walnut Creek Dr Ste 800"
+                                            :addressCountry  "USA"
+                                            :addressRegion   "Texas"
+                                            :addressLocality "Mansfield"}
+                                  :image   "https://images.ctfassets.net/76m8os65degn/579H1x1By4l9yTYu0sOVLc/4643768820b5b96a67aa3e0cbf3ce127/mansfield.jpg"}]})
 
        events/navigate-adventure-stylist-profile
        (let [{:stylist/keys [salon] :stylist.address/keys [city state]}
