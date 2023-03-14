@@ -48,16 +48,16 @@
    :og-description "Mayvenn is the recommended and trusted source for quality hair by 100,000 stylists across the country. Mayvenn's 100% virgin human hair is backed by a 30 Day Quality Guarantee & includes FREE shipping!"})
 
 (defn ->structured-data [data]
-  ;; Although it's not difficult to make this work for client side, there is no value to having structured data
-  ;; in the fully rendered page as the information is scraped from the server side render.  Additionally,
-  ;; the second render was being detected and flagged as duplicate by the Google structured data tool.
-  #?(:clj
-     (for [datum data]
-       [:script {:type "application/ld+json"}
-        (-> (merge {"@context" "https://schema.org"} datum)
-            json/generate-string
-            safe-hiccup/raw)])
-     :cljs []))
+  #?(:clj (for [datum data]
+            [:script {:type "application/ld+json"}
+             (-> (merge {"@context" "https://schema.org"} datum)
+                 json/generate-string
+                 safe-hiccup/raw)])
+     :cljs (for [datum data]
+             [:script {:type "application/ld+json"}
+              (->> (merge {"@context" "https://schema.org"} datum)
+                   clj->js
+                   (.stringify js/JSON))])))
 
 (defn ^:private tagmap->tags
   ([{:keys [title description og-title og-type og-image og-description no-index? structured-data]}]
