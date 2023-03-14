@@ -339,8 +339,7 @@
        (merge default-tagmap
               {:title           "Mayvenn Beauty Lounge - Houston"
                :description     "Visit our Houston store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."
-               :structured-data [{"@context" "https://schema.org/"
-                                  "@type"    "LocalBusiness"
+               :structured-data [{"@type"    "LocalBusiness"
                                   :name      "Mayvenn Beauty Lounge - Houston"
                                   :address   {"@type"          "PostalAddress"
                                               :postalCode      "77063"
@@ -355,7 +354,8 @@
        (merge default-tagmap
               {:title           "Mayvenn Beauty Lounge - Katy"
                :description     "Visit our Katy store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."
-               :structured-data [{:name    "Mayvenn Beauty Lounge - Katy"
+               :structured-data [{"@type"    "LocalBusiness"
+                                  :name    "Mayvenn Beauty Lounge - Katy"
                                   :address {"@type"          "PostalAddress"
                                             :postalCode      "77449"
                                             :streetAddress   "6060 N Fry Rd"
@@ -369,7 +369,8 @@
        (merge default-tagmap
               {:title           "Mayvenn Beauty Lounge - Dallas"
                :description     "Visit our Dallas store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."
-               :structured-data [{:name    "Mayvenn Beauty Lounge - Dallas"
+               :structured-data [{"@type"    "LocalBusiness"
+                                  :name    "Mayvenn Beauty Lounge - Dallas"
                                   :address {"@type"          "PostalAddress"
                                             :postalCode      "75248"
                                             :streetAddress   "15220 Montfort Dr"
@@ -383,7 +384,8 @@
        (merge default-tagmap
               {:title           "Mayvenn Beauty Lounge - Grand Prairie"
                :description     "Visit our Grand Prairie store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."
-               :structured-data [{:name    "Mayvenn Beauty Lounge - Grand Prairie"
+               :structured-data [{"@type"    "LocalBusiness"
+                                  :name    "Mayvenn Beauty Lounge - Grand Prairie"
                                   :address {"@type"          "PostalAddress"
                                             :postalCode      "75052"
                                             :streetAddress   "2650 State Hwy 161"
@@ -397,7 +399,8 @@
        (merge default-tagmap
               {:title           "Mayvenn Beauty Lounge - Mansfield"
                :description     "Visit our Mansfield store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."
-               :structured-data [{:name    "Mayvenn Beauty Lounge - Mansfield"
+               :structured-data [{"@type"    "LocalBusiness"
+                                  :name    "Mayvenn Beauty Lounge - Mansfield"
                                   :address {"@type"          "PostalAddress"
                                             :postalCode      "76063"
                                             :streetAddress   "930 N Walnut Creek Dr Ste 800"
