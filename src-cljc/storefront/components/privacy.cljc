@@ -1,5 +1,6 @@
 (ns storefront.components.privacy
-  (:require #?@(:cljs [[storefront.hooks.wirewheel-upcp :as wirewheel-upcp]])
+  (:require #?@(:cljs [[storefront.hooks.wirewheel-upcp :as wirewheel-upcp]
+                       storefront.config])
             [storefront.component :as component]
             [storefront.keypaths :as keypaths]
             [storefront.effects :as effects]
@@ -13,9 +14,10 @@
   (render
    [this]
    (component/html
-    [:iframe {:style {:height "900px"}
-              :id    "wwiframe"
-              :src   "https://ui.upcp.wirewheel.io/76/welcome"}])))
+    #?(:cljs [:iframe {:style {:height "900px"}
+                       :id    "wwiframe"
+                       :src   storefront.config/wirewheel-upcp-url}]
+       :clj [:div]))))
 
 (component/defcomponent component [{:keys [content static-content-id wwupcp?]} owner opts]
   [:div.flex.flex-column.container
