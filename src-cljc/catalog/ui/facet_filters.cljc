@@ -66,14 +66,6 @@
                  (apply utils/fake-href target))
           primary)]))
 
-(defn header-close-molecule
-  [{:header.close/keys [id target]}]
-  (c/html
-   [:a.block (merge {:data-test id}
-                    (apply utils/fake-href target))
-    (svg/x-sharp {:style {:width  "14px"
-                          :height "14px"}})]))
-
 (c/defcomponent footer-organism
   [data _ _]
   [:div.px2.py6.flex.flex-column.items-center
@@ -176,31 +168,33 @@
    [:div.mynp1.bg-refresh-gray
     (c/elements desktop-section-organism sections :facet-filtering/sections)]])
 
-(defn header-filter-count-molecule
-  [{:header.title/keys [primary secondary]}]
+(defn header-close-molecule
+  [{:header.close/keys [id target]}]
   (c/html
-   [:div.pl5
-    [:div.proxima.content-1.my2 primary]
-    [:div.proxima.content-2.dark-dark-gray secondary]]))
-
-;; storefront.components.header/nav-header, but with
-;; taller and wider left and right elements
-(defn nav-header [attrs left center right]
-  (let [size {:width "90px" :height "95px"}]
-    (c/html
-     [:div.flex.items-center
-      ^:attrs attrs
-      [:div.mx-auto.flex.items-center.justify-around {:style size} ^:inline left]
-      [:div.flex-auto.py3 ^:inline center]
-      [:div.mx-auto.flex.items-center.justify-around {:style size} ^:inline right]])))
+   [:a.block (merge {:data-test id}
+                    (apply utils/fake-href target))
+    (svg/x-sharp {:style {:width  "14px"
+                          :height "14px"}})]))
 
 (c/defcomponent header-organism
   [data _ _]
-  (nav-header 
-   {:class "border-bottom border-gray"}
-   (header-filter-count-molecule data) 
-   nil
-   (header-close-molecule data)))
+  (c/html
+   [:div.p3.flex.flex-column
+    ^:attrs {:class "border-bottom border-gray"}
+    [:div.flex.justify-between.items-center
+     [:div.proxima.content-1.my2 (:header.title/primary data)]
+     [:div ^:inline (header-close-molecule data)]]
+    [:div.proxima.content-2.dark-dark-gray (:header.title/secondary data)]
+    [:div.flex.flex-wrap.py1
+     (c/elements summary-pill-molecule data :header/pills)]
+    (let [{:header.reset/keys [id primary target]} data]
+      (when id
+        (ui/button-medium-underline-black
+         (merge {:data-test id
+                 :class "my2"}
+                (apply utils/fake-href target))
+         primary) ))]))
+     
 
 (c/defcomponent panel-template
   [{:keys [header sections footer]} _ _]
@@ -223,7 +217,42 @@
     (header-reset-molecule data)]
    secondary])
 
-(defn summary<-
+(defn ^:private pills<-
+  [facets-db 
+   navigation-event
+   navigation-args
+   {:facet-filtering/keys [filters panel]}]
+  (let [filtering-options (->> filters
+                               (mapcat (fn selections->options
+                                         [[facet-slug option-slugs]]
+                                         (let [facet-options (-> facets-db
+                                                                 (get facet-slug)
+                                                                 :facet/options)]
+                                           (->> option-slugs
+                                                (map #(get facet-options %))
+                                                (map #(assoc % :facet/slug facet-slug))))))
+                               concat)]
+    (concat
+     (when-not (:toggled? panel)
+       [{:filtering-summary.pill/primary-icon :funnel
+         :filtering-summary.pill/data-test    "filter-open-main"
+         :filtering-summary.pill/primary      (if (empty? filtering-options)
+                                                "Filters"
+                                                (str "- " (count filtering-options)))
+         :filtering-summary.pill/target       [e/flow|facet-filtering|panel-toggled {:toggled? true}]}])
+     (mapv (fn options->pills
+             [option]
+             {:filtering-summary.pill/primary     (:option/name option)
+              :filtering-summary.pill/target      [e/flow|facet-filtering|filter-toggled
+                                                   {:navigation-args  navigation-args
+                                                    :navigation-event navigation-event
+                                                    :facet-key        (:facet/slug option)
+                                                    :option-key       (:option/slug option)
+                                                    :toggled?         false}]
+              :filtering-summary.pill/action-icon :close-x})
+           filtering-options)) ))
+
+(defn ^:private summary<-
   "Takes (Biz)
    - Defined Facets
    - Count of items
@@ -237,39 +266,11 @@
    item-count
    navigation-event
    navigation-args
-
-   {:facet-filtering/keys [filters item-label]}]
-  (let [filtering-options (->> filters
-                               (mapcat (fn selections->options
-                                         [[facet-slug option-slugs]]
-                                         (let [facet-options (-> facets-db
-                                                                 (get facet-slug)
-                                                                 :facet/options)]
-                                           (->> option-slugs
-                                                (map #(get facet-options %))
-                                                (map #(assoc % :facet/slug facet-slug))))))
-                               concat)
-        pills             (concat
-                           [{:filtering-summary.pill/primary-icon :funnel
-                             :filtering-summary.pill/data-test    "filter-open-main"
-                             :filtering-summary.pill/primary      (if (empty? filtering-options)
-                                                                    "Filters"
-                                                                    (str "- " (count filtering-options)))
-                             :filtering-summary.pill/target       [e/flow|facet-filtering|panel-toggled {:toggled? true}]}]
-                           (mapv (fn options->pills
-                                   [option]
-                                   {:filtering-summary.pill/primary     (:option/name option)
-                                    :filtering-summary.pill/target      [e/flow|facet-filtering|filter-toggled
-                                                                         {:navigation-args  navigation-args
-                                                                          :navigation-event navigation-event
-                                                                          :facet-key        (:facet/slug option)
-                                                                          :option-key       (:option/slug option)
-                                                                          :toggled?         false}]
-                                    :filtering-summary.pill/action-icon :close-x})
-                                 filtering-options))]
-    {:filtering-summary.status/primary   "Filter By:"
-     :filtering-summary.status/secondary (ui/pluralize-with-amount item-count item-label)
-     :filtering-summary/pills            pills}))
+   {:facet-filtering/keys [item-label]
+    :as facet-filtering-state}]
+  {:filtering-summary.status/primary   "Filter By:"
+   :filtering-summary.status/secondary (ui/pluralize-with-amount item-count item-label)
+   :filtering-summary/pills            (pills<- facets-db navigation-event navigation-args facet-filtering-state)})
 
 
 (defn sections<-
@@ -379,9 +380,9 @@
     (list
      (when (:facet-filtering/panel facet-filtering-state)
        (c/build panel-template
-                {:header header
+                {:header   header
                  :sections sections
-                 :footer (with :filtering.footer data)}))
+                 :footer   (with :filtering.footer data)}))
      [:div
       {:key "filtering-component"}
       [:div.hide-on-dt
@@ -425,14 +426,19 @@
                                                     navigation-event
                                                     navigation-args
                                                     facet-filtering-state)
-        :filtering/header                {:header.reset/primary "RESET"
+        :filtering/header                {:header.reset/primary "Clear All"
                                           :header.reset/target  [e/flow|facet-filtering|reset
                                                                  {:navigation-event navigation-event
                                                                   :navigation-args  navigation-args}]
+                                          :header.reset/id   (when (-> facet-filtering-state :facet-filtering/filters seq) "filters-header-reset")
                                           :header.close/id      "filters-close"
                                           :header.close/target  [e/flow|facet-filtering|panel-toggled false]
                                           :header.title/primary "Filters"
-                                          :header.title/secondary (str item-count " items")}
+                                          :header.title/secondary (str item-count " items")
+                                          :header/pills (pills<- indexed-facets
+                                                                 navigation-event
+                                                                 navigation-args
+                                                                 facet-filtering-state)}
         :filtering/sections              (sections<- indexed-facets
                                                      (->> faceted-models
                                                           (mapv #(select-keys % facets-to-filter-on))
