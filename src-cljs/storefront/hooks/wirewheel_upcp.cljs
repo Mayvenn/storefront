@@ -1,5 +1,6 @@
 (ns storefront.hooks.wirewheel-upcp
   (:require [storefront.browser.tags :as tags]
+            storefront.config
             spice.core))
 
 (defn ^:private loaded? [] (.hasOwnProperty js/window "cmpJavascriptSdk"))
@@ -14,6 +15,6 @@
 (defn insert []
   (when-not (loaded?)
     (tags/insert-tag-with-callback
-     (tags/src-tag "https://ui.upcp.wirewheel.io/extensions/upcp-sdk-0.8.3.min.js"
-              "ww-upcp")
+     (tags/src-tag storefront.config/wirewheel-upcp-url
+                   "ww-upcp")
      init-iframe)))

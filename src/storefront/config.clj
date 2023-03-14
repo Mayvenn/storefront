@@ -123,6 +123,7 @@
                            :preview-api-key            (env :contentful-content-delivery-preview-api-key)
                            :space-id                   (env :contentful-space-id)
                            :webhook-secret             (env :contentful-webhook-secret)}
+     :wirewheel-config    {:upcp-iframe-src (env :wirewheel-upcp-iframe-src)}
      :logging             {:environment (env :environment)}
      :launchdarkly-config {:sdk-key (env :launchdarkly-sdk-key)}
      :storeback-config    {:endpoint          (env :storeback-endpoint)

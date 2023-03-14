@@ -34,6 +34,8 @@
 
 (def api-base-url js/apiUrl)
 
+(def wirewheel-upcp-url js/wwUpcpUrl)
+
 (def review-tag-url (case js/environment
                       "production" "//staticw2.yotpo.com/ZmvkoIuVo61VsbHVPaqDPZpkfGm6Ce2kjVmSqFw9/widget.js"
                       "//staticw2.yotpo.com/2UyuTzecYoIe4JECHCuqP6ClAOzjnodSFMc7GEuT/widget.js"))

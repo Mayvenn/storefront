@@ -160,7 +160,7 @@
     files))
 
 (defn layout
-  [{:keys [storeback-config environment client-version]} data initial-content]
+  [{:keys [storeback-config environment client-version wirewheel-config]} data initial-content]
   (let [home?    (= events/navigate-home (get-in data keypaths/navigation-event))
         shop?    (or (= "shop" (get-in data keypaths/store-slug))
                     (= "retail-location" (get-in data keypaths/store-experience)))
@@ -249,7 +249,8 @@
                        (format "var data = %s;" (data->transit (dissoc data (first keypaths/categories))))
                        "var environment=\"" environment "\";"
                        "var clientVersion=\"" client-version "\";"
-                       "var apiUrl=\"" (:endpoint storeback-config) "\";"))]
+                       "var apiUrl=\"" (:endpoint storeback-config) "\";"
+                       "var wwUpcpUrl=\"" (:upcp-iframe-src wirewheel-config) "\";"))]
 
             (when-not (config/development? environment)
               (for [n js-files]

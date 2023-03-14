@@ -12,7 +12,8 @@
             [spice.logger4j :as logger4j]
             [tocsin.core :as tocsin]))
 
-(defrecord AppHandler [logger exception-handler storeback-config welcome-config environment client-version static-pages-repo]
+(defrecord AppHandler [logger exception-handler storeback-config welcome-config environment
+                       client-version static-pages-repo wirewheel-config]
   component/Lifecycle
   (start [c]
     (assoc c :handler (create-handler (dissoc c :handler))))
@@ -43,7 +44,8 @@
    :app-handler (map->AppHandler (select-keys config [:storeback-config
                                                       :welcome-config
                                                       :environment
-                                                      :client-version]))
+                                                      :client-version
+                                                      :wirewheel-config]))
    :sitemap-cache (->AtomCache nil)
    :embedded-server (jetty-server (merge (:server-opts config)
                                          {:configurator jetty/configurator}))

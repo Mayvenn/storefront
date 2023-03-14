@@ -887,12 +887,12 @@
         (update-in keypaths/v2-products merge (products/index-products products))
         (update-in keypaths/v2-skus merge skus))))
 
-(defn frontend-routes [{:keys [storeback-config environment client-version] :as _ctx}]
+(defn frontend-routes [{:keys [storeback-config environment client-version wirewheel-config] :as _ctx}]
   (fn [{:keys [state] :as req}]
     (let [nav-message        (get-in-req-state req keypaths/navigation-message)
           [nav-event params] nav-message]
       (when (not= nav-event events/navigate-not-found)
-        (let [render-ctx (maps/auto-map storeback-config environment client-version)
+        (let [render-ctx (maps/auto-map storeback-config environment client-version wirewheel-config)
               data       (cond-> state
                            (= events/navigate-category nav-event)
                            (assoc-category-route-data storeback-config params)
@@ -1205,7 +1205,7 @@
 
 (defn create-handler
   ([] (create-handler {}))
-  ([{:keys [logger exception-handler environment contentful] :as ctx}]
+  ([{:keys [logger exception-handler environment contentful wirewheel-config] :as ctx}]
    (-> (routes (GET "/healthcheck" [] "cool beans")
                (GET "/robots.txt" req (-> (robots req) util.response/response (util.response/content-type "text/plain")))
                (GET "/sitemap.xml" req (sitemap-index req))
