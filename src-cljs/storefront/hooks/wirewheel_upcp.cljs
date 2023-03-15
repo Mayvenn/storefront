@@ -5,7 +5,8 @@
             cljs.core
             spice.core))
 
-(defn loaded? [] (cljs.core/exists? js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent))
+(defn ^:private loaded? [] (cljs.core/exists? js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent))
+(defn ^:private iframe-mounted? [] (js/document.getElementById "wwiframe"))
 
 ;; The UPCP has some difficult initialization characteristics. To work properly the following
 ;; events must occur in order:
@@ -16,9 +17,11 @@
 ;; with the title "We can't find the page you're looking for."
 
 (defn init-iframe []
-  (js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent
-   #js {:targetIframe (js/document.getElementById "wwiframe")})
-  (messages/handle-message events/inited-wirewheel-upcp))
+  (when (and (loaded?)
+             (iframe-mounted?))
+    (js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent
+     #js {:targetIframe (js/document.getElementById "wwiframe")})
+    (messages/handle-message events/inited-wirewheel-upcp)))
 
 (defn insert []
   (when-not (loaded?)
@@ -26,4 +29,5 @@
      (tags/src-tag "https://ui.upcp.wirewheel.io/extensions/upcp-sdk-0.8.3.min.js"
                    "ww-upcp")
      (fn []
-       (messages/handle-message events/inserted-wirewheel-upcp)))))
+       (messages/handle-message events/inserted-wirewheel-upcp)
+       (init-iframe)))))
