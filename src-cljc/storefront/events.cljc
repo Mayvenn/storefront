@@ -435,6 +435,9 @@
 (defpath inserted-stripe)
 (defpath inserted-uploadcare)
 (defpath inserted-kustomer)
+(defpath inserted-wirewheel-upcp)
+
+(defpath inited-wirewheel-upcp)
 
 (defpath autocomplete-update-address)
 

@@ -14,23 +14,30 @@
   (render
    [this]
    (component/html
-    #?(:cljs [:iframe {:style {:height "900px"}
-                       :id    "wwiframe"
-                       :src   storefront.config/wirewheel-upcp-url}]
-       :clj [:div]))))
+    (let [src (:src (component/get-props this))]
+      [:iframe {:style {:height "900px"}
+                :id    "wwiframe"
+                :src src}]))))
 
-(component/defcomponent component [{:keys [content static-content-id wwupcp?]} owner opts]
+(component/defcomponent component [{:keys [content static-content-id wwupcp? ww-iframe? ww-iframe-src]} owner opts]
   [:div.flex.flex-column.container
    [:div
     {:id                      (str "content-" static-content-id)
      :dangerouslySetInnerHTML {:__html content}}]
-   (when wwupcp?
-     (component/build wirewheel-upcp-iframe))])
+   (when ww-iframe?
+     (component/build wirewheel-upcp-iframe {:src ww-iframe-src}))])
 
 (defn query [data]
-  {:wwupcp?    (experiments/ww-upcp? data)
-   :sms-number (get-in data keypaths/sms-number)
-   :content    (get-in data keypaths/static-content)})
+  (let [ww-sdk-loaded? (get-in data keypaths/loaded-wirewheel-upcp)
+        ww-ff?         (experiments/ww-upcp? data)
+        ww-iframe-src  #?(:cljs (if (get-in data keypaths/inited-wirewheel-upcp)
+                                  storefront.config/wirewheel-upcp-url
+                                  nil)
+                          :clj nil)]
+    {:sms-number    (get-in data keypaths/sms-number)
+     :content       (get-in data keypaths/static-content)
+     :ww-iframe?    (and ww-sdk-loaded? ww-ff?)
+     :ww-iframe-src ww-iframe-src}))
 
 (defn page [data opts]
   (component/build component (query data) opts))
