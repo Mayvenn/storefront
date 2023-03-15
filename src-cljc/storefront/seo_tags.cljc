@@ -253,24 +253,24 @@
   [data location]
   (when-let [location-cms-data (get-in data (conj keypaths/cms-retail-location (keyword location)))]
     (let [store-name (-> location-cms-data :name)
-          address    (str (-> location-cms-data :address1)
-                          ", "
-                          (-> location-cms-data :address2))
+          address    (str (-> location-cms-data :address-1)
+                          (when-let [address-2 (-> location-cms-data :address-2)]
+                            (str ", " address-2)))
           city       (-> location-cms-data :address-city)
           state      (-> location-cms-data :state)
           telephone  (-> location-cms-data :phone-number)]
-      [{"@type"    "LocalBusiness"
-        "@id"      (str store-name "-" address "-" city "-" state)
-        :name      (str "Mayvenn Beauty Lounge - " store-name)
-        :telephone telephone
-        :address   {"@type"          "PostalAddress"
-                    :postalCode      (-> location-cms-data :address-zipcode)
-                    :streetAddress   address
-                    :addressCountry  "USA"
-                    :addressRegion   state
-                    :addressLocality city
-                    :telephone       telephone}
-        :image     (->> location-cms-data :hero :file :url (str "http:"))}])))
+      {"@type"    "LocalBusiness"
+       "@id"      (str store-name "-" address "-" city "-" state)
+       :name      (str "Mayvenn Beauty Lounge - " store-name)
+       :telephone telephone
+       :address   {"@type"          "PostalAddress"
+                   :postalCode      (-> location-cms-data :address-zipcode)
+                   :streetAddress   address
+                   :addressCountry  "USA"
+                   :addressRegion   state
+                   :addressLocality city
+                   :telephone       telephone}
+       :image     (->> location-cms-data :hero :file :url (str "http:"))})))
 
 (defn tags-for-page [data]
   (let [og-image-url assets/canonical-image]
@@ -362,31 +362,176 @@
        (merge default-tagmap
               {:title           "Mayvenn Beauty Lounge - Houston"
                :description     "Visit our Houston store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."
-               :structured-data (location-structured-data data :houston)})
+               :structured-data [(merge (location-structured-data data :houston)
+                                        {:openingHoursSpecification
+                                         [{"@type" "OpeningHoursSpecification",
+                                           :closes "18:00:00",
+                                           :dayOfWeek "https://schema.org/Sunday",
+                                           :opens "12:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Saturday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Thursday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Tuesday",
+                                           :opens "13:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Friday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Monday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Wednesday",
+                                           :opens "11:00:00"}]})]})
 
        events/navigate-retail-walmart-katy
        (merge default-tagmap
               {:title           "Mayvenn Beauty Lounge - Katy"
                :description     "Visit our Katy store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."
-               :structured-data (location-structured-data data :katy)})
+               :structured-data [(merge (location-structured-data data :katy)
+                                        {:openingHoursSpecification
+                                         [{"@type" "OpeningHoursSpecification",
+                                           :closes "18:00:00",
+                                           :dayOfWeek "https://schema.org/Sunday",
+                                           :opens "12:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Saturday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Thursday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Tuesday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Friday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Monday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Wednesday",
+                                           :opens "11:00:00"}]})]})
 
        events/navigate-retail-walmart-dallas
        (merge default-tagmap
               {:title           "Mayvenn Beauty Lounge - Dallas"
                :description     "Visit our Dallas store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."
-               :structured-data (location-structured-data data :dallas)})
+               :structured-data [(merge (location-structured-data data :dallas)
+                                        {:openingHoursSpecification
+                                         [{"@type" "OpeningHoursSpecification",
+                                           :closes "18:00:00",
+                                           :dayOfWeek "https://schema.org/Sunday",
+                                           :opens "12:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Saturday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Thursday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Tuesday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Friday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Monday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Wednesday",
+                                           :opens "11:00:00"}]})]})
 
        events/navigate-retail-walmart-grand-prairie
        (merge default-tagmap
               {:title           "Mayvenn Beauty Lounge - Grand Prairie"
                :description     "Visit our Grand Prairie store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."
-               :structured-data (location-structured-data data :grand-prairie)})
+               :structured-data [(merge (location-structured-data data :grand-prairie)
+                                        {:openingHoursSpecification
+                                         [{"@type" "OpeningHoursSpecification",
+                                           :closes "18:00:00",
+                                           :dayOfWeek "https://schema.org/Sunday",
+                                           :opens "12:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Saturday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Thursday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Tuesday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Friday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Monday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:30:00",
+                                           :dayOfWeek "https://schema.org/Wednesday",
+                                           :opens "11:00:00"}]})]})
 
        events/navigate-retail-walmart-mansfield
        (merge default-tagmap
               {:title           "Mayvenn Beauty Lounge - Mansfield"
                :description     "Visit our Mansfield store for a large selection of 100% virgin human hair wigs, bundles and seamless hair extensions to create your perfect look."
-               :structured-data (location-structured-data data :mansfield)})
+               :structured-data [(merge (location-structured-data data :mansfield)
+                                        {:openingHoursSpecification
+                                         [{"@type" "OpeningHoursSpecification",
+                                           :closes "18:00:00",
+                                           :dayOfWeek "https://schema.org/Sunday",
+                                           :opens "12:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Saturday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Thursday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Tuesday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Friday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Monday",
+                                           :opens "11:00:00"}
+                                          {"@type" "OpeningHoursSpecification",
+                                           :closes "19:00:00",
+                                           :dayOfWeek "https://schema.org/Wednesday",
+                                           :opens "11:00:00"}]})]})
 
        events/navigate-adventure-stylist-profile
        (let [{:stylist/keys [salon] :stylist.address/keys [city state]}
