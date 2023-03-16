@@ -73,6 +73,7 @@
      :react/key                    (str "product-" product-slug "-" (:catalog/sku-id cheapest-sku))
      :product-card-title/id        (some->> product-slug (str "product-card-title-")) ;; TODO: better display-decision id
      :product-card-title/primary   (:copy/title product)
+     :product-card/id              (str "product-" product-slug)
      :product-card/target          [events/navigate-product-details
                                     {:catalog/product-id (:catalog/product-id product)
                                      :page/slug          product-slug
@@ -156,12 +157,12 @@
                                :src   (str "https://ucarecdn.com/" (ui/ucare-img-id rectangle-swatch) "/-/format/auto/-/resize/13x/")}]])))])])])))
 
 (defn organism
-  [{:as data react-key :react/key :product-card/keys [target]}]
+  [{:as data react-key :react/key :product-card/keys [id target]}]
   (component/html
    [:a.inherit-color.col.col-6.col-4-on-tb-dt.p1
     (merge (apply utils/route-to target)
            {:key       react-key
-            :data-test react-key})
+            :data-test id})
     [:div.border.border-cool-gray.container-height.center
      (ui/screen-aware card-image-molecule data)
      (product-card-title-molecule data)
