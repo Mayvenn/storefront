@@ -5,7 +5,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.effects :as effects]
             [storefront.events :as events]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.accessors.experiments :as experiments]
+            [storefront.platform.messages :as messages]))
 
 (component/defcomponent wirewheel-upcp-iframe
   [{:keys [src]} owner opts]
@@ -13,7 +14,7 @@
    [:iframe #?(:cljs {:style   {:height "900px"}
                       :id      "wwiframe"
                       :src     src
-                      :on-load #(wirewheel-upcp/init-iframe)})]))
+                      :on-load #(messages/handle-message [:a :b :c])})]))
 
 (component/defcomponent component [{:keys [content static-content-id ww-iframe-src]} owner opts]
   [:div.flex.flex-column.container
@@ -36,3 +37,10 @@
 (defmethod effects/perform-effects events/navigate-content-privacy [_ event _ _ app-state]
   #?(:cljs
      (wirewheel-upcp/insert)))
+
+(defmethod effects/perform-effects [:a :b :c] [_ event _ _ app-state]
+  (prn "trying")
+  #?(:cljs
+     (if (wirewheel-upcp/loaded?) 
+       (wirewheel-upcp/init-iframe) 
+       (js/setTimeout #(messages/handle-message [:a :b :c]) 50))))

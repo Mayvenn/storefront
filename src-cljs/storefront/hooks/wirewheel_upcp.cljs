@@ -5,7 +5,7 @@
             cljs.core
             spice.core))
 
-(defn ^:private loaded? [] (cljs.core/exists? js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent))
+(defn loaded? [] (cljs.core/exists? js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent))
 (defn ^:private iframe-mounted? [] (js/document.getElementById "wwiframe"))
 
 (defn logstuf []
@@ -40,5 +40,4 @@
      (tags/src-tag "https://ui.upcp.wirewheel.io/extensions/upcp-sdk-0.8.3.min.js"
                    "ww-upcp")
      (fn []
-       ;; There is a span of time where the WireWheel tag has loaded but the SDK hasn't 
-       (messages/handle-later e/inserted-wirewheel-upcp {} 1000)))))
+       (messages/handle-message e/inserted-wirewheel-upcp)))))
