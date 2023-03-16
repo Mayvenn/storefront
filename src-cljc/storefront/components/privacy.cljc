@@ -10,16 +10,18 @@
 (component/defdynamic-component wirewheel-upcp-iframe
   (did-mount
    [this]
+   (prn "mounted")
    #?(:cljs (wirewheel-upcp/init-iframe)))
   (render
    [this]
    (component/html
-    (let [src (:src (component/get-props this))]
-      [:iframe {:style {:height "900px"}
-                :id    "wwiframe"
-                :src src}]))))
+    (spice.core/spy "rendered"
+                    (let [src (:src (component/get-props this))]
+                      [:iframe {:style {:height "900px"}
+                                :id    "wwiframe"
+                                :src src}])))))
 
-(component/defcomponent component [{:keys [content static-content-id wwupcp? ww-iframe? ww-iframe-src]} owner opts]
+(component/defcomponent component [{:keys [content static-content-id ww-iframe? ww-iframe-src]} owner opts]
   [:div.flex.flex-column.container
    [:div
     {:id                      (str "content-" static-content-id)
@@ -28,15 +30,14 @@
      (component/build wirewheel-upcp-iframe {:src ww-iframe-src}))])
 
 (defn query [data]
-  (let [ww-sdk-loaded? (get-in data keypaths/loaded-wirewheel-upcp)
-        ww-ff?         (experiments/ww-upcp? data)
+  (let [ww-ff?         (experiments/ww-upcp? data)
         ww-iframe-src  #?(:cljs (if (get-in data keypaths/inited-wirewheel-upcp)
                                   storefront.config/wirewheel-upcp-url
                                   nil)
                           :clj nil)]
     {:sms-number    (get-in data keypaths/sms-number)
      :content       (get-in data keypaths/static-content)
-     :ww-iframe?    (and ww-sdk-loaded? ww-ff?)
+     :ww-iframe?    ww-ff?
      :ww-iframe-src ww-iframe-src}))
 
 (defn page [data opts]

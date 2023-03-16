@@ -17,14 +17,23 @@
 ;; with the title "We can't find the page you're looking for."
 
 (defn init-iframe []
-  (when (and (loaded?)
-             (iframe-mounted?))
+  (prn "init-iframe")
+  (when (and (spice.core/spy "init-iframe - SDK loaded?" (loaded?))
+             (spice.core/spy "init-iframe - iframe-mounted?" (iframe-mounted?)))
+    (prn "init-iframe - actually initing")
     (js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent
-     #js {:targetIframe (js/document.getElementById "wwiframe")})
+     #js {:targetIframe (spice.core/spy "init-iframe - wwiframe" (js/document.getElementById "wwiframe"))})
     (messages/handle-message events/inited-wirewheel-upcp)))
 
 (defn insert []
+  (prn "insert")
   (when-not (loaded?)
+    (js/window.addEventListener "message"
+                                (fn [e]
+                                  (when (= "https://ui.upcp.wirewheel.io" (.-origin e))
+                                    (spice.core/spy "postMessage" e)))
+                                false)
+    (prn "insert - adding SDK tag")
     (tags/insert-tag-with-callback
      (tags/src-tag "https://ui.upcp.wirewheel.io/extensions/upcp-sdk-0.8.3.min.js"
                    "ww-upcp")
