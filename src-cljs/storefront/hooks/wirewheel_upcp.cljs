@@ -1,12 +1,16 @@
 (ns storefront.hooks.wirewheel-upcp
   (:require [storefront.browser.tags :as tags]
             [storefront.platform.messages :as messages]
-            [storefront.events :as events]
+            [storefront.events :as e]
             cljs.core
             spice.core))
 
 (defn ^:private loaded? [] (cljs.core/exists? js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent))
 (defn ^:private iframe-mounted? [] (js/document.getElementById "wwiframe"))
+
+(defn logstuf []
+  (println "loaded? " (loaded?))
+  (println "iframe-mounted? " (boolean (iframe-mounted?))))
 
 ;; The UPCP has some difficult initialization characteristics. To work properly the following
 ;; events must occur in order:
@@ -17,26 +21,24 @@
 ;; with the title "We can't find the page you're looking for."
 
 (defn init-iframe []
-  (prn "init-iframe")
-  (when (and (spice.core/spy "init-iframe - SDK loaded?" (loaded?))
-             (spice.core/spy "init-iframe - iframe-mounted?" (iframe-mounted?)))
-    (prn "init-iframe - actually initing")
-    (js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent
-     #js {:targetIframe (spice.core/spy "init-iframe - wwiframe" (js/document.getElementById "wwiframe"))})
-    (messages/handle-message events/inited-wirewheel-upcp)))
+  (println "init-iframe")
+  (logstuf)
+  (js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent
+   #js {:targetIframe (js/document.getElementById "wwiframe")})
+  (messages/handle-message e/inited-wirewheel-upcp))
 
 (defn insert []
-  (prn "insert")
+  (println "insert SDK")
   (when-not (loaded?)
     (js/window.addEventListener "message"
                                 (fn [e]
                                   (when (= "https://ui.upcp.wirewheel.io" (.-origin e))
                                     (spice.core/spy "postMessage" e)))
                                 false)
-    (prn "insert - adding SDK tag")
+    (println "  adding SDK tag")
     (tags/insert-tag-with-callback
      (tags/src-tag "https://ui.upcp.wirewheel.io/extensions/upcp-sdk-0.8.3.min.js"
                    "ww-upcp")
      (fn []
-       (messages/handle-message events/inserted-wirewheel-upcp)
-       (init-iframe)))))
+       ;; There is a span of time where the WireWheel tag has loaded but the SDK hasn't
+       (messages/handle-later e/inserted-wirewheel-upcp 1000)))))
