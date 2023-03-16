@@ -12,7 +12,10 @@
    :billboard       "Billboard / Poster"
    :saw-store       "Saw the store/Walk-in"
    :other           "Other"
-   :streaming-radio "Pandora, Spotify, etc"})
+   :streaming-radio "Pandora, Spotify, etc"
+   :mirror-cling    "Restroom Mirror Cling"
+   :scratch-off     "Scratch-Off Ticket"
+   :valpak-mailer   "ValPak Mailer"})
 
 (defn hdyhau-answered-data
   [hdyhau-to-submit ; map {key true}
