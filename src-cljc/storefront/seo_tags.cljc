@@ -270,7 +270,10 @@
                    :addressRegion   state
                    :addressLocality city
                    :telephone       telephone}
-       :image     (->> location-cms-data :hero :file :url (str "http:"))})))
+       :image     (->> location-cms-data :hero :file :url (str "http:"))
+       :geo       {"@type"    "GeoCoordinates"
+                   :latitude  (-> location-cms-data :location :lat)
+                   :longitude (-> location-cms-data :location :lon)}})))
 
 (defn tags-for-page [data]
   (let [og-image-url assets/canonical-image]
