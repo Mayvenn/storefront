@@ -254,7 +254,6 @@
   (when-let [location-cms-data (get-in data (conj keypaths/cms-retail-location (keyword location)))]
     (let [telephone  (-> location-cms-data :phone-number)]
       {"@type"    "LocalBusiness"
-       ;; "@id"      (str store-name "-" address "-" city "-" state)
        :name      (str "Mayvenn Beauty Lounge - " (-> location-cms-data :name))
        :telephone telephone
        :address   {"@type"          "PostalAddress"
