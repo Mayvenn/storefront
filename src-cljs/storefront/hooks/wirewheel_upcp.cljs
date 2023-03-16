@@ -40,5 +40,5 @@
      (tags/src-tag "https://ui.upcp.wirewheel.io/extensions/upcp-sdk-0.8.3.min.js"
                    "ww-upcp")
      (fn []
-       ;; There is a span of time where the WireWheel tag has loaded but the SDK hasn't
-       (messages/handle-later e/inserted-wirewheel-upcp 1000)))))
+       ;; There is a span of time where the WireWheel tag has loaded but the SDK hasn't 
+       (messages/handle-later e/inserted-wirewheel-upcp {} 1000)))))
