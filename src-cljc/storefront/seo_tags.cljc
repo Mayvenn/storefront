@@ -252,23 +252,19 @@
 (defn location-structured-data
   [data location]
   (when-let [location-cms-data (get-in data (conj keypaths/cms-retail-location (keyword location)))]
-    (let [store-name (-> location-cms-data :name)
-          address    (str (-> location-cms-data :address-1)
-                          (when-let [address-2 (-> location-cms-data :address-2)]
-                            (str ", " address-2)))
-          city       (-> location-cms-data :address-city)
-          state      (-> location-cms-data :state)
-          telephone  (-> location-cms-data :phone-number)]
+    (let [telephone  (-> location-cms-data :phone-number)]
       {"@type"    "LocalBusiness"
-       "@id"      (str store-name "-" address "-" city "-" state)
-       :name      (str "Mayvenn Beauty Lounge - " store-name)
+       ;; "@id"      (str store-name "-" address "-" city "-" state)
+       :name      (str "Mayvenn Beauty Lounge - " (-> location-cms-data :name))
        :telephone telephone
        :address   {"@type"          "PostalAddress"
                    :postalCode      (-> location-cms-data :address-zipcode)
-                   :streetAddress   address
+                   :streetAddress   (str (-> location-cms-data :address-1)
+                                         (when-let [address-2 (-> location-cms-data :address-2)]
+                                           (str ", " address-2)))
                    :addressCountry  "USA"
-                   :addressRegion   state
-                   :addressLocality city
+                   :addressRegion   (-> location-cms-data :state)
+                   :addressLocality (-> location-cms-data :address-city)
                    :telephone       telephone}
        :image     (->> location-cms-data :hero :file :url (str "http:"))
        :geo       {"@type"    "GeoCoordinates"
