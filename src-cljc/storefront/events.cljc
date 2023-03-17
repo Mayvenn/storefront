@@ -437,7 +437,8 @@
 (defpath inserted-kustomer)
 (defpath inserted-wirewheel-upcp)
 
-(defpath inited-wirewheel-upcp)
+(defpath initialized-wirewheel-upcp)
+(defpath wirewheel-upcp-iframe-loaded)
 
 (defpath autocomplete-update-address)
 

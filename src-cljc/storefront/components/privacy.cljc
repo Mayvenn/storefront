@@ -14,7 +14,7 @@
    [:iframe #?(:cljs {:style   {:height "900px"}
                       :id      "wwiframe"
                       :src     src
-                      :on-load #(messages/handle-message [:a :b :c])})]))
+                      :on-load wirewheel-upcp/init-iframe})]))
 
 (component/defcomponent component [{:keys [content static-content-id ww-iframe-src]} owner opts]
   [:div.flex.flex-column.container
@@ -38,9 +38,9 @@
   #?(:cljs
      (wirewheel-upcp/insert)))
 
-(defmethod effects/perform-effects [:a :b :c] [_ event _ _ app-state]
-  (prn "trying")
+(defmethod effects/perform-effects events/wirewheel-upcp-iframe-loaded 
+  [_ event _ _ app-state]
   #?(:cljs
-     (if (wirewheel-upcp/loaded?) 
+     (if (wirewheel-upcp/sdk-loaded?) 
        (wirewheel-upcp/init-iframe) 
-       (js/setTimeout #(messages/handle-message [:a :b :c]) 50))))
+       (messages/handle-later events/wirewheel-upcp-iframe-loaded {} 50))))
