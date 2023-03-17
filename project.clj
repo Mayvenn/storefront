@@ -152,6 +152,7 @@
                                            "externs/stringer.js"
                                            "externs/stripe.js"
                                            "externs/uploadcare.js"
+                                           "externs/wirewheel_upcp.js"
                                            "externs/wistia.js"
                                            "externs/yotpo.js"]
                         :optimizations    :advanced}}}}
