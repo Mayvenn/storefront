@@ -90,9 +90,9 @@
     :href      "#"
     :data-test (:facet-filtering.section.filter/id data)
     :key       id}
-   [:div (ui/check-box {:value value 
-                        :id (str "filter-" 
-                                 (string/escape primary {\" "\\\""}) 
+   [:div (ui/check-box {:value value
+                        :id (str "filter-"
+                                 (string/escape primary {\" "\\\""})
                                  "-mobile")})]
    (when icon-url
      [:img.block.pr2
@@ -169,9 +169,10 @@
     (c/elements desktop-section-organism sections :facet-filtering/sections)]])
 
 (defn header-close-molecule
-  [{:header.close/keys [id target]}]
+  [{:header.close/keys [id target aria-label]}]
   (c/html
-   [:a.block (merge {:data-test id}
+   [:a.block (merge {:data-test id
+                     :aria-label aria-label}
                     (apply utils/fake-href target))
     (svg/x-sharp {:style {:width  "14px"
                           :height "14px"}})]))
@@ -193,8 +194,15 @@
          (merge {:data-test id
                  :class "my2"}
                 (apply utils/fake-href target))
-         primary) ))]))
-     
+         primary)))
+    (let [{:header.warning/keys [id color content]} data]
+      (when id
+        [:div.mt2
+        (ui/note-box
+         {:color     color
+          :data-test id}
+         [:div.p2
+          [:div.proxima.content-3 content]])]))]))
 
 (c/defcomponent panel-template
   [{:keys [header sections footer]} _ _]
@@ -218,7 +226,7 @@
    secondary])
 
 (defn ^:private pills<-
-  [facets-db 
+  [facets-db
    navigation-event
    navigation-args
    {:facet-filtering/keys [filters panel]}]
@@ -250,7 +258,7 @@
                                                     :option-key       (:option/slug option)
                                                     :toggled?         false}]
               :filtering-summary.pill/action-icon :close-x})
-           filtering-options)) ))
+           filtering-options))))
 
 (defn ^:private summary<-
   "Takes (Biz)
@@ -303,7 +311,7 @@
               :facet-filtering.section/toggled?       section-toggled?
               :facet-filtering.section.title/primary  (str (cond->> facet-name
                                                              (contains? #{:hair/origin :hair/color :hair/texture} facet-slug)
-                                                             (str "Hair ")) (when checked-count 
+                                                             (str "Hair ")) (when checked-count
                                                                               (str " (" checked-count ")")))
               :facet-filtering.section.title/target   [e/flow|facet-filtering|section-toggled {:facet-key facet-slug
                                                                                                :toggled?  (not section-toggled?)}]
@@ -419,26 +427,36 @@
     (cond-> {:filtering/child-component-data  child-component-data}
 
       (seq facets-to-filter-on)
-      
+
       (merge
        {:filtering/summary               (summary<- indexed-facets
                                                     item-count
                                                     navigation-event
                                                     navigation-args
                                                     facet-filtering-state)
-        :filtering/header                {:header.reset/primary "Clear All"
-                                          :header.reset/target  [e/flow|facet-filtering|reset
-                                                                 {:navigation-event navigation-event
-                                                                  :navigation-args  navigation-args}]
-                                          :header.reset/id   (when (-> facet-filtering-state :facet-filtering/filters seq) "filters-header-reset")
-                                          :header.close/id      "filters-close"
-                                          :header.close/target  [e/flow|facet-filtering|panel-toggled false]
-                                          :header.title/primary "Filters"
-                                          :header.title/secondary (str item-count " items")
-                                          :header/pills (pills<- indexed-facets
-                                                                 navigation-event
-                                                                 navigation-args
-                                                                 facet-filtering-state)}
+        :filtering/header                (merge 
+                                          {:header.reset/primary    "Clear All"
+                                           :header.reset/target     [e/flow|facet-filtering|reset
+                                                                     {:navigation-event navigation-event
+                                                                      :navigation-args  navigation-args}]
+                                           :header.reset/id         (when (-> facet-filtering-state :facet-filtering/filters seq) "filters-header-reset")
+                                           :header.close/id         "filters-close"
+                                           :header.close/aria-label "close"
+                                           :header.close/target     [e/flow|facet-filtering|panel-toggled false]
+                                           :header.title/primary    "Filters"
+                                           :header.title/secondary  (str item-count " items")
+                                           :header/pills            (pills<- indexed-facets
+                                                                             navigation-event
+                                                                             navigation-args
+                                                                             facet-filtering-state)}
+                                          (when (zero? item-count)
+                                            {:header.warning/id      "filters-zero-matches-note"
+                                             :header.warning/color   "warning-yellow"
+                                             :header.warning/content (str "Sorry, we could not find any products that match "
+                                                                          "your filter criteria. Please try adjusting your filters or "
+                                                                          "removing some of them to broaden your search.")}))
+        
+
         :filtering/sections              (sections<- indexed-facets
                                                      (->> faceted-models
                                                           (mapv #(select-keys % facets-to-filter-on))
@@ -488,7 +506,7 @@
      [_ event {:keys [facet-key toggled?]} app-state]
      (when toggled?
        (stringer/track-event "category_page_filter-select"
-                                        {:filter_name (pr-str facet-key)}))))
+                             {:filter_name (pr-str facet-key)}))))
 
 (defmethod t/transition-state e/flow|facet-filtering|section-toggled
   [_ _ {:keys [facet-key toggled?]} state]
