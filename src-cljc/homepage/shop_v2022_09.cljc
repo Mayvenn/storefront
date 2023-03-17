@@ -25,9 +25,10 @@
                                                             (conj storefront.keypaths/cms-homepage)
                                                             (get-in app-state)
                                                             :body))})
-                     :hero                    (if in-omni?
-                                                (ui/hero-query cms :omni)
-                                                (ui/hero-query cms :unified-fi))
+                     :hero                    (when-not (:homepage-cms-update (get-in app-state k/features))
+                                                (if in-omni?
+                                                 (ui/hero-query cms :omni)
+                                                 (ui/hero-query cms :unified-fi)))
                      :shopping-categories     (ui/shopping-categories-query categories)
                      :zip-explanation         {:zip-explanation/id "zip-explanation"}
                      :blog1                   {:blog/id        "dye-humann-hair-wig"
