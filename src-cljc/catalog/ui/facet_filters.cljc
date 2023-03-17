@@ -213,7 +213,7 @@
     (c/elements section-organism
                 sections
                 :facet-filtering/sections)]
-   [:div.absolute.bottom-0.left-0.right-0.bg-white
+   [:div.bg-white
     (c/build footer-organism footer)]])
 
 (c/defcomponent desktop-header-organism
