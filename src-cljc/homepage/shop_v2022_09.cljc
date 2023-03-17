@@ -8,7 +8,8 @@
             [storefront.accessors.experiments :as experiments]
             [adventure.components.layered :as layered]
             [storefront.components.carousel :as carousel]
-            [mayvenn.concept.account :as accounts]))
+            [mayvenn.concept.account :as accounts]
+            [storefront.components.landing-page :as landing-page]))
 
 (defn page
   "Binds app-state to template for classic experiences"
@@ -17,7 +18,13 @@
         categories (get-in app-state k/categories)
         in-omni?   (:experience/omni (:experiences (accounts/<- app-state)))]
     (c/build ui/template
-             (merge {:hero                    (if in-omni?
+             (merge {:lp-data                 {:layers
+                                               (mapv (partial landing-page/determine-and-shape-layer app-state)
+                                                     (->> :unified-fi
+                                                          (conj storefront.keypaths/cms-homepage)
+                                                          (get-in app-state)
+                                                          :body))}
+                     :hero                    (if in-omni?
                                                 (ui/hero-query cms :omni)
                                                 (ui/hero-query cms :unified-fi))
                      :shopping-categories     (ui/shopping-categories-query categories)

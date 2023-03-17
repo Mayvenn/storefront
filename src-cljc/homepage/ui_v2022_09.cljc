@@ -14,8 +14,9 @@
             [adventure.components.layered :as layered]))
 
 (c/defcomponent template
-  [{:keys [hero shopping-categories blog1 blog2 zip-explanation] :as data} _ _]
+  [{:keys [hero shopping-categories blog1 blog2 zip-explanation lp-data] :as data} _ _]
   [:div
+   (c/build layered/component lp-data nil)
    (c/build hero/organism-without-shipping-bar hero)
    (c/build promises/organism (vt/with :promises data))
    (when (seq (vt/with :not-your-average-hair-store data))
