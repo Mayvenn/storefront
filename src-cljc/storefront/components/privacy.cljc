@@ -26,7 +26,7 @@
 
 (defn query [data]
   {:sms-number    (get-in data keypaths/sms-number)
-   :content       (get-in data keypaths/static-content) 
+   :content       (get-in data keypaths/static-content)
    :ww-iframe-src (and (experiments/ww-upcp? data)
                        (get-in data keypaths/loaded-wirewheel-upcp)
                        #?(:cljs storefront.config/wirewheel-upcp-url))})
@@ -38,9 +38,9 @@
   #?(:cljs
      (wirewheel-upcp/insert)))
 
-(defmethod effects/perform-effects events/wirewheel-upcp-iframe-loaded 
-  [_ event _ _ app-state]
-  #?(:cljs
-     (if (wirewheel-upcp/sdk-loaded?) 
-       (wirewheel-upcp/init-iframe) 
-       (messages/handle-later events/wirewheel-upcp-iframe-loaded {} 50))))
+;; (defmethod effects/perform-effects events/wirewheel-upcp-iframe-loaded
+;;   [_ event _ _ app-state]
+;;   #?(:cljs
+;;      (if (wirewheel-upcp/sdk-loaded?)
+;;        (wirewheel-upcp/init-iframe)
+;;        (messages/handle-later events/wirewheel-upcp-iframe-loaded {} 50))))

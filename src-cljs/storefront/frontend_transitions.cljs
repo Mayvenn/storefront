@@ -587,9 +587,6 @@
 (defmethod transition-state events/inserted-wirewheel-upcp [_ _ _ app-state]
   (assoc-in app-state keypaths/loaded-wirewheel-upcp true))
 
-(defmethod transition-state events/inited-wirewheel-upcp [_ _ _ app-state]
-  (assoc-in app-state keypaths/inited-wirewheel-upcp true))
-
 (defmethod transition-state events/stripe-component-mounted [_ event {:keys [card-element]} app-state]
   (assoc-in app-state keypaths/stripe-card-element card-element))
 

@@ -5,14 +5,20 @@
             cljs.core
             spice.core))
 
-(defn sdk-loaded? [] (cljs.core/exists? js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent))
+(defn ^:export sdkexists [] (cljs.core/exists? js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent))
+(defn ^:export sdkandnotnil [] (and (not (nil? (spice.core/spy js/window.cmpJavascriptSdk)))
+                                        (not (nil? (spice.core/spy js/window.cmpJavascriptSdk.WireWheelSDK)))
+                                        (not (nil? (spice.core/spy js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent)))))
+(defn ^:export sdknotnot [] (not (not js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent)))
+(defn ^:export sdk [] js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent)
+(defn sdk-loaded? [] (sdkexists))
 (defn ^:private iframe-mounted? [] (js/document.getElementById "wwiframe"))
 
 (defn logstuf []
   (println "loaded? " (sdk-loaded?))
   (println "iframe-mounted? " (boolean (iframe-mounted?))))
 (defn init-iframe []
-  (println "init-iframe") 
+  (println "init-iframe")
   (logstuf)
   (js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent
    #js {:targetIframe (js/document.getElementById "wwiframe")})
