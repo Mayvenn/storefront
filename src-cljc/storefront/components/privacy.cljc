@@ -14,7 +14,10 @@
    [:iframe #?(:cljs {:style   {:height "900px"}
                       :id      "wwiframe"
                       :src     src
-                      :on-load wirewheel-upcp/init-iframe})]))
+                      :on-load (fn init-iframe []
+                                 (js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent
+                                  #js {:targetIframe (js/document.getElementById "wwiframe")})
+                                 (messages/handle-message events/initialized-wirewheel-upcp))})]))
 
 (component/defcomponent component [{:keys [content static-content-id ww-iframe-src]} owner opts]
   [:div.flex.flex-column.container
@@ -34,13 +37,7 @@
 (defn page [data opts]
   (component/build component (query data) opts))
 
-(defmethod effects/perform-effects events/navigate-content-privacy [_ event _ _ app-state]
+(defmethod effects/perform-effects events/navigate-content-privacy
+  [_ _ _ _ _]
   #?(:cljs
      (wirewheel-upcp/insert)))
-
-;; (defmethod effects/perform-effects events/wirewheel-upcp-iframe-loaded
-;;   [_ event _ _ app-state]
-;;   #?(:cljs
-;;      (if (wirewheel-upcp/sdk-loaded?)
-;;        (wirewheel-upcp/init-iframe)
-;;        (messages/handle-later events/wirewheel-upcp-iframe-loaded {} 50))))
