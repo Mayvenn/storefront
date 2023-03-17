@@ -18,12 +18,13 @@
         categories (get-in app-state k/categories)
         in-omni?   (:experience/omni (:experiences (accounts/<- app-state)))]
     (c/build ui/template
-             (merge {:lp-data                 {:layers
-                                               (mapv (partial landing-page/determine-and-shape-layer app-state)
-                                                     (->> :unified-fi
-                                                          (conj storefront.keypaths/cms-homepage)
-                                                          (get-in app-state)
-                                                          :body))}
+             (merge {:lp-data                 (when (:homepage-cms-update (get-in app-state k/features))
+                                                {:layers
+                                                 (mapv (partial landing-page/determine-and-shape-layer app-state)
+                                                       (->> :unified-fi
+                                                            (conj storefront.keypaths/cms-homepage)
+                                                            (get-in app-state)
+                                                            :body))})
                      :hero                    (if in-omni?
                                                 (ui/hero-query cms :omni)
                                                 (ui/hero-query cms :unified-fi))
