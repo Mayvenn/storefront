@@ -597,6 +597,7 @@
       (assoc _ :hdyhau-post-purchase (feature-flags/retrieve-flag ld "hdyhau-post-purchase" :bool false))
       (assoc _ :experience-omni (feature-flags/retrieve-flag ld "experience-omni" :bool false))
       (assoc _ :ww-upcp (feature-flags/retrieve-flag ld "ww-upcp" :bool false))
+      (assoc _ :homepage-cms-update (feature-flags/retrieve-flag ld "homepage-cms-update" :bool false))
       (assoc-in-req-state req keypaths/features _)
       (h _))))
 
