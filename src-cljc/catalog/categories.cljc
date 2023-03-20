@@ -1264,7 +1264,7 @@
     :hair/family                    #{"closures"}
     :hair/base-material             #{"hd-lace"}
     :selector/essentials            [:hair/family :catalog/department :hair/base-material]
-    :selector/electives             [:hair/texture :hair/origin :hair.closure/area]
+    :selector/electives             [:hair/texture :hair/origin :hair/color :hair.closure/area]
     :page/title                     "100% Virgin Hair HD Lace Closures | Mayvenn"
     :page.meta/description          (copy "Mayvenn’s HD Lace comes complete with 4x4 or 5x5 inches of parting space."
                                           "Crafted with high-quality 100% virgin human hair.")
