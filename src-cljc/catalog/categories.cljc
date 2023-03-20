@@ -1232,7 +1232,7 @@
     :hair/family                    #{"frontals"}
     :hair/base-material             #{"hd-lace"}
     :selector/essentials            [:hair/family :catalog/department :hair/base-material]
-    :selector/electives             [:hair/texture :hair/origin]
+    :selector/electives             [:hair/texture :hair/origin :hair/color]
     :page/title                     "100% Virgin Hair HD Lace Frontals | Mayvenn"
     :page.meta/description          (copy "Mayvenn’s HD Lace comes complete with 13x4, inches of parting space."
                                           "Crafted with high-quality 100% virgin human hair.")
