@@ -115,26 +115,34 @@
 (defn template-slot-kv->hiccup-content
   "Takes CMS template-slot key-value from contentful and tur"
   ([sku template-slot-kv]
-   (let [[template-slot-id template-slot-data] template-slot-kv]
-     (some->> (template-slot-data :selectable-values)
-              (into []
-                    (comp
-                     (map (fn [selectable-value ]
-                            (merge selectable-value
-                                   (:selector selectable-value))))
-                     (selector/match-essentials
-                      ;; TODO Move the code responsible for merging the selector attributes into the top level
-                      ;; of the selectable value to the API / Handler areas)
-                      (assoc sku :selector/essentials (into #{} (comp
-                                                                 (map :selector)
-                                                                 (mapcat keys))
-                                                            (:selectable-values template-slot-data))))
-                     (map :value)
-                     (map (fn [node]
-                            (assoc node :template-slot/slug (:slug template-slot-data))))
-                     (map build-hiccup-tag)))
-              (not-empty)
-              (conj [template-slot-id])))))
+   (let [[template-slot-id template-slot-data] template-slot-kv
+
+         keys-in-selectable-values (into #{} (comp
+                                              (map :selector)
+                                              (mapcat keys))
+                                         (:selectable-values template-slot-data))
+         keys-on-sku               (set (keys sku))
+         keys-possible-to-select   (set/intersection keys-in-selectable-values
+                                                     keys-on-sku)
+         skuer                     (assoc sku :selector/essentials keys-possible-to-select)]
+
+     ;; This handles the case where there are no selectable values which could possibly apply to the passed in sku
+     ;; Selector Match Essentials asserts that the essentials field should never be empty
+     (when (seq keys-possible-to-select)
+       (some->> (template-slot-data :selectable-values)
+                (into []
+                      (comp
+                       (map (fn [selectable-value]
+                              (merge selectable-value
+                                     (:selector selectable-value))))
+
+                       (selector/match-essentials skuer)
+                       (map :value)
+                       (map (fn [node]
+                              (assoc node :template-slot/slug (:slug template-slot-data))))
+                       (map build-hiccup-tag)))
+                (not-empty)
+                (conj [template-slot-id]))))))
 
 
 (defn rename-template-slot-ids [cms-dynamic-content-data]
