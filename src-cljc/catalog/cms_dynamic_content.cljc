@@ -127,7 +127,8 @@
          skuer                     (assoc sku :selector/essentials keys-possible-to-select)]
 
      ;; This handles the case where there are no selectable values which could possibly apply to the passed in sku
-     ;; Selector Match Essentials asserts that the essentials field should never be empty
+     ;; Selector Match Essentials asserts that the essentials field should never be empty or refer to keys not present in
+     ;; the skuer
      (when (seq keys-possible-to-select)
        (some->> (template-slot-data :selectable-values)
                 (into []
