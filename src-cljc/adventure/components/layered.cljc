@@ -797,13 +797,13 @@
             :max-size 1024
             :alt      alt})
    (when desktop-image
-     (ui/img {:src      (:url (:file desktop-image))
-              :style    {:object-fit "cover"
-                         :display    "block"}
-              :class    "flex-auto col-12 hide-on-mb"
-              :quality  75
-              :max-size 1024
-              :alt      alt}))])
+     (ui/img {:src             (:url (:file desktop-image))
+              :style           {:object-fit "cover"
+                                :display    "block"}
+              :class           "flex-auto col-12 hide-on-mb"
+              :default-quality 75
+              :max-size        1024
+              :alt             alt}))])
 
 (defcomponent icon
   [{:keys [icon size]} _ _]
