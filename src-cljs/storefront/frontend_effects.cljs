@@ -311,15 +311,12 @@
 
 (defmethod effects/perform-effects events/navigate-home
   [_ _ _ _ app-state]
-  (let [homepage-version (if (= :shop (sites/determine-site app-state))
-                           :unified-fi
-                           :unified)]
-    (effects/fetch-cms2 app-state [:homepage homepage-version])
-    (effects/fetch-cms2 app-state [:homepage :omni])
-    (doseq [keypath [[:advertisedPromo]
-                     [:ugc-collection :free-install-mayvenn]
-                     [:faq :free-mayvenn-services]]]
-      (effects/fetch-cms-keypath app-state keypath))))
+  (effects/fetch-cms2 app-state [:homepage :unified])
+  (effects/fetch-cms2 app-state [:homepage :omni])
+  (doseq [keypath [[:advertisedPromo]
+                   [:ugc-collection :free-install-mayvenn]
+                   [:faq :free-mayvenn-services]]]
+    (effects/fetch-cms-keypath app-state keypath)))
 
 (defmethod effects/perform-effects events/navigate-landing-page
   [_ _ args _ app-state]

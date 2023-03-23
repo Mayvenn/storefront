@@ -16,21 +16,20 @@
   [app-state]
   (let [cms        (get-in app-state k/cms)
         categories (get-in app-state k/categories)
-        in-omni?   (:experience/omni (:experiences (accounts/<- app-state)))]
+        in-omni?   (:experience/omni (:experiences (accounts/<- app-state)))
+        cms-slug   (if in-omni?
+                     :omni
+                     :unified)]
     (c/build ui/template
              (merge {:lp-data                 (when (:homepage-cms-update (get-in app-state k/features))
                                                 {:layers
                                                  (mapv (partial landing-page/determine-and-shape-layer app-state)
-                                                       (->> (if in-omni?
-                                                              :omni
-                                                              :unified)
+                                                       (->> cms-slug
                                                             (conj storefront.keypaths/cms-homepage)
                                                             (get-in app-state)
                                                             :body))})
                      :hero                    (when-not (:homepage-cms-update (get-in app-state k/features))
-                                                (if in-omni?
-                                                 (ui/hero-query cms :omni)
-                                                 (ui/hero-query cms :unified-fi)))
+                                                (ui/hero-query cms cms-slug))
                      :shopping-categories     (ui/shopping-categories-query categories)
                      :zip-explanation         {:zip-explanation/id "zip-explanation"}
                      :blog1                   {:blog/id        "dye-humann-hair-wig"
