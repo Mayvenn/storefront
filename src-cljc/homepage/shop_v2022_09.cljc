@@ -17,52 +17,54 @@
   (let [cms        (get-in app-state k/cms)
         categories (get-in app-state k/categories)
         in-omni?   (:experience/omni (:experiences (accounts/<- app-state)))
-        cms-slug   (if in-omni?
-                     :omni
-                     :unified)]
+        cms-slug   (cond
+                     (= "classic" (get-in app-state k/store-slug)) :classic
+                     in-omni?                                      :omni
+                     :else                                         :unified)]
     (c/build ui/template
-             (merge {:lp-data                 (when (:homepage-cms-update (get-in app-state k/features))
-                                                {:layers
-                                                 (mapv (partial landing-page/determine-and-shape-layer app-state)
-                                                       (->> cms-slug
-                                                            (conj storefront.keypaths/cms-homepage)
-                                                            (get-in app-state)
-                                                            :body))})
-                     :hero                    (when-not (:homepage-cms-update (get-in app-state k/features))
+             (merge {:lp-data             (when (:homepage-cms-update (get-in app-state k/features))
+                                            {:layers
+                                             (mapv (partial landing-page/determine-and-shape-layer app-state)
+                                                   (->> cms-slug
+                                                        (conj storefront.keypaths/cms-homepage)
+                                                        (get-in app-state)
+                                                        (spice.core/spy "9999")
+                                                        :body))})
+                     :hero                (when-not (:homepage-cms-update (get-in app-state k/features))
                                                 (ui/hero-query cms cms-slug))
-                     :shopping-categories     (ui/shopping-categories-query categories)
-                     :zip-explanation         {:zip-explanation/id "zip-explanation"}
-                     :blog1                   {:blog/id        "dye-humann-hair-wig"
-                                               :blog/target    "https://shop.mayvenn.com/blog/hair/how-to-dye-a-human-hair-wig/"
-                                               :blog/author    "Mayvenn"
-                                               :blog/date      "16 Mar 2020"
-                                               :blog/read-time "7 min read"
-                                               :blog/heading   "How to Dye a Human Hair Wig"
-                                               :blog/beginning (str "One of the best things about wearing wigs is their versatility. "
-                                                                    "You can be subtle and reserved one day, then bold and vixen-like "
-                                                                    "the next. Even better, human hair wigs can be dyed just like your "
-                                                                    "natural hair. That means not only can your fashion change to suit "
-                                                                    "your mood, but your hair color can, too.")
-                                               :blog/ucare-id  "51e44ac7-1b45-4cb4-a880-79fb67789feb"}
-                     :blog2                   {:blog/id        "right-stylist"
-                                               :blog/target    "https://shop.mayvenn.com/blog/hair/how-to-choose-the-right-hairstylist/"
-                                               :blog/author    "Amber Coleman"
-                                               :blog/date      "2 Aug 2021"
-                                               :blog/read-time "3 min read"
-                                               :blog/heading   "How to Choose the Right Hairstylist"
-                                               :blog/beginning (str "Looking for a hairstylist that accommodates your hair needs can be "
-                                                                    "a struggle, but it’s not impossible! There are a couple of key steps "
-                                                                    "that go into finding a great stylist like research, recommendations, "
-                                                                    "pricing, and consultations. Here are a few tips that’ll help you "
-                                                                    "find the right stylist for all of your #hairgoals.")
-                                               :blog/ucare-id  "70f4e431-6726-4484-b91f-1a2b294aee00"}}
+                     :shopping-categories (ui/shopping-categories-query categories)
+                     :zip-explanation     {:zip-explanation/id "zip-explanation"}
+                     :blog1               {:blog/id        "dye-humann-hair-wig"
+                                           :blog/target    "https://shop.mayvenn.com/blog/hair/how-to-dye-a-human-hair-wig/"
+                                           :blog/author    "Mayvenn"
+                                           :blog/date      "16 Mar 2020"
+                                           :blog/read-time "7 min read"
+                                           :blog/heading   "How to Dye a Human Hair Wig"
+                                           :blog/beginning (str "One of the best things about wearing wigs is their versatility. "
+                                                                "You can be subtle and reserved one day, then bold and vixen-like "
+                                                                "the next. Even better, human hair wigs can be dyed just like your "
+                                                                "natural hair. That means not only can your fashion change to suit "
+                                                                "your mood, but your hair color can, too.")
+                                           :blog/ucare-id  "51e44ac7-1b45-4cb4-a880-79fb67789feb"}
+                     :blog2               {:blog/id        "right-stylist"
+                                           :blog/target    "https://shop.mayvenn.com/blog/hair/how-to-choose-the-right-hairstylist/"
+                                           :blog/author    "Amber Coleman"
+                                           :blog/date      "2 Aug 2021"
+                                           :blog/read-time "3 min read"
+                                           :blog/heading   "How to Choose the Right Hairstylist"
+                                           :blog/beginning (str "Looking for a hairstylist that accommodates your hair needs can be "
+                                                                "a struggle, but it’s not impossible! There are a couple of key steps "
+                                                                "that go into finding a great stylist like research, recommendations, "
+                                                                "pricing, and consultations. Here are a few tips that’ll help you "
+                                                                "find the right stylist for all of your #hairgoals.")
+                                           :blog/ucare-id  "70f4e431-6726-4484-b91f-1a2b294aee00"}}
 
                     (when in-omni?
                       (vt/within :not-your-average-hair-store
-                                 {:primary "Not Your Average Hair Store"
+                                 {:primary   "Not Your Average Hair Store"
                                   :secondary (str "Visit us today and get a FREE consultation, or personalize your next "
-                                                        "wig for as low as $25 at a Mayvenn Beauty Lounge near you! "
-                                                        "High-quality 100% virgin human hair wigs, extensions, bundles, and more in stock!")}))
+                                                  "wig for as low as $25 at a Mayvenn Beauty Lounge near you! "
+                                                  "High-quality 100% virgin human hair wigs, extensions, bundles, and more in stock!")}))
                     (vt/within :promises (if in-omni?
                                            layered/promises-omni-query
                                            {:list/icons

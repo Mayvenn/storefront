@@ -37,7 +37,8 @@
      (c/build layered/shop-text-block hold-hair-high)]))
 
 (c/defcomponent template
-  [{:keys [contact-us
+  [{:keys [lp-data
+           contact-us
            diishan
            faq
            guarantees
@@ -47,6 +48,7 @@
            install-specific-query
            zip-explanation]} _ _]
   [:div
+   (c/build layered/component lp-data nil)
    (c/build hero/organism hero)
 
    (c/build shopping-categories/organism shopping-categories)

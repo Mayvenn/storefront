@@ -312,6 +312,7 @@
 (defmethod effects/perform-effects events/navigate-home
   [_ _ _ _ app-state]
   (effects/fetch-cms2 app-state [:homepage :unified])
+  (effects/fetch-cms2 app-state [:homepage :classic])
   (effects/fetch-cms2 app-state [:homepage :omni])
   (doseq [keypath [[:advertisedPromo]
                    [:ugc-collection :free-install-mayvenn]
