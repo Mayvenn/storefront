@@ -393,9 +393,8 @@
                                                                                 (resolve-cms-node normalized-cms-cache))]))}
 
                               (cond (= events/navigate-home nav-event)
-                                    (-> {:homepage (let [id (if shop? :unified-fi :unified)]
-                                                     {id (-> normalized-cms-cache (assemble-cms-node :homepage id) first)
-                                                      :omni (-> normalized-cms-cache (assemble-cms-node :homepage :omni) first)})}
+                                    (-> {:homepage {:unified (-> normalized-cms-cache (assemble-cms-node :homepage :unified) first)
+                                                    :omni    (-> normalized-cms-cache (assemble-cms-node :homepage :omni) first)}}
                                         (update-data [:ugc-collection :homepage-looks-spotlight])
                                         contentful/derive-all-looks)
 

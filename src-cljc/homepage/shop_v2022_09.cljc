@@ -21,7 +21,9 @@
              (merge {:lp-data                 (when (:homepage-cms-update (get-in app-state k/features))
                                                 {:layers
                                                  (mapv (partial landing-page/determine-and-shape-layer app-state)
-                                                       (->> :unified-fi
+                                                       (->> (if in-omni?
+                                                              :omni
+                                                              :unified)
                                                             (conj storefront.keypaths/cms-homepage)
                                                             (get-in app-state)
                                                             :body))})
