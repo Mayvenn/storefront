@@ -18,24 +18,6 @@
             [storefront.components.ui :as ui]
             [storefront.events :as e]))
 
-(c/defcomponent install-specific-organism
-  [{:keys [buy-three-bundles
-           shop-framed-checklist
-           video-overlay
-           how-it-works
-           sit-back-and-relax
-           who-shop-hair
-           hold-hair-high] :as data} _ _]
-  (when data
-    [:div
-     (c/build layered/shop-text-block buy-three-bundles)
-     (c/build layered/shop-framed-checklist shop-framed-checklist)
-     (c/build layered/video-overlay video-overlay)
-     (c/build layered/shop-bulleted-explainer how-it-works)
-     (c/build layered/shop-text-block sit-back-and-relax)
-     (c/build layered/image-block who-shop-hair)
-     (c/build layered/shop-text-block hold-hair-high)]))
-
 (c/defcomponent template
   [{:keys [lp-data
            contact-us
@@ -45,7 +27,6 @@
            hashtag-mayvenn-hair
            hero
            shopping-categories
-           install-specific-query
            zip-explanation]} _ _]
   [:div
    (c/build layered/component lp-data nil)
@@ -96,29 +77,6 @@
      :shopping-categories.box/target    [e/navigate-shop-by-look {:album-keyword :look}]
      :shopping-categories.box/alt-label ["Need Inspiration?" "Try shop by look."]})})
 
-(defn shopping-categories-for-shop-query
-  [categories]
-  {:list/boxes
-   (conj
-    (->> categories
-         (filter ::order)
-         (sort-by ::order)
-         (mapv
-          (fn category->box
-            [{:keys [page/slug copy/title catalog/category-id]
-              ::keys [image-id]}]
-            {:shopping-categories.box/id       slug
-             :shopping-categories.box/target   [e/navigate-category
-                                                {:page/slug           slug
-                                                 :catalog/category-id category-id}]
-             :shopping-categories.box/ucare-id image-id
-             :shopping-categories.box/label    title})))
-    {:shopping-categories.box/id        "need-inspiration"
-     :shopping-categories.box/target    [e/navigate-shop-by-look {:album-keyword :look}]
-     :shopping-categories.box/alt-label ["Need Inspiration?" "Try shop by look."]})})
-
-(def zip-explanation
-  {:zip-explanation/id "zip-explanation"})
 
 (defn hashtag-mayvenn-hair-query
   [ugc]
@@ -130,12 +88,6 @@
      :hashtag-mayvenn-hair.cta/label    "see more looks"
      :hashtag-mayvenn-hair.cta/target   [e/navigate-shop-by-look {:album-keyword :look}]}))
 
-(defn faq-query
-  [faq expanded-index]
-  {:faq/expanded-index expanded-index
-   :list/sections      (for [{:keys [question answer]} (:question-answers faq)]
-                         {:faq/title   (:text question)
-                          :faq/content answer})})
 
 (def guarantees-query
   {:list/icons
@@ -194,45 +146,3 @@
                                                              :width  56}]
      :contact-us.contact-method/title      "Email Us"
      :contact-us.contact-method/copy       "help@mayvenn.com"}]})
-
-(defn install-specific-query [app-state]
-  {:buy-three-bundles     {:layer/type            :shop-text-block
-                           :header/value          "Buy 3 bundles and we’ll pay for your install"
-                           :header/first-on-page? true
-                           :cta/button?           true
-                           :cta/value             "Start Hair Quiz"
-                           :cta/id                "homepage-take-hair-quiz"
-                           :cta/target            [e/navigate-shopping-quiz-unified-freeinstall-intro {:query-params {:location "homepage_cta"}}]}
-   :shop-framed-checklist {:layer/type   :shop-framed-checklist
-                           :header/value "What's included?"
-                           :bullets      ["Shampoo"
-                                          "Braid down"
-                                          "Sew-in and style"
-                                          "Paid for by Mayvenn"]
-                           :divider-img  "url('//ucarecdn.com/2d3a98e3-b49a-4f0f-9340-828d12865315/-/resize/x24/')"}
-   :video-overlay         {:layer/type      :video-overlay
-                           :close-nav-event (get-in app-state k/navigation-event)
-                           :video           (get-in app-state adventure.keypaths/adventure-home-video)}
-
-   :how-it-works       {:layer/type     :shop-bulleted-explainer
-                        :layer/id       "heres-how-it-works"
-                        :title/value    ["You buy the hair,"
-                                         "we cover the install."]
-                        :subtitle/value ["Here's how it works."]
-                        :bullets        [{:title/value "Pick Your Dream Look"
-                                          :body/value  "Have a vision in mind? We’ve got the hair for it. Otherwise, peruse our site for inspiration to find your next look."}
-                                         {:title/value ["Select A Mayvenn" ui/hyphen "Certified Stylist"]
-                                          :body/value  "We’ve hand-picked thousands of talented stylists around the country. We’ll cover the cost of your salon appointment with them when you buy 3 or more bundles."}
-                                         {:title/value "Schedule Your Appointment"
-                                          :body/value  "We’ll connect you with your stylist to set up your install. Then, we’ll send you a prepaid voucher to cover the cost of service."}]
-                        :cta/id         "watch-video"
-                        :cta/value      "Watch Video"
-                        :cta/icon       [:svg/play-video {:width  "30px"
-                                                          :height "30px"}]
-                        :cta/target     [(get-in app-state k/navigation-event)
-                                         {:query-params {:video "free-install"}}]}
-   :who-shop-hair      {:layer/type :image-block
-                        :ucare?     true
-                        :mob-uuid   "bd8888d3-9d1a-4944-a840-2863b50ba5d6"
-                        :dsk-uuid   "36bd1978-b3e2-457a-9c8d-303661f57924"
-                        :file-name  "who-shop-hair"}})
