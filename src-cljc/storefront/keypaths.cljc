@@ -47,6 +47,7 @@
 (def user-id (conj user :id))
 (def user-must-set-password (conj user :must-set-password))
 (def user-total-available-store-credit (conj user :total-available-store-credit))
+(def user-ecd (conj user :ecd))
 
 (def order [:order])
 (def order-total (conj order :total))
@@ -394,3 +395,4 @@
 (def account-profile-ip-addresses (conj account-profile :ip-addresses))
 (def account-profile-experiences (conj account-profile :experiences))
 (def account-profile-landfalls (conj account-profile :landfalls))
+

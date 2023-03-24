@@ -1,5 +1,12 @@
 (ns storefront.hooks.google-analytics
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [spice.maps :as maps]
+            [storefront.transitions :as t] 
+            [storefront.keypaths :as k] 
+            [storefront.events :as e]
+            [storefront.components.formatters :as f]
+            goog.crypt
+            goog.crypt.Sha256))
 
 (defn ^:private track
   [event-name data]
@@ -72,3 +79,25 @@
   []
   (track "generate_lead" {:currency "USD" 
                           :value    0}))
+
+(defn sha256< [message]
+  (when (seq message)
+    (let [sha256 (js/goog.crypt.Sha256.)]
+      (->> message string/lower-case string/trim goog.crypt/stringToByteArray (.update sha256))
+      (goog.crypt/byteArrayToHex (.digest sha256)))))
+
+;; This event should be triggered when the user enters any of the ECD fields so that GTM
+;; always has the latest submitted email address, phone, etc.
+(defmethod t/transition-state e/set-user-ecd
+  [_ _event {:keys [email phone first-name last-name address1 city state zipcode] :as _args} app-state]
+  (update-in app-state 
+             k/user-ecd 
+             #(maps/deep-merge % (maps/deep-remove-nils {:sha256_email_address (sha256< email)
+                                                         :sha256_phone_number  (sha256< (f/e164-phone phone))
+                                                         :address              {:sha256_first_name (sha256< first-name)
+                                                                                :sha256_last_name  (sha256< last-name)
+                                                                                :street            address1
+                                                                                :city              city
+                                                                                :region            state
+                                                                                :postal_code       zipcode
+                                                                                :country           "us"}}))))

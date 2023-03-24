@@ -96,6 +96,18 @@
     #?(:cljs (format-date {:timeStyle "short"} datetime)
        :clj (.print (org.joda.time.format.DateTimeFormat/forPattern "h:mm a") datetime))))
 
+(defn e164-phone [phone-number]
+  (let [digits (-> phone-number str numbers/digits-only)]
+    (cond (= 10 (count digits))
+          (str "+1" digits)
+          
+          (and (= 11 (count digits))
+               (= "1" (first digits)))
+          (str "+" digits)
+
+          :else
+          nil)))
+
 (defn phone-number [phone]
   {:pre [(#{10 11} (->> phone str numbers/digits-only count))]}
   (->> phone

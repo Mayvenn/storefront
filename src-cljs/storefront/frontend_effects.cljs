@@ -1046,3 +1046,17 @@
 (defmethod effects/perform-effects events/user-identified
   [_ _ _ _ app-state]
   (email-capture/start-long-timer-if-unstarted (get-in app-state keypaths/cookie)))
+
+(defmethod effects/perform-effects events/api-success-update-order-update-address
+  [_ event {:keys [order]} _ app-state]
+  (messages/handle-message events/set-user-ecd 
+                           (assoc (:shipping-address order) 
+                                  :email
+                                  (-> order :user :email))))
+
+(defmethod effects/perform-effects events/api-success-update-order-update-guest-address 
+  [_ event {:keys [order]} _ app-state]
+  (messages/handle-message events/set-user-ecd 
+                           (assoc (:shipping-address order) 
+                                  :email 
+                                  (-> order :user :email))))
