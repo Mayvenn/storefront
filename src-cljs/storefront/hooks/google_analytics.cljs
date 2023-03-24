@@ -1,13 +1,5 @@
 (ns storefront.hooks.google-analytics
-  (:require [clojure.string :as string]
-            [storefront.components.formatters :as f]
-            [goog.crypt :as crypt]
-            goog.crypt.Sha256))
-
-(defn sha256< [message]
-  (let [sha256 (js/goog.crypt.Sha256.)]
-    (.update sha256 (crypt/stringToByteArray message))
-    (crypt/byteArrayToHex (.digest sha256))))
+  (:require [clojure.string :as string]))
 
 (defn ^:private track
   [event-name data]
@@ -42,25 +34,14 @@
 (defn track-sign-up [] #_(track "sign_up" {}))
 
 (defn track-placed-order
-  [{:keys [number shipping-method-price line-item-skuers used-promotion-codes tax email address]}]
-  (let [{:keys [phone first-name last-name address1 city state zipcode]} address]
-    (track "purchase" 
-           {:transaction_id           number
-            :items                    (mapv mayvenn-line-item->ga4-item line-item-skuers)
-            :currency                 "USD"
-            :value                    (reduce + 0 (map :sku/price line-item-skuers))
-            :coupon                   (->> used-promotion-codes (string/join " ") not-empty)
-            :tax                      tax
-            :shipping                 shipping-method-price
-            :enhanced_conversion_data {:sha256_email_address (sha256< email)
-                                       :sha256_phone_number  (sha256< (f/e164-phone phone))
-                                       :address              {:sha256_first_name (sha256< first-name)
-                                                              :sha256_last_name  (sha256< last-name)
-                                                              :street            address1
-                                                              :city              city
-                                                              :region            state
-                                                              :postal_code       zipcode
-                                                              :country           "us"}}})))
+  [{:keys [number shipping-method-price line-item-skuers used-promotion-codes tax]}]
+  (track "purchase" {:transaction_id number
+                     :items          (mapv mayvenn-line-item->ga4-item line-item-skuers)
+                     :currency       "USD"
+                     :value          (reduce + 0 (map :sku/price line-item-skuers))
+                     :coupon         (->> used-promotion-codes (string/join " ") not-empty)
+                     :tax            tax
+                     :shipping       shipping-method-price}))
 
 (defn track-begin-checkout
   [{:keys [line-item-skuers used-promotion-codes]}]

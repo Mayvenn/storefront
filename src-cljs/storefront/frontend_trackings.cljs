@@ -381,9 +381,7 @@
             {:total            (:total order)
              :tax              (:tax-total order)
              :number           (:number order)
-             :line-item-skuers line-item-skuers
-             :email            (-> order :user :email)
-             :address          (:billing-address order)}))))
+             :line-item-skuers line-item-skuers}))))
 
 (defmethod perform-track events/api-success-auth-sign-in [_ event {:keys [flow user] :as args} app-state]
   (stringer/track-event "sign_in" {:type flow})
