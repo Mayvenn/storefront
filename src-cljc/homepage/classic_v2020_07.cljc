@@ -9,20 +9,15 @@
   [app-state]
   (let [cms                  (get-in app-state k/cms)
         categories           (get-in app-state k/categories)
-        ugc                  (get-in app-state k/cms-ugc-collection)
-        homepage-cms-update? (:homepage-cms-update (get-in app-state k/features))]
+        ugc                  (get-in app-state k/cms-ugc-collection)]
     (c/build ui/template {:contact-us           ui/contact-us-query
-                          :lp-data              (when homepage-cms-update?
-                                                  {:layers
-                                                   (mapv (partial landing-page/determine-and-shape-layer app-state)
-                                                         (->> :classic
-                                                              (conj k/cms-homepage)
-                                                              (get-in app-state)
-                                                              (spice.core/spy "9999")
-                                                              :body))})
+                          :lp-data              {:layers
+                                                 (mapv (partial landing-page/determine-and-shape-layer app-state)
+                                                       (->> :classic
+                                                            (conj k/cms-homepage)
+                                                            (get-in app-state)
+                                                            :body))}
                           :diishan              ui/diishan-query
                           :guarantees           ui/guarantees-query
-                          :hero                 (when-not homepage-cms-update?
-                                                  (ui/hero-query cms :classic))
                           :hashtag-mayvenn-hair (ui/hashtag-mayvenn-hair-query ugc)
                           :shopping-categories  (ui/shopping-categories-query categories)})))

@@ -17,22 +17,16 @@
   (let [cms                  (get-in app-state k/cms)
         categories           (get-in app-state k/categories)
         in-omni?             (:experience/omni (:experiences (accounts/<- app-state)))
-        homepage-cms-update? (:homepage-cms-update (get-in app-state k/features))
-        cms-slug             (cond
-                               (= "classic" (get-in app-state k/store-slug)) :classic
-                               in-omni?                                      :omni
-                               :else                                         :unified)]
+        cms-slug             (if in-omni?
+                               :omni
+                               :unified)]
     (c/build ui/template
-             (merge {:lp-data             (when homepage-cms-update?
-                                            {:layers
-                                             (mapv (partial landing-page/determine-and-shape-layer app-state)
-                                                   (->> cms-slug
-                                                        (conj storefront.keypaths/cms-homepage)
-                                                        (get-in app-state)
-                                                        (spice.core/spy "9999")
-                                                        :body))})
-                     :hero                (when-not homepage-cms-update?
-                                            (ui/hero-query cms cms-slug))
+             (merge {:lp-data             {:layers
+                                           (mapv (partial landing-page/determine-and-shape-layer app-state)
+                                                 (->> cms-slug
+                                                      (conj storefront.keypaths/cms-homepage)
+                                                      (get-in app-state)
+                                                      :body))}
                      :shopping-categories (ui/shopping-categories-query categories)
                      :zip-explanation     {:zip-explanation/id "zip-explanation"}
                      :blog1               {:blog/id        "dye-humann-hair-wig"
