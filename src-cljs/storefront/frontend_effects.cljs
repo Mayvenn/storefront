@@ -1041,6 +1041,10 @@
 
 (defmethod effects/perform-effects events/api-success-update-order-update-guest-address
   [_ _ {:keys [order]} _ _]
+  (messages/handle-message events/set-user-ecd 
+                           (assoc (:shipping-address order) 
+                                  :email 
+                                  (-> order :user :email))))
   (messages/handle-message events/user-identified {:user (:user order)}))
 
 (defmethod effects/perform-effects events/user-identified
@@ -1052,11 +1056,4 @@
   (messages/handle-message events/set-user-ecd 
                            (assoc (:shipping-address order) 
                                   :email
-                                  (-> order :user :email))))
-
-(defmethod effects/perform-effects events/api-success-update-order-update-guest-address 
-  [_ event {:keys [order]} _ app-state]
-  (messages/handle-message events/set-user-ecd 
-                           (assoc (:shipping-address order) 
-                                  :email 
                                   (-> order :user :email))))
