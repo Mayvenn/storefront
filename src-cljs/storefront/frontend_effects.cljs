@@ -1044,7 +1044,7 @@
   (messages/handle-message events/set-user-ecd 
                            (assoc (:shipping-address order) 
                                   :email 
-                                  (-> order :user :email))))
+                                  (-> order :user :email)))
   (messages/handle-message events/user-identified {:user (:user order)}))
 
 (defmethod effects/perform-effects events/user-identified
