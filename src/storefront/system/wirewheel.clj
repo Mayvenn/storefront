@@ -113,10 +113,10 @@
 (comment
   (let [wirewheel   (-> {:logger             (:logger dev-system/the-system)
                          :auth-token-timeout 20000 ;; 12000000 ; 20 minutes
-                         :client-id          "0oa3o6qykrLjo3st4697"
-                         :client-secret      "zdlfVJo7V2FN4pSDzwmXX_A09PWCT7S9elndwyHP"
+                         :client-id          ""
+                         :client-secret      ""
                          :issuer-base-url    "https://wirewheelio.okta.com"
-                         :issuer-path        "/oauth2/aus4je1g5wPYSB7dz697/v1/token"
+                         :issuer-path        ""
                          :api-base-url       "https://api.upcp.wirewheel.io/"
                          :scheduler          (:scheduler dev-system/the-system)
                          :exception-handler  (:exception-handler dev-system/the-system)}
