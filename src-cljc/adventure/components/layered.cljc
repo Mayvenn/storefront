@@ -923,10 +923,8 @@
 (defcomponent section [{:keys [contents mobile-class desktop-class url
                                navigation-message background-color padding gap]} _ opts]
   [(if url :a :div)
-   (merge {:class (cond->> ["grid"
-                            mobile-class
-                            desktop-class
-                            "items-center"]
+   (merge {:class (cond->> [mobile-class
+                            desktop-class]
                     background-color (cons (str "bg-" background-color))
                     padding          (concat (get padding-classes padding))
                     gap              (concat (get gap-classes gap))
