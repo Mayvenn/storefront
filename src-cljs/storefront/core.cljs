@@ -147,6 +147,10 @@
 (defn ^:export current-features []
   (clj->js (get-in @app-state keypaths/features)))
 
+(defn ^:export current-user-ecd []
+  ;; Enhanced Conversion Data
+  (clj->js (get-in @app-state keypaths/user-ecd)))
+
 (defn ^:before-load before-load []
   (handle-message app-state events/app-stop))
 
