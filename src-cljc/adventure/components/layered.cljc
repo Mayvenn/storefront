@@ -920,12 +920,12 @@
    "medium" ["gap-4"]
    "large" ["gap-8"]})
 
-(defcomponent section [{:keys [contents mobile-columns desktop-columns url
+(defcomponent section [{:keys [contents mobile-class desktop-class url
                                navigation-message background-color padding gap]} _ opts]
   [(if url :a :div)
    (merge {:class (cond->> ["grid"
-                            (str "columns-" mobile-columns)
-                            (str "columns-" desktop-columns "-on-tb-dt")
+                            mobile-class
+                            desktop-class
                             "items-center"]
                     background-color (cons (str "bg-" background-color))
                     padding          (concat (get padding-classes padding))

@@ -125,6 +125,18 @@
                                                                :variant-ids   (map :legacy/variant-id all-skus)}]
                 :look/items     product-items})))))
 
+(defn determine-mobile-and-desktop-class
+  [{:keys [mobile-columns
+           desktop-columns
+           mobile-layout
+           desktop-layout]
+    :as cms-data} data]
+  (let [homepage-cms-update? (:homepage-cms-update (get-in data storefront.keypaths/features))
+        base-class (if homepage-cms-update? "sections-" "columns-")]
+    (-> cms-data
+        (assoc :mobile-class (str base-class (if homepage-cms-update? mobile-layout mobile-columns))
+               :desktop-class (str base-class (if homepage-cms-update? desktop-layout desktop-columns) "-on-tb-dt")))))
+
 (defn determine-and-shape-layer
   [data body-layer]
   (let [skus-db               (get-in data storefront.keypaths/v2-skus)
@@ -319,10 +331,13 @@
                                                                 nil)}
       "section"                                  (-> body-layer
                                                      (select-keys [:contents :mobile-columns :desktop-columns
+                                                                   :mobile-layout :desktop-layout
                                                                    :desktop-reverse-order :background-color :url
                                                                    :padding :gap])
                                                      (update :contents (partial map #(determine-and-shape-layer data %)))
+
                                                      (assoc :navigation-message (url->navigation-message (:url body-layer)))
+                                                     (determine-mobile-and-desktop-class data)
                                                      (assoc :layer/type :section))
       "tiles"                                    (-> body-layer
                                                      (select-keys [:contents :mobile-columns :desktop-columns
