@@ -1,6 +1,7 @@
 (ns catalog.icp
   (:require [api.catalog :refer [select]]
             [adventure.components.layered :as layered]
+            catalog.facets
             catalog.keypaths
             [catalog.skuers :as skuers]
             [catalog.ui.category-hero :as category-hero]
@@ -14,6 +15,7 @@
             [mayvenn.visual.ui.dividers :as dividers]
             [spice.maps :as maps]
             [storefront.accessors.categories :as accessors.categories]
+            [storefront.accessors.experiments :as experiments]
             [storefront.assets :as assets]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
@@ -193,12 +195,14 @@
 
 (defn page
   [state _]
-  (let [current-category      (accessors.categories/current-category state)
-        interstitial-category (accessors.categories/current-category state)
+  (let [interstitial-category               (accessors.categories/current-category state)
 
         facet-filtering-state               (assoc (get-in state catalog.keypaths/k-models-facet-filtering)
-                                                   :facet-filtering/item-label "item")
-        selections                          (:facet-filtering/filters facet-filtering-state)
+                                                   :facet-filtering/item-label "item") 
+        facet-filtering-longhand-state      (update facet-filtering-state 
+                                                    :facet-filtering/filters 
+                                                    catalog.facets/expand-shorthand-colors)
+        selections                          (:facet-filtering/filters facet-filtering-longhand-state)
         loaded-category-products            (->> (get-in state keypaths/v2-products)
                                                  vals
                                                  (select (merge
@@ -214,7 +218,8 @@
                                                           selections)))
         shop?                               (or (= "shop" (get-in state keypaths/store-slug))
                                                 (= "retail-location" (get-in state keypaths/store-experience)))
-        faq                                 (get-in state (conj keypaths/cms-faq (:contentful/faq-id interstitial-category)))]
+        faq                                 (get-in state (conj keypaths/cms-faq (:contentful/faq-id interstitial-category)))
+        experiment-color-shorthand?         (experiments/color-shorthand? state)]
     (component/build template
                      (merge
                       (when-let [filter-title (:product-list/title interstitial-category)]
@@ -231,7 +236,7 @@
                                                    :list/sections      (for [{:keys [question answer]} question-answers]
                                                                          {:faq/title   (:text question)
                                                                           :faq/content answer})}))
-                       :spotlighting          (when (= "13" (:catalog/category-id current-category))
+                       :spotlighting          (when (= "13" (:catalog/category-id interstitial-category))
                                                 {:title      (:spotlighting/title interstitial-category)
                                                  :spotlights (map (fn [{:keys [:subcategory/image-id
                                                                                :subcategory/title
@@ -249,16 +254,19 @@
                                                                           category-products-matching-criteria)}
 
                       (facet-filters/filters<-
-                       {:facets-db             (get-in state storefront.keypaths/v2-facets)
-                        :faceted-models        loaded-category-products
-                        :facet-filtering-state facet-filtering-state
-                        :facets-to-filter-on   (:selector/electives interstitial-category)
-                        :navigation-event      events/navigate-category
-                        :navigation-args       (select-keys interstitial-category [:catalog/category-id :page/slug])
-                        :child-component-data  {:product-card-listing
-                                                (product-card-listing/query state
-                                                                            interstitial-category
-                                                                            category-products-matching-criteria)}})
+                       {:facets-db                      (get-in state storefront.keypaths/v2-facets)
+                        :faceted-models                 loaded-category-products
+                        :facet-filtering-state          facet-filtering-state
+                        :experiment-color-shorthand?    experiment-color-shorthand?
+                        :facet-filtering-longhand-state (if experiment-color-shorthand?
+                                                          facet-filtering-longhand-state
+                                                          facet-filtering-state)
+                        :facets-to-filter-on            (:selector/electives interstitial-category)
+                        :navigation-event               events/navigate-category
+                        :navigation-args                (select-keys interstitial-category [:catalog/category-id :page/slug])
+                        :child-component-data           {:product-card-listing (product-card-listing/query state
+                                                                                                           interstitial-category
+                                                                                                           category-products-matching-criteria)}})
 
                       (case (:subcategories/layout interstitial-category)
                         :grid

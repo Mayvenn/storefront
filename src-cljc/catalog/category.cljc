@@ -9,6 +9,7 @@
    [api.catalog :refer [select]]
    adventure.keypaths
    api.current
+   catalog.facets
    [catalog.icp :as icp]
    catalog.keypaths
    [catalog.skuers :as skuers]
@@ -25,7 +26,6 @@
    [storefront.events :as e]
    [storefront.keypaths :as k]
    [storefront.platform.component-utils :as utils]
-   [storefront.request-keys :as request-keys]
    [storefront.trackings :as trackings]
    [storefront.transitions :as transitions]
    [catalog.ui.facet-filters :as facet-filters]))
@@ -100,6 +100,9 @@
   (let [category                            (accessors.categories/current-category app-state)
         facet-filtering-state               (merge (get-in app-state catalog.keypaths/k-models-facet-filtering)
                                                    {:facet-filtering/item-label "item"})
+        facet-filtering-longhand-state      (update facet-filtering-state
+                                                    :facet-filtering/filters
+                                                    catalog.facets/expand-shorthand-colors)
         loaded-category-products            (->> (get-in app-state k/v2-products)
                                                  vals
                                                  (select (merge
@@ -125,36 +128,40 @@
                                                 (= "retail-location" (get-in app-state k/store-experience)))
         faq                                 (get-in app-state (conj storefront.keypaths/cms-faq (:contentful/faq-id category)))
         splay?                              (and (seq (:selector/dimensions category))
-                                                 (experiments/splay-tation? app-state))]
+                                                 (experiments/splay-tation? app-state))
+        experiment-color-shorthand?         (experiments/color-shorthand? app-state)]
     (c/build template
              (merge
               (when-let [filter-title (:product-list/title category)]
                 {:title filter-title})
-              {:category-hero          (category-hero-query category)
-               :video                  (when-let [video (get-in app-state adventure.keypaths/adventure-home-video)] video)
-               :content-box            (when (and shop? (:content-block/type category))
-                                         (let [{:content-block/keys [title header summary sections]} category]
-                                           {:title    title
-                                            :header   header
-                                            :summary  summary
-                                            :sections sections}))
-               :faq-section            (when (and shop? faq)
-                                         (let [{:keys [question-answers]} faq]
-                                           {:faq/expanded-index (get-in app-state storefront.keypaths/faq-expanded-section)
-                                            :list/sections      (for [{:keys [question answer]} question-answers]
-                                                                  {:faq/title   (:text question)
-                                                                   :faq/content answer})}))}
+              {:category-hero (category-hero-query category)
+               :video         (when-let [video (get-in app-state adventure.keypaths/adventure-home-video)] video)
+               :content-box   (when (and shop? (:content-block/type category))
+                                (let [{:content-block/keys [title header summary sections]} category]
+                                  {:title    title
+                                   :header   header
+                                   :summary  summary
+                                   :sections sections}))
+               :faq-section   (when (and shop? faq)
+                                (let [{:keys [question-answers]} faq]
+                                  {:faq/expanded-index (get-in app-state storefront.keypaths/faq-expanded-section)
+                                   :list/sections      (for [{:keys [question answer]} question-answers]
+                                                         {:faq/title   (:text question)
+                                                          :faq/content answer})}))}
               (facet-filters/filters<-
-               {:facets-db             (get-in app-state storefront.keypaths/v2-facets)
-                :faceted-models        (if splay? category-skuers loaded-category-products)
-                :facet-filtering-state facet-filtering-state
-                :facets-to-filter-on   (:selector/electives category)
-                :navigation-event      e/navigate-category
-                :navigation-args       (select-keys category [:catalog/category-id :page/slug])
-                :child-component-data  {:product-card-listing
-                                        (product-card-listing/query app-state
-                                                                    category
-                                                                    (if splay? card-skuers category-products-matching-criteria))}})))))
+               {:facets-db                      (get-in app-state storefront.keypaths/v2-facets)
+                :faceted-models                 (if splay? category-skuers loaded-category-products)
+                :facet-filtering-state          facet-filtering-state
+                :experiment-color-shorthand?    experiment-color-shorthand?
+                :facet-filtering-longhand-state (if experiment-color-shorthand? 
+                                                  facet-filtering-longhand-state
+                                                  facet-filtering-state)
+                :facets-to-filter-on            (:selector/electives category)
+                :navigation-event               e/navigate-category
+                :navigation-args                (select-keys category [:catalog/category-id :page/slug])
+                :child-component-data           {:product-card-listing (product-card-listing/query app-state
+                                                                                                   category
+                                                                                                   (if splay? card-skuers category-products-matching-criteria))}})))))
 
 (defn ^:export built-component
   [app-state opts]

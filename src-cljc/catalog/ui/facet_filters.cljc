@@ -296,7 +296,10 @@
    {:facet-filtering/keys [sections
                            filters]}]
   {:facet-filtering/sections
-   (->> (vals (select-keys facets-db (keys represented-facets)))
+   (->> represented-facets
+        keys
+        (select-keys facets-db)
+        vals
         (sort-by :filter/order)
         (map
          (fn facet->section [{facet-slug    :facet/slug
@@ -339,6 +342,7 @@
                                                                                 :toggled?         (not filter-toggled?)}]
                                                                      :value   filter-toggled?
                                                                      :url     option-name}
+                                                                  
                                                                     option-swatch
                                                                     (assoc :facet-filtering.section.filter/icon-url
                                                                            (str "https://ucarecdn.com/"
@@ -411,18 +415,23 @@
     [facets-db
      faceted-models
      facet-filtering-state
+     experiment-color-shorthand?
+     facet-filtering-longhand-state
      facets-to-filter-on
      ;; For the page the filters are rendered on
      navigation-event
      navigation-args
      child-component-data]}]
-  (let [indexed-facets (->> facets-db
-                            (maps/index-by (comp keyword :facet/slug))
-                            (maps/map-values (fn [facet]
-                                               (update facet :facet/options
-                                                       (partial maps/index-by :option/slug)))))
+  (let [indexed-facets (assoc (->> facets-db
+                                   (maps/index-by (comp keyword :facet/slug)) 
+                                   (maps/map-values (fn [facet]
+                                                      (update facet :facet/options
+                                                              (partial maps/index-by :option/slug)))))
+                              ;; Hack on hair color shorthand
+                              :hair/color.shorthand
+                              facets/color-shorthand)
         item-count     (->> faceted-models
-                            (select (:facet-filtering/filters facet-filtering-state))
+                            (select (:facet-filtering/filters facet-filtering-longhand-state))
                             count)]
     (cond-> {:filtering/child-component-data  child-component-data}
 
@@ -458,9 +467,17 @@
         
 
         :filtering/sections              (sections<- indexed-facets
-                                                     (->> faceted-models
-                                                          (mapv #(select-keys % facets-to-filter-on))
-                                                          (apply merge-with clojure.set/union))
+                                                     (cond-> (->> faceted-models
+                                                                  (mapv #(select-keys % facets-to-filter-on))
+                                                                  (apply merge-with clojure.set/union))
+                                                       
+                                                       ;; Replace colors with shorthands  
+                                                       experiment-color-shorthand?
+                                                       (update :hair/color #(->> %
+                                                                                 (map facets/color-slug>shorthand-slug)
+                                                                                 (into (hash-set))))
+                                                       experiment-color-shorthand?
+                                                       (clojure.set/rename-keys {:hair/color :hair/color.shorthand}))
                                                      navigation-event
                                                      navigation-args
                                                      facet-filtering-state)
@@ -532,6 +549,7 @@
                                  (merge
                                   navigation-args
                                   {:query-params (->> existing-filters
+                                                      ;;spice.core/spy
                                                       (filter (fn [[_ v]] (seq v)))
                                                       (reduce merge {})
                                                       categories/category-selections->query-params)})))))

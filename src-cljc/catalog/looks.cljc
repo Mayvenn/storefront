@@ -4,8 +4,9 @@
                        [storefront.history :as history]
                        [storefront.trackings :as trackings]])
             [api.catalog :refer [select ?discountable ?physical]]
+            catalog.facets
             [catalog.images :as catalog-images]
-            catalog.keypaths
+            catalog.keypaths 
             [catalog.ui.facet-filters :as facet-filters]
             clojure.set
             clojure.string
@@ -291,106 +292,114 @@
   Visually: Grid, Spinning, or Filtering
   "
   [state _]
-  (let [skus-db               (get-in state storefront.keypaths/v2-skus)
-        images-db             (get-in state storefront.keypaths/v2-images)
-        facets-db             (->> (get-in state storefront.keypaths/v2-facets)
-                                   (maps/index-by (comp keyword :facet/slug))
-                                   (maps/map-values (fn [facet]
-                                                      (update facet :facet/options
-                                                              (partial maps/index-by :option/slug)))))
-        looks-shared-carts-db (get-in state storefront.keypaths/v1-looks-shared-carts)
+  (let [skus-db                        (get-in state storefront.keypaths/v2-skus)
+        images-db                      (get-in state storefront.keypaths/v2-images)
+        facets-db                      (->> (get-in state storefront.keypaths/v2-facets)
+                                            (maps/index-by (comp keyword :facet/slug))
+                                            (maps/map-values (fn [facet]
+                                                               (update facet :facet/options
+                                                                       (partial maps/index-by :option/slug)))))
+        looks-shared-carts-db          (get-in state storefront.keypaths/v1-looks-shared-carts)
 
-        selected-album-keyword (get-in state storefront.keypaths/selected-album-keyword)
-        looks                  (looks<- state skus-db facets-db
-                                        looks-shared-carts-db
-                                        selected-album-keyword)
-        looks-tags?            (experiments/looks-tags? state)
-        remove-free-install?   (:remove-free-install (get-in state storefront.keypaths/features))
+        selected-album-keyword         (get-in state storefront.keypaths/selected-album-keyword)
+        looks                          (looks<- state skus-db facets-db
+                                                looks-shared-carts-db
+                                                selected-album-keyword)
+        looks-tags?                    (experiments/looks-tags? state)
+        remove-free-install?           (:remove-free-install (get-in state storefront.keypaths/features))
         ;; Flow models
-        facet-filtering-state  (-> state
-                                   (get-in catalog.keypaths/k-models-facet-filtering)
-                                   (assoc :facet-filtering/item-label "Look"))
-        tag-facets             (when looks-tags?
-                                 [{:facet/slug    :tags/face-shape
-                                   :facet/name    "Face Shape",
-                                   :filter/order  20,
-                                   :facet/options #{{:option/slug  "round",
-                                                     :option/name  "Round",
-                                                     :filter/order 0}
-                                                    {:option/slug  "square",
-                                                     :option/name  "Square",
-                                                     :filter/order 1}
-                                                    {:option/slug  "oval",
-                                                     :option/name  "Oval",
-                                                     :filter/order 2}
-                                                    {:option/slug  "triangular",
-                                                     :option/name  "Triangular",
-                                                     :filter/order 3}
-                                                    {:option/slug  "heart",
-                                                     :option/name  "Heart",
-                                                     :filter/order 4}}}
-                                  {:facet/slug    :tags/style
-                                   :facet/name    "Style",
-                                   :filter/order  21,
-                                   :facet/options #{{:option/slug  "expressive",
-                                                     :option/name  "Expressive",
-                                                     :filter/order 0}
-                                                    {:option/slug  "romantic",
-                                                     :option/name  "Romantic",
-                                                     :filter/order 1}
-                                                    {:option/slug  "classic",
-                                                     :option/name  "Classic",
-                                                     :filter/order 2}
-                                                    {:option/slug  "sporty",
-                                                     :option/name  "Sporty",
-                                                     :filter/order 3}
-                                                    {:option/slug  "glam",
-                                                     :option/name  "Gram",
-                                                     :filter/order 4}
-                                                    {:option/slug  "trendy",
-                                                     :option/name  "Trendy",
-                                                     :filter/order 5}}}
-                                  {:facet/slug    :tags/event
-                                   :facet/name    "Event",
-                                   :filter/order  22,
-                                   :facet/options #{{:option/slug  "wedding",
-                                                     :option/name  "Wedding",
-                                                     :filter/order 0}
-                                                    {:option/slug  "birthday",
-                                                     :option/name  "Birthday",
-                                                     :filter/order 1}
-                                                    {:option/slug  "work/business",
-                                                     :option/name  "Work/Business",
-                                                     :filter/order 2}
-                                                    {:option/slug  "anniversary",
-                                                     :option/name  "Anniversary",
-                                                     :filter/order 3}
-                                                    {:option/slug  "engagement",
-                                                     :option/name  "Engagement",
-                                                     :filter/order 4}
-                                                    {:option/slug  "party/event",
-                                                     :option/name  "Party/Event",
-                                                     :filter/order 5}}}]) ]
+        facet-filtering-state          (-> state
+                                           (get-in catalog.keypaths/k-models-facet-filtering)
+                                           (assoc :facet-filtering/item-label "Look"))
+        facet-filtering-longhand-state (update facet-filtering-state
+                                               :facet-filtering/filters
+                                               catalog.facets/expand-shorthand-colors)
+        tag-facets                     (when looks-tags?
+                                         [{:facet/slug    :tags/face-shape
+                                           :facet/name    "Face Shape",
+                                           :filter/order  20,
+                                           :facet/options #{{:option/slug  "round",
+                                                             :option/name  "Round",
+                                                             :filter/order 0}
+                                                            {:option/slug  "square",
+                                                             :option/name  "Square",
+                                                             :filter/order 1}
+                                                            {:option/slug  "oval",
+                                                             :option/name  "Oval",
+                                                             :filter/order 2}
+                                                            {:option/slug  "triangular",
+                                                             :option/name  "Triangular",
+                                                             :filter/order 3}
+                                                            {:option/slug  "heart",
+                                                             :option/name  "Heart",
+                                                             :filter/order 4}}}
+                                          {:facet/slug    :tags/style
+                                           :facet/name    "Style",
+                                           :filter/order  21,
+                                           :facet/options #{{:option/slug  "expressive",
+                                                             :option/name  "Expressive",
+                                                             :filter/order 0}
+                                                            {:option/slug  "romantic",
+                                                             :option/name  "Romantic",
+                                                             :filter/order 1}
+                                                            {:option/slug  "classic",
+                                                             :option/name  "Classic",
+                                                             :filter/order 2}
+                                                            {:option/slug  "sporty",
+                                                             :option/name  "Sporty",
+                                                             :filter/order 3}
+                                                            {:option/slug  "glam",
+                                                             :option/name  "Gram",
+                                                             :filter/order 4}
+                                                            {:option/slug  "trendy",
+                                                             :option/name  "Trendy",
+                                                             :filter/order 5}}}
+                                          {:facet/slug    :tags/event
+                                           :facet/name    "Event",
+                                           :filter/order  22,
+                                           :facet/options #{{:option/slug  "wedding",
+                                                             :option/name  "Wedding",
+                                                             :filter/order 0}
+                                                            {:option/slug  "birthday",
+                                                             :option/name  "Birthday",
+                                                             :filter/order 1}
+                                                            {:option/slug  "work/business",
+                                                             :option/name  "Work/Business",
+                                                             :filter/order 2}
+                                                            {:option/slug  "anniversary",
+                                                             :option/name  "Anniversary",
+                                                             :filter/order 3}
+                                                            {:option/slug  "engagement",
+                                                             :option/name  "Engagement",
+                                                             :filter/order 4}
+                                                            {:option/slug  "party/event",
+                                                             :option/name  "Party/Event",
+                                                             :filter/order 5}}}]) 
+        experiment-color-shorthand?    (experiments/color-shorthand? state)]
     (if
       ;; Spinning
-      (or (utils/requesting? state request-keys/fetch-shared-carts)
-          (empty? looks))
+     (or (utils/requesting? state request-keys/fetch-shared-carts)
+         (empty? looks))
       (->> (component/build spinning-template)
            (template/wrap-standard state
                                    e/navigate-shop-by-look))
       ;; Grid of Looks
       (->> (merge
-            {:hero   (if remove-free-install?
-                       looks-hero-no-free-install<-
-                       looks-hero<-)}
+            {:hero (if remove-free-install?
+                     looks-hero-no-free-install<-
+                     looks-hero<-)}
             (facet-filters/filters<-
-             {:facets-db             (concat (get-in state storefront.keypaths/v2-facets) tag-facets)
-              :faceted-models        looks
-              :facet-filtering-state facet-filtering-state
-              :facets-to-filter-on   [:hair/origin :hair/color :hair/texture :tags/event :tags/face-shape :tags/style]
-              :navigation-event      e/navigate-shop-by-look
-              :navigation-args       {:album-keyword :look}
-              :child-component-data  (looks-cards<- images-db looks facet-filtering-state)}))
+             {:facets-db                      (concat (get-in state storefront.keypaths/v2-facets) tag-facets)
+              :faceted-models                 looks
+              :facet-filtering-state          facet-filtering-state
+              :experiment-color-shorthand?    experiment-color-shorthand?
+              :facet-filtering-longhand-state (if experiment-color-shorthand?
+                                                facet-filtering-longhand-state
+                                                facet-filtering-state)
+              :facets-to-filter-on            [:hair/origin :hair/color :hair/texture :tags/event :tags/face-shape :tags/style]
+              :navigation-event               e/navigate-shop-by-look
+              :navigation-args                {:album-keyword :look}
+              :child-component-data           (looks-cards<- images-db looks facet-filtering-state)}))
            (component/build looks-template)
            (template/wrap-standard state e/navigate-shop-by-look)))))
 
