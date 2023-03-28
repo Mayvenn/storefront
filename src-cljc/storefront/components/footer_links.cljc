@@ -71,7 +71,10 @@
                                           :data-test "content-tos") "Terms")
      " - "
      ;; use traditional page load so anchors work
-     ^:inline (minimal-footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#our-ads")} "Our Ads")]
+     ^:inline (minimal-footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#our-ads")} "Our Ads")
+     " - "
+     ^:inline (minimal-footer-link (assoc (utils/route-to events/navigate-content-about-us)
+                                          :data-test "content-about-us") "Return & Exchange Policy")]
     [:div.flex-column.content-3.white.bg-black.pt6
      [:div.p3.container
       [:div.flex.justify-between
@@ -80,18 +83,18 @@
                                          :width  "115px"
                                          :class  "fill-white"})
         [:div.flex.mt4.mb3.col-12-on-dt
-       [:div.col-3 {:key "full"}
-        ^:inline (footer-link (merge {:aria-label "About Mayvenn"} (utils/route-to events/navigate-content-about-us)) "About")
-        ^:inline (footer-link {:href "https://jobs.mayvenn.com"} "Careers")
+         [:div.col-3 {:key "full"}
+          ^:inline (footer-link (merge {:aria-label "About Mayvenn"} (utils/route-to events/navigate-content-about-us)) "About")
+          ^:inline (footer-link {:href "https://jobs.mayvenn.com"} "Careers")
         ^:inline (footer-link (utils/route-to events/navigate-content-help) "Contact")]
-       [:div.col-3 {:key "standard"}
+         [:div.col-3 {:key "standard"}
         ^:inline (footer-link (assoc (utils/route-to events/navigate-content-privacy)
                                      :data-test "content-privacy") "Privacy")
         ^:inline (footer-link (assoc (utils/route-to events/navigate-content-tos)
                                      :data-test "content-tos") "Terms")
 
         ;; use traditional page load so anchors work
-        ^:inline (footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#our-ads")} "Our Ads")]
+          ^:inline (footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#our-ads")} "Our Ads")]
        [:div.col-6
         ^:inline (footer-link {:href (str (routes/path-for events/navigate-content-guarantee) "#guarantee")}
                               "Our Guarantee")
