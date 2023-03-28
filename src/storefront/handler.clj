@@ -597,6 +597,8 @@
       (assoc _ :experience-omni (feature-flags/retrieve-flag ld "experience-omni" :bool false))
       (assoc _ :ww-upcp (feature-flags/retrieve-flag ld "ww-upcp" :bool false))
       (assoc _ :homepage-cms-update (feature-flags/retrieve-flag ld "homepage-cms-update" :bool false))
+      (assoc _ :splay-tation (feature-flags/retrieve-flag ld "splay-tation" :bool false))
+      (assoc _ :color-shorthand (feature-flags/retrieve-flag ld "color-shorthand" :bool false))
       (assoc-in-req-state req keypaths/features _)
       (h _))))
 
