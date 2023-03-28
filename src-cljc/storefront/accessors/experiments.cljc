@@ -166,3 +166,7 @@
 (defn debug-template-slots?
   [data]
   (display-feature? data "tooling--debug-template-slots"))
+
+(defn color-shorthand?
+  [data]
+  (display-feature? data "color-shorthand"))
