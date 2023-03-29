@@ -964,7 +964,7 @@
 
 (defcomponent button [{:keys [alignment copy color size url navigation-message]} _ _]
   (ui/button (str "btn-" size " "
-                  "btn" color " "
+                  "btn-" color " "
                   alignment " "
                   "button-font-1")
              (merge {:href url} (when navigation-message (apply utils/route-to navigation-message)))
