@@ -127,8 +127,7 @@
         shop?                               (or (= "shop" (get-in app-state k/store-slug))
                                                 (= "retail-location" (get-in app-state k/store-experience)))
         faq                                 (get-in app-state (conj storefront.keypaths/cms-faq (:contentful/faq-id category)))
-        splay?                              (and (seq (:selector/dimensions category))
-                                                 (experiments/splay-tation? app-state))
+        splay?                              (-> category :selector/dimensions empty? not)
         experiment-color-shorthand?         (experiments/color-shorthand? app-state)]
     (c/build template
              (merge
