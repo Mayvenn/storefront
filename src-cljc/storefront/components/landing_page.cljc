@@ -137,6 +137,12 @@
         (assoc :mobile-class (str base-class (if homepage-cms-update? mobile-layout mobile-columns))
                :desktop-class (str base-class (if homepage-cms-update? desktop-layout desktop-columns) "-on-tb-dt")))))
 
+(defn determine-alignment
+  [{:keys [alignment-to-container] :as cms-data}]
+  (assoc cms-data :alignment (if (= "left" alignment-to-container)
+                               "left-align"
+                               "center")))
+
 (defn determine-and-shape-layer
   [data body-layer]
   (let [skus-db               (get-in data storefront.keypaths/v2-skus)
@@ -347,7 +353,8 @@
                                                      (assoc :navigation-message (url->navigation-message (:url body-layer)))
                                                      (assoc :layer/type :tiles))
       "button"                                   (-> body-layer
-                                                     (select-keys [:copy :color :size :url])
+                                                     (select-keys [:copy :alignment-to-container :color :size :url])
+                                                     determine-alignment
                                                      (assoc :navigation-message (url->navigation-message (:url body-layer)))
                                                      (assoc :layer/type :button))
       "title"                                    (-> body-layer
