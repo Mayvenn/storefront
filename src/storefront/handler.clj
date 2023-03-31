@@ -567,6 +567,11 @@
            (assoc-in-req-state keypaths/user-verified-at (cookies/get req "verified-at"))
            (assoc-in-req-state keypaths/account-profile (acct-profile-scaffold req))))))
 
+(defn wrap-set-wirewheel [h]
+  (fn [req]
+    (h (-> req
+           (assoc-in-req-state keypaths/wirewheel (json/parse-string (cookies/get req "wwupcp") true))))))
+
 (defn wrap-fetch-promotions
   [h storeback-config]
   (fn [req]
@@ -603,13 +608,14 @@
 
 
 ;;TODO Have all of these middleswarez perform event transitions, just like the frontend
-(defn wrap-state [routes {:keys [storeback-config welcome-config contentful static-pages-repo launchdarkly environment]}]
+(defn wrap-state [routes {:keys [storeback-config welcome-config contentful static-pages-repo launchdarkly environment wirewheel]}]
   (-> routes
       (wrap-add-feature-flags launchdarkly)
       (wrap-set-cms-cache contentful)
       (wrap-fetch-promotions storeback-config)
       (wrap-fetch-catalog storeback-config)
       (wrap-set-user)
+      (wrap-set-wirewheel)
       (wrap-set-welcome-url welcome-config)
       wrap-affiliate-initial-login-landing-navigation-message
       (wrap-set-initial-state environment static-pages-repo)))
@@ -888,12 +894,12 @@
         (update-in keypaths/v2-products merge (products/index-products products))
         (update-in keypaths/v2-skus merge skus))))
 
-(defn frontend-routes [{:keys [storeback-config environment client-version wirewheel-config] :as _ctx}]
+(defn frontend-routes [{:keys [storeback-config environment client-version wirewheel-config wirewheel] :as _ctx}]
   (fn [{:keys [state] :as req}]
     (let [nav-message        (get-in-req-state req keypaths/navigation-message)
           [nav-event params] nav-message]
       (when (not= nav-event events/navigate-not-found)
-        (let [render-ctx (maps/auto-map storeback-config environment client-version wirewheel-config)
+        (let [render-ctx (maps/auto-map storeback-config environment client-version wirewheel-config wirewheel)
               data       (cond-> state
                            (= events/navigate-category nav-event)
                            (assoc-category-route-data storeback-config params)
@@ -1206,7 +1212,7 @@
 
 (defn create-handler
   ([] (create-handler {}))
-  ([{:keys [logger exception-handler environment contentful wirewheel-config] :as ctx}]
+  ([{:keys [logger exception-handler environment contentful wirewheel-config wirewheel] :as ctx}]
    (-> (routes (GET "/healthcheck" [] "cool beans")
                (GET "/robots.txt" req (-> (robots req) util.response/response (util.response/content-type "text/plain")))
                (GET "/sitemap.xml" req (sitemap-index req))

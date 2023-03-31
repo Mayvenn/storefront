@@ -10,7 +10,8 @@
             [storefront.system.scheduler :as scheduler]
             [storefront.system.contentful.static-page :as static-page]
             [spice.logger4j :as logger4j]
-            [tocsin.core :as tocsin]))
+            [tocsin.core :as tocsin]
+            [storefront.system.wirewheel :as wirewheel]))
 
 (defrecord AppHandler [logger exception-handler storeback-config welcome-config environment
                        client-version static-pages-repo wirewheel-config]
@@ -40,6 +41,7 @@
                        nil nil)
    :contentful  (contentful/map->ContentfulContext (merge (:contentful-config config)
                                                           (select-keys config [:environment])))
+   :wirewheel  (wirewheel/map->WirewheelContext (:wirewheel-api-config config))
    :launchdarkly (feature-flags/map->LaunchDarkly (select-keys config [:launchdarkly-config]))
    :app-handler (map->AppHandler (select-keys config [:storeback-config
                                                       :welcome-config
@@ -52,8 +54,9 @@
    :exception-handler (exception-handler (config :bugsnag-token) (config :environment))))
 
 (def dependency-map
-  {:app-handler       [:logger :exception-handler :contentful :launchdarkly :sitemap-cache :static-pages-repo]
+  {:app-handler       [:logger :exception-handler :contentful :launchdarkly :sitemap-cache :static-pages-repo :wirewheel]
    :contentful        [:logger :exception-handler :scheduler]
+   :wirewheel         [:logger :exception-handler :scheduler]
    :static-pages-repo [:scheduler :exception-handler]
    :scheduler         [:logger :exception-handler]
    :embedded-server   {:app :app-handler}})

@@ -49,6 +49,10 @@
 (def user-total-available-store-credit (conj user :total-available-store-credit))
 (def user-ecd (conj user :ecd))
 
+(def wirewheel [:wirewheel])
+(def wirewheel-subject (conj wirewheel :subject))
+(def wirewheel-subject-anonymous-id (conj wirewheel-subject :anonymousId))
+
 (def order [:order])
 (def order-total (conj order :total))
 (def order-promotion-codes (conj order :promotion-codes))

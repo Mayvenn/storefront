@@ -6,22 +6,19 @@
   (:import java.util.Base64))
 
 (defn auth-token-request
-  [{:keys [base-url path client-id client-secret exception-handler logger]}]
+  [{:keys [issuer-url client-id client-secret exception-handler logger]}]
   (try
-    (tugboat/request {:endpoint base-url
-                      :logger   logger}
-                     :post
-                     path
-                     {:socket-timeout 30000
-                      :conn-timeout   30000
-                      :headers        {"Content-Type"  "application/x-www-form-urlencoded"
-                                       "Authorization" (->> (str client-id ":" client-secret)
-                                                            .getBytes
-                                                            (.encodeToString (Base64/getEncoder))
-                                                            (str "Basic "))}
-                      :query-params   {"grant_type" "client_credentials"
-                                       "scope"      "consent-insert-api consent-get-api"}
-                      :body           (json/generate-string {"access_token" nil})})
+    (tugboat/request {:logger       logger
+                      :method       :post
+                      :url          issuer-url
+                      :headers      {"Content-Type"  "application/x-www-form-urlencoded"
+                                     "Authorization" (->> (str client-id ":" client-secret)
+                                                          .getBytes
+                                                          (.encodeToString (Base64/getEncoder))
+                                                          (str "Basic "))}
+                      :query-params {"grant_type" "client_credentials"
+                                     "scope"      "consent-insert-api consent-get-api"}
+                      :body         (json/generate-string {"access_token" nil})})
     (catch Throwable e
       (logger :error e)
       (exception-handler e)
@@ -67,7 +64,7 @@
   (set-consents [_ _ _] "Set consent information for an individual")
   (fetch-consents [_ _] "Fetch an individual's consents"))
 
-(defrecord WirewheelContext [logger exception-handler auth-token-timeout client-id client-secret issuer-base-url issuer-path api-base-url scheduler]
+(defrecord WirewheelContext [logger exception-handler scheduler auth-token-timeout client-id client-secret issuer-url api-base-url]
   component/Lifecycle
   (start [c]
     (logger :event {:event {:name :cms.lifecycle/started}})
@@ -76,8 +73,7 @@
                        auth-token-timeout
                        "poller for Wire Wheel API auth token"
                        #(reset! auth-token
-                                (some-> {:base-url          issuer-base-url
-                                         :path              issuer-path
+                                (some-> {:issuer-url        issuer-url
                                          :client-id         client-id
                                          :client-secret     client-secret
                                          :exception-handler exception-handler
@@ -89,7 +85,8 @@
       (assoc c :auth-token auth-token)))
   (stop [c]
     (logger :event {:event {:name :component.wirewheel.lifecycle/stopped}})
-    (reset! (:auth-token c) nil)
+    (when (:auth-token c)
+      (reset! (:auth-token c) nil))
     (dissoc c :auth-token))
   ConsentPlatform
   (set-consents [c verified-user-id consents]
@@ -109,25 +106,3 @@
             consents-fetch-request
             :body
             :unifiedConsent)))
-
-(comment
-  (let [wirewheel   (-> {:logger             (:logger dev-system/the-system)
-                         :auth-token-timeout 20000 ;; 12000000 ; 20 minutes
-                         :client-id          ""
-                         :client-secret      ""
-                         :issuer-base-url    "https://wirewheelio.okta.com"
-                         :issuer-path        ""
-                         :api-base-url       "https://api.upcp.wirewheel.io/"
-                         :scheduler          (:scheduler dev-system/the-system)
-                         :exception-handler  (:exception-handler dev-system/the-system)}
-                      map->WirewheelContext
-                      .start)
-        verified-id (str (java.util.UUID/randomUUID))]
-    (Thread/sleep 1000)
-    (.set-consents wirewheel verified-id [{:target "foo-target"
-                                           :vendor "bar-vendor"
-                                           :action "REJECT"}])
-    (.fetch-consents wirewheel verified-id)
-    (.stop wirewheel))
-
-  )
