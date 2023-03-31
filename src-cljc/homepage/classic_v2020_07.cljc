@@ -17,7 +17,7 @@
                                                              (conj k/cms-homepage)
                                                              (get-in app-state)
                                                              :body))}}
-                          (when (:hide-old-classic-homepage (get-in app-state storefront.keypaths/features))
+                          (when-not (:hide-old-classic-homepage (get-in app-state storefront.keypaths/features))
                             {:contact-us           ui/contact-us-query
                             :diishan              ui/diishan-query
                             :guarantees           ui/guarantees-query
