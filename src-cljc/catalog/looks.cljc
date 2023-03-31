@@ -399,7 +399,9 @@
               :facets-to-filter-on            [:hair/origin :hair/color :hair/texture :tags/event :tags/face-shape :tags/style]
               :navigation-event               e/navigate-shop-by-look
               :navigation-args                {:album-keyword :look}
-              :child-component-data           (looks-cards<- images-db looks facet-filtering-state)}))
+              :child-component-data           (looks-cards<- images-db looks (if experiment-color-shorthand?
+                                                                               facet-filtering-longhand-state
+                                                                               facet-filtering-state))})) 
            (component/build looks-template)
            (template/wrap-standard state e/navigate-shop-by-look)))))
 
