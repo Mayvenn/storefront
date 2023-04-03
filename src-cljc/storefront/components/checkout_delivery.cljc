@@ -67,7 +67,7 @@
     "Sun" 1
     0))
 
-(def additional-holiday-delay-days 1)
+(def additional-holiday-delay-days 0)
 
 (defn number-of-days-to-ship
   ;; Key:
