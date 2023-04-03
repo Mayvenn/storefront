@@ -110,7 +110,7 @@
 .btn-black.btn-medium { border-image-source: svg-load(var(--oct-button-medium-svg), fill=var(--black), stroke=none); }
 .btn-black span       { background-color: var(--black); }
 
-.btn-ghost            { color: var(--p-color); text-decoration: underline }
+.btn-ghost            { color: var(--p-color); text-decoration: underline; padding: 0 }
 
 .btn-s-color { color: var(--white); background-color: var(--s-color); }
 
