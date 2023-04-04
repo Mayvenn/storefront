@@ -126,16 +126,13 @@
                 :look/items     product-items})))))
 
 (defn determine-mobile-and-desktop-class
-  [{:keys [mobile-columns
-           desktop-columns
-           mobile-layout
+  [{:keys [mobile-layout
            desktop-layout]
-    :as cms-data} data]
-  (let [homepage-cms-update? (:homepage-cms-update (get-in data storefront.keypaths/features))
-        base-class (if homepage-cms-update? "sections-" "columns-")]
+    :as cms-data}]
+  (let [base-class "sections-"]
     (-> cms-data
-        (assoc :mobile-class (str base-class (if homepage-cms-update? mobile-layout mobile-columns))
-               :desktop-class (str base-class (if homepage-cms-update? desktop-layout desktop-columns) "-on-tb-dt")))))
+        (assoc :mobile-class (str base-class mobile-layout)
+               :desktop-class (str base-class desktop-layout "-on-tb-dt")))))
 
 (defn determine-alignment
   [{:keys [alignment-to-container] :as cms-data}]
@@ -336,14 +333,13 @@
                                                                 "animated-value-props" :animated-value-props
                                                                 nil)}
       "section"                                  (-> body-layer
-                                                     (select-keys [:contents :mobile-columns :desktop-columns
-                                                                   :mobile-layout :desktop-layout
+                                                     (select-keys [:contents :mobile-layout :desktop-layout
                                                                    :desktop-reverse-order :background-color :url
                                                                    :padding :gap])
                                                      (update :contents (partial map #(determine-and-shape-layer data %)))
 
                                                      (assoc :navigation-message (url->navigation-message (:url body-layer)))
-                                                     (determine-mobile-and-desktop-class data)
+                                                     determine-mobile-and-desktop-class
                                                      (assoc :layer/type :section))
       "tiles"                                    (-> body-layer
                                                      (select-keys [:contents :mobile-columns :desktop-columns
