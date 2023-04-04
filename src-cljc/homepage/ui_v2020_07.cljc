@@ -30,16 +30,16 @@
            zip-explanation]} _ _]
   [:div
    (c/build layered/component lp-data nil)
-   (c/build hero/organism hero)
+   (when hero (c/build hero/organism hero))
 
-   (c/build shopping-categories/organism shopping-categories)
+   (when shopping-categories (c/build shopping-categories/organism shopping-categories))
 
-   (c/build hashtag-mayvenn-hair/organism hashtag-mayvenn-hair)
-   (c/build zip-explanation/organism zip-explanation)
-   (c/build faq/organism faq)
-   (c/build guarantees/organism guarantees)
-   (c/build diishan/organism diishan)
-   (c/build contact-us/organism contact-us)])
+   (when hashtag-mayvenn-hair (c/build hashtag-mayvenn-hair/organism hashtag-mayvenn-hair))
+   (when zip-explanation (c/build zip-explanation/organism zip-explanation))
+   (when faq (c/build faq/organism faq))
+   (when guarantees (c/build guarantees/organism guarantees))
+   (when diishan (c/build diishan/organism diishan))
+   (when contact-us (c/build contact-us/organism contact-us))])
 
 (defn hero-query
   "TODO homepage hero query is reused and complected

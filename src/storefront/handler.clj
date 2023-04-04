@@ -603,6 +603,7 @@
       (assoc _ :ww-upcp (feature-flags/retrieve-flag ld "ww-upcp" :bool false))
       (assoc _ :homepage-cms-update (feature-flags/retrieve-flag ld "homepage-cms-update" :bool false))
       (assoc _ :color-shorthand (feature-flags/retrieve-flag ld "color-shorthand" :bool false))
+      (assoc _ :hide-old-classic-homepage (feature-flags/retrieve-flag ld "hide-old-classic-homepage" :bool false))
       (assoc-in-req-state req keypaths/features _)
       (h _))))
 
