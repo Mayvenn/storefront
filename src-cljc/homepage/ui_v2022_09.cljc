@@ -17,8 +17,8 @@
   [{:keys [hero shopping-categories blog1 blog2 zip-explanation lp-data] :as data} _ _]
   [:div
    (c/build layered/component lp-data nil)
-   (c/build hero/organism-without-shipping-bar hero)
-   (c/build promises/organism (vt/with :promises data))
+   (when hero (c/build hero/organism-without-shipping-bar hero))
+   (when-let [promises (vt/with :promises data)] (c/build promises/organism promises))
    (when (seq (vt/with :not-your-average-hair-store data))
      ;; TODO: this div is an expediency, these designs belong in a component that
      ;;       contains its own layout, but this is faster right now. Come back and
@@ -26,12 +26,13 @@
      [:div.max-960.mx-auto.center.p4-on-mb.p8-on-tb-dt
       (titles/canela-huge-with-large-secondary
        (vt/with :not-your-average-hair-store data))])
-   (c/build shopping-categories/organism shopping-categories)
-   (c/build blog/organism blog1)
-   (c/build shop-these-looks/organism data)
-   (c/build blog/organism blog2)
-   [:div.mt8
-    (c/build zip-explanation/organism zip-explanation)]])
+   (when shopping-categories (c/build shopping-categories/organism shopping-categories))
+   (when blog1 (c/build blog/organism blog1))
+   (when (:shop-these-looks/row-1 data) (c/build shop-these-looks/organism data))
+   (when (:blog/id data) (c/build blog/organism blog2))
+   (when zip-explanation
+     [:div.mt8
+      (c/build zip-explanation/organism zip-explanation)])])
 
 (defn hero-query
   "TODO homepage hero query is reused and complected
