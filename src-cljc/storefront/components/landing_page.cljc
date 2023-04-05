@@ -8,6 +8,7 @@
             [adventure.faq :as faq]
             [adventure.keypaths :as adventure.keypaths]
             [mayvenn.concept.email-capture :as concept]
+            [mayvenn.concept.account :as accounts]
             [mayvenn.visual.tools :refer [within with]]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
@@ -147,6 +148,7 @@
         promotions            (get-in data storefront.keypaths/promotions)
         remove-free-install?  (:remove-free-install (get-in data storefront.keypaths/features))
         migrate-to-rich-text? (:migrate-to-rich-text (get-in data storefront.keypaths/features))
+        in-omni?              (:experience/omni (:experiences (accounts/<- data)))
         facets-db             (->> (get-in data storefront.keypaths/v2-facets)
                                    (maps/index-by (comp keyword :facet/slug))
                                    (maps/map-values (fn [facet]
@@ -331,7 +333,8 @@
                                                                 "customize-wig"        :customize-wig
                                                                 "why-mayvenn"          :why-mayvenn
                                                                 "animated-value-props" :animated-value-props
-                                                                nil)}
+                                                                nil)
+                                                  :in-omni? in-omni?}
       "section"                                  (-> body-layer
                                                      (select-keys [:contents :mobile-layout :desktop-layout
                                                                    :desktop-reverse-order :background-color :url

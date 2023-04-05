@@ -869,9 +869,20 @@
     {:promises.icon/symbol :svg/shield,
      :promises.icon/title  "30-Day Guarantee"}]})
 
+(def promises-query
+  {:list/icons
+   [{:promises.icon/symbol :svg/hand-heart,
+     :promises.icon/title  "Top-Notch Service"}
+    {:promises.icon/symbol :svg/shield,
+     :promises.icon/title  "30 Day Guarantee"}
+    {:promises.icon/symbol :svg/check-cloud,
+     :promises.icon/title  "100% Virgin Human Hair"}
+    {:promises.icon/symbol :svg/ship-truck,
+     :promises.icon/title  "Free Standard Shipping"}]})
+
 (defcomponent promises-omni
-  [_ _ _]
-  (component/build promises/organism promises-omni-query))
+  [{:keys [in-omni?]} _ _]
+  (component/build promises/organism (if in-omni? promises-omni-query promises-query)))
 
 (def wig-customization-query
   {:header/supertitle "Available In-Store Only"
