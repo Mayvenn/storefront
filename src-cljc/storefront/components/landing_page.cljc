@@ -139,7 +139,7 @@
   [{:keys [alignment-to-container] :as cms-data}]
   (assoc cms-data :alignment (if (= "left" alignment-to-container)
                                "left-align"
-                               "center")))
+                               "justify-center")))
 
 (defn determine-and-shape-layer
   [data body-layer]
