@@ -26,15 +26,22 @@
    {:style {:grid-template-columns "25px auto"}}
    (concat
     (map-indexed
-     (fn [ix {:keys [icon copy]}]
+     (fn [ix {:keys [icon copy promise-target promise-target-copy]}]
        [(svg/symbolic->html [icon {:key   (str "icon-" ix)
                                    :style {:grid-column "1 / 2"
                                            :height      "20px"}
                                    :class "fill-p-color col-12"}])
         [:div
-         {:key   (str "copy-" ix)
-          :style {:grid-column "2 / 3"}}
-         copy]])
+         [:div
+          {:key   (str "copy-" ix)
+           :style {:grid-column "2 / 3"}}
+          copy]
+         (when promise-target
+           (ui/button-small-underline-black
+            (merge
+             (apply utils/route-to promise-target)
+             {:style {:grid-column "2 / 3"}})
+            promise-target-copy))]])
      promises))
    (ui/button-small-underline-primary
     (merge

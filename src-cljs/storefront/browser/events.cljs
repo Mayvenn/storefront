@@ -80,7 +80,9 @@
    :design-system          events/control-design-system-popup-dismiss
    :addon-services-menu    events/control-addon-service-menu-dismiss
    :stylist-search-filters events/control-stylist-search-filters-dismiss
-   :length-guide           events/popup-hide-length-guide})
+   :length-guide           events/popup-hide-length-guide
+   :return-policy          events/popup-hide-return-policy
+   :shipping-options       events/popup-hide-shipping-options})
 
 (defn dismiss-stylist-filter-modal-event
   [app-state]

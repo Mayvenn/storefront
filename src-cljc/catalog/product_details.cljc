@@ -228,6 +228,7 @@
     (c/html
      [:div
       [:div.container.pdp-on-tb
+       #?(:cljs (popup/built-component data nil))
        (when (:offset ugc)
          [:div.absolute.overlay.z4.overflow-auto
           {:key "popup-ugc"}
@@ -362,6 +363,109 @@
      (stringer/track-event "length_guide_link_pressed"
                            {:location location})))
 
+#?(:cljs
+   [(defmethod popup/query :return-policy [state]
+      {:return-policy/close-target [events/popup-hide-return-policy]
+       :return-policy/primary      "Return & Exchange Policy"})
+    (defmethod popup/component :return-policy
+      [{:return-policy/keys [close-target primary]} _ _]
+      (ui/modal
+       {:close-attrs
+        {:on-click #(apply publish close-target)}}
+       [:div.bg-white.stretch.p4
+        [:div.bg-white.col-12.flex.justify-between.items-center
+         [:div.content-1 primary]
+         [:a.p3
+          (merge (apply utils/fake-href close-target)
+                 {:data-test "close-return-policy-modal"})
+          (svg/x-sharp {:style {:width  "12px"
+                                :height "12px"}})]]
+        [:div.bold "Exchange Policy:"]
+        [:div "Wear it, dye it, even cut it. If you're not in love with your hair, we'll exchange it within 30 days. Contact us at " [:span.bold.underline "1-888-562-7952"]]
+        [:br]
+        [:div.bold "Return Policy:"]
+        [:div "If you're not completely satisfied with your Mayvenn hair before it is installed, we will refund your purchase as long as it's unopened and the hair is in its original condition (bundles must not be unraveled or altered, lace cannot be altered, etc.) Contact us at " [:span.bold.underline "1-888-562-7952"]]
+        [:br]
+        [:div "Our return policy covers products that have not been altered in any way. Make sure that you check out the texture, length, etc. before you unwrap and install your bundles or wigs - this will ensure that it'll be eligible for a full return if you decide to switch it up." ]]))])
+
+(defmethod transitions/transition-state events/popup-show-return-policy
+  [_ _ {:keys []} state]
+  (-> state
+      (assoc-in keypaths/popup :return-policy)
+      #_(assoc-in catalog.keypaths/length-guide-image length-guide-image)))
+
+#?(:cljs
+   (defmethod trackings/perform-track events/popup-show-return-policy
+     [_ _ {:keys [product]} _]
+     (stringer/track-event "return_policy_link_pressed"
+                           {:product product})))
+
+#?(:cljs
+   [(defmethod popup/query :shipping-options [state]
+      {:shipping-options/close-target [events/popup-hide-shipping-options]
+       :shipping-options/primary      "Shipping"
+       :shipping-options/drop-shipping?    (->> [(get-in state catalog.keypaths/detailed-product-selected-sku)]
+                                                (select {:warehouse/slug #{"factory-cn"}})
+                                                boolean)})
+    (defmethod popup/component :shipping-options
+      [{:shipping-options/keys [close-target primary drop-shipping?]} _ _]
+      (ui/modal
+       {:close-attrs
+        {:on-click #(apply publish close-target)}}
+       [:div.bg-white.stretch.p4
+        [:div.bg-white.col-12.flex.justify-between.items-center.py3
+         [:div.content-1 primary]
+         [:a.p3
+          (merge (apply utils/fake-href close-target)
+                 {:data-test "close-return-policy-modal"})
+          (svg/x-sharp {:style {:width  "12px"
+                                :height "12px"}})]]
+        (if drop-shipping?
+          [:div.grid.gap-2
+           [:div.grid.grid-cols-3.gap-2
+            [:div "Option"]
+            [:div "Time"]
+            [:div "Cost"]]
+           [:p.col-12.border-bottom.border-width-2]
+           [:div.grid.grid-cols-3.gap-2.border-bottom.border-warm-gray.pb1
+            [:div.content-3 "Standard"]
+            [:div.content-3 "7-10 business days"]
+            [:div.content-3 "Free"]]]
+          [:div.grid.gap-2
+           [:div.grid.grid-cols-3.gap-2
+            [:div "Option"]
+            [:div "Time"]
+            [:div "Cost"]]
+           [:p.col-12.border-bottom.border-width-2]
+           [:div.grid.grid-cols-3.gap-2.border-bottom.border-aqua.pb1
+            [:div.content-3 "Standard"]
+            [:div.content-3 "4-6 business days"]
+            [:div.content-3 "Free"]]
+           [:div.grid.grid-cols-3.gap-2.border-bottom.border-warm-gray.pb1
+            [:div.content-3 "Priority (USPS)"]
+            [:div.content-3 "2-4 business days"]
+            [:div.content-3 "$2.99"]]
+           [:div.grid.grid-cols-3.gap-2.border-bottom.pb1
+            [:div.content-3 "Express (FedEx)"]
+            [:div.content-3 "1-2 business days"]
+            [:div.content-3 "$20.00"]]
+           [:div.grid.grid-cols-3.gap-2
+            [:div.content-3 "Rush (Overnight - FedEx)"]
+            [:div.content-3 "1 business days"]
+            [:div.content-3 "$40.00"]]])]))])
+
+(defmethod transitions/transition-state events/popup-show-shipping-options
+  [_ _ {:keys []} state]
+  (-> state
+      (assoc-in keypaths/popup :shipping-options)
+      #_(assoc-in catalog.keypaths/length-guide-image length-guide-image)))
+
+#?(:cljs
+   (defmethod trackings/perform-track events/popup-show-shipping-options
+     [_ _ {:keys [product]} _]
+     (stringer/track-event "shipping_options_link_pressed"
+                           {:product product})))
+
 (defn first-when-only [coll]
   (when (= 1 (count coll))
     (first coll)))
@@ -390,12 +494,23 @@
                                    :quantity (get-in app-state keypaths/browse-sku-quantity 1)}]
       :cta/spinning?             (utils/requesting? app-state (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
       :cta/disabled?             (not (:inventory/in-stock? selected-sku))
-      :sub-cta/promises          [{:icon :svg/shield
-                                   :copy "30 day guarantee"}
-                                  {:icon :svg/ship-truck
-                                   :copy "Free standard shipping"}
-                                  {:icon :svg/market
-                                   :copy "Come visit our Texas locations"}]
+      :sub-cta/promises          (if (:show-return-and-shipping-modals (get-in app-state keypaths/features))
+                                   [{:icon :svg/shield
+                                     :copy "Not the perfect match? We'll exchange it within 30 days."
+                                     :promise-target [events/popup-show-return-policy {:product (products/current-product app-state)}]
+                                     :promise-target-copy "Return & Exchange Policy"}
+                                    {:icon :svg/ship-truck
+                                     :copy "Free standard shipping on all orders."
+                                     :promise-target [events/popup-show-shipping-options {:product (products/current-product app-state)}]
+                                     :promise-target-copy "Shipping Options"}
+                                    {:icon :svg/market
+                                     :copy "Try it on at one of our Texas locations."}]
+                                   [{:icon :svg/shield
+                                     :copy "30 day guarantee"}
+                                    {:icon :svg/ship-truck
+                                     :copy "Free standard shipping"}
+                                    {:icon :svg/market
+                                     :copy "Come visit our Texas locations"}])
       :sub-cta/learn-more-copy   "Find my store"
       :sub-cta/learn-more-target [events/navigate-retail-walmart {}]})))
 
