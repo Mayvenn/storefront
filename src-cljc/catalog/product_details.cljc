@@ -366,9 +366,10 @@
 #?(:cljs
    [(defmethod popup/query :return-policy [state]
       {:return-policy/close-target [events/popup-hide-return-policy]
-       :return-policy/primary      "Return & Exchange Policy"})
+       :return-policy/primary      "Return & Exchange Policy"
+       :return-policy/contact-number "1-888-562-7952"})
     (defmethod popup/component :return-policy
-      [{:return-policy/keys [close-target primary]} _ _]
+      [{:return-policy/keys [close-target primary contact-number]} _ _]
       (ui/modal
        {:close-attrs
         {:on-click #(apply publish close-target)}}
@@ -380,13 +381,25 @@
                  {:data-test "close-return-policy-modal"})
           (svg/x-sharp {:style {:width  "12px"
                                 :height "12px"}})]]
-        [:div.bold "Exchange Policy:"]
-        [:div "Wear it, dye it, even cut it. If you're not in love with your hair, we'll exchange it within 30 days. Contact us at " [:span.bold.underline "1-888-562-7952"]]
+        [:p.bold "Exchange Policy:"]
+        [:p "Wear it, dye it, even cut it. If you're not in love with your hair,
+        we'll exchange it within 30 days. Contact us at "
+         (ui/link :link/phone :a.black.bold.underline {} contact-number) "."]
         [:br]
-        [:div.bold "Return Policy:"]
-        [:div "If you're not completely satisfied with your Mayvenn hair before it is installed, we will refund your purchase as long as it's unopened and the hair is in its original condition (bundles must not be unraveled or altered, lace cannot be altered, etc.) Contact us at " [:span.bold.underline "1-888-562-7952"]]
+        [:p "This means that even if your hair has been previously worn,
+        installed, cut, colored, or styled, we will still exchange it for you!"]
         [:br]
-        [:div "Our return policy covers products that have not been altered in any way. Make sure that you check out the texture, length, etc. before you unwrap and install your bundles or wigs - this will ensure that it'll be eligible for a full return if you decide to switch it up." ]]))])
+        [:p.bold "Return Policy:"]
+        [:p "If you're not completely satisfied with your Mayvenn hair before it
+        is installed, we will refund your purchase as long as it's unopened and
+        the hair is in its original condition (bundles must not be unraveled or
+        altered, lace cannot be altered, etc.) Contact us
+        at " (ui/link :link/phone :a.black.bold.underline {} contact-number) "."]
+        [:br]
+        [:p "Our return policy covers products that have not been altered in any
+        way. Make sure that you check out the texture, length, etc. before you
+        unwrap and install your bundles or wigs - this will ensure that it'll be
+        eligible for a full return if you decide to switch it up." ]]))])
 
 (defmethod transitions/transition-state events/popup-show-return-policy
   [_ _ {:keys []} state]
@@ -437,7 +450,7 @@
             [:div "Time"]
             [:div "Cost"]]
            [:p.col-12.border-bottom.border-width-2]
-           [:div.grid.grid-cols-3.gap-2.border-bottom.border-aqua.pb1
+           [:div.grid.grid-cols-3.gap-2.border-bottom.border-warm-gray.pb1
             [:div.content-3 "Standard"]
             [:div.content-3 "4-6 business days"]
             [:div.content-3 "Free"]]
@@ -445,11 +458,11 @@
             [:div.content-3 "Priority (USPS)"]
             [:div.content-3 "2-4 business days"]
             [:div.content-3 "$2.99"]]
-           [:div.grid.grid-cols-3.gap-2.border-bottom.pb1
+           [:div.grid.grid-cols-3.gap-2.border-bottom.border-warm-gray.pb1
             [:div.content-3 "Express (FedEx)"]
             [:div.content-3 "1-2 business days"]
             [:div.content-3 "$20.00"]]
-           [:div.grid.grid-cols-3.gap-2
+           [:div.grid.grid-cols-3.gap-2.border-bottom.border-warm-gray.pb1
             [:div.content-3 "Rush (Overnight - FedEx)"]
             [:div.content-3 "1 business days"]
             [:div.content-3 "$40.00"]]])]))])
