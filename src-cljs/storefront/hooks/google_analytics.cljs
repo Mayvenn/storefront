@@ -92,10 +92,14 @@
   [_ _event {:keys [email phone first-name last-name address1 city state zipcode] :as _args} app-state]
   (update-in app-state 
              k/user-ecd 
-             #(maps/deep-merge % (maps/deep-remove-nils {:sha256_email_address (sha256< email)
+             #(maps/deep-merge % (maps/deep-remove-nils {:email                email
+                                                         :phone_number         (f/e164-phone phone)
+                                                         :sha256_email_address (sha256< email)
                                                          :sha256_phone_number  (sha256< (f/e164-phone phone))
                                                          :address              {:sha256_first_name (sha256< first-name)
                                                                                 :sha256_last_name  (sha256< last-name)
+                                                                                :first_name       first-name
+                                                                                :last_name        last-name
                                                                                 :street            address1
                                                                                 :city              city
                                                                                 :region            state
