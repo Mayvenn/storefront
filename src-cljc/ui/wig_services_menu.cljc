@@ -60,12 +60,7 @@
                                   {:title/primary "2 Bundles"
                                    :title/secondary (str "Sew in two additional bundles to the desired unit and basic styling. "
                                                          "Additional bundles not included in the price.")
-                                   :price 40}]}
-                  {:header/title "Maintainence Services"
-                   :items        [{:title/primary "Wig Maintainence"
-                                   :title/secondary (str "Includes but is not limited to: wash, condition, detangle, dry, re-style, "
-                                                         "replacement of wig combs, clips, and/or elastic band.")
-                                   :price 50}]}]})
+                                   :price 40}]}]})
 
 (defn wig-services-menu-item
   [ix {:as data :keys [price]}]
