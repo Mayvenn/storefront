@@ -381,25 +381,34 @@
                  {:data-test "close-return-policy-modal"})
           (svg/x-sharp {:style {:width  "12px"
                                 :height "12px"}})]]
+        [:p "We offer 30-day refunds and exchanges on all of our products,
+        except for custom and bespoke units. Made-to-order units are only
+        eligible for exchange."]
+        [:br]
         [:p.bold "Exchange Policy:"]
-        [:p "Wear it, dye it, even cut it. If you're not in love with your hair,
-        we'll exchange it within 30 days. Contact us at "
-         (ui/link :link/phone :a.black.bold.underline {} contact-number) "."]
+        [:p "Wear it, dye it, even cut it. If you’re not in love with your hair, we’ll exchange it within 30 days."]
         [:br]
         [:p "This means that even if your hair has been previously worn,
         installed, cut, colored, or styled, we will still exchange it for you!"]
         [:br]
-        [:p.bold "Return Policy:"]
-        [:p "If you're not completely satisfied with your Mayvenn hair before it
-        is installed, we will refund your purchase as long as it's unopened and
-        the hair is in its original condition (bundles must not be unraveled or
-        altered, lace cannot be altered, etc.) Contact us
-        at " (ui/link :link/phone :a.black.bold.underline {} contact-number) "."]
+        [:p.bold "Refund Policy:"]
+        [:p "If you are not completely satisfied with your purchase, we will
+        refund your payment if the item is returned in its original condition
+        within 30 days."]
         [:br]
-        [:p "Our return policy covers products that have not been altered in any
-        way. Make sure that you check out the texture, length, etc. before you
-        unwrap and install your bundles or wigs - this will ensure that it'll be
-        eligible for a full return if you decide to switch it up." ]]))])
+        [:p "\"Original condition\" means that the item has not been altered,
+        washed, or used in any way. Additionally, bundles must not be unraveled
+        to be eligible for a full refund. Wigs, closures, and frontals must have
+        the lace and any straps intact (the lace has not been cut or colored,
+        and the straps have not been removed)." ]
+        [:br]
+        [:p "We recommend that you confirm that you have received the correct texture, length, and other features before unwrapping and installing your hair. This will help ensure that your purchase is eligible for a full refund if you decide to switch it up."]
+        [:br]
+        [:p "Contact our Customer Service team at "
+         (ui/link :link/phone :a.black.bold {} contact-number)
+         " from 8am-5pm PST, Monday through Friday or email us at "
+         (ui/link :link/email :a.black.bold {} "help@mayvenn.com")
+         "."]]))])
 
 (defmethod transitions/transition-state events/popup-show-return-policy
   [_ _ {:keys []} state]
