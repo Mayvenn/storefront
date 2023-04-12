@@ -97,7 +97,8 @@
 
 (defn page
   [app-state _]
-  (let [category                            (accessors.categories/current-category app-state)
+  (let [category                            (accessors.categories/current-category app-state) 
+        experiment-color-shorthand?         (experiments/color-shorthand? app-state)
         facet-filtering-state               (merge (get-in app-state catalog.keypaths/k-models-facet-filtering)
                                                    {:facet-filtering/item-label "item"})
         facet-filtering-longhand-state      (update facet-filtering-state
@@ -108,27 +109,28 @@
                                                  (select (merge
                                                           (skuers/electives< category)
                                                           (skuers/essentials< category))))
-        selections                          (:facet-filtering/filters facet-filtering-state)
-
+        selections                          (:facet-filtering/filters (if experiment-color-shorthand?
+                                                                        facet-filtering-longhand-state
+                                                                        facet-filtering-state))
         category-skus                       (->> (get-in app-state k/v2-skus)
                                                  vals
                                                  (select (merge
                                                           (skuers/electives< category)
                                                           (skuers/essentials< category))))
         category-skus-matching-criteria     (select selections category-skus)
-        category-products-matching-criteria (select selections loaded-category-products)
-        category-skuers                     (skuers/skus->skuers (:selector/dimensions category)
+        category-products-matching-criteria (select selections loaded-category-products) 
+        dimensions                          (:selector/dimensions category)
+        category-skuers                     (skuers/skus->skuers dimensions
                                                                  category-skus
                                                                  loaded-category-products)
-        card-skuers                         (skuers/skus->skuers (:selector/dimensions category)
+        card-skuers                         (skuers/skus->skuers dimensions
                                                                  category-skus-matching-criteria
                                                                  category-products-matching-criteria)
 
         shop?                               (or (= "shop" (get-in app-state k/store-slug))
                                                 (= "retail-location" (get-in app-state k/store-experience)))
         faq                                 (get-in app-state (conj storefront.keypaths/cms-faq (:contentful/faq-id category)))
-        splay?                              (-> category :selector/dimensions empty? not)
-        experiment-color-shorthand?         (experiments/color-shorthand? app-state)]
+        splay?                              (-> dimensions seq boolean)]
     (c/build template
              (merge
               (when-let [filter-title (:product-list/title category)]

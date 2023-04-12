@@ -159,10 +159,6 @@
   [data]
   (display-feature? data "ww-upcp"))
 
-(defn splay-tation?
-  [data]
-  (display-feature? data "splay-tation"))
-
 (defn debug-template-slots?
   [data]
   (display-feature? data "tooling--debug-template-slots"))
