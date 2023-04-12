@@ -413,14 +413,13 @@
 (defmethod transitions/transition-state events/popup-show-return-policy
   [_ _ {:keys []} state]
   (-> state
-      (assoc-in keypaths/popup :return-policy)
-      #_(assoc-in catalog.keypaths/length-guide-image length-guide-image)))
+      (assoc-in keypaths/popup :return-policy)))
 
 #?(:cljs
    (defmethod trackings/perform-track events/popup-show-return-policy
-     [_ _ {:keys [product]} _]
+     [_ _ tracking-data _]
      (stringer/track-event "return_policy_link_pressed"
-                           {:product product})))
+                           tracking-data)))
 
 #?(:cljs
    [(defmethod popup/query :shipping-options [state]
@@ -479,14 +478,13 @@
 (defmethod transitions/transition-state events/popup-show-shipping-options
   [_ _ {:keys []} state]
   (-> state
-      (assoc-in keypaths/popup :shipping-options)
-      #_(assoc-in catalog.keypaths/length-guide-image length-guide-image)))
+      (assoc-in keypaths/popup :shipping-options)))
 
 #?(:cljs
    (defmethod trackings/perform-track events/popup-show-shipping-options
-     [_ _ {:keys [product]} _]
+     [_ _ tracking-data _]
      (stringer/track-event "shipping_options_link_pressed"
-                           {:product product})))
+                           tracking-data)))
 
 (defn first-when-only [coll]
   (when (= 1 (count coll))
@@ -519,11 +517,13 @@
       :sub-cta/promises          (if (:show-return-and-shipping-modals (get-in app-state keypaths/features))
                                    [{:icon :svg/shield
                                      :copy "Not the perfect match? We'll exchange it within 30 days."
-                                     :promise-target [events/popup-show-return-policy {:product (products/current-product app-state)}]
+                                     :promise-target [events/popup-show-return-policy {:product (products/current-product app-state)
+                                                                                       :location "pdp"}]
                                      :promise-target-copy "Return & Exchange Policy"}
                                     {:icon :svg/ship-truck
                                      :copy "Free standard shipping on all orders."
-                                     :promise-target [events/popup-show-shipping-options {:product (products/current-product app-state)}]
+                                     :promise-target [events/popup-show-shipping-options {:product (products/current-product app-state)
+                                                                                          :location "pdp"}]
                                      :promise-target-copy "Shipping Options"}
                                     {:icon :svg/market
                                      :copy "Try it on at one of our Texas locations."}]

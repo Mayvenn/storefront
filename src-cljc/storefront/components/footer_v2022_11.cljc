@@ -149,7 +149,8 @@
      ^:inline (underfoot-link (assoc (utils/route-to e/navigate-content-tos)
                                      :data-test "content-tos") "Terms")
      ;; use traditional page load so anchors work
-     ^:inline (underfoot-link {:href (str (routes/path-for e/navigate-content-privacy) "#our-ads")} "Our Ads")]
+     ^:inline (underfoot-link {:href (str (routes/path-for e/navigate-content-privacy) "#our-ads")} "Our Ads")
+     ^:inline (underfoot-link (apply utils/route-to [e/popup-show-return-policy {:location "underfoot"}]) "Return Policy")]
     [:div.flex.items-center {:key "minimal"}
      "©" (date/year (date/now)) " " "Mayvenn"]]])
 
