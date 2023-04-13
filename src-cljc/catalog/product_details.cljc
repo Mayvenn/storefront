@@ -771,8 +771,7 @@
 
 (defn ^:private product-carousel<-
   [images-catalog product-carousel detailed-product carousel-redesign?]
-  (when (and carousel-redesign?
-             (select ?wig [detailed-product]))
+  (when carousel-redesign?
     (let [index    (:idx product-carousel)
           exhibits (->> detailed-product
                         (detailed-product-media images-catalog)
@@ -965,11 +964,13 @@
         info-accordion     (accordion-neue/<- state :info-accordion)
         ;; external loads
         loaded-quadpay?    (get-in state keypaths/loaded-quadpay)
-        ;; Flags
-        carousel-redesign? (experiments/carousel-redesign? state)
         ;; Focus
         detailed-product   (products/current-product state)
-        selected-sku       (get-in state catalog.keypaths/detailed-product-selected-sku)]
+        selected-sku       (get-in state catalog.keypaths/detailed-product-selected-sku) 
+        ;; Flags
+        carousel-redesign? (and (experiments/carousel-redesign? state)
+                                (or (select ?wig [detailed-product])
+                                    (select {:hair/family #{"seamless-clip-ins"}} [detailed-product])))]
     (c/build (if detailed-product template loading-template)
              (merge (query state)
                     (options-picker< state facets-db options-accordion)
