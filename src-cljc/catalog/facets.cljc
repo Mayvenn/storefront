@@ -66,14 +66,27 @@
                          :selectors #{"#1-jet-black"
                                       "black"
                                       "hl-1b-blonde"
-                                      "1b-soft-black"}}
+                                      "1b-soft-black"
+                                      "s01a"
+                                      "s02"
+                                      "s02a"
+                                      "s08"
+                                      "s09"
+                                      "s09w"}}
                         {:title     "Browns"
                          :slug      "brown"
                          :image-id  "9830b374-9ad5-46f7-b9ed-842dc0770cee"
                          :selectors #{"#2-chocolate-brown"
                                       "1c-mocha-brown"
                                       "#4-caramel-brown"
-                                      "6-hazelnut-brown"}}
+                                      "6-hazelnut-brown"
+                                      "b-s04-s06"
+                                      "b-s04-s07"
+                                      "b-s05-s06"
+                                      "h-s04-s08"
+                                      "b-s05w-s06"
+                                      "b-s05-s07"
+                                      "h-s06-s08"}}
                         {:title     "Burgundys"
                          :slug      "burgundy"
                          :image-id  "5eadafa5-87ac-42ab-9af7-9be9621a0de9"
@@ -92,7 +105,17 @@
                                       "blonde-dark-roots"
                                       "18-chestnut-blonde"
                                       "60-golden-ash-blonde"
-                                      "613-bleach-blonde"}}]
+                                      "613-bleach-blonde"
+                                      "b-s07w-s08"
+                                      "b-s08-s10"
+                                      "b-s07a-s10"
+                                      "s04"
+                                      "s05"
+                                      "s06w"}}
+                        {:title     "Reds"
+                         :slug      "red"
+                         :image-id  "937451d3-070b-4f2c-b839-4f5b621ef661"
+                         :selectors #{"s07rb"}}]
                        (map-indexed (fn [idx {:keys [title slug image-id selectors]}]
                                       (let [swatch-url (str "//ucarecdn.com/" image-id "/-/format/auto/" slug ".jpg")]
                                         [slug
