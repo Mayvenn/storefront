@@ -14,8 +14,7 @@
             [storefront.platform.asset-mappings :as asset-mappings]
             [storefront.safe-hiccup :refer [html5 raw]]
             [storefront.seo-tags :as seo]
-            [storefront.platform.component-utils :as utils]
-            [storefront.system.wirewheel :as wirewheel])
+            [storefront.platform.component-utils :as utils])
   (:import java.util.zip.GZIPInputStream
            java.io.ByteArrayOutputStream))
 
@@ -161,7 +160,7 @@
     files))
 
 (defn layout
-  [{:keys [storeback-config environment client-version wirewheel-config wirewheel] :as ctx} data initial-content]
+  [{:keys [storeback-config environment client-version wirewheel-config]} data initial-content]
   (let [home?    (= events/navigate-home (get-in data keypaths/navigation-event))
         shop?    (or (= "shop" (get-in data keypaths/store-slug))
                     (= "retail-location" (get-in data keypaths/store-experience)))
@@ -251,19 +250,7 @@
                        "var environment=\"" environment "\";"
                        "var clientVersion=\"" client-version "\";"
                        "var apiUrl=\"" (:endpoint storeback-config) "\";"
-                       "var wwUpcpUrl=\"" (:upcp-iframe-src wirewheel-config) "\";"
-                       (let [anonymous-consent (some->> data
-                                                        :wirewheel
-                                                        :subject
-                                                        :anonymousId
-                                                        (wirewheel/.fetch-consents wirewheel)
-                                                        :actions
-                                                        (filter #(= "doNotSellOrShareMyPersonalInformationChoosingOptOutMeansWeWillNotSellOrShare" (:target %)))
-                                                        first
-                                                        :action)]
-                         (when anonymous-consent
-                           (str "var OptOut=" (not= "ACCEPT" anonymous-consent) ";")))
-                       ))]
+                       "var wwUpcpUrl=\"" (:upcp-iframe-src wirewheel-config) "\";"))]
 
             (when-not (config/development? environment)
               (for [n js-files]

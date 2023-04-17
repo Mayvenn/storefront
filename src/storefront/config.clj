@@ -108,32 +108,28 @@
                      :logging           {:logging-namespace "com.mayvenn.storefront"}})
 
 (defn env-config []
-  {:environment          (env :environment)
-   :bugsnag-token        (env :bugsnag-token)
-   :welcome-config       {:url (env :welcome-url)}
-   :contentful-config    {:cache-timeout              #(* (if-dev-else env 60 4) minute)
-                          :static-page-fetch-interval (* (if-dev-else env 60 5) minute)
-                          :endpoint                   (if-prod-else env
-                                                        "https://cdn.contentful.com"
-                                                        "https://preview.contentful.com")
-                          :api-key                    (if-prod-else env
-                                                        (env :contentful-content-delivery-api-key)
-                                                        (env :contentful-content-delivery-preview-api-key))
-                          :preview-api-key            (env :contentful-content-delivery-preview-api-key)
-                          :space-id                   (env :contentful-space-id)
-                          :webhook-secret             (env :contentful-webhook-secret)}
-   :wirewheel-api-config {:auth-token-timeout (* 20 minute)
-                          :client-id          (env :wirewheel-api-client-id)
-                          :client-secret      (env :wirewheel-api-client-secret)
-                          :issuer-url         (env :wirewheel-api-issuer-url)
-                          :api-base-url       (env :wirewheel-api-base-url)}
-   :wirewheel-config    {:upcp-iframe-src (env :wirewheel-upcp-iframe-src)}
-   :logging             {:environment (env :environment)}
-   :launchdarkly-config {:sdk-key (env :launchdarkly-sdk-key)}
-   :storeback-config    {:endpoint          (env :storeback-endpoint)
-                         :internal-endpoint (or
-                                             (env :storeback-v2-internal-endpoint)
-                                             (env :storeback-internal-endpoint))}})
+  (let [now (date/now)]
+    {:environment         (env :environment)
+     :bugsnag-token       (env :bugsnag-token)
+     :welcome-config      {:url (env :welcome-url)}
+     :contentful-config   {:cache-timeout              #(* (if-dev-else env 60 4) minute)
+                           :static-page-fetch-interval (* (if-dev-else env 60 5) minute)
+                           :endpoint                   (if-prod-else env
+                                                                     "https://cdn.contentful.com"
+                                                                     "https://preview.contentful.com")
+                           :api-key                    (if-prod-else env
+                                                                     (env :contentful-content-delivery-api-key)
+                                                                     (env :contentful-content-delivery-preview-api-key))
+                           :preview-api-key            (env :contentful-content-delivery-preview-api-key)
+                           :space-id                   (env :contentful-space-id)
+                           :webhook-secret             (env :contentful-webhook-secret)}
+     :wirewheel-config    {:upcp-iframe-src (env :wirewheel-upcp-iframe-src)}
+     :logging             {:environment (env :environment)}
+     :launchdarkly-config {:sdk-key (env :launchdarkly-sdk-key)}
+     :storeback-config    {:endpoint          (env :storeback-endpoint)
+                           :internal-endpoint (or
+                                               (env :storeback-v2-internal-endpoint)
+                                               (env :storeback-internal-endpoint))}}))
 
 (defn deep-merge
   [& maps]
