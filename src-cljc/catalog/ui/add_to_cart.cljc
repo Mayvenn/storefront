@@ -32,9 +32,9 @@
                                            :height      "20px"}
                                    :class "fill-p-color col-12"}])
         [:div
+         {:key (str "copy-" ix)}
          [:div
-          {:key   (str "copy-" ix)
-           :style {:grid-column "2 / 3"}}
+          {:style {:grid-column "2 / 3"}}
           copy]
          (when promise-target
            (ui/button-small-underline-black
