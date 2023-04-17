@@ -120,8 +120,10 @@
            :hair/color.process               #{"natural" "dyed"}
            :hair/source                      #{"virgin"}
            :category/tags                    #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
+           :subcategories.old/ids            ["38" "39" "46"]
+           :subcategories.old/layout         :list
            :subcategories/ids                ["38" "39" "46"]
-           :subcategories/layout             :list
+           :subcategories/layout             :spotlights
            :selector/essentials              [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives               [:hair/origin :hair/texture :hair.closure/area :hair/color :hair/base-material]
            :subsections/subsection-selectors [#:subsection{:title "Standard Lace Closures" :selector #:hair{:base-material #{"lace"}}}
@@ -269,9 +271,10 @@
            :selector/essentials           [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives            [:hair/origin :hair/texture :hair/color :hair/base-material]
            :product-list/title            "Shop All Frontals"
+           :subcategories.old/ids         ["29" "10" "47"]
+           :subcategories.old/layout      :list
            :subcategories/ids             ["29" "10" "47"]
-           :subcategories/layout          :list
-
+           :subcategories/layout          :spotlights
            :subsections/subsection-selectors [#:subsection{:title "Standard Lace Frontals" :selector #:hair{:family #{"frontals"} :base-material #{"lace"}}}
                                               #:subsection{:title "360 frontals" :selector #:hair{:family #{"360-frontals"}}}
                                               #:subsection{:title "HD Lace Frontals" :selector #:hair{:family #{"frontals"} :base-material #{"hd-lace"}}}]
@@ -645,10 +648,15 @@
                                                    "30 Day Quality Guarantee, our Wigs can be customized to fit"
                                                    "your unique look using the built-in combs and adjustable strap.")
            :product-list/title               "Shop All Wigs"
+           ;; GROT
            :spotlighting/title               "New Arrivals"
            :spotlighting/category-ids        ["42" "40" "41"]
+           :subcategories.old/ids            ["42" "43" "40" "41" "26" "25"]
+           :subcategories.old/layout         :return-address-labels
+           ;; end GROT
            :subcategories/ids                ["42" "43" "40" "41" "26" "25"]
-           :subcategories/layout             :return-address-labels
+           :subcategories/layout             :spotlights
+
            :subsections/subsection-selectors [{:subsection/title    "Lace Front Wigs"
                                                :subsection/selector {:hair/family #{"lace-front-wigs"}}}
                                               {:subsection/title    "360 Wigs"
@@ -718,6 +726,7 @@
            :category/description (copy "Made of authentic and high-quality human hair,"
                                        "ready to wear wigs are a quick,"
                                        "convenient way to change up your look instantly.")
+           :subcategory/title "Ready to Wear Wigs"
            :subcategory/image-id "a4f7ad94-3c2c-41aa-be4d-94d9d83b1602"
 
            :contentful/faq-id   :category-ready-wear-wigs
@@ -870,6 +879,7 @@
            :category/new?        false
            :category/description (copy "Available in 4 bestselling textures, take your pick of our Standard Lace wig options."
                                        "Ideal for switching up your style with a brand new closure or frontal unit.")
+           :subcategory/title    "Standard Lace Wigs"
            :subcategory/image-id "71dcdd17-f9cc-456f-b763-2c1c047c30b4"
            :copy/title           "Standard Lace Wigs"
            :page/slug            "standard-lace-wigs"
@@ -958,9 +968,11 @@
            :opengraph/title                  "Natural Human Hair Bundles - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
            :selector/electives               [:hair/texture :hair/origin :hair/color]
            :selector/essentials              [:catalog/department :hair/family]
-           :subcategories/layout             :grid
+           :subcategories.old/layout         :grid
+           :subcategories.old/ids            ["2" "3" "4" "5" "6" "7" "8" "9"]
+           :subcategories.old/title          "Textures"
+           :subcategories/layout             :spotlights
            :subcategories/ids                ["2" "3" "4" "5" "6" "7" "8" "9"]
-           :subcategories/title              "Textures"
            :subsections/subsection-selectors texture-subsection-selectors
 
            :seo/sitemap            true
@@ -1140,18 +1152,20 @@
      :category/image-url               "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
      :opengraph/title                  "Real Human Hair Extensions - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
      :opengraph/description            "Blending flawlessly with your own hair and backed by our 30 Day Quality Guarantee, our seamless clip-in extensions are the best quality products on the market and ships free!"
+     :subcategories.old/ids            ["21" "22"]
+     :subcategories.old/layout         :list
      :subcategories/ids                ["21" "22"]
-     :subcategories/layout             :list
+     :subcategories/layout             :spotlights
      :subsections/subsection-selectors [{:subsection/title    "Seamless Clip-Ins"
                                          :subsection/selector {:hair/family #{"seamless-clip-ins"}}}
                                         #_{:subsection/title    "Tape-Ins"
-                                         :subsection/selector {:hair/family #{"tape-ins"}}}]
+                                           :subsection/selector {:hair/family #{"tape-ins"}}}]
      :content-block/type               :about-attributes
      :content-block/title              "Hair Extensions 101:"
      :content-block/header             "How to Choose"
      :content-block/summary            "No matter what kind of transformation you’re looking for, our seamless clip-in hair extensions will help you achieve your desired look in an instant. Our clip-ins are perfect for when you want a natural-looking appearance that complements your own hair while giving that much coveted oomph-factor."
      :content-block/sections           [#_{:title "Tape-In Hair Extensions"
-                                         :body  [{:text "Our seamless tape-in hair extensions have a thin weft that flawlessly blends with your own hair, so you can have the hair of your dreams."}]}
+                                           :body  [{:text "Our seamless tape-in hair extensions have a thin weft that flawlessly blends with your own hair, so you can have the hair of your dreams."}]}
                                         {:title "Clip-In Hair Extensions"
                                          :body  [{:text "With a thin weft that blends into your hair seamlessly, our clip-in human hair extensions help you create the hair of your dreams."}]}
                                         {:title "Human Hair Extensions"
@@ -1208,8 +1222,10 @@
                                        :seo/title
                                        ". Featuring a thin, polyurethane"
                                        " weft that flawlessly blends with your own hair."]
-    :subcategories/ids                ["47" "46" "42"]
-    :subcategories/layout             :list
+    :subcategories.old/ids             ["47" "46" "42"]
+    :subcategories.old/layout          :list
+    :subcategories/ids                 ["47" "46" "42"]
+    :subcategories/layout              :spotlights
     :subsections/subsection-selectors [{:subsection/title    "HD Lace Closures"
                                         :subsection/selector {:hair/family #{"closures"}}}
                                        {:subsection/title    "HD Lace Frontals"
@@ -1294,9 +1310,11 @@
     :copy/banner-img-mob-id "44c98bfd-bd71-4469-a321-c86bb3d713c6"
     :copy/banner-alt        "Select Wigs"
 
+    :subcategories.old/ids    ["29" "10"]
+    :subcategories.old/layout :list
     :subcategories/ids    ["29" "10"]
-    :subcategories/layout :list
-
+    :subcategories/layout :spotlights
+    
     :subsections/subsection-selectors [{:subsection/title    "Lace Front Wigs"
                                         :subsection/selector {:hair/family #{"lace-front-wigs"}}}
                                        {:subsection/title    "360 Wigs"

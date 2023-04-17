@@ -52,7 +52,8 @@
        :aria-label aria}
       label)]))
 
-(c/defcomponent organism
+;; GROT
+(c/defcomponent organism-old
   [data _ _]
   [:div.bg-warm-gray.center.mx-auto
    (if-let [banner (category-hero-banner-molecule data)]
@@ -64,3 +65,20 @@
       [:div.my3.mx6-on-mb.col-8-on-tb-dt.mx-auto-on-tb-dt
        (category-hero-body-molecule data)
        (category-hero-action-molecule data)]])])
+
+(c/defcomponent organism
+  [data _ _]
+  [:div
+   (if-let [banner (category-hero-banner-molecule data)]
+     banner
+     [:div.px2.py10 
+      [:h1.proxima.text-3xl (:category-hero.title/primary data)]
+      (category-hero-icon-molecule data) ; Is this still used?
+      (let [{:category-hero.action/keys [label target aria]} data] 
+        (when (and label target)
+          [:div.my3.mx6-on-mb.col-8-on-tb-dt.mx-auto-on-tb-dt ; Is this still used?
+           [:div.mt3
+            (ui/button-small-underline-black
+             {:on-click   (apply utils/send-event-callback target)
+              :aria-label aria}
+             label)]]))])])

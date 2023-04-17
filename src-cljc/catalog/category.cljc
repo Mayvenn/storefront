@@ -46,9 +46,12 @@
   [{:keys [category-hero
            content-box
            faq-section
-           video] :as queried-data} _ _]
+           video
+           experiment-plp-header?] :as queried-data} _ _]
   [:div
-   (c/build category-hero/organism category-hero)
+   (if experiment-plp-header?
+     (c/build category-hero/organism category-hero)
+     (c/build category-hero/organism-old category-hero))
    (when video
      (c/build video/component
                       video
@@ -99,6 +102,7 @@
   [app-state _]
   (let [category                            (accessors.categories/current-category app-state) 
         experiment-color-shorthand?         (experiments/color-shorthand? app-state)
+        experiment-plp-header?              (experiments/plp-header? app-state)
         facet-filtering-state               (merge (get-in app-state catalog.keypaths/k-models-facet-filtering)
                                                    {:facet-filtering/item-label "item"})
         facet-filtering-longhand-state      (update facet-filtering-state
@@ -135,7 +139,8 @@
              (merge
               (when-let [filter-title (:product-list/title category)]
                 {:title filter-title})
-              {:category-hero (category-hero-query category)
+              {:experiment-plp-header? experiment-plp-header?
+               :category-hero (category-hero-query category)
                :video         (when-let [video (get-in app-state adventure.keypaths/adventure-home-video)] video)
                :content-box   (when (and shop? (:content-block/type category))
                                 (let [{:content-block/keys [title header summary sections]} category]

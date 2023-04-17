@@ -549,7 +549,6 @@
                                  (merge
                                   navigation-args
                                   {:query-params (->> existing-filters
-                                                      ;;spice.core/spy
                                                       (filter (fn [[_ v]] (seq v)))
                                                       (reduce merge {})
                                                       categories/category-selections->query-params)})))))

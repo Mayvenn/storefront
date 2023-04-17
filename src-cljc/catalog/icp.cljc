@@ -160,18 +160,27 @@
            content-box
            expanding-content-box
            drill-category-grid
-           drill-category-list] :as queried-data} _ _]
+           drill-category-list
+           experiment-plp-header?] :as queried-data} _ _]
   [:div
-   (component/build category-hero/organism category-hero)
-   (when-let [data (:spotlighting queried-data)]
-     (component/build spotlighting/organism data {}))
-   (when-let [data (:return-address-labels queried-data)]
-     (component/build return-address-labels/organism data {}))
-   [:div.mx-auto
+   (if experiment-plp-header?
+     (component/build category-hero/organism category-hero)
+     (component/build category-hero/organism-old category-hero))
+   
+   (when-let [data (and (not experiment-plp-header?) 
+                        (:spotlighting queried-data))]
+     (component/build spotlighting/organism-old data {}))
+   (if experiment-plp-header?
+     (when-let [data (:spotlights queried-data)]
+       (component/build spotlighting/organism {:spotlights data} {}))
+     (when-let [data (:return-address-labels queried-data)]
+       (component/build return-address-labels/organism data {})))
+   
+   [:div.mx-auto 
     (component/build drill-category-list-organism drill-category-list)
     (component/build drill-category-grid-organism drill-category-grid)]
-
-   [:div.mb10 dividers/purple]
+   (when-not experiment-plp-header? 
+     [:div.mb10 dividers/purple])
    [:div.py5
     (when title [:div.canela.title-1.center.mb2 title])
     (component/build facet-filters/organism queried-data {:opts {:child-component product-list}})]
@@ -186,7 +195,7 @@
 
 (defn category->subcategories
   "Returns a hydrated sequence of subcategories for the given category"
-  [all-categories {subcategory-ids :subcategories/ids}]
+  [all-categories subcategory-ids]
   (let [indexed-categories (maps/index-by :catalog/category-id all-categories)
         category-order     (zipmap subcategory-ids (range))]
     (->> (select-keys indexed-categories subcategory-ids)
@@ -209,7 +218,10 @@
                                                           (skuers/electives< interstitial-category)
                                                           (skuers/essentials< interstitial-category))))
         categories                          (get-in state keypaths/categories)
-        subcategories                       (category->subcategories categories interstitial-category)
+        experiment-plp-header?              (experiments/plp-header? state)
+        subcategories                       (category->subcategories categories ((if experiment-plp-header?
+                                                                                   :subcategories/ids
+                                                                                   :subcategories.old/ids) interstitial-category))
         spotlight-subcategories             (map #(accessors.categories/id->category % categories)
                                                  (:spotlighting/category-ids interstitial-category))
         category-products-matching-criteria (->> loaded-category-products
@@ -224,34 +236,35 @@
                      (merge
                       (when-let [filter-title (:product-list/title interstitial-category)]
                         {:title filter-title})
-                      {:category-hero         (category-hero-query interstitial-category)
-                       :content-box           (when (and shop? (:content-block/type interstitial-category))
-                                                {:title    (:content-block/title interstitial-category)
-                                                 :header   (:content-block/header interstitial-category)
-                                                 :summary  (:content-block/summary interstitial-category)
-                                                 :sections (:content-block/sections interstitial-category)})
-                       :expanding-content-box (when (and shop? faq)
-                                                (let [{:keys [question-answers]} faq]
-                                                  {:faq/expanded-index (get-in state keypaths/faq-expanded-section)
-                                                   :list/sections      (for [{:keys [question answer]} question-answers]
-                                                                         {:faq/title   (:text question)
-                                                                          :faq/content answer})}))
-                       :spotlighting          (when (= "13" (:catalog/category-id interstitial-category))
-                                                {:title      (:spotlighting/title interstitial-category)
-                                                 :spotlights (map (fn [{:keys [:subcategory/image-id
-                                                                               :subcategory/title
-                                                                               :catalog/category-id
-                                                                               :page/slug]}]
-                                                                    {:image-src image-id
-                                                                     :title     title
-                                                                     :alt       (str "Woman wearing a " (clojure.string/join (butlast title)))
-                                                                     :nav-event [events/navigate-category
-                                                                                 {:page/slug           slug
-                                                                                  :catalog/category-id category-id}]})
-                                                                  spotlight-subcategories)})
-                       :product-card-listing  (product-card-listing/query state
-                                                                          interstitial-category
-                                                                          category-products-matching-criteria)}
+                      {:experiment-plp-header? experiment-plp-header?
+                       :category-hero          (category-hero-query interstitial-category)
+                       :content-box            (when (and shop? (:content-block/type interstitial-category))
+                                                 {:title    (:content-block/title interstitial-category)
+                                                  :header   (:content-block/header interstitial-category)
+                                                  :summary  (:content-block/summary interstitial-category)
+                                                  :sections (:content-block/sections interstitial-category)})
+                       :expanding-content-box  (when (and shop? faq)
+                                                 (let [{:keys [question-answers]} faq]
+                                                   {:faq/expanded-index (get-in state keypaths/faq-expanded-section)
+                                                    :list/sections      (for [{:keys [question answer]} question-answers]
+                                                                          {:faq/title   (:text question)
+                                                                           :faq/content answer})}))
+                       :spotlighting           (when (= "13" (:catalog/category-id interstitial-category))
+                                                 {:title      (:spotlighting/title interstitial-category)
+                                                  :spotlights (map (fn [{:keys [:subcategory/image-id
+                                                                                :subcategory/title
+                                                                                :catalog/category-id
+                                                                                :page/slug]}]
+                                                                     {:image-src image-id
+                                                                      :title     title
+                                                                      :alt       (str "Woman wearing a " (clojure.string/join (butlast title)))
+                                                                      :nav-event [events/navigate-category
+                                                                                  {:page/slug           slug
+                                                                                   :catalog/category-id category-id}]})
+                                                                   spotlight-subcategories)})
+                       :product-card-listing   (product-card-listing/query state
+                                                                           interstitial-category
+                                                                           category-products-matching-criteria)}
 
                       (facet-filters/filters<-
                        {:facets-db                      (get-in state storefront.keypaths/v2-facets)
@@ -267,28 +280,70 @@
                         :child-component-data           {:product-card-listing (product-card-listing/query state
                                                                                                            interstitial-category
                                                                                                            category-products-matching-criteria)}})
+                      (if experiment-plp-header? 
+                        (case (:subcategories/layout interstitial-category)
+                          :spotlights ;; Note: this might be the only layout we still use.
+                          {:spotlights (map (fn [{:keys [:subcategory/image-id
+                                                         :subcategory/title
+                                                         :catalog/category-id
+                                                         :icon
+                                                         :page/slug]
+                                                  :as   subcategory}]
+                                              {:image-src image-id
+                                               :icon      icon
+                                               :title     (or title (:copy/title subcategory))
+                                               :alt       (str "Woman wearing a " (clojure.string/join (butlast (or title (:copy/title subcategory)))))
+                                               :nav-event [events/navigate-category
+                                                           {:page/slug           slug
+                                                            :catalog/category-id category-id}]})
+                                            subcategories)}
+                          
+                          :grid
+                          {:drill-category-grid {:drill-category-grid/values (mapv category->drill-category-grid-entry subcategories)
+                                                 :drill-category-grid/title  (:subcategories/title interstitial-category)}}
+                          :list
+                          (let [values (mapv category->drill-category-list-entry subcategories)]
+                            {:drill-category-list {:drill-category-list/values                 values
+                                                   :drill-category-list/showing-3-or-more?     (>= (count values) 3)
+                                                   :drill-category-list/tablet-desktop-columns (max 1 (min 3 (count values)))}})
 
-                      (case (:subcategories/layout interstitial-category)
-                        :grid
-                        {:drill-category-grid {:drill-category-grid/values (mapv category->drill-category-grid-entry subcategories)
-                                               :drill-category-grid/title  (:subcategories/title interstitial-category)}}
-                        :list
-                        (let [values (mapv category->drill-category-list-entry subcategories)]
-                          {:drill-category-list {:drill-category-list/values                 values
-                                                 :drill-category-list/showing-3-or-more?     (>= (count values) 3)
-                                                 :drill-category-list/tablet-desktop-columns (max 1 (min 3 (count values)))}})
-                        :return-address-labels
-                        {:return-address-labels {:title  "Shop by Category"
-                                                 :labels (map (fn [{:keys [:subcategory/image-id
-                                                                           :subcategory/title
-                                                                           :catalog/category-id
-                                                                           :page/slug]
-                                                                    :as   subcategory}]
-                                                                {:image-src image-id
-                                                                 :title     (or title (:copy/title subcategory))
-                                                                 :alt       (str "Woman wearing a " (clojure.string/join (butlast (or title (:copy/title subcategory)))))
-                                                                 :nav-event [events/navigate-category
-                                                                             {:page/slug           slug
-                                                                              :catalog/category-id category-id}]})
-                                                              subcategories)}}
-                        nil)))))
+                          :return-address-labels
+                          {:return-address-labels {:title  "Shop by Category"
+                                                   :labels (map (fn [{:keys [:subcategory/image-id
+                                                                             :subcategory/title
+                                                                             :catalog/category-id
+                                                                             :page/slug]
+                                                                      :as   subcategory}]
+                                                                  {:image-src image-id
+                                                                   :title     (or title (:copy/title subcategory))
+                                                                   :alt       (str "Woman wearing a " (clojure.string/join (butlast (or title (:copy/title subcategory)))))
+                                                                   :nav-event [events/navigate-category
+                                                                               {:page/slug           slug
+                                                                                :catalog/category-id category-id}]})
+                                                                subcategories)}}
+                          nil)
+                        ;; GROT (raise the other case up)
+                        (case (:subcategories.old/layout interstitial-category) 
+                          :grid
+                          {:drill-category-grid {:drill-category-grid/values (mapv category->drill-category-grid-entry subcategories)
+                                                 :drill-category-grid/title  (:subcategories.old/title interstitial-category)}}
+                          :list
+                          (let [values (mapv category->drill-category-list-entry subcategories)]
+                            {:drill-category-list {:drill-category-list/values                 values
+                                                   :drill-category-list/showing-3-or-more?     (>= (count values) 3)
+                                                   :drill-category-list/tablet-desktop-columns (max 1 (min 3 (count values)))}})
+                          :return-address-labels
+                          {:return-address-labels {:title  "Shop by Category"
+                                                   :labels (map (fn [{:keys [:subcategory/image-id
+                                                                             :subcategory/title
+                                                                             :catalog/category-id
+                                                                             :page/slug]
+                                                                      :as   subcategory}]
+                                                                  {:image-src image-id
+                                                                   :title     (or title (:copy/title subcategory))
+                                                                   :alt       (str "Woman wearing a " (clojure.string/join (butlast (or title (:copy/title subcategory)))))
+                                                                   :nav-event [events/navigate-category
+                                                                               {:page/slug           slug
+                                                                                :catalog/category-id category-id}]})
+                                                                subcategories)}}
+                          nil))))))
