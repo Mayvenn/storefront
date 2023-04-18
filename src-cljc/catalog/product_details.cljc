@@ -757,12 +757,9 @@
      :carousel-images   carousel-images
      :selected-picker   selected-picker}))
 
-;; A requirement of the product carousel is that it needs to have the media
-;; for a detailed product. That should probably be included on the product
-;; itself, but for now we'll just use the product carousel query to get the media
-(defn- detailed-product-media
-  [images-catalog product]
-  (->> product
+(defn- detailed-skuer-media
+  [images-catalog skuer]
+  (->> skuer
        (images/for-skuer images-catalog)
        (selector/match-all {:selector/strict? true}
                            {:use-case #{"carousel"}
@@ -770,11 +767,11 @@
        (sort-by :order)))
 
 (defn ^:private product-carousel<-
-  [images-catalog product-carousel detailed-product carousel-redesign?]
+  [images-catalog product-carousel selected-sku carousel-redesign?]
   (when carousel-redesign?
     (let [index    (:idx product-carousel)
-          exhibits (->> detailed-product
-                        (detailed-product-media images-catalog)
+          exhibits (->> selected-sku
+                        (detailed-skuer-media images-catalog)
                         (map (fn [{:keys [alt url] :as image}]
                                {:src url
                                 :alt alt
@@ -975,7 +972,7 @@
              (merge (query state)
                     (options-picker< state facets-db options-accordion)
                     {:add-to-cart (add-to-cart-query state)}
-                    (product-carousel<- images-db product-carousel detailed-product carousel-redesign?)
+                    (product-carousel<- images-db product-carousel selected-sku carousel-redesign?)
                     (price-block< selected-sku)
                     (zip-payment< selected-sku loaded-quadpay?)
                     (information< state
@@ -1234,9 +1231,6 @@
 #?(:cljs
    (defmethod effects/perform-effects events/pdp|picker-options|selected
      [_ _ {:keys [data callback-message]} _ _]
-     (when (= (:facet data) "color")
-       (publish events/pdp|carousel|color-synced
-                {:color (:selected-option data)}))
      (apply messages/handle-message callback-message)))
 
 #?(:cljs
@@ -1244,21 +1238,3 @@
      [_ _ {:keys [data]} _]
      (stringer/track-event "pdp.picker-options/selected" data)))
 
-;; Syncs the carousel to the color selected in the picker
-(defmethod effects/perform-effects events/pdp|carousel|color-synced
-  [_ _ {:keys [color]} _ state]
-  (let [images-db        (get-in state keypaths/v2-images)
-        {:keys [idx]}    (carousel-neue/<- state :product-carousel)
-        detailed-product (products/current-product state)]
-    (let [idx-synced? (-> (detailed-product-media images-db detailed-product)
-                          (nth idx)
-                          :hair/color
-                          (= color))
-          target-idx  (->> (detailed-product-media images-db detailed-product)
-                           (map-indexed (fn [i item] [i item]))
-                           (filter (fn [[_ item]] (= (:hair/color item) color)))
-                           ffirst)]
-      (when (and (not idx-synced?)
-                 (int? target-idx))
-        (publish events/carousel|jumped {:id  :product-carousel
-                                         :idx target-idx})))))

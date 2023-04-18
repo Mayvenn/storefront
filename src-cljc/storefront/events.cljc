@@ -842,8 +842,6 @@
 (defpath carousel|reset)
 (defpath carousel|jumped)
 
-(defpath pdp|carousel|color-synced)
-
 (defpath reviews|reset)
 
 (defpath account-profile|experience|evaluated)
