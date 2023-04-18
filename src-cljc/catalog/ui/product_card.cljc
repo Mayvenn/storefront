@@ -83,18 +83,18 @@
                                                                  skus
                                                                  color-order-map))}}]
      :product-card-details/id      (str "product-card-details-" product-slug)
-     :product-card-details/content (if (empty? in-stock-skus)
-                                     [[:text "Out of stock"]]
-                                     [[:text (str "in "
-                                                  (if (= shortest longest)
-                                                    shortest
-                                                    (str shortest " - " longest)))]
-                                      (if (= 1 (count product-colors))
-                                        [:text (:option/name (first product-colors))]
-                                        [:swatches [product-slug product-colors]])
+     :product-card-details/content [[:text (str "in "
+                                                (if (= shortest longest)
+                                                  shortest
+                                                  (str shortest " - " longest)))]
+                                    (if (= 1 (count product-colors))
+                                      [:text (:option/name (first product-colors))]
+                                      [:swatches [product-slug product-colors]])
+                                    (if (empty? in-stock-skus)
+                                      [:text "Out of stock"]
                                       [:pricing [(:sku/price cheapest-sku)
                                                  (when (-> cheapest-sku :promo.clearance/eligible first )
-                                                   (* 0.65 (:sku/price cheapest-sku)))]]])
+                                                   (* 0.65 (:sku/price cheapest-sku)))]])]
      :card-image/src               (str (:url image) "-/format/auto/" (:filename image))
      :card-image/alt               (:alt image)}))
 
