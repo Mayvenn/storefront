@@ -170,55 +170,56 @@
             [exhibit-highlight-component
              exhibit-thumbnail-component
              id]}                         (c/get-opts carousel)]
-       [:div.carousel-2022-with-sidebar
-        [:div.exhibit-highlight
-         (c/build exhibit-highlight-component (nth exhibits selected-exhibit-idx))]
-        [:div.exhibits.flex.flex-column
-         [:a.center.flip-vertical
-          (merge {:on-click   (partial decrement-selected-exhibit carousel)
-                  :href       "javascript:void(0);"
-                  :aria-label "Move to previous image"}
-                 (if (= 0 selected-exhibit-idx)
-                   {:style {:filter "opacity(0.25)"}}
-                   {:class "pointer"}))
-          (svg/dropdown-arrow {:class  "fill-black"
-                               :height "16px"
-                               :width  "16px"})]
-         [:div.flex.flex-column
-          {:ref   (c/use-ref carousel "dt-exhibits")
-           :style {:flex-basis 0
-                   :flex-grow  1
-                   :overflow   "hidden"
-                   :gap        "0.5rem"
-                   :position   "relative"}}
-          (map-indexed (fn [index exhibit]
-                         [:a.exhibit.relative.grid.pointer
-                          {:key        index
-                           :href       "javascript:void(0);"
-                           :aria-label "View image"
-                           :on-click   #(publish events/carousel|jumped {:id  id
-                                                                         :idx index})
-                           :style      {:grid-template-areas "\"thumbnail\""}}
-                          [:div
-                           (merge
-                            {:style {:grid-area "thumbnail"
-                                     :z-index   1}}
-                            (when (= index selected-exhibit-idx)
-                              {:class "border border-width-3 border-s-color"}))]
-                          [:div
-                           {:style {:grid-area "thumbnail"}}
-                           (c/build (or exhibit-thumbnail-component exhibit-highlight-component) exhibit)]])
-                       exhibits)]
-         [:a.center
-          (merge {:on-click   (partial increment-selected-exhibit carousel)
-                  :href       "javascript:void(0);"
-                  :aria-label "Move to next image"}
-                 (if (= (count exhibits) (inc selected-exhibit-idx))
-                   {:style {:filter "opacity(0.25)"}}
-                   {:class "pointer"}))
-          (svg/dropdown-arrow {:class  "fill-black"
-                               :height "16px"
-                               :width  "16px"})]]])))
+       (when-not (= 0 (count exhibits))
+         [:div.carousel-2022-with-sidebar
+          [:div.exhibit-highlight
+           (c/build exhibit-highlight-component (nth exhibits selected-exhibit-idx))]
+          [:div.exhibits.flex.flex-column
+           [:a.center.flip-vertical
+            (merge {:on-click   (partial decrement-selected-exhibit carousel)
+                    :href       "javascript:void(0);"
+                    :aria-label "Move to previous image"}
+                   (if (= 0 selected-exhibit-idx)
+                     {:style {:filter "opacity(0.25)"}}
+                     {:class "pointer"}))
+            (svg/dropdown-arrow {:class  "fill-black"
+                                 :height "16px"
+                                 :width  "16px"})]
+           [:div.flex.flex-column
+            {:ref   (c/use-ref carousel "dt-exhibits")
+             :style {:flex-basis 0
+                     :flex-grow  1
+                     :overflow   "hidden"
+                     :gap        "0.5rem"
+                     :position   "relative"}}
+            (map-indexed (fn [index exhibit]
+                           [:a.exhibit.relative.grid.pointer
+                            {:key        index
+                             :href       "javascript:void(0);"
+                             :aria-label "View image"
+                             :on-click   #(publish events/carousel|jumped {:id  id
+                                                                           :idx index})
+                             :style      {:grid-template-areas "\"thumbnail\""}}
+                            [:div
+                             (merge
+                              {:style {:grid-area "thumbnail"
+                                       :z-index   1}}
+                              (when (= index selected-exhibit-idx)
+                                {:class "border border-width-3 border-s-color"}))]
+                            [:div
+                             {:style {:grid-area "thumbnail"}}
+                             (c/build (or exhibit-thumbnail-component exhibit-highlight-component) exhibit)]])
+                         exhibits)]
+           [:a.center
+            (merge {:on-click   (partial increment-selected-exhibit carousel)
+                    :href       "javascript:void(0);"
+                    :aria-label "Move to next image"}
+                   (if (= (count exhibits) (inc selected-exhibit-idx))
+                     {:style {:filter "opacity(0.25)"}}
+                     {:class "pointer"}))
+            (svg/dropdown-arrow {:class  "fill-black"
+                                 :height "16px"
+                                 :width  "16px"})]]]))))
 
 (defn slider-carousel
   "A carousel "
