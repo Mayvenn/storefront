@@ -69,10 +69,7 @@
                                       "1b-soft-black"
                                       "s01a"
                                       "s02"
-                                      "s02a"
-                                      "s08"
-                                      "s09"
-                                      "s09w"}}
+                                      "s02a"}}
                         {:title     "Browns"
                          :slug      "brown"
                          :image-id  "9830b374-9ad5-46f7-b9ed-842dc0770cee"
@@ -86,7 +83,10 @@
                                       "h-s04-s08"
                                       "b-s05w-s06"
                                       "b-s05-s07"
-                                      "h-s06-s08"}}
+                                      "h-s06-s08"
+                                      "s04"
+                                      "s05"
+                                      "s06w"}}
                         {:title     "Burgundys"
                          :slug      "burgundy"
                          :image-id  "5eadafa5-87ac-42ab-9af7-9be9621a0de9"
@@ -109,9 +109,9 @@
                                       "b-s07w-s08"
                                       "b-s08-s10"
                                       "b-s07a-s10"
-                                      "s04"
-                                      "s05"
-                                      "s06w"}}
+                                      "s08"
+                                      "s09"
+                                      "s09w"}}
                         {:title     "Reds"
                          :slug      "red"
                          :image-id  "27df119d-bc0a-4f97-8f97-ef31bf5694b9"
