@@ -172,7 +172,7 @@
     (component/build drill-category-list-organism drill-category-list)
     (component/build drill-category-grid-organism drill-category-grid)]
    [:div.py5
-    (when title [:div.canela.title-1.center.mb2 title])
+    (when title [:h2.proxima.text-2xl.px2.mb2 title])
     (component/build facet-filters/organism queried-data {:opts {:child-component product-list}})]
 
    (when content-box
