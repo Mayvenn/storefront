@@ -1218,6 +1218,7 @@
                (GET "/googlee2783b8646cb0bdd.html" _req
                  (-> "google-site-verification: googlee2783b8646cb0bdd.html"
                      (util.response/response) (util.response/content-type "text/html")))
+               (GET "/care-guide" req (util.response/redirect "https://ucarecdn.com/7689dd8f-e9d7-4e43-af34-1938b4fc9439/" 302))
                (GET "/blog" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/blog/"))))
                (GET "/blog/" req (util.response/redirect (store-url "shop" environment req)))
                (GET "/adv/home" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/")) :moved-permanently))

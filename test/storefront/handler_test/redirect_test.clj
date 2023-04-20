@@ -603,3 +603,10 @@
         (let [resp (handler (mock/request :get (format "https://shop.mayvenn.com/products/%s-some-product-detail-slug" product-id)))]
           (is (= 302 (:status resp)) (pr-str resp))
           (is (= "https://shop.mayvenn.com/adv/find-your-stylist" (get-in resp [:headers "Location"]))))))))
+
+(deftest redirects-care-guide-to-pdf
+  (with-services {}
+    (with-handler handler
+      (let [resp (handler (mock/request :get "https://shop.mayvenn.com/care-guide"))]
+        (is (= 302 (:status resp)) (pr-str resp))
+        (is (= "https://ucarecdn.com/7689dd8f-e9d7-4e43-af34-1938b4fc9439/" (get-in resp [:headers "Location"])))))))
