@@ -57,7 +57,7 @@
   (string/replace (str slug) #"#" ""))
 
 (def color-shorthand
-  {:facet/name    "Base Color" 
+  {:facet/name    "Hair Color"
    :facet/slug    :hair/color.shorthand
    :filter/order  6 ; Same as color, which it replaces
    :facet/options (->> [{:title     "Blacks"
