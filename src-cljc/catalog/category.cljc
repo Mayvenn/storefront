@@ -46,24 +46,21 @@
   [{:keys [category-hero
            content-box
            faq-section
-           video
-           experiment-plp-header?] :as queried-data} _ _]
+           video] :as queried-data} _ _]
   [:div
-   (if experiment-plp-header?
-     (c/build category-hero/organism category-hero)
-     (c/build category-hero/organism-old category-hero))
+   (c/build category-hero/organism category-hero)
    (when video
      (c/build video/component
-                      video
+              video
                       ;; NOTE(jeff): we use an invalid video slug to preserve back behavior. There probably should be
                       ;;             an investigation to why history is replaced when doing A -> B -> A navigation
                       ;;             (B is removed from history).
-                      {:opts
-                       {:close-attrs
-                        (utils/route-to e/navigate-category
-                                        {:query-params        {:video "0"}
-                                         :page/slug           "mayvenn-install"
-                                         :catalog/category-id 23})}}))
+              {:opts
+               {:close-attrs
+                (utils/route-to e/navigate-category
+                                {:query-params        {:video "0"}
+                                 :page/slug           "mayvenn-install"
+                                 :catalog/category-id 23})}}))
 
    [:div.py5
     (c/build facet-filters/organism queried-data {:opts {:child-component product-list}})]
@@ -102,7 +99,6 @@
   [app-state _]
   (let [category                            (accessors.categories/current-category app-state) 
         experiment-color-shorthand?         (experiments/color-shorthand? app-state)
-        experiment-plp-header?              (experiments/plp-header? app-state)
         facet-filtering-state               (merge (get-in app-state catalog.keypaths/k-models-facet-filtering)
                                                    {:facet-filtering/item-label "item"})
         facet-filtering-longhand-state      (update facet-filtering-state
@@ -139,8 +135,7 @@
              (merge
               (when-let [filter-title (:product-list/title category)]
                 {:title filter-title})
-              {:experiment-plp-header? experiment-plp-header?
-               :category-hero (category-hero-query category)
+              {:category-hero (category-hero-query category)
                :video         (when-let [video (get-in app-state adventure.keypaths/adventure-home-video)] video)
                :content-box   (when (and shop? (:content-block/type category))
                                 (let [{:content-block/keys [title header summary sections]} category]

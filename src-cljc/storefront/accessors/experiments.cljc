@@ -167,6 +167,3 @@
   [data]
   (display-feature? data "color-shorthand"))
 
-(defn plp-header?
-  [data]
-  (display-feature? data "plp-header"))

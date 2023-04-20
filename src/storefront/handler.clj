@@ -598,7 +598,6 @@
       (assoc _ :ww-upcp (feature-flags/retrieve-flag ld "ww-upcp" :bool false))
       (assoc _ :homepage-cms-update (feature-flags/retrieve-flag ld "homepage-cms-update" :bool false))
       (assoc _ :color-shorthand (feature-flags/retrieve-flag ld "color-shorthand" :bool false))
-      (assoc _ :plp-header (feature-flags/retrieve-flag ld "plp-header" :bool false))
       (assoc _ :hide-old-classic-homepage (feature-flags/retrieve-flag ld "hide-old-classic-homepage" :bool false))
       (assoc _ :hide-old-static-homepage-content (feature-flags/retrieve-flag ld "hide-old-static-homepage-content" :bool false))
       (assoc _ :show-return-and-shipping-modals (feature-flags/retrieve-flag ld "show-return-and-shipping-modals" :bool false))
