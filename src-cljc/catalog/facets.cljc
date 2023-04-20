@@ -114,7 +114,7 @@
                                       "s06w"}}
                         {:title     "Reds"
                          :slug      "red"
-                         :image-id  "937451d3-070b-4f2c-b839-4f5b621ef661"
+                         :image-id  "27df119d-bc0a-4f97-8f97-ef31bf5694b9"
                          :selectors #{"s07rb"}}]
                        (map-indexed (fn [idx {:keys [title slug image-id selectors]}]
                                       (let [swatch-url (str "//ucarecdn.com/" image-id "/-/format/auto/" slug ".jpg")]
