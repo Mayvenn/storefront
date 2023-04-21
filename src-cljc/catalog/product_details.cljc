@@ -1150,13 +1150,11 @@
         sku               (or (->> (:SKU query-params)
                                    (conj keypaths/v2-skus)
                                    (get-in app-state))
-                              (get-in app-state catalog.keypaths/detailed-product-selected-sku)
                               (first product-skus))
         availability      (catalog.products/index-by-selectors
                            [:hair/color :hair/length]
                            product-skus)]
     (-> app-state
-        (assoc-in catalog.keypaths/detailed-product-selected-sku nil) ; have to clear to get images set properly for lps
         (assoc-in catalog.keypaths/detailed-product-id product-id)
         (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
         (assoc-in keypaths/browse-sku-quantity 1)
