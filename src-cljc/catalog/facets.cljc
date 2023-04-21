@@ -108,7 +108,7 @@
                                       "613-bleach-blonde"
                                       "b-s07w-s08"
                                       "b-s08-s10"
-                                      "b-s07a-s10"
+                                      "h-s07a-s10"
                                       "s08"
                                       "s09"
                                       "s09w"}}
