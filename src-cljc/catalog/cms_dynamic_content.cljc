@@ -48,7 +48,7 @@
   (build-hiccup-content [:h5.canela.title-3] content))
 
 (defmethod build-hiccup-tag :rich-text/heading-6 [{:keys [content]}]
-  (build-hiccup-content [:h6.proxima.title-3] content))
+  (build-hiccup-content [:h6.proxima.title-3.shout] content))
 
 (defmethod build-hiccup-tag :rich-text/paragraph [{:keys [content]}]
   (build-hiccup-content [:div] content))

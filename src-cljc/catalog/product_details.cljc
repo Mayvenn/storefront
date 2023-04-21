@@ -584,7 +584,8 @@
     [:pdp.details.care/maintenance-level
      :pdp.details.care/needs-install-by-stylist?
      :pdp.details.care/can-it-be-colored?
-     :pdp.details.care/view-care-guide]}
+     :pdp.details.care/view-care-guide
+     :pdp.details.care/storage]}
    {:pdp.details/customize-your-wig
     [:pdp.details.customize-your-wig/in-store-services
      :pdp.details.customize-your-wig/video-tutorial]}])
