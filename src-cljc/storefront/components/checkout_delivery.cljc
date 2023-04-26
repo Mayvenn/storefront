@@ -235,9 +235,15 @@
          (cond
            (= checkout-shipping-note :in-shipping-window)
            {:delivery.note/id   "delivery-note"
-            :delivery.note/copy (if (= "Fri" east-coast-weekday)
-                                  "Order by 10am ET today to have the guaranteed delivery dates below"
-                                  "Order by 1pm ET today to have the guaranteed delivery dates below")}
+            :delivery.note/copy (when-not (and (:show-shipping-delay (get-in data keypaths/features))
+                                               (->> (orders/product-and-service-items order)
+                                                    (map :variant-attrs)
+                                                    ;; Saddlecreek skus don't have a warehouse
+                                                    (remove :warehouse/slug)
+                                                    seq))
+                                  (if (= "Fri" east-coast-weekday)
+                                   "Order by 10am ET today to have the guaranteed delivery dates below"
+                                   "Order by 1pm ET today to have the guaranteed delivery dates below"))}
            (= checkout-shipping-note :was-in-shipping-window)
            {:delivery.note/id       "delivery-note"
             :delivery.note/severity :warning

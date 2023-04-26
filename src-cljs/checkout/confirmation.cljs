@@ -239,7 +239,7 @@
       (string/replace #"[^a-z]+" "-")))
 
 (defn shipping-method-summary-line-query
-  [shipping-method line-items-excluding-shipping]
+  [data shipping-method line-items-excluding-shipping]
   (let [free-shipping? (= "WAITER-SHIPPING-1" (:sku shipping-method))
         only-services? (every? line-items/service? line-items-excluding-shipping)
         drop-shipping? (->> (map :variant-attrs line-items-excluding-shipping)
@@ -247,8 +247,16 @@
                             boolean)]
     (when (and shipping-method (not (and free-shipping? only-services?)))
       {:cart-summary-line/id       "shipping"
-       :cart-summary-line/label    "Shipping"
-       :cart-summary-line/sublabel (-> shipping-method :sku (shipping/timeframe drop-shipping?))
+       :cart-summary-line/primary    "Shipping"
+       :cart-summary-line/secondary (-> shipping-method :sku (shipping/timeframe drop-shipping?))
+       :cart-summary-line/tertiary (when (and (:show-shipping-delay (get-in data keypaths/features))
+                                              (->> (get-in data keypaths/order)
+                                                   orders/product-and-service-items
+                                                   (map :variant-attrs)
+                                                   ;; Saddlecreek skus don't have a warehouse
+                                                   (remove :warehouse/slug)
+                                                   seq))
+                                        "Shipping delay: Ships by 5/1.")
        :cart-summary-line/value    (->> shipping-method
                                         vector
                                         (apply (juxt :quantity :unit-price))
@@ -256,7 +264,8 @@
                                         mf/as-money-or-free)})))
 
 (defn ^:private cart-summary-query
-  [{:as order :keys [adjustments]}
+  [data
+   {:as order :keys [adjustments]}
    {:free-mayvenn-service/keys [service-item discounted]}
    free-service-sku
    addon-skus
@@ -274,12 +283,13 @@
                :cart-summary-total-line/id    "total"
                :cart-summary-total-line/label "Total"
                :cart-summary-total-line/value (some-> total (- available-store-credit) (max 0) mf/as-money)
-               :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
-                                             :cart-summary-line/label "Subtotal"
-                                             :cart-summary-line/value (mf/as-money subtotal)}]
+               :cart-summary/lines (concat [{:cart-summary-line/id      "subtotal"
+                                             :cart-summary-line/primary "Subtotal"
+                                             :cart-summary-line/value   (mf/as-money subtotal)}]
 
                                            (when-let [shipping-method-summary-line
                                                       (shipping-method-summary-line-query
+                                                       data
                                                        (orders/shipping-item order)
                                                        (orders/product-and-service-items order))]
                                              [shipping-method-summary-line])
@@ -287,26 +297,26 @@
                                            (for [{:keys [name price] :as adjustment}
                                                  (filter adjustments/non-zero-adjustment? adjustments)
                                                  :let [install-summary-line? (orders/service-line-item-promotion? adjustment)]]
-                                             (cond-> {:cart-summary-line/id    (str (text->data-test-name name) "-adjustment")
-                                                      :cart-summary-line/icon  [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
-                                                                                                   :height "2em" :width "2em"}]
-                                                      :cart-summary-line/label (adjustments/display-adjustment-name adjustment)
-                                                      :cart-summary-line/value (mf/as-money-or-free price)}
+                                             (cond-> {:cart-summary-line/id      (str (text->data-test-name name) "-adjustment")
+                                                      :cart-summary-line/icon    [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
+                                                                                                     :height "2em" :width "2em"}]
+                                                      :cart-summary-line/primary (adjustments/display-adjustment-name adjustment)
+                                                      :cart-summary-line/value   (mf/as-money-or-free price)}
 
                                                install-summary-line?
-                                               (merge {:cart-summary-line/id    "free-service-adjustment"
-                                                       :cart-summary-line/value (mf/as-money-or-free price)
-                                                       :cart-summary-line/label (str "Free " (or (:product/essential-title free-service-sku)
-                                                                                                 service-name))})))
+                                               (merge {:cart-summary-line/id      "free-service-adjustment"
+                                                       :cart-summary-line/value   (mf/as-money-or-free price)
+                                                       :cart-summary-line/primary (str "Free " (or (:product/essential-title free-service-sku)
+                                                                                                   service-name))})))
                                            (when (pos? tax)
-                                             [{:cart-summary-line/id       "tax"
-                                               :cart-summary-line/label    "Tax"
-                                               :cart-summary-line/value    (mf/as-money tax)}])
+                                             [{:cart-summary-line/id      "tax"
+                                               :cart-summary-line/primary "Tax"
+                                               :cart-summary-line/value   (mf/as-money tax)}])
                                            (when (pos? available-store-credit)
-                                             [{:cart-summary-line/id    "store-credit"
-                                               :cart-summary-line/label "Store Credit"
-                                               :cart-summary-line/class "p-color"
-                                               :cart-summary-line/value (mf/as-money (- (min available-store-credit total)))}]))}
+                                             [{:cart-summary-line/id      "store-credit"
+                                               :cart-summary-line/primary "Store Credit"
+                                               :cart-summary-line/class   "p-color"
+                                               :cart-summary-line/value   (mf/as-money (- (min available-store-credit total)))}]))}
 
         (seq addon-skus)
         (merge
@@ -493,7 +503,8 @@
       :service-line-items           (concat
                                      (free-service-line-items-query data free-mayvenn-service addon-service-skus)
                                      (standalone-service-line-items-query data))
-      :cart-summary                 (cart-summary-query order
+      :cart-summary                 (cart-summary-query data
+                                                        order
                                                         free-mayvenn-service
                                                         (get skus (get-in free-mayvenn-service [:free-mayvenn-service/service-item :sku]))
                                                         addon-service-skus

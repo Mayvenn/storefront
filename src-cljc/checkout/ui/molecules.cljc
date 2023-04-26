@@ -8,7 +8,7 @@
 
 (defn cart-summary-line-molecule
   [{:cart-summary-line/keys
-    [id label sublabel icon value action-id action-target action-icon class]}]
+    [id primary secondary tertiary icon value action-id action-target action-icon class]}]
   (component/html
    (when id
      [:tr.proxima.content-2
@@ -16,9 +16,11 @@
        :key       (str "cart-summary-line-" id)}
       [:td.pyp1.flex.items-center.align-middle
        (svg/symbolic->html icon)
-       ^String (str label)
-       (when sublabel
-         [:div.h7.ml1 ^String (str sublabel)])
+       ^String (str primary)
+       (when secondary
+         [:div.h7.ml1 ^String (str secondary)])
+       (when tertiary
+         [:div.h7.ml1.red ^String (str tertiary)])
        (when action-id
          [:a.ml1.h6.gray.flex.items-center
           ^:attrs (merge {:data-test action-id}
