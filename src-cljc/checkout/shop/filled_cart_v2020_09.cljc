@@ -488,10 +488,10 @@
                             (select {:warehouse/slug #{"factory-cn"}})
                             boolean)]
     (when (and shipping-method (not (and free-shipping? only-services?)))
-      {:cart-summary-line/id       "shipping"
-       :cart-summary-line/label    "Shipping"
-       :cart-summary-line/sublabel (-> shipping-method :sku (shipping/timeframe drop-shipping?))
-       :cart-summary-line/value    (->> shipping-method
+      {:cart-summary-line/id        "shipping"
+       :cart-summary-line/primary   "Shipping"
+       :cart-summary-line/secondary (-> shipping-method :sku (shipping/timeframe drop-shipping?))
+       :cart-summary-line/value     (->> shipping-method
                                         vector
                                         (apply (juxt :quantity :unit-price))
                                         (reduce * 1)
@@ -506,9 +506,9 @@
      :cart-summary-total-line/value (some-> total mf/as-money)
 
      :cart-summary/id    "cart-summary"
-     :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
-                                   :cart-summary-line/label "Subtotal"
-                                   :cart-summary-line/value (mf/as-money subtotal)}]
+     :cart-summary/lines (concat [{:cart-summary-line/id      "subtotal"
+                                   :cart-summary-line/primary "Subtotal"
+                                   :cart-summary-line/value   (mf/as-money subtotal)}]
 
                                  (when-let [shipping-method-summary-line
                                             (shipping-method-summary-line-query
@@ -518,19 +518,19 @@
 
                                  (for [{:keys [name price coupon-code] :as adjustment}
                                        (filter adjustments/non-zero-adjustment? adjustments)]
-                                   (cond-> {:cart-summary-line/id    (text->data-test-name name)
-                                            :cart-summary-line/icon  [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
-                                                                                         :height "2em" :width "2em"} ]
-                                            :cart-summary-line/label (adjustments/display-adjustment-name adjustment)
-                                            :cart-summary-line/value (mf/as-money-or-free price)}
+                                   (cond-> {:cart-summary-line/id      (text->data-test-name name)
+                                            :cart-summary-line/icon    [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
+                                                                                           :height "2em" :width "2em"} ]
+                                            :cart-summary-line/primary (adjustments/display-adjustment-name adjustment)
+                                            :cart-summary-line/value   (mf/as-money-or-free price)}
 
                                      coupon-code
                                      (merge (coupon-code->remove-promo-action coupon-code))))
 
                                  (when (pos? tax-total)
-                                   [{:cart-summary-line/id    "tax"
-                                     :cart-summary-line/label "Tax"
-                                     :cart-summary-line/value (mf/as-money tax-total)}]))}))
+                                   [{:cart-summary-line/id      "tax"
+                                     :cart-summary-line/primary "Tax"
+                                     :cart-summary-line/value   (mf/as-money tax-total)}]))}))
 
 (defn upsold-cart-summary-query
   "The cart has an upsell 'entered' because the customer has requested a service discount"

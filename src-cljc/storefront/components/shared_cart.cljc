@@ -164,10 +164,10 @@
                             items)}))
 
 (def shipping-method-summary-line-query
-  {:cart-summary-line/id       "shipping"
-   :cart-summary-line/label    "Shipping"
-   :cart-summary-line/sublabel "4-6 days" ;; NOTE: if only services, no shipping time?
-   :cart-summary-line/value    "FREE"})
+  {:cart-summary-line/id        "shipping"
+   :cart-summary-line/primary   "Shipping"
+   :cart-summary-line/secondary "4-6 days" ;; NOTE: if only services, no shipping time?
+   :cart-summary-line/value     "FREE"})
 
 (defn ^:private text->data-test-name [name]
   (-> name
@@ -200,31 +200,31 @@
                                           "Hair + Install Total"
                                           "Total")
          :cart-summary-total-line/value (some-> waiter-order :total mf/as-money)
-         :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
-                                       :cart-summary-line/label "Subtotal"
-                                       :cart-summary-line/value (some-> waiter-order :line-items-total mf/as-money-or-free)}]
+         :cart-summary/lines (concat [{:cart-summary-line/id      "subtotal"
+                                       :cart-summary-line/primary "Subtotal"
+                                       :cart-summary-line/value   (some-> waiter-order :line-items-total mf/as-money-or-free)}]
 
                                      (when-let [shipping-method-summary-line
                                                 shipping-method-summary-line-query]
                                        [shipping-method-summary-line])
 
                                      [(when service-is-discounted?
-                                        {:cart-summary-line/id    "freeinstall-adjustment"
-                                         :cart-summary-line/icon  [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
-                                                                                      :height "2em" :width "2em"}]
-                                         :cart-summary-line/label (str "Free " (or (:product/essential-title discountable-item)
-                                                                                   (:sku/title discountable-item)))
-                                         :cart-summary-line/value (some-> discounted-service-amount mf/as-money-or-free)})
+                                        {:cart-summary-line/id      "freeinstall-adjustment"
+                                         :cart-summary-line/icon    [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
+                                                                                        :height "2em" :width "2em"}]
+                                         :cart-summary-line/primary (str "Free " (or (:product/essential-title discountable-item)
+                                                                                     (:sku/title discountable-item)))
+                                         :cart-summary-line/value   (some-> discounted-service-amount mf/as-money-or-free)})
                                       (when explicit-promotion
-                                        {:cart-summary-line/id    (str (text->data-test-name (:coupon-code explicit-promotion)) "-adjustment")
-                                         :cart-summary-line/icon  [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
-                                                                                      :height "2em" :width "2em"}]
-                                         :cart-summary-line/label (string/upper-case (:coupon-code explicit-promotion))
-                                         :cart-summary-line/value (some-> explicit-promotion :price mf/as-money-or-free)})])}
+                                        {:cart-summary-line/id      (str (text->data-test-name (:coupon-code explicit-promotion)) "-adjustment")
+                                         :cart-summary-line/icon    [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
+                                                                                        :height "2em" :width "2em"}]
+                                         :cart-summary-line/primary (string/upper-case (:coupon-code explicit-promotion))
+                                         :cart-summary-line/value   (some-> explicit-promotion :price mf/as-money-or-free)})])}
 
       service-is-discounted?
-      (merge {:cart-summary-total-incentive/id    "mayvenn-install"
-              :cart-summary-total-incentive/label "Includes Mayvenn Install"
+      (merge {:cart-summary-total-incentive/id      "mayvenn-install"
+              :cart-summary-total-incentive/label   "Includes Mayvenn Install"
               :cart-summary-total-incentive/savings (when (neg? total-savings)
                                                       (mf/as-money (- total-savings)))}))))
 
