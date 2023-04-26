@@ -94,6 +94,14 @@
                                                               {:variant line-item}))]
         [:div.h5.right {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money price) " each"]]]]]))
 
+(defn shipping-delay-hack
+  [{:shipping-delay/keys [show?]}]
+  (when show?
+    [:div.bg-warning-yellow.border.border-warning-yellow.m3
+     [:div.bg-lighten-4.p3
+      [:span.bold "Shipping Delay: "]
+      [:span "There is a slight delay in shipping for 1 or more products in your cart. Ships by Monday (5/1). We apologize for any inconvenience."]]]))
+
 (defcomponent full-component [{:keys [order
                                       skus
                                       images
@@ -108,13 +116,15 @@
                                       show-browser-pay?
                                       delete-line-item-requests
                                       loaded-quadpay?
-                                      cart-summary]} owner _]
+                                      cart-summary]
+                               :as data} owner _]
   [:div.container.p2
    (component/build promo-banner/sticky-organism promo-banner nil)
 
    [:div.clearfix.mxn3
     [:div.col-on-tb-dt.col-6-on-tb-dt.px3
      {:data-test "cart-line-items"}
+     (shipping-delay-hack data)
      (display-adjustable-line-items line-items
                                     skus
                                     images
@@ -213,6 +223,12 @@
      :skus                      skus
      :products                  products
      :images                    images
+     :shipping-delay/show? (and (:show-shipping-delay (get-in data keypaths/features))
+                                (->> (orders/product-and-service-items order)
+                                     (map :variant-attrs)
+                                     ;; Saddlecreek skus don't have a warehouse
+                                     (remove :warehouse/slug)
+                                     seq))
      :promo-banner              (when (zero? (orders/product-quantity order))
                                   (promo-banner/query data))
      :updating?                 (update-pending? data)
