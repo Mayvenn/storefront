@@ -147,7 +147,7 @@
 
 (defn shipping-method->shipping-method-option
   [selected-shipping-method-sku-id
-   current-local-time
+   base-starting-date
    east-coast-weekday
    in-window?
    drop-shipping?
@@ -195,7 +195,7 @@
                           (formatters/format-date {:weekday "short"
                                                    :month   "long"
                                                    :day     "numeric"}
-                                                  (date/add-delta current-local-time {:days revised-max})))
+                                                  (date/add-delta base-starting-date {:days revised-max})))
       :secondary/copy  (str (shipping/names-with-time-range sku
                                                             drop-shipping?)
                             " "
@@ -223,7 +223,14 @@
       :delivery/options                      (->> shipping-methods
                                                   (map (partial shipping-method->shipping-method-option
                                                                 selected-sku
-                                                                now
+                                                                (if (and (:show-shipping-delay (get-in data keypaths/features))
+                                                                         (->> (orders/product-and-service-items order)
+                                                                              (map :variant-attrs)
+                                                                              ;; Saddlecreek skus don't have a warehouse
+                                                                              (remove :warehouse/slug)
+                                                                              seq))
+                                                                  (date/to-datetime "2023-05-01T04:00:00.000Z")
+                                                                  now)
                                                                 east-coast-weekday
                                                                 (= checkout-shipping-note :in-shipping-window)
                                                                 drop-shipping?)))}
