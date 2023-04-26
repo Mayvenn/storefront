@@ -49,11 +49,21 @@
      {:style {:grid-column "2 / 3"}})
     learn-more-copy)])
 
+(defn shipping-delay-hack
+  [{:shipping-delay/keys [show?]}]
+  (when show?
+    [:div.bg-warning-yellow.border.border-warning-yellow.mx3.my5
+     [:div.bg-lighten-4.p3
+      [:span.bold "Shipping Delay: "]
+      [:span "There is a slight delay in shipping for this product. Ships by Monday (5/1). We apologize for any inconvenience."]]]))
+
 (defcomponent organism
   "Add to Cart organism"
   [data _ _]
   [:div
    [:div.px3.my1
     (cta-molecule data)]
+   [:div
+    (shipping-delay-hack data)]
    [:div.px5.my1
     (sub-cta-molecule data)]])

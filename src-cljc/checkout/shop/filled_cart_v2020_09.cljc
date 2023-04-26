@@ -6,6 +6,7 @@
    [api.catalog :refer [select ?a-la-carte ?discountable ?physical ?recent ?service ?wig]]
    api.current
    api.orders
+   catalog.keypaths
    [checkout.header :as header]
    [checkout.suggestions :as suggestions]
    [checkout.ui.cart-item-v202004 :as cart-item-v202004]
@@ -83,6 +84,14 @@
 
 ;;; -----------------------------------
 
+(defn shipping-delay-hack
+  [{:shipping-delay/keys [show?]}]
+  (when show?
+    [:div.bg-warning-yellow.border.border-warning-yellow
+     [:div.bg-lighten-4.p3
+      [:span.bold "Shipping Delay: "]
+      [:span "There is a slight delay in shipping for 1 or more products in your cart. Ships by Monday (5/1). We apologize for any inconvenience."]]]))
+
 (defn physical-items-component
   [physical-items suggestions]
   [:div
@@ -134,13 +143,15 @@
            checkout-wo-mayvenn-install
            quadpay
            browser-pay?
-           checkout-caption]}
+           checkout-caption]
+    :as data}
    _ _]
   [:div.container.px2
    (component/build promo-banner/sticky-organism promo-banner nil)
    [:div.clearfix.mxn3
     [:div
-     [:div.bg-refresh-gray.p3.col-on-tb-dt.col-6-on-tb-dt.bg-white-on-tb-dt
+     [:div.bg-refresh-gray.px3.pb3.col-on-tb-dt.col-6-on-tb-dt.bg-white-on-tb-dt.p3-on-mb
+      (shipping-delay-hack data)
       (service-items-component service-items)
       (physical-items-component physical-items suggestions)]]
 
@@ -752,21 +763,27 @@
         suggestions (suggestions/consolidated-query app-state)
         no-items?   (empty? items)]
     (component/build template
-                     {:cart {:return-link     (return-link<- items)
-                             :clear-cart-link (clear-cart-link<- app-state)
-                             :promo-banner    (when (zero? (orders/product-quantity waiter-order))
-                                                (promo-banner/query app-state))
-                             :cta             (cta<- no-items? hair-missing-quantity pending-requests?)
-                             :physical-items  (physical-items<- items
-                                                                update-line-item-requests
-                                                                delete-line-item-requests
-                                                                (get-in app-state keypaths/v2-products))
-                             :service-items   (service-items<-
-                                               (api.current/stylist app-state)
-                                               items
-                                               remove-in-progress?
-                                               delete-line-item-requests
-                                               (:appointment-time-slot waiter-order))
+                     {:cart {:return-link          (return-link<- items)
+                             :clear-cart-link      (clear-cart-link<- app-state)
+                             :promo-banner         (when (zero? (orders/product-quantity waiter-order))
+                                                     (promo-banner/query app-state))
+                             :cta                  (cta<- no-items? hair-missing-quantity pending-requests?)
+                             :shipping-delay/show? (and (:show-shipping-delay (get-in app-state keypaths/features))
+                                                        (->> (orders/product-and-service-items waiter-order)
+                                                             (map :variant-attrs)
+                                                             ;; Saddlecreek skus don't have a warehouse
+                                                             (remove :warehouse/slug)
+                                                             seq))
+                             :physical-items       (physical-items<- items
+                                                                     update-line-item-requests
+                                                                     delete-line-item-requests
+                                                                     (get-in app-state keypaths/v2-products))
+                             :service-items        (service-items<-
+                                                    (api.current/stylist app-state)
+                                                    items
+                                                    remove-in-progress?
+                                                    delete-line-item-requests
+                                                    (:appointment-time-slot waiter-order))
 
                              :checkout-caption            (checkout-caption<- items easy-booking? booking)
                              :cart-summary                (merge (cart-summary<- waiter-order items)

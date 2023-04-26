@@ -113,6 +113,14 @@
                           events/external-redirect-quadpay-checkout
                           {:quadpay-redirect-url redirect-url})))
 
+(defn shipping-delay-hack
+  [show-shipping-delay?]
+  (when show-shipping-delay?
+    [:div.bg-warning-yellow.border.border-warning-yellow.my3
+     [:div.bg-lighten-4.p3
+      [:span.bold "Shipping Delay: "]
+      [:span "There is a slight delay in shipping for 1 or more products in your cart. Ships by Monday (5/1). We apologize for any inconvenience."]]]))
+
 (defcomponent component
   [{:as   queried-data
     :keys [checkout-button-data
@@ -120,6 +128,7 @@
            cart-summary
            delivery
            cart-items
+           show-shipping-delay?
            order
            loaded-quadpay?
            easy-booking?
@@ -163,6 +172,7 @@
 
          (when (seq cart-items)
            [:div.mt3
+            (shipping-delay-hack show-shipping-delay?)
             [:h2.title-2.proxima.mb1
              "Items"]
 
@@ -474,6 +484,12 @@
       :loaded-quadpay?              (get-in data keypaths/loaded-quadpay)
       :servicing-stylist            servicing-stylist
       :cart-items                   (cart-items-query data physical-line-items skus)
+      :show-shipping-delay?         (and (:show-shipping-delay (get-in data keypaths/features))
+                                         (->> (orders/product-and-service-items order)
+                                              (map :variant-attrs)
+                                              ;; Saddlecreek skus don't have a warehouse
+                                              (remove :warehouse/slug)
+                                              seq))
       :service-line-items           (concat
                                      (free-service-line-items-query data free-mayvenn-service addon-service-skus)
                                      (standalone-service-line-items-query data))

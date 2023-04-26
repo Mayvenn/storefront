@@ -421,15 +421,24 @@
      (stringer/track-event "return_policy_link_pressed"
                            tracking-data)))
 
+(defn shipping-delay-hack
+  [{:shipping-delay/keys [show?]}]
+  (when show?
+    [:div.bg-warning-yellow.border.border-warning-yellow.my3
+     [:div.bg-lighten-4.p3
+      [:span.bold "Shipping Delay: "]
+      [:span "There is a slight delay in shipping for 1 or more products in your cart. Ships by Monday (5/1). We apologize for any inconvenience."]]]))
+
 #?(:cljs
    [(defmethod popup/query :shipping-options [state]
-      {:shipping-options/close-target [events/popup-hide-shipping-options]
-       :shipping-options/primary      "Shipping"
-       :shipping-options/drop-shipping?    (->> [(get-in state catalog.keypaths/detailed-product-selected-sku)]
-                                                (select {:warehouse/slug #{"factory-cn"}})
-                                                boolean)})
+      {:shipping-options/close-target   [events/popup-hide-shipping-options]
+       :shipping-options/primary        "Shipping"
+       :shipping-delay/show?            (:show-shipping-delay (get-in state keypaths/features))
+       :shipping-options/drop-shipping? (->> [(get-in state catalog.keypaths/detailed-product-selected-sku)]
+                                             (select {:warehouse/slug #{"factory-cn"}})
+                                             boolean)})
     (defmethod popup/component :shipping-options
-      [{:shipping-options/keys [close-target primary drop-shipping?]} _ _]
+      [{:shipping-options/keys [close-target primary drop-shipping?] :as data} _ _]
       (ui/modal
        {:close-attrs
         {:on-click #(apply publish close-target)}}
@@ -452,28 +461,30 @@
             [:div.content-3 "Standard"]
             [:div.content-3 "7-10 business days"]
             [:div.content-3 "Free"]]]
-          [:div.grid.gap-2
-           [:div.grid.grid-cols-3.gap-2
-            [:div "Option"]
-            [:div "Time"]
-            [:div "Cost"]]
-           [:p.col-12.border-bottom.border-width-2]
-           [:div.grid.grid-cols-3.gap-2.border-bottom.border-warm-gray.pb1
-            [:div.content-3 "Standard"]
-            [:div.content-3 "4-6 business days"]
-            [:div.content-3 "Free"]]
-           [:div.grid.grid-cols-3.gap-2.border-bottom.border-warm-gray.pb1
-            [:div.content-3 "Priority (USPS)"]
-            [:div.content-3 "2-4 business days"]
-            [:div.content-3 "$2.99"]]
-           [:div.grid.grid-cols-3.gap-2.border-bottom.border-warm-gray.pb1
-            [:div.content-3 "Express (FedEx)"]
-            [:div.content-3 "1-2 business days"]
-            [:div.content-3 "$20.00"]]
-           [:div.grid.grid-cols-3.gap-2.border-bottom.border-warm-gray.pb1
-            [:div.content-3 "Rush (Overnight - FedEx)"]
-            [:div.content-3 "1 business days"]
-            [:div.content-3 "$40.00"]]])]))])
+          [:div
+           [:div.grid.gap-2
+            [:div.grid.grid-cols-3.gap-2
+             [:div "Option"]
+             [:div "Time"]
+             [:div "Cost"]]
+            [:p.col-12.border-bottom.border-width-2]
+            [:div.grid.grid-cols-3.gap-2.border-bottom.border-warm-gray.pb1
+             [:div.content-3 "Standard"]
+             [:div.content-3 "4-6 business days"]
+             [:div.content-3 "Free"]]
+            [:div.grid.grid-cols-3.gap-2.border-bottom.border-warm-gray.pb1
+             [:div.content-3 "Priority (USPS)"]
+             [:div.content-3 "2-4 business days"]
+             [:div.content-3 "$2.99"]]
+            [:div.grid.grid-cols-3.gap-2.border-bottom.border-warm-gray.pb1
+             [:div.content-3 "Express (FedEx)"]
+             [:div.content-3 "1-2 business days"]
+             [:div.content-3 "$20.00"]]
+            [:div.grid.grid-cols-3.gap-2.border-bottom.border-warm-gray.pb1
+             [:div.content-3 "Rush (Overnight - FedEx)"]
+             [:div.content-3 "1 business days"]
+             [:div.content-3 "$40.00"]]]
+           (shipping-delay-hack data)])]))])
 
 (defmethod transitions/transition-state events/popup-show-shipping-options
   [_ _ {:keys []} state]
@@ -514,6 +525,11 @@
                                    :quantity (get-in app-state keypaths/browse-sku-quantity 1)}]
       :cta/spinning?             (utils/requesting? app-state (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
       :cta/disabled?             (not (:inventory/in-stock? selected-sku))
+      :shipping-delay/show?      (and (:show-shipping-delay (get-in app-state keypaths/features))
+                                      (->> [(get-in app-state catalog.keypaths/detailed-product-selected-sku)]
+                                           (select {:warehouse/slug #{"factory-cn"}})
+                                           boolean
+                                           not))
       :sub-cta/promises          (if (:show-return-and-shipping-modals (get-in app-state keypaths/features))
                                    [{:icon :svg/shield
                                      :copy "Not the perfect match? We'll exchange it within 30 days."
