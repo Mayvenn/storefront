@@ -141,6 +141,41 @@
                                "left-align"
                                "justify-center")))
 
+(def navigate-show-page
+  {"katy"          events/navigate-retail-walmart-katy
+   "houston"       events/navigate-retail-walmart-houston
+   "grand-prairie" events/navigate-retail-walmart-grand-prairie
+   "dallas"        events/navigate-retail-walmart-dallas
+   "mansfield"     events/navigate-retail-walmart-mansfield})
+
+(defn retail-location-query
+  [{:keys [email facebook hero state hours name phone-number instagram tiktok
+           location address-1 address-2 address-zipcode address-city slug] :as data}]
+  (when (and name slug)
+    {:name             (str name ", " state)
+     :slug             slug
+     :img-url          (-> hero :file :url)
+     :address1-2       (when address-1 (str address-1 (when address-2 (str ", " address-2))))
+     :city-state-zip   (when address-city (str address-city ", " state " " address-zipcode))
+     :phone            phone-number
+     :mon-sat-hours    (first hours)
+     :sun-hours        (last hours)
+     :show-page-target (get navigate-show-page slug)
+     :directions       #?(:cljs (when (:lat location)
+                                  (str "https://www.google.com/maps/search/?api=1&query="
+                                       (goog.string/urlEncode (str "Mayvenn Beauty Lounge "
+                                                                   address-1
+                                                                   address-2)
+                                                              ","
+                                                              (:lat location)
+                                                              ","
+                                                              (:lon location))))
+                          :clj "")
+     :instagram        (when instagram (str "https://www.instagram.com/" instagram))
+     :facebook         (when facebook (str "https://www.facebook.com/" facebook))
+     :tiktok           (when tiktok (str "https://www.tiktok.com/@" tiktok))
+     :email            email}))
+
 (defn determine-and-shape-layer
   [data body-layer]
   (let [skus-db               (get-in data storefront.keypaths/v2-skus)
@@ -324,6 +359,9 @@
                                                                               (map cms-dynamic-content/build-hiccup-tag)
                                                                               (into [:div])))
                                                        (assoc :layer/type :rich-text)))
+      "retailLocation"                           (-> body-layer
+                                                     retail-location-query
+                                                     (assoc :layer/type :retail-location))
       "staticContent"                            {:layer/type (case (:module body-layer)
                                                                 "contact-us"           :lp-contact-us
                                                                 "divider-green-gray"   :lp-divider-green-gray
