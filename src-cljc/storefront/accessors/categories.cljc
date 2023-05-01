@@ -12,13 +12,15 @@
 
 (defn sort-query-params
   [params]
-  (let [ordering {"origin"        0
-                  "texture"       1
-                  "style"         2
-                  "color"         3
-                  "base-material" 4
-                  "weight"        5
-                  "family"        6}]
+  (let [ordering {"origin"          0
+                  "texture"         1
+                  "style"           2
+                  "color"           3
+                  "color-shorthand" 4
+                  "color-feature"   5
+                  "base-material"   6
+                  "weight"          7
+                  "family"          8}]
     (into (sorted-map-by
            (fn [key1 key2]
              (compare (get ordering key1 100)

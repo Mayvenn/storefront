@@ -311,7 +311,7 @@
         facet-filtering-state          (-> state
                                            (get-in catalog.keypaths/k-models-facet-filtering)
                                            (assoc :facet-filtering/item-label "Look"))
-        facet-filtering-longhand-state (update facet-filtering-state
+        facet-filtering-expanded-state (update facet-filtering-state
                                                :facet-filtering/filters
                                                catalog.facets/expand-shorthand-colors)
         tag-facets                     (when looks-tags?
@@ -393,14 +393,14 @@
               :faceted-models                 looks
               :facet-filtering-state          facet-filtering-state
               :experiment-color-shorthand?    experiment-color-shorthand?
-              :facet-filtering-longhand-state (if experiment-color-shorthand?
-                                                facet-filtering-longhand-state
+              :facet-filtering-expanded-state (if experiment-color-shorthand?
+                                                facet-filtering-expanded-state
                                                 facet-filtering-state)
               :facets-to-filter-on            [:hair/origin :hair/color :hair/texture :tags/event :tags/face-shape :tags/style]
               :navigation-event               e/navigate-shop-by-look
               :navigation-args                {:album-keyword :look}
               :child-component-data           (looks-cards<- images-db looks (if experiment-color-shorthand?
-                                                                               facet-filtering-longhand-state
+                                                                               facet-filtering-expanded-state
                                                                                facet-filtering-state))})) 
            (component/build looks-template)
            (template/wrap-standard state e/navigate-shop-by-look)))))

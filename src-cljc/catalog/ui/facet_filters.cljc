@@ -415,23 +415,27 @@
     [facets-db
      faceted-models
      facet-filtering-state
+     facet-filtering-expanded-state
      experiment-color-shorthand?
-     facet-filtering-longhand-state
      facets-to-filter-on
      ;; For the page the filters are rendered on
      navigation-event
      navigation-args
      child-component-data]}]
-  (let [indexed-facets (assoc (->> facets-db
-                                   (maps/index-by (comp keyword :facet/slug)) 
-                                   (maps/map-values (fn [facet]
-                                                      (update facet :facet/options
-                                                              (partial maps/index-by :option/slug)))))
-                              ;; Hack on hair color shorthand
-                              :hair/color.shorthand
-                              facets/color-shorthand)
+  (let [indexed-facets-pre (->> facets-db
+                                (maps/index-by (comp keyword :facet/slug))
+                                (maps/map-values (fn [facet]
+                                                   (update facet :facet/options
+                                                           (partial maps/index-by :option/slug)))))
+        ;; These include the synthetic hair/color.shorthand and style.color/features facets
+        indexed-facets (merge indexed-facets-pre
+                              ;; Hack on synthetic facets
+                              {:hair/color.shorthand facets/color-shorthand} 
+                              (when ((set facets-to-filter-on) :style.color/features)
+                                {:style.color/features  (facets/colors-facet->color-features-facet
+                                                         (-> indexed-facets-pre :hair/color :facet/options vals))}))
         item-count     (->> faceted-models
-                            (select (:facet-filtering/filters facet-filtering-longhand-state))
+                            (select (:facet-filtering/filters facet-filtering-expanded-state))
                             count)]
     (cond-> {:filtering/child-component-data  child-component-data}
 
@@ -467,17 +471,20 @@
         
 
         :filtering/sections              (sections<- indexed-facets
-                                                     (cond-> (->> faceted-models
-                                                                  (mapv #(select-keys % facets-to-filter-on))
-                                                                  (apply merge-with clojure.set/union))
-                                                       
-                                                       ;; Replace colors with shorthands  
-                                                       experiment-color-shorthand?
-                                                       (update :hair/color #(->> %
-                                                                                 (map facets/color-slug>shorthand-slug)
-                                                                                 (into (hash-set))))
-                                                       experiment-color-shorthand?
-                                                       (clojure.set/rename-keys {:hair/color :hair/color.shorthand}))
+                                                     (let [facet-slug->option-slugs (->> faceted-models
+                                                                                         (mapv #(select-keys % facets-to-filter-on))
+                                                                                         (apply merge-with clojure.set/union))]
+                                                       (cond-> facet-slug->option-slugs
+                                                         :always
+                                                         (assoc :style.color/features #{"balayage" "highlights"})
+                                                         
+                                                         experiment-color-shorthand?
+                                                         (assoc :hair/color.shorthand (->> facet-slug->option-slugs
+                                                                                           :hair/color
+                                                                                           (map facets/color-slug>shorthand-slug)
+                                                                                           (into (hash-set))) )
+                                                         experiment-color-shorthand?
+                                                         (dissoc :hair/color)))
                                                      navigation-event
                                                      navigation-args
                                                      facet-filtering-state)

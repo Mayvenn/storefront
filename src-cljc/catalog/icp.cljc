@@ -198,10 +198,10 @@
 
         facet-filtering-state               (assoc (get-in state catalog.keypaths/k-models-facet-filtering)
                                                    :facet-filtering/item-label "item") 
-        facet-filtering-longhand-state      (update facet-filtering-state 
+        facet-filtering-expanded-state      (update facet-filtering-state 
                                                     :facet-filtering/filters 
                                                     catalog.facets/expand-shorthand-colors)
-        selections                          (:facet-filtering/filters facet-filtering-longhand-state)
+        selections                          (:facet-filtering/filters facet-filtering-expanded-state)
         loaded-category-products            (->> (get-in state keypaths/v2-products)
                                                  vals
                                                  (select (merge
@@ -244,8 +244,8 @@
                         :faceted-models                 loaded-category-products
                         :facet-filtering-state          facet-filtering-state
                         :experiment-color-shorthand?    experiment-color-shorthand?
-                        :facet-filtering-longhand-state (if experiment-color-shorthand?
-                                                          facet-filtering-longhand-state
+                        :facet-filtering-expanded-state (if experiment-color-shorthand?
+                                                          facet-filtering-expanded-state
                                                           facet-filtering-state)
                         :facets-to-filter-on            (:selector/electives interstitial-category)
                         :navigation-event               events/navigate-category

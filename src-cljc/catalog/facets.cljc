@@ -16,6 +16,7 @@
    :base-material    :hair/base-material
    :color            :hair/color
    :color-shorthand  :hair/color.shorthand
+   :color-feature    :style.color/features
    :length           :hair/length
    :color.process    :hair/color.process
    :style            :wig/trait
@@ -146,10 +147,50 @@
           {}
           color-slug>shorthand-slug))
 
+(defn intersection-ignoring-empties [s1 s2]
+  (cond (empty? s1) s2
+        (empty? s2) s1
+        :else (clojure.set/intersection s1 s2)))
+
 (defn expand-shorthand-colors
   [{:as args
     color-shorthand :hair/color.shorthand}]
   (cond-> args
     color-shorthand (dissoc :hair/color.shorthand)
-    color-shorthand (assoc :hair/color
-                           (set (mapcat shorthand-slug>color-slugs color-shorthand)))))
+    color-shorthand (update :hair/color intersection-ignoring-empties (set (mapcat shorthand-slug>color-slugs color-shorthand)))))
+
+(defn colors-facet->color-features-facet [colors]
+  {:facet/name    "Hair Features"
+   :facet/slug    :style.color/features
+   :filter/order  7
+   :facet/options (let [{:strs [balayage
+                                highlights]} (->> colors
+                                                  (map (fn [composite-color]
+                                                         (into {} (map (fn [[feature _feature-color]]
+                                                                         [feature #{(:option/slug composite-color)}])
+                                                                       (:style.color/features composite-color)))))
+                                                  (apply merge-with clojure.set/union))]
+                    {"balayage"   {:filter/order 1
+                                   :option/name  "Balayage"
+                                   :option/slug  "balayage"
+                                   :sku/name     "Balayage"
+                                   :selectors    balayage}
+                     "highlights" {:filter/order 2
+                                   :option/name  "Highlights"
+                                   :option/slug  "highlights"
+                                   :sku/name     "Highlights" 
+                                   :selectors    highlights}})})
+
+(defn expand-color-features
+  [colors-facet {:as                          args
+                 selected-color-feature-slugs :style.color/features}] 
+  (cond-> (dissoc args :style.color/features)
+    selected-color-feature-slugs
+    (update :hair/color 
+            intersection-ignoring-empties 
+            (let [color-features-facet (->> colors-facet :facet/options vals colors-facet->color-features-facet)
+                  selected-color-slugs (mapcat :selectors (-> color-features-facet
+                                                              :facet/options
+                                                              (select-keys selected-color-feature-slugs)
+                                                              vals))] 
+              (set selected-color-slugs)))))

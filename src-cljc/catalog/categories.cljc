@@ -1069,7 +1069,7 @@
 
      :hair/family         #{"seamless-clip-ins"}
      :selector/essentials [:catalog/department :hair/family]
-     :selector/electives  [:hair/color]
+     :selector/electives  [:hair/color :style.color/features]
      :selector/dimensions [:hair/texture :hair/color]
      :subcategory/image-id "d255ccf8-75af-4729-86da-af6e15783fc2"
      :copy/title           "Clip-In Hair Extensions"

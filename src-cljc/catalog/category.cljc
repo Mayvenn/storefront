@@ -98,20 +98,22 @@
 (defn page
   [app-state _]
   (let [category                            (accessors.categories/current-category app-state) 
+        color-facet                         (:hair/color (catalog.facets/by-slug app-state))
         experiment-color-shorthand?         (experiments/color-shorthand? app-state)
         facet-filtering-state               (merge (get-in app-state catalog.keypaths/k-models-facet-filtering)
                                                    {:facet-filtering/item-label "item"})
-        facet-filtering-longhand-state      (update facet-filtering-state
-                                                    :facet-filtering/filters
-                                                    catalog.facets/expand-shorthand-colors)
+        facet-filtering-expanded-state      (cond-> facet-filtering-state 
+                                              experiment-color-shorthand?
+                                              (update :facet-filtering/filters catalog.facets/expand-shorthand-colors)
+                                              
+                                              (->> category :selector/electives (filter (partial = :style.color/features)) seq)
+                                              (update :facet-filtering/filters (partial catalog.facets/expand-color-features color-facet))) 
         loaded-category-products            (->> (get-in app-state k/v2-products)
                                                  vals
                                                  (select (merge
                                                           (skuers/electives< category)
                                                           (skuers/essentials< category))))
-        selections                          (:facet-filtering/filters (if experiment-color-shorthand?
-                                                                        facet-filtering-longhand-state
-                                                                        facet-filtering-state))
+        selections                          (:facet-filtering/filters facet-filtering-expanded-state)
         category-skus                       (->> (get-in app-state k/v2-skus)
                                                  vals
                                                  (select (merge
@@ -153,10 +155,8 @@
                {:facets-db                      (get-in app-state storefront.keypaths/v2-facets)
                 :faceted-models                 (if splay? category-skuers loaded-category-products)
                 :facet-filtering-state          facet-filtering-state
+                :facet-filtering-expanded-state facet-filtering-expanded-state
                 :experiment-color-shorthand?    experiment-color-shorthand?
-                :facet-filtering-longhand-state (if experiment-color-shorthand? 
-                                                  facet-filtering-longhand-state
-                                                  facet-filtering-state)
                 :facets-to-filter-on            (:selector/electives category)
                 :navigation-event               e/navigate-category
                 :navigation-args                (select-keys category [:catalog/category-id :page/slug])
