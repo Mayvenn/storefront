@@ -350,7 +350,7 @@
                                                   :icon       (:icon body-layer)}
       "text"                                     (when-not migrate-to-rich-text?
                                                    (-> body-layer
-                                                       (select-keys [:font :size :alignment :content])
+                                                       (select-keys [:font :size :alignment :content :long-content])
                                                        (assoc :layer/type :text)))
       "richText"                                 (when migrate-to-rich-text?
                                                    (-> body-layer

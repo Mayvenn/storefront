@@ -1025,11 +1025,11 @@
               (merge {:href url} (when navigation-message (apply utils/route-to navigation-message)))
               copy)])
 
-(defcomponent text [{:keys [url font size alignment content]} _ _]
+(defcomponent text [{:keys [url font size alignment content long-content]} _ _]
   [:div.black.my-auto
    {:class (clojure.string/join " " [font size])
     :style {:text-align alignment}}
-   content])
+   (or long-content content)])
 
 (defcomponent rich-text [{:keys [alignment content]} _ _]
   [:div.black.my-auto
