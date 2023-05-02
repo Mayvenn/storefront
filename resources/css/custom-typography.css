@@ -155,17 +155,17 @@ h1, h2, h3, h4, h5, h6 {
 
 /* New Design System */
 
-.proxima.text-xxs { font: 0.625rem/1rem var(--font-family-proxima) }
-.proxima.text-xs { font: 0.75rem/1rem var(--font-family-proxima) }
-.proxima.text-sm { font: 0.875rem/1.25rem var(--font-family-proxima) }
-.proxima.text-base { font: 1rem/1.5rem var(--font-family-proxima) }
-.proxima.text-lg { font: 1.125rem/1.75rem var(--font-family-proxima) }
-.proxima.text-xl { font: 1.25rem/1.75rem var(--font-family-proxima) }
-.proxima.text-2xl { font: 1.5rem/2rem var(--font-family-proxima) }
-.proxima.text-3xl { font: 1.875rem/2.25rem var(--font-family-proxima) }
-.proxima.text-4xl { font: 2.25rem/2.5rem var(--font-family-proxima) }
-.proxima.text-5xl { font: 3rem/1 var(--font-family-proxima) }
-.proxima.text-6xl { font: 3.75rem/1 var(--font-family-proxima) }
-.proxima.text-7xl { font: 4.5rem/1 var(--font-family-proxima) }
-.proxima.text-8xl { font: 6rem/1 var(--font-family-proxima) }
-.proxima.text-9xl { font: 8rem/1 var(--font-family-proxima) }
+.proxima.text-xxs { font: 0.625rem/1rem var(--font-family-proxima) } /* 10px */
+.proxima.text-xs { font: 0.75rem/1rem var(--font-family-proxima) } /* 12px */
+.proxima.text-sm { font: 0.875rem/1.25rem var(--font-family-proxima) } /* 14px */
+.proxima.text-base { font: 1rem/1.5rem var(--font-family-proxima) } /* 16px */
+.proxima.text-lg { font: 1.125rem/1.75rem var(--font-family-proxima) } /* 18px */
+.proxima.text-xl { font: 1.25rem/1.75rem var(--font-family-proxima) } /* 20px */
+.proxima.text-2xl { font: 1.5rem/2rem var(--font-family-proxima) } /* 24px */
+.proxima.text-3xl { font: 1.875rem/2.25rem var(--font-family-proxima) } /* 30px */
+.proxima.text-4xl { font: 2.25rem/2.5rem var(--font-family-proxima) } /* 36px */
+.proxima.text-5xl { font: 3rem/1 var(--font-family-proxima) } /* 48px */
+.proxima.text-6xl { font: 3.75rem/1 var(--font-family-proxima) } /* 60px */
+.proxima.text-7xl { font: 4.5rem/1 var(--font-family-proxima) } /* 72px */
+.proxima.text-8xl { font: 6rem/1 var(--font-family-proxima) } /* 96px */
+.proxima.text-9xl { font: 8rem/1 var(--font-family-proxima) } /* 128px */
