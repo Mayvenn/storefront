@@ -608,6 +608,36 @@
    [:svg opts
     ^:inline (svg-xlink "gem")]))
 
+(defn blow-dryer
+  [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "blow-dryer")]))
+
+(defn comb
+  [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "comb")]))
+
+(defn hair-long
+  [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "hair-long")]))
+
+(defn droplet
+  [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "droplet")]))
+
+(defn box-open
+  [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "box-open")]))
+
 (defn symbolic->html
   "Converts a data from query that describes an svg to the appropriate html.
 
@@ -617,36 +647,41 @@
   (component/html
    (if kind
      (case kind
+       :svg/blow-dryer                     ^:inline (blow-dryer attrs)
+       :svg/box-open                       ^:inline (box-open attrs)
        :svg/calendar                        ^:inline (calendar attrs)
        :svg/certified                       ^:inline (certified attrs)
        :svg/chat-bubble-diamonds            ^:inline (chat-bubble-diamonds attrs)
        :svg/chat-bubble-diamonds-p-color    ^:inline (chat-bubble-diamonds-p-color attrs)
+       :svg/check-cloud                     ^:inline (check-cloud attrs)
        :svg/check-mark                      ^:inline (check-mark attrs)
        :svg/close-x                         ^:inline (close-x attrs)
+       :svg/comb                           ^:inline (comb attrs)
        :svg/crown                           ^:inline (crown attrs)
+       :svg/custom-wig-services             ^:inline (custom-wig-services attrs)
        :svg/customer-service-representative ^:inline (customer-service-representative attrs)
        :svg/discount-tag                    ^:inline (discount-tag attrs)
+       :svg/droplet                        ^:inline (droplet attrs)
        :svg/edit                            ^:inline (edit attrs)
        :svg/experience-badge                ^:inline (experience-badge attrs)
+       :svg/gem                             ^:inline (gem attrs)
+       :svg/hair-long                      ^:inline (hair-long attrs)
+       :svg/hand-heart                      ^:inline (hand-heart attrs)
        :svg/heart                           ^:inline (heart attrs)
        :svg/icon-call                       ^:inline (icon-call attrs)
        :svg/icon-email                      ^:inline (icon-email attrs)
        :svg/icon-sms                        ^:inline (icon-sms attrs)
+       :svg/lock                            ^:inline (lock attrs)
+       :svg/market                          ^:inline (market attrs)
        :svg/mayvenn-logo                    ^:inline (mayvenn-logo attrs)
        :svg/mirror                          ^:inline (mirror attrs)
        :svg/play-video                      ^:inline (play-video attrs)
+       :svg/ribbon                          ^:inline (ribbon attrs)
        :svg/shaded-shipping-package         ^:inline (shaded-shipping-package attrs)
-       :svg/whole-star                      ^:inline (whole-star attrs)
-       :svg/worry-free                      ^:inline (worry-free attrs)
-       :svg/snowflake                       ^:inline (snowflake attrs)
        :svg/shield                          ^:inline (shield attrs)
        :svg/ship-truck                      ^:inline (ship-truck attrs)
-       :svg/market                          ^:inline (market attrs)
-       :svg/hand-heart                      ^:inline (hand-heart attrs)
-       :svg/check-cloud                     ^:inline (check-cloud attrs)
-       :svg/custom-wig-services             ^:inline (custom-wig-services attrs)
-       :svg/gem                             ^:inline (gem attrs)
-       :svg/ribbon                          ^:inline (ribbon attrs)
-       :svg/lock                            ^:inline (lock attrs)
+       :svg/snowflake                       ^:inline (snowflake attrs)
+       :svg/whole-star                      ^:inline (whole-star attrs)
+       :svg/worry-free                      ^:inline (worry-free attrs)
        [:div])
      [:div])))
