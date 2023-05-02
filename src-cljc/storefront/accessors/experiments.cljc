@@ -167,3 +167,7 @@
   [data]
   (display-feature? data "color-shorthand"))
 
+(defn good-to-know?
+  [data]
+  (display-feature? data "good-to-know"))
+
