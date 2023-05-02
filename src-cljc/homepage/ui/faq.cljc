@@ -9,6 +9,7 @@
   [{:as data :faq/keys [expanded-index] :list/keys [sections]} _ _]
   (when (seq data)
     [:div.col-12.mx-auto.bg-pale-purple.px6.py8
+     {:data-test "faq"}
      [:div.col-8-on-dt.mx-auto
       [:h2.canela.title-1.center.my7
        "Frequently Asked Questions"]

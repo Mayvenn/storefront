@@ -25,6 +25,7 @@
             [catalog.products :as products]
             [catalog.selector.sku :as sku-selector]
             [catalog.ui.add-to-cart :as add-to-cart]
+            [catalog.ui.pre-accordion :as pre-accordion]
             [catalog.ui.molecules :as catalog.M]
             [catalog.reviews :as reviews]
             [clojure.string]
@@ -262,6 +263,7 @@
               :else        (c/build add-to-cart/organism add-to-cart))]
            (when (products/stylist-only? product)
              shipping-and-guarantee)
+           (c/build pre-accordion/component (with :pre-accordion data)) 
            (c/build accordion-neue/component
                     (with :info-accordion data)
                     {:opts {:accordion.drawer.open/face-component   accordions.product-info/face-open
@@ -731,48 +733,71 @@
     :open-drawers         open-drawers}))
 
 (defn query [data]
-  (let [selections      (get-in data catalog.keypaths/detailed-product-selections)
-        product         (products/current-product data)
-        product-skus    (products/extract-product-skus data product)
-        images-catalog  (get-in data keypaths/v2-images)
-        facets          (facets/by-slug data)
-        selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
-        carousel-images (find-carousel-images product product-skus images-catalog
+  (let [selections         (get-in data catalog.keypaths/detailed-product-selections)
+        product            (products/current-product data)
+        product-skus       (products/extract-product-skus data product)
+        images-catalog     (get-in data keypaths/v2-images)
+        facets             (facets/by-slug data)
+        selected-sku       (get-in data catalog.keypaths/detailed-product-selected-sku)
+        carousel-images    (find-carousel-images product product-skus images-catalog
                                               ;;TODO These selection election keys should not be hard coded
-                                              (select-keys selections [:hair/color
-                                                                       :hair/base-material])
-                                              selected-sku)
+                                                 (select-keys selections [:hair/color
+                                                                          :hair/base-material])
+                                                 selected-sku)
 
-        product-options      (get-in data catalog.keypaths/detailed-product-options)
-        ugc                  (ugc-query product selected-sku data)
-        shop?                (or (= "shop" (get-in data keypaths/store-slug))
-                                 (= "retail-location" (get-in data keypaths/store-experience)))
-        faq                  (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
-                               (-> data
-                                   (get-in (conj keypaths/cms-faq pdp-faq-id))
-                                   (assoc :open-drawers (:accordion/open-drawers (accordion-neue/<- data :pdp-faq)))))
-        selected-picker      (get-in data catalog.keypaths/detailed-product-selected-picker)]
-    {:title/primary     (:copy/title product)
-     :ugc               ugc
-     :fetching-product? (utils/requesting? data (conj request-keys/get-products
-                                                      (:catalog/product-id product)))
-     :adding-to-bag?    (utils/requesting? data (conj request-keys/add-to-bag
-                                                      (:catalog/sku-id selected-sku)))
-     :sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
-     :options           product-options
-     :product           product
-     :selections        selections
-     :selected-options  (get-selected-options selections product-options)
-     :selected-sku      selected-sku
-     :facets            facets
-     :faq-section       (when (and shop? faq)
-                          (let [{:keys [question-answers]} faq]
-                            {:faq/expanded-index (get-in data keypaths/faq-expanded-section)
-                             :list/sections      (for [{:keys [question answer]} question-answers]
-                                                   {:faq/title   (:text question)
-                                                    :faq/content answer})}))
-     :carousel-images   carousel-images
-     :selected-picker   selected-picker}))
+        product-options    (get-in data catalog.keypaths/detailed-product-options)
+        ugc                (ugc-query product selected-sku data)
+        shop?              (or (= "shop" (get-in data keypaths/store-slug))
+                               (= "retail-location" (get-in data keypaths/store-experience)))
+        faq                (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
+                             (-> data
+                                 (get-in (conj keypaths/cms-faq pdp-faq-id))
+                                 (assoc :open-drawers (:accordion/open-drawers (accordion-neue/<- data :pdp-faq)))))
+        selected-picker    (get-in data catalog.keypaths/detailed-product-selected-picker)
+        show-good-to-know? (and (experiments/good-to-know? data)
+                                (-> product :hair/family first (= "seamless-clip-ins")))]
+    (merge {:title/primary     (:copy/title product)
+            :ugc               ugc
+            :fetching-product? (utils/requesting? data (conj request-keys/get-products
+                                                             (:catalog/product-id product)))
+            :adding-to-bag?    (utils/requesting? data (conj request-keys/add-to-bag
+                                                             (:catalog/sku-id selected-sku)))
+            :sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
+            :options           product-options
+            :product           product
+            :selections        selections
+            :selected-options  (get-selected-options selections product-options)
+            :selected-sku      selected-sku
+            :facets            facets
+            :faq-section       (when (and shop? faq)
+                                 (let [{:keys [question-answers]} faq]
+                                   {:faq/expanded-index (get-in data keypaths/faq-expanded-section)
+                                    :list/sections      (for [{:keys [question answer]} question-answers]
+                                                          {:faq/title   (:text question)
+                                                           :faq/content answer})}))
+            :carousel-images   carousel-images
+            :selected-picker   selected-picker}
+           (when show-good-to-know?
+             #:pre-accordion{:primary      "Good to Know:"
+                             :blocks-left  [{:primary "10 pieces (wefts) included"
+                                             :icon    :svg/box-open
+                                             :content ["1 x 8 inch weft" 
+                                                       "1 x 7 inch weft" 
+                                                       "2 x 6 inch wefts" 
+                                                       "2 x 4 inch wefts" 
+                                                       "4 x 1.5 inch weft"]}
+                                            {:primary "Clips come attached to weft"
+                                             :icon    :svg/comb}
+                                            {:primary "One package creates a full look"
+                                             :icon    :svg/hair-long}]
+                             :blocks-right [{:primary "Can be heat-styled up to 250° F"
+                                             :icon    :svg/blow-dryer
+                                             :content ["Apply heat protectant before styling."]}
+                                            {:primary "Can be professionally colored"
+                                             :icon    :svg/droplet
+                                             :content ["Use deposit-only products or toners. Should not be lifted (bleached) any further."]}]
+                             :link-text    "Jump to FAQ"
+                             :link-target  [events/control-scroll-to-selector {:selector "[data-test=faq]"}]}))))
 
 (defn- detailed-skuer-media
   [images-catalog skuer]
