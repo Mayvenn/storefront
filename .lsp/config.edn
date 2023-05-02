@@ -1,1 +1,2 @@
-{:ignore-classpath-directories true}
+{:ignore-classpath-directories true
+ :source-paths-ignore-regex    ["resources.*"]}
