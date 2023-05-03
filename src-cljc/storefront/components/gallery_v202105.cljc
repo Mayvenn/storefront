@@ -1,6 +1,7 @@
 (ns storefront.components.gallery-v202105
   "This gallery is for stylist view/edit of their own gallery."
   (:require #?@(:cljs [[storefront.api :as api]])
+            [mayvenn.visual.tools :as vt]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent]]
@@ -9,7 +10,7 @@
             [storefront.components.gallery-appointments-v202105 :as appointments]
             [storefront.components.tabs-v202105 :as tabs]
             [storefront.effects :as effects]
-            [storefront.events :as events]
+            [storefront.events :as events] 
             [storefront.platform.messages :as messages]
             [storefront.routes :as routes]
             [storefront.transitions :as transitions]
@@ -109,7 +110,7 @@
      "My Gallery"]]
    (when past-appts?
      [:div
-      (tabs/component data)])
+      (tabs/component (vt/with :stylist-gallery-tabs data))])
    [:div
     (component/build appointments/template data opts)
     (component/build gallery-edit-v202105/reorderable-wrapper data)]])
