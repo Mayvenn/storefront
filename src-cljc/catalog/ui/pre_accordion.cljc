@@ -9,8 +9,8 @@
   [:div.flex.proxima.my2
    {:key primary}
    [:div
-    (svg/symbolic->html [icon {:style {:height "22px"
-                                       :width  "22px"}
+    (svg/symbolic->html [icon {:style {:height "20px"
+                                       :width  "20px"}
                                :class "fill-p-color mr1"}])]
    [:div.text-xs.flex-auto
     [:div.bold primary]
