@@ -13,7 +13,7 @@
     font-display: swap;
 }
 @font-face {
-    font-family: 'Proxima Nova';
+    font-family: 'Proxima Nova Black';
     src: url(/fonts/Proxima-Nova-Black.woff2) format('woff2');
     font-weight: 900;
     unicode-range: U+0020-007F, U+00C0, U+00E0; /* The bare minimum for the English Language, À, à  */
@@ -44,15 +44,15 @@ h1, h2, h3, h4, h5, h6 {
     letter-spacing: 0.45px;
 }
 .title-1.proxima {
-    font: 900 24px/30px var(--font-family-proxima);
+    font: 900 24px/30px var(--font-family-proxima-black);
     letter-spacing: 1.07px;
 }
 .title-2.proxima {
-    font: 900 18px/24px var(--font-family-proxima);
+    font: 900 18px/24px var(--font-family-proxima-black);
     letter-spacing: 0.6px;
 }
 .title-3.proxima {
-    font: 900 12px/27px var(--font-family-proxima);
+    font: 900 12px/27px var(--font-family-proxima-black);
     letter-spacing: 0.92px;
 }
 .content-1 { font: var(--content-1-font); }
@@ -60,19 +60,19 @@ h1, h2, h3, h4, h5, h6 {
 .content-3 { font: var(--content-3-font); }
 .content-4 { font: var(--content-4-font); }
 .button-font-1 {
-    font: 900 15px/18px var(--font-family-proxima);
+    font: 900 15px/18px var(--font-family-proxima-black);
     letter-spacing: 0.92px;
 }
 .button-font-2 {
-    font: 900 14px/17px var(--font-family-proxima);
+    font: 900 14px/17px var(--font-family-proxima-black);
     letter-spacing: 0.86px;
 }
 .button-font-3 {
-    font: 900 12px/15px var(--font-family-proxima);
+    font: 900 12px/15px var(--font-family-proxima-black);
     letter-spacing: 0.74px;
 }
 .button-font-4 {
-    font: 900 11px/13px var(--font-family-proxima);
+    font: 900 11px/13px var(--font-family-proxima-black);
     letter-spacing: 0.68px;
 }
 
@@ -137,6 +137,7 @@ h1, h2, h3, h4, h5, h6 {
 
     --font-family-canela: 'Canela', 'Times New Roman', Times, serif;
     --font-family-proxima: 'Proxima Nova', Arial, sans-serif;
+    --font-family-proxima-black: 'Proxima Nova Black', Arial, sans-serif;
 
     --darken-2: rgba(0, 0, 0, .125);
     --darken-3: rgba(0, 0, 0, .375);
@@ -155,17 +156,17 @@ h1, h2, h3, h4, h5, h6 {
 
 /* New Design System */
 
-.proxima.text-xxs { font: 0.625rem/1rem var(--font-family-proxima) } /* 10px */
-.proxima.text-xs { font: 0.75rem/1rem var(--font-family-proxima) } /* 12px */
-.proxima.text-sm { font: 0.875rem/1.25rem var(--font-family-proxima) } /* 14px */
-.proxima.text-base { font: 1rem/1.5rem var(--font-family-proxima) } /* 16px */
-.proxima.text-lg { font: 1.125rem/1.75rem var(--font-family-proxima) } /* 18px */
-.proxima.text-xl { font: 1.25rem/1.75rem var(--font-family-proxima) } /* 20px */
-.proxima.text-2xl { font: 1.5rem/2rem var(--font-family-proxima) } /* 24px */
-.proxima.text-3xl { font: 1.875rem/2.25rem var(--font-family-proxima) } /* 30px */
-.proxima.text-4xl { font: 2.25rem/2.5rem var(--font-family-proxima) } /* 36px */
-.proxima.text-5xl { font: 3rem/1 var(--font-family-proxima) } /* 48px */
-.proxima.text-6xl { font: 3.75rem/1 var(--font-family-proxima) } /* 60px */
-.proxima.text-7xl { font: 4.5rem/1 var(--font-family-proxima) } /* 72px */
-.proxima.text-8xl { font: 6rem/1 var(--font-family-proxima) } /* 96px */
-.proxima.text-9xl { font: 8rem/1 var(--font-family-proxima) } /* 128px */
+.proxima.text-xxs { font: inherit 0.625rem/1rem var(--font-family-proxima) } /* 10px / 16px */
+.proxima.text-xs { font: inherit 0.75rem/1rem var(--font-family-proxima) } /* 12px / 16px */
+.proxima.text-sm { font: inherit 0.875rem/1.25rem var(--font-family-proxima) } /* 14px / 20px */
+.proxima.text-base { font: inherit 1rem/1.5rem var(--font-family-proxima) } /* 16px / 24px */
+.proxima.text-lg { font: inherit 1.125rem/1.75rem var(--font-family-proxima) } /* 18px / 28px */
+.proxima.text-xl { font: inherit 1.25rem/1.75rem var(--font-family-proxima) } /* 20px / 28px */
+.proxima.text-2xl { font: inherit 1.5rem/2rem var(--font-family-proxima) } /* 24px / 32px */
+.proxima.text-3xl { font: inherit 1.875rem/2.25rem var(--font-family-proxima) } /* 30px / 36px */
+.proxima.text-4xl { font: inherit 2.25rem/2.5rem var(--font-family-proxima) } /* 36px / 40px */
+.proxima.text-5xl { font: inherit 3rem/1 var(--font-family-proxima) } /* 48px / 48px */
+.proxima.text-6xl { font: inherit 3.75rem/1 var(--font-family-proxima) } /* 60px / 60px */
+.proxima.text-7xl { font: inherit 4.5rem/1 var(--font-family-proxima) } /* 72px / 72px */
+.proxima.text-8xl { font: inherit 6rem/1 var(--font-family-proxima) } /* 96px / 96px */
+.proxima.text-9xl { font: inherit 8rem/1 var(--font-family-proxima) } /* 128px / 128px */
