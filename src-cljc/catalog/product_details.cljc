@@ -739,6 +739,7 @@
         images-catalog     (get-in data keypaths/v2-images)
         facets             (facets/by-slug data)
         selected-sku       (get-in data catalog.keypaths/detailed-product-selected-sku)
+        dyeable?           (-> selected-sku :hair/color (not= #{"s01a"})) ; Shouldn't this be a facet?
         carousel-images    (find-carousel-images product product-skus images-catalog
                                               ;;TODO These selection election keys should not be hard coded
                                                  (select-keys selections [:hair/color
@@ -793,9 +794,13 @@
                              :blocks-right [{:primary "Can be heat-styled up to 250° F"
                                              :icon    :svg/blow-dryer
                                              :content ["Apply heat protectant before styling."]}
-                                            {:primary "Can be professionally colored"
-                                             :icon    :svg/droplet
-                                             :content ["Use deposit-only products or toners. Should not be lifted (bleached) any further."]}]
+                                            (if dyeable?
+                                              {:primary "Can be professionally colored"
+                                               :icon    :svg/droplet
+                                               :content ["Use deposit-only products or toners. Should not be lifted (bleached) any further."]}
+                                              {:primary "Cannot be colored"
+                                               :icon    :svg/droplet
+                                               :content ["We do not recommend any lifting (bleaching) or coloring."]})]
                              :link-text    "Jump to FAQs"
                              :link-target  [events/control-scroll-to-selector {:selector "[data-test=faq]"}]}))))
 
