@@ -796,7 +796,7 @@
                                             {:primary "Can be professionally colored"
                                              :icon    :svg/droplet
                                              :content ["Use deposit-only products or toners. Should not be lifted (bleached) any further."]}]
-                             :link-text    "Jump to FAQ"
+                             :link-text    "Jump to FAQs"
                              :link-target  [events/control-scroll-to-selector {:selector "[data-test=faq]"}]}))))
 
 (defn- detailed-skuer-media

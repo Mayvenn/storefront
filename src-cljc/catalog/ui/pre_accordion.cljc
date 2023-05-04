@@ -6,13 +6,13 @@
 
 (defn block
   [icon primary content]
-  [:div.flex.proxima.my2
+  [:div.flex.my2
    {:key primary}
    [:div
     (svg/symbolic->html [icon {:style {:height "20px"
                                        :width  "20px"}
                                :class "fill-p-color mr1"}])]
-   [:div.text-xs.flex-auto
+   [:div.proxima.text-sm.flex-auto
     [:div.bold primary]
     (when (seq content)
       (map-indexed (fn [ix c] [:div {:key (str primary " " ix)} c]) 
@@ -22,8 +22,8 @@
   "A light purple panel for introducing an accordion."
   [{:keys [primary blocks-left blocks-right link-target link-text]} _ _]
   (when primary
-    [:div.bg-pale-purple.p4.proxima
-     [:div.text-base primary]
+    [:div.bg-pale-purple.p4
+     [:div.proxima.text-base.bold primary]
      [:div.flex
       (for [[id side] [["l" blocks-left] ["r" blocks-right]]]
         [:div.col-6 {:key id}
