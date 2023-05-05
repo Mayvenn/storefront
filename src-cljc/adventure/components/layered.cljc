@@ -1,5 +1,6 @@
 (ns adventure.components.layered
   (:require [mayvenn.visual.tools :refer [within with]]
+            [clojure.string]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.accordion :as accordion]
             [storefront.components.svg :as svg]
@@ -1119,12 +1120,13 @@
 
 (defcomponent component [{:keys [layers]} owner opts]
   [:div
-   (for [[i layer-data] (map-indexed vector layers)]
-     [:section {:key (str "section-" i)}
+   (for [[i {:keys [title] :as layer-data}] (map-indexed vector layers)]
+     [:section {:key (str "section-" i)
+                :id (clojure.string/lower-case (clojure.string/replace (str title) #" " "-"))}
       ^:inline (layer-view (add-possible-h1 i layer-data) opts)])])
 
 (defmethod fx/perform-effects events/control-landing-page-email-submit
-  [_ _ {:keys [email-capture-id template-content-id] :as this} _ _]
+  [_ _ {:keys [email-capture-id template-content-id]} _ _]
   (publish events/biz|email-capture|captured {:trigger-id          email-capture-id
                                                :template-content-id template-content-id})
   (publish events/flash-show-success {:message "Successfully signed up"}))

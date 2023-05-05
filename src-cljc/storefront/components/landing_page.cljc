@@ -374,7 +374,7 @@
                                                                 nil)
                                                   :in-omni? in-omni?}
       "section"                                  (-> body-layer
-                                                     (select-keys [:contents :mobile-layout :desktop-layout
+                                                     (select-keys [:contents :mobile-layout :desktop-layout :title
                                                                    :desktop-reverse-order :background-color :url
                                                                    :padding :gap])
                                                      (update :contents (partial map #(determine-and-shape-layer data %)))
