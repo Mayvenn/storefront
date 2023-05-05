@@ -24,11 +24,11 @@
 (def ^:private tabs
   [{:id                 :past-appointments
     :title              "past appointments"
-    :navigate           events/navigate-gallery-appointments
+    :message            [events/navigate-gallery-appointments]
     :not-selected-class "border-right"}
    {:id                 :my-gallery
     :title              "my gallery"
-    :navigate           events/navigate-gallery-edit
+    :message            [events/navigate-gallery-edit]
     :not-selected-class "border-left"}])
 
 (defn query [data]
@@ -110,7 +110,7 @@
      "My Gallery"]]
    (when past-appts?
      [:div
-      (tabs/component (vt/with :stylist-gallery-tabs data))])
+      (component/build tabs/component (vt/with :stylist-gallery-tabs data))])
    [:div
     (component/build appointments/template data opts)
     (component/build gallery-edit-v202105/reorderable-wrapper data)]])

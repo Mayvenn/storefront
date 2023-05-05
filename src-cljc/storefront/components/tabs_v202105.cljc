@@ -1,11 +1,16 @@
 (ns storefront.components.tabs-v202105
-  (:require [storefront.platform.component-utils :as utils]))
+  (:require [storefront.platform.component-utils :as utils]
+            [storefront.component :as c]))
 
-(defn component [{:keys [tabs selected-tab]}]
+(c/defcomponent component
+  "A set of tabs."
+  [{:keys [tabs selected-tab]} _ _]
   [:div.flex.flex-wrap.content-2
-   (for [{:keys [id title navigate not-selected-class]} tabs]
+   (for [{:keys [id title message not-selected-class]} tabs]
      [:a.col-6.black.center.p2
-      (merge (utils/route-to navigate)
+      (merge (apply (if (= (ffirst message) :navigate) 
+                      utils/route-to
+                      utils/fake-href) message)
              {:key       (str "tabs-" id)
               :data-test (str "nav-" (name id))
               :class     (if (= id selected-tab)
