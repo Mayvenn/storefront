@@ -599,6 +599,7 @@
       (assoc _ :homepage-cms-update (feature-flags/retrieve-flag ld "homepage-cms-update" :bool false))
       (assoc _ :color-shorthand (feature-flags/retrieve-flag ld "color-shorthand" :bool false))
       (assoc _ :good-to-know (feature-flags/retrieve-flag ld "good-to-know" :bool false))
+      (assoc _ :help-me-find-my-shade (feature-flags/retrieve-flag ld "help-me-find-my-shade" :bool false))
       (assoc _ :show-shipping-delay (feature-flags/retrieve-flag ld "show-shipping-delay" :bool false))
       (assoc _ :hide-old-classic-homepage (feature-flags/retrieve-flag ld "hide-old-classic-homepage" :bool false))
       (assoc _ :hide-old-static-homepage-content (feature-flags/retrieve-flag ld "hide-old-static-homepage-content" :bool false))

@@ -27,6 +27,7 @@
             [catalog.ui.add-to-cart :as add-to-cart]
             [catalog.ui.pre-accordion :as pre-accordion]
             [catalog.ui.molecules :as catalog.M]
+            [catalog.ui.popup-shade-finder :as popup-shade-finder]
             [catalog.reviews :as reviews]
             [clojure.string]
             [homepage.ui.faq :as faq]
@@ -58,8 +59,7 @@
             [storefront.transitions :as transitions]
             storefront.ugc
             [spice.core :as spice]
-            [spice.maps]
-            [clojure.set :as set]))
+            [spice.maps]))
 
 (defn two-column-layout [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
@@ -179,7 +179,7 @@
     option-name]])
 
 (c/defcomponent picker-accordion-contents
-  [{:keys [facet swatches? options] :as picker-contents} _ _]
+  [{:keys [facet swatches? options link-text link-message] :as picker-contents} _ _]
   [:div.p2
    {:key (str "picker-contents-" facet)
     :data-test (str "picker-contents-" facet)}
@@ -886,23 +886,27 @@
                                             :swatch      (:option/rectangle-swatch selected-color)}
                              :open-message [events/pdp|picker-options|viewed {:facet   "color"
                                                                               :options (map :option/slug color-options)}]
-                             :contents     {:swatches? true
-                                            :facet     "color"
-                                            :options   (->> color-options
-                                                            (map (fn [{:keys [option/slug option/name option/rectangle-swatch]}]
-                                                                   (merge {:option-slug      (facets/hacky-fix-of-bad-slugs-on-facets slug)
-                                                                           :option-name      name
-                                                                           :rectangle-swatch rectangle-swatch
-                                                                           :selected?        (= (:option/slug selected-color) slug)}
-                                                                          (when (-> selected-color :option/slug (not= slug))
-                                                                            {:target [events/pdp|picker-options|selected
-                                                                                      {:data             {:facet           "color"
-                                                                                                          :options         (map :option/slug color-options)
-                                                                                                          :selected-option slug}
-                                                                                       :callback-message [events/control-product-detail-picker-option-select
-                                                                                                          {:navigation-event events/navigate-product-details
-                                                                                                           :selection        :hair/color
-                                                                                                           :value            slug}]}]})))))}})
+                             :contents     (merge {:swatches? true
+                                                   :facet     "color" 
+                                                   :options   (->> color-options
+                                                                   (map (fn [{:keys [option/slug option/name option/rectangle-swatch]}]
+                                                                          (merge {:option-slug      (facets/hacky-fix-of-bad-slugs-on-facets slug)
+                                                                                  :option-name      name
+                                                                                  :rectangle-swatch rectangle-swatch
+                                                                                  :selected?        (= (:option/slug selected-color) slug)}
+                                                                                 (when (-> selected-color :option/slug (not= slug))
+                                                                                   {:target [events/pdp|picker-options|selected
+                                                                                             {:data             {:facet           "color"
+                                                                                                                 :options         (map :option/slug color-options)
+                                                                                                                 :selected-option slug}
+                                                                                              :callback-message [events/control-product-detail-picker-option-select
+                                                                                                                 {:navigation-event events/navigate-product-details
+                                                                                                                  :selection        :hair/color
+                                                                                                                  :value            slug}]}]})))))}
+                                                  (when (experiments/help-me-find-my-shade? state)
+                                                    {:link/content "Help me find my shade"
+                                                     :link/target  [events/popup-show-shade-finder]
+                                                     :link/id      "help-find-shade"}))})
                           (let [length-options (->> options
                                                     :hair/length
                                                     (sort-by :filter/order))]

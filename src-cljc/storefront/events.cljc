@@ -475,6 +475,8 @@
 (defpath popup-show-shipping-options)
 (defpath popup-hide-shipping-options)
 
+(defpath popup-show-shade-finder)
+
 (defpath add-sku-to-bag)
 (defpath api-success-add-multiple-skus-to-bag)
 (defpath bulk-add-sku-to-bag)
