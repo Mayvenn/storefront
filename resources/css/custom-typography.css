@@ -155,17 +155,56 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* New Design System */
-.proxima.text-xxs { font: 10px/16px var(--font-family-proxima) }
-.proxima.text-xs { font: 12px/16px var(--font-family-proxima) }
-.proxima.text-sm { font: 14px/20px var(--font-family-proxima) }
-.proxima.text-base { font: 16px/24px var(--font-family-proxima) }
-.proxima.text-lg { font: 18px/28px var(--font-family-proxima) }
-.proxima.text-xl { font: 20px/28px var(--font-family-proxima) } */
-.proxima.text-2xl { font: 24px/32px var(--font-family-proxima) }
-.proxima.text-3xl { font: 30px/36px var(--font-family-proxima) }
-.proxima.text-4xl { font: 36px/40px var(--font-family-proxima) }
-.proxima.text-5xl { font: 48px/48px var(--font-family-proxima) }
-.proxima.text-6xl { font: 60px/60px var(--font-family-proxima) }
-.proxima.text-7xl { font: 72px/72px var(--font-family-proxima) }
-.proxima.text-8xl { font: 96px/96px var(--font-family-proxima) }
-.proxima.text-9xl { font: 128px/128px var(--font-family-proxima) }
+.proxima { font-family: var(--font-family-proxima) }
+.proxima.text-xs {
+    font-size: 12px;
+    line-height: 16px;
+}
+.proxima.text-sm {
+    font-size: 14px;
+    line-height: 20px;
+}   
+.proxima.text-base {
+    font-size: 16px;
+    line-height: 24px;
+}
+.proxima.text-lg {
+    font-size: 18px;
+    line-height: 28px;
+}
+.proxima.text-xl {
+    font-size: 20px;
+    line-height: 28px;
+}
+.proxima.text-2xl {
+    font-size: 24px;
+    line-height: 32px;
+}
+.proxima.text-3xl {
+    font-size: 30px;
+    line-height: 36px;
+}
+.proxima.text-4xl {
+    font-size: 36px;
+    line-height: 40px;
+}
+.proxima.text-5xl {
+    font-size: 48px;
+    line-height: 48px;
+}
+.proxima.text-6xl {
+    font-size: 60px;
+    line-height: 60px;
+}
+.proxima.text-7xl {
+    font-size: 72px;
+    line-height: 72px;
+}
+.proxima.text-8xl {
+    font-size: 96px;
+    line-height: 96px;
+}
+.proxima.text-9xl {
+    font-size: 128px;
+    line-height: 128px;
+}

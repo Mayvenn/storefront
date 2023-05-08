@@ -39,35 +39,28 @@
        [:div.py2
         (case tab
           :finding-your-color-match 
-          [:div
-           [:p.proxima.text-base "To find your best color match:"]
+          [:div.proxima.text-base
+           [:div "To find your best color match:"]
            [:ol
-            [:li.proxima.text-base.my1 "Take a picture of your hair in natural, indirect light (near a window) to use as a reference."]]
+            [:li.my1 "Take a picture of your hair in natural, indirect light (near a window) to use as a reference."]]
            (ui/img {:src   "https://ucarecdn.com/9e4121d9-87f2-4b43-aed3-bb7909f953bf/" ; TODO get right picture
-                    :alt   "Color Match 1"
+                    :alt   ""
                     :class "col-12"})
            [:ol
-            [:li.proxima.text-base.my1 {:value 2} "Compare your natural hair color in the photo to the available colors."]]
-           [:p.proxima.text-base "Don’t worry, if you try on your clip-ins and they aren’t the perfect match, " 
+            [:li.my1 {:value 2} "Compare your natural hair color in the photo to the available colors."]]
+           [:div "Don’t worry, if you try on your clip-ins and they aren’t the perfect match, " 
             "we’ll exchange them within 30 days. For more information, see our " 
-            [:a.bold.black.underline (utils/route-to e/navigate-content-about-us) "return & exchange policy."]] 
-           #_[:div "Use the mid-shaft (middle) of your hair through your ends to color match. " 
-              "Our roots are sometimes a different color than the rest of our hair and using the middle lengths will give a more accurate representation. " 
-              "Keep in mind: if you're in between two different shades it's usually best to go with the lighter option."]
-           #_[:div " To figure out if your hair's undertones are warm cool or neutral try this tip. " 
-              "Does your hair appear more red orange or yellow-based in natural light? You're leaning warm. " 
-              "Do your strands appear to have more of a blue or green hue? Cool is the way to go. " 
-              "If there's not a strong indication either way you're neutral."]
-           #_[:div "And most of all don't worry if you're not 100 % sure! " 
-              "Our 30 -day exchange policy makes it super simple to switch out your clip-ins for a different color once they arrive. " 
-              "Need expert help? Text " [:span.bold "34649"] " to reach our Customer Support team."]
-           #_[:div "Color-matching your natural hair to your extensions is simpler than it sounds. "
-              "Make sure you're looking at your hair in bright, natural lighting. In front of a window, or even outside, is best."]]
+            [:a.bold.black.underline (utils/route-to e/navigate-content-about-us) "return & exchange policy."]]]
           
           :color-chart 
-          [:div "CC"])]
-       
-       ])))
+          [:div.proxima.text-base 
+           [:div.my2 "In the world of hair color and extensions, there are various codes and names used to describe each color. It's common to see alphanumeric codes used for different levels and tones."]
+           [:div.my2 "Whether you're using a beauty supply color system (commonly used with wigs and bundles) or a standard hair color system (commonly used with clip-ins and other custom-colored products), we've got you covered."]
+           [:div.my2 "Take a look at the colors we carry and what the codes mean across product types, so you can find your perfect match no matter which extensions you're wearing."]
+           [:div.proxima.text-xl.my3 "Color Chart"]
+           (ui/img {:src "https://ucarecdn.com/b850d68e-0222-4afd-9972-421ffeb727c8/"
+                    :alt "Color Chart"
+                    :class "col-12"})])]])))
 
 
 (defmethod t/transition-state e/popup-show-shade-finder
