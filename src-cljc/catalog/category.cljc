@@ -71,17 +71,17 @@
      (c/build faq/organism faq-section))])
 
 (defn category-hero-query
-  [{:copy/keys     [title learn-more-target banner-img-dsk-id banner-img-mob-id banner-alt]
-    :category/keys [description new?]
-    icon-uri       :icon}]
+  [{:copy/keys     [title banner-img-dsk-id banner-img-mob-id banner-alt]
+    :category/keys [description new? guide-page]
+    icon-uri       :icon}
+   experiment-plp-header?]
   (cond-> {:category-hero.title/primary title
            :category-hero.body/primary  description}
-
-    ;; TODO(corey) this key is in #:copy
-    (seq learn-more-target)
-    (merge {:category-hero.action/label  "Learn more"
-            :category-hero.action/aria   "Learn more about complimentary Mayvenn Services."
-            :category-hero.action/target learn-more-target})
+    
+    (and experiment-plp-header? guide-page)
+    (merge {:category-hero.action/label  "Help me choose"
+            :category-hero.action/aria   "Help me choose"
+            :category-hero.action/target guide-page})
 
     (seq banner-img-dsk-id)
     (merge {:category-hero.banner/img-dsk-id banner-img-dsk-id
@@ -137,7 +137,7 @@
              (merge
               (when-let [filter-title (:product-list/title category)]
                 {:title filter-title})
-              {:category-hero (category-hero-query category)
+              {:category-hero (category-hero-query category (experiments/plp-header? app-state))
                :video         (when-let [video (get-in app-state adventure.keypaths/adventure-home-video)] video)
                :content-box   (when (and shop? (:content-block/type category))
                                 (let [{:content-block/keys [title header summary sections]} category]

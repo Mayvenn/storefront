@@ -600,6 +600,7 @@
       (assoc _ :color-shorthand (feature-flags/retrieve-flag ld "color-shorthand" :bool false))
       (assoc _ :good-to-know (feature-flags/retrieve-flag ld "good-to-know" :bool false))
       (assoc _ :help-me-find-my-shade (feature-flags/retrieve-flag ld "help-me-find-my-shade" :bool false))
+      (assoc _ :plp-header (feature-flags/retrieve-flag ld "plp-header" :bool false))
       (assoc _ :show-shipping-delay (feature-flags/retrieve-flag ld "show-shipping-delay" :bool false))
       (assoc _ :hide-old-classic-homepage (feature-flags/retrieve-flag ld "hide-old-classic-homepage" :bool false))
       (assoc _ :hide-old-static-homepage-content (feature-flags/retrieve-flag ld "hide-old-static-homepage-content" :bool false))
@@ -948,6 +949,7 @@
    events/navigate-content-ugc-usage-terms           generic-server-render
    events/navigate-content-voucher-terms             generic-server-render
    events/navigate-content-program-terms             generic-server-render
+   events/navigate-guide-clipin-extensions           generic-server-render
    events/navigate-store-gallery                     generic-server-render
    events/navigate-checkout-processing               generic-server-render
    events/navigate-adventure-stylist-profile         generic-server-render

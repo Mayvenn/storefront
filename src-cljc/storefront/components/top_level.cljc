@@ -39,6 +39,7 @@
             [storefront.components.slideout-nav :as slideout-nav]
             [storefront.components.landing-page :as landing-page]
             [storefront.components.stylist-social-media :as stylist-social-media]
+            [storefront.components.guide-clipin-extensions :as guide-clipin-extensions]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             stylist-directory.keypaths
@@ -117,6 +118,7 @@
    events/navigate-content-voucher-terms        (constantly content/built-component)
    events/navigate-content-program-terms        (constantly content/built-component)
    events/navigate-content-our-hair             (constantly content/built-component)
+   events/navigate-guide-clipin-extensions      (constantly guide-clipin-extensions/built-component)
    events/navigate-sign-in                      (constantly sign-in/built-component)
    events/navigate-sign-up                      (constantly sign-up/built-component)
    events/navigate-account-email-verification   (constantly email-verification/built-component)

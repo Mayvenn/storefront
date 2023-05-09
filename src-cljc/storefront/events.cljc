@@ -55,6 +55,7 @@
 (defpath navigate-gallery-appointments)
 (defpath navigate-gallery-image-picker)
 (defpath navigate-gallery-photo)
+(defpath navigate-guide-clipin-extensions)
 
 (defpath navigate-content)
 (defpath navigate-content-help)

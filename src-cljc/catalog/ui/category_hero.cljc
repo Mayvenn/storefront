@@ -38,9 +38,8 @@
       (category-hero-icon-molecule data) ; Is this still used?
       (let [{:category-hero.action/keys [label target aria]} data] 
         (when (and label target)
-          [:div.my3.mx6-on-mb.col-8-on-tb-dt.mx-auto-on-tb-dt ; Is this still used?
-           [:div.mt3
-            (ui/button-small-underline-black
-             {:on-click   (apply utils/send-event-callback target)
-              :aria-label aria}
-             label)]]))])])
+          (ui/button-medium-underline-primary
+           (merge (apply utils/route-to target)
+                  {:aria-label aria
+                   :class      "block mt3"})
+           label)))])])

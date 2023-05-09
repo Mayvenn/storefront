@@ -14,18 +14,19 @@
   (read-string (name value)))
 
 (def static-page-routes
-  {"/guarantee"         (edn->bidi events/navigate-content-guarantee)
-   "/help"              (edn->bidi events/navigate-content-help)
-   "/about-us"          (edn->bidi events/navigate-content-about-us)
-   "/policy/privacy"    (edn->bidi events/navigate-content-privacy)
-   "/policy/privacy/v2" (edn->bidi events/navigate-content-privacyv2)
-   "/policy/privacy/v1" (edn->bidi events/navigate-content-privacyv1)
-   "/policy/tos"        (edn->bidi events/navigate-content-tos)
-   "/policy/sms"        (edn->bidi events/navigate-content-sms)
-   "/ugc-usage-terms"   (edn->bidi events/navigate-content-ugc-usage-terms)
-   "/voucher-terms"     (edn->bidi events/navigate-content-voucher-terms)
-   "/program-terms"     (edn->bidi events/navigate-content-program-terms)
-   "/our-hair"          (edn->bidi events/navigate-content-our-hair)
+  {"/guarantee"                   (edn->bidi events/navigate-content-guarantee)
+   "/help"                        (edn->bidi events/navigate-content-help)
+   "/about-us"                    (edn->bidi events/navigate-content-about-us)
+   "/policy/privacy"              (edn->bidi events/navigate-content-privacy)
+   "/policy/privacy/v2"           (edn->bidi events/navigate-content-privacyv2)
+   "/policy/privacy/v1"           (edn->bidi events/navigate-content-privacyv1)
+   "/policy/tos"                  (edn->bidi events/navigate-content-tos)
+   "/policy/sms"                  (edn->bidi events/navigate-content-sms)
+   "/ugc-usage-terms"             (edn->bidi events/navigate-content-ugc-usage-terms)
+   "/voucher-terms"               (edn->bidi events/navigate-content-voucher-terms)
+   "/program-terms"               (edn->bidi events/navigate-content-program-terms)
+   "/our-hair"                    (edn->bidi events/navigate-content-our-hair)
+   "/clipin-extensions-guide"     (edn->bidi events/navigate-guide-clipin-extensions)
 
    ;; Wig Care Guides
    "/info/wigs-101-guide"         (edn->bidi events/navigate-wigs-101-guide)
@@ -36,12 +37,12 @@
    "/info/wig-styling-guide"      (edn->bidi events/navigate-wig-styling-guide)
 
    ;; Retail Stores
-   "/info/walmart"               (edn->bidi events/navigate-retail-walmart)
-   "/info/walmart/grand-prairie" (edn->bidi events/navigate-retail-walmart-grand-prairie)
-   "/info/walmart/katy"          (edn->bidi events/navigate-retail-walmart-katy)
-   "/info/walmart/houston"       (edn->bidi events/navigate-retail-walmart-houston)
-   "/info/walmart/dallas"        (edn->bidi events/navigate-retail-walmart-dallas)
-   "/info/walmart/mansfield"     (edn->bidi events/navigate-retail-walmart-mansfield)})
+   "/info/walmart"                (edn->bidi events/navigate-retail-walmart)
+   "/info/walmart/grand-prairie"  (edn->bidi events/navigate-retail-walmart-grand-prairie)
+   "/info/walmart/katy"           (edn->bidi events/navigate-retail-walmart-katy)
+   "/info/walmart/houston"        (edn->bidi events/navigate-retail-walmart-houston)
+   "/info/walmart/dallas"         (edn->bidi events/navigate-retail-walmart-dallas)
+   "/info/walmart/mansfield"      (edn->bidi events/navigate-retail-walmart-mansfield)})
 
 (def routes-free-from-force-set-password
   #{events/navigate-force-set-password
