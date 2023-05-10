@@ -123,7 +123,13 @@
                            :preview-api-key            (env :contentful-content-delivery-preview-api-key)
                            :space-id                   (env :contentful-space-id)
                            :webhook-secret             (env :contentful-webhook-secret)}
-     :wirewheel-config    {:upcp-iframe-src (env :wirewheel-upcp-iframe-src)}
+     :wirewheel-config    {:upcp-iframe-src    (env :wirewheel-upcp-iframe-src)
+                           :auth-token-timeout (* 5 minute)
+                           :client-id          (env :wirewheel-api-client-id)
+                           :client-secret      (env :wirewheel-api-client-secret)
+                           :issuer-base-url    "https://wirewheelio.okta.com"
+                           :issuer-path        (env :wirewheel-api-issuer-path)
+                           :api-base-url       (env :wirewheel-api-base-url)}
      :logging             {:environment (env :environment)}
      :launchdarkly-config {:sdk-key (env :launchdarkly-sdk-key)}
      :storeback-config    {:endpoint          (env :storeback-endpoint)

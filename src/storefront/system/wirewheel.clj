@@ -20,8 +20,7 @@
                                                             (.encodeToString (Base64/getEncoder))
                                                             (str "Basic "))}
                       :query-params   {"grant_type" "client_credentials"
-                                       "scope"      "consent-insert-api consent-get-api"}
-                      :body           (json/generate-string {"access_token" nil})})
+                                       "scope"      "consent-insert-api consent-get-api"}})
     (catch Throwable e
       (logger :error e)
       (exception-handler e)
@@ -71,21 +70,23 @@
   component/Lifecycle
   (start [c]
     (logger :event {:event {:name :cms.lifecycle/started}})
-    (let [auth-token (atom nil)]
+    (let [get-auth-token (some-> {:base-url          issuer-base-url
+                                  :path              issuer-path
+                                  :client-id         client-id
+                                  :client-secret     client-secret
+                                  :exception-handler exception-handler
+                                  :logger            logger}
+                                 auth-token-request
+                                 :body
+                                 (json/parse-string true)
+                                 :access_token)
+          auth-token (atom get-auth-token)]
       (scheduler/every scheduler
                        auth-token-timeout
                        "poller for Wire Wheel API auth token"
-                       #(reset! auth-token
-                                (some-> {:base-url          issuer-base-url
-                                         :path              issuer-path
-                                         :client-id         client-id
-                                         :client-secret     client-secret
-                                         :exception-handler exception-handler
-                                         :logger            logger}
-                                        auth-token-request
-                                        :body
-                                        (json/parse-string true)
-                                        :access_token)))
+                       (fn []
+                         (logger :info "Polling for new API token")
+                         (reset! auth-token get-auth-token)))
       (assoc c :auth-token auth-token)))
   (stop [c]
     (logger :event {:event {:name :component.wirewheel.lifecycle/stopped}})
@@ -109,25 +110,3 @@
             consents-fetch-request
             :body
             :unifiedConsent)))
-
-(comment
-  (let [wirewheel   (-> {:logger             (:logger dev-system/the-system)
-                         :auth-token-timeout 20000 ;; 12000000 ; 20 minutes
-                         :client-id          ""
-                         :client-secret      ""
-                         :issuer-base-url    "https://wirewheelio.okta.com"
-                         :issuer-path        ""
-                         :api-base-url       "https://api.upcp.wirewheel.io/"
-                         :scheduler          (:scheduler dev-system/the-system)
-                         :exception-handler  (:exception-handler dev-system/the-system)}
-                      map->WirewheelContext
-                      .start)
-        verified-id (str (java.util.UUID/randomUUID))]
-    (Thread/sleep 1000)
-    (.set-consents wirewheel verified-id [{:target "foo-target"
-                                           :vendor "bar-vendor"
-                                           :action "REJECT"}])
-    (.fetch-consents wirewheel verified-id)
-    (.stop wirewheel))
-
-  )

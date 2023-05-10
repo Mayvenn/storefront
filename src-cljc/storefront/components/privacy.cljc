@@ -15,8 +15,9 @@
                       :id      "wwiframe"
                       :src     src
                       :on-load (fn init-iframe []
-                                 (js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent
-                                  #js {:targetIframe (js/document.getElementById "wwiframe")})
+                                 (when (clojure.core/exists? js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent)
+                                   (js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent
+                                    #js {:targetIframe (js/document.getElementById "wwiframe")}))
                                  (messages/handle-message events/initialized-wirewheel-upcp))})]))
 
 (component/defcomponent component [{:keys [content static-content-id ww-iframe-src]} owner opts]
