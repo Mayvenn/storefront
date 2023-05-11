@@ -26,6 +26,7 @@
    "/voucher-terms"               (edn->bidi events/navigate-content-voucher-terms)
    "/program-terms"               (edn->bidi events/navigate-content-program-terms)
    "/our-hair"                    (edn->bidi events/navigate-content-our-hair)
+   "/return-and-exchange-policy"  (edn->bidi events/navigate-content-return-and-exchange-policy)
    "/clipin-extensions-guide"     (edn->bidi events/navigate-guide-clipin-extensions)
 
    ;; Wig Care Guides
@@ -50,6 +51,7 @@
     events/navigate-content-privacy
     events/navigate-content-privacyv2
     events/navigate-content-privacyv1
+    events/navigate-content-return-and-exchange-policy
     events/navigate-content-tos
     events/navigate-content-sms
     events/navigate-content-ugc-usage-terms

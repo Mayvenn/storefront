@@ -70,6 +70,7 @@
 (defpath navigate-content-voucher-terms)
 (defpath navigate-content-program-terms)
 (defpath navigate-content-our-hair)
+(defpath navigate-content-return-and-exchange-policy)
 
 (defpath navigate-design-system)
 (defpath navigate-design-system-component-library)
