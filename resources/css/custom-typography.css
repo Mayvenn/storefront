@@ -156,55 +156,55 @@ h1, h2, h3, h4, h5, h6 {
 
 /* New Design System */
 .proxima { font-family: var(--font-family-proxima) }
-.proxima.text-xs {
+.text-xs {
     font-size: 12px;
     line-height: 16px;
 }
-.proxima.text-sm {
+.text-sm {
     font-size: 14px;
     line-height: 20px;
 }   
-.proxima.text-base {
+.text-base {
     font-size: 16px;
     line-height: 24px;
 }
-.proxima.text-lg {
+.text-lg {
     font-size: 18px;
     line-height: 28px;
 }
-.proxima.text-xl {
+.text-xl {
     font-size: 20px;
     line-height: 28px;
 }
-.proxima.text-2xl {
+.text-2xl {
     font-size: 24px;
     line-height: 32px;
 }
-.proxima.text-3xl {
+.text-3xl {
     font-size: 30px;
     line-height: 36px;
 }
-.proxima.text-4xl {
+.text-4xl {
     font-size: 36px;
     line-height: 40px;
 }
-.proxima.text-5xl {
+.text-5xl {
     font-size: 48px;
     line-height: 48px;
 }
-.proxima.text-6xl {
+.text-6xl {
     font-size: 60px;
     line-height: 60px;
 }
-.proxima.text-7xl {
+.text-7xl {
     font-size: 72px;
     line-height: 72px;
 }
-.proxima.text-8xl {
+.text-8xl {
     font-size: 96px;
     line-height: 96px;
 }
-.proxima.text-9xl {
+.text-9xl {
     font-size: 128px;
     line-height: 128px;
 }

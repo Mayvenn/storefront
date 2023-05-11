@@ -154,6 +154,7 @@
                     store-info-expanded
                     shop-wigs-menu-expanded})
 (def menus (conj header-menus menu-expanded))
+(def tabs (conj ui :tabs))
 
 (def expanded-commission-order-id (conj ui :expanded-commission-order-id))
 

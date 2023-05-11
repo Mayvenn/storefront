@@ -552,6 +552,7 @@
 (defpath control-adventure-location-submit)
 
 (defpath control-toggle-promo-code-entry)
+(defpath control-tab-selected)
 
 (defpath api-success-fetch-matched-stylist)
 (defpath api-success-fetch-stylists)
