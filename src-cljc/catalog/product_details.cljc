@@ -384,8 +384,8 @@
           (svg/x-sharp {:style {:width  "12px"
                                 :height "12px"}})]]
         [:p "We offer 30-day refunds and exchanges on all of our products,
-        except for custom and bespoke units. Made-to-order units are only
-        eligible for exchange."]
+        except for custom and bespoke units. Custom and bespoke units are
+        only eligible for exchange."]
         [:br]
         [:p.bold "Exchange Policy:"]
         [:p "Wear it, dye it, even cut it. If you’re not in love with your hair, we’ll exchange it within 30 days."]
