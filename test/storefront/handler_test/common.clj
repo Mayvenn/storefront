@@ -14,11 +14,19 @@
 (def test-overrides {:environment       "test"
                      :server-opts       {:port 2390}
                      :logging           {:system-name "storefront.tests"}
+                     :bugsnag-token     "bugsnag-token"
                      :contentful-config {:endpoint         (str "http://localhost:" contentful-port)
                                          :graphql-endpoint (str "http://localhost:" contentful-port "/_graphql")
                                          :space-id         "fake-space-id"
                                          :api-key          "fake-api-key"
                                          :preview-api-key  "fake-preview-api-key"}
+                     :wirewheel-config    {:upcp-iframe-src    "fake-wirewheel-upcp-iframe-src"
+                                           :auth-token-timeout (* 5 60 1000)
+                                           :client-id          "fake-wirewheel-api-client-id"
+                                           :client-secret      "fake-wirewheel-api-client-secret"
+                                           :issuer-base-url    "https://wirewheelio.okta.com"
+                                           :issuer-path        "fake-wirewheel-api-issuer-path"
+                                           :api-base-url       "fake-wirewheel-api-base-url"}
                      :storeback-config  {:endpoint          "http://localhost:4334/"
                                          :internal-endpoint "http://localhost:4334/"}})
 
