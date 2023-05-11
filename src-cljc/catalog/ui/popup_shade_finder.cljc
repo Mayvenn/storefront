@@ -14,11 +14,12 @@
 
 #?(:cljs 
    (defmethod popup/query :shade-finder [app-state]
-     {:tab (get-in app-state k/product-details-popup-shade-finder-tab)}))
+     {:tab (or (get-in app-state (conj k/tabs :shade-finder))
+               :finding-your-color-match)}))
 
 #?(:cljs 
    (defmethod popup/component :shade-finder
-     [{:as args :keys [tab]} _ _]
+     [{:keys [tab]} _ _]
      (ui/modal
       {:close-attrs {:on-click #(apply m/handle-message [e/popup-hide])}}
       [:div.bg-white.p3.stretch
@@ -29,11 +30,13 @@
                                                                                        :height "14px"}})]]
        (c/build tabs/component {:tabs         [{:id                 :finding-your-color-match
                                                 :title              "Finding Your Color Match"
-                                                :message            [e/popup-show-shade-finder {:tab :finding-your-color-match}]
+                                                :message            [e/control-tab-selected {:tabs-id :shade-finder
+                                                                                             :tab-id  :finding-your-color-match}]
                                                 :not-selected-class "border-right"}
                                                {:id                 :color-chart
                                                 :title              "Color Chart"
-                                                :message            [e/popup-show-shade-finder {:tab :color-chart}]
+                                                :message            [e/control-tab-selected {:tabs-id :shade-finder
+                                                                                             :tab-id  :color-chart}]
                                                 :not-selected-class "border-left"}]
                                 :selected-tab tab})
        [:div.py2
@@ -63,9 +66,7 @@
 
 (defmethod t/transition-state e/popup-show-shade-finder
   [_ _ {:keys [tab]} app-state]
-  (-> app-state
-      (assoc-in k/popup :shade-finder)
-      (assoc-in k/product-details-popup-shade-finder-tab (or tab :finding-your-color-match))))
+  (assoc-in app-state k/popup :shade-finder))
 
 #?(:cljs
    (defmethod trk/perform-track e/popup-show-shade-finder

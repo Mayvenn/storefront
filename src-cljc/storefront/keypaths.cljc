@@ -159,7 +159,6 @@
 (def expanded-commission-order-id (conj ui :expanded-commission-order-id))
 
 (def product-details (conj ui :product-details))
-(def product-details-popup-shade-finder-tab (conj product-details :popup-shade-finder-tab))
 
 (def phone-capture-session (conj ui :phone-capture-session))
 
