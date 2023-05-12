@@ -104,6 +104,7 @@
                                        {:question "How many packages of clip-ins do I need for a full look?"
                                         :answer   [:div
                                                    [:div.mb3 "If your hair is fine to medium density, 1 pack of Clip-Ins should work for a full look."]
+                                                   [:div.mb3 "For medium to thick hair 2 packs will create a better blend and match your natural density. You can always mix and match packs for a truly customized look!"]
                                                    placeholder-img]}
                                        {:question "What is a seamless weft?"
                                         :answer   [:div
