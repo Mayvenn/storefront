@@ -182,7 +182,6 @@
         images-db             (get-in data storefront.keypaths/v2-images)
         promotions            (get-in data storefront.keypaths/promotions)
         remove-free-install?  (:remove-free-install (get-in data storefront.keypaths/features))
-        migrate-to-rich-text? (:migrate-to-rich-text (get-in data storefront.keypaths/features))
         in-omni?              (:experience/omni (:experiences (accounts/<- data)))
         facets-db             (->> (get-in data storefront.keypaths/v2-facets)
                                    (maps/index-by (comp keyword :facet/slug))
@@ -348,17 +347,15 @@
                                                                 "Large (4 rem)"   "4rem"
                                                                 "X-Large (8 rem)" "8rem")
                                                   :icon       (:icon body-layer)}
-      "text"                                     (when-not migrate-to-rich-text?
-                                                   (-> body-layer
-                                                       (select-keys [:font :size :alignment :content :long-content])
-                                                       (assoc :layer/type :text)))
-      "richText"                                 (when migrate-to-rich-text?
-                                                   (-> body-layer
-                                                       (update :content #(->> %
-                                                                              :content
-                                                                              (map cms-dynamic-content/build-hiccup-tag)
-                                                                              (into [:div])))
-                                                       (assoc :layer/type :rich-text)))
+      "text"                                     (-> body-layer
+                                                     (select-keys [:font :size :alignment :content :long-content])
+                                                     (assoc :layer/type :text))
+      "richText"                                 (-> body-layer
+                                                     (update :content #(->> %
+                                                                            :content
+                                                                            (map cms-dynamic-content/build-hiccup-tag)
+                                                                            (into [:div])))
+                                                     (assoc :layer/type :rich-text))
       "retailLocation"                           (-> body-layer
                                                      retail-location-query
                                                      (assoc :layer/type :retail-location))
