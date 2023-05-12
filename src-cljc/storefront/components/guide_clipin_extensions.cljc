@@ -9,6 +9,9 @@
             [storefront.keypaths :as k]
             [storefront.platform.component-utils :as utils]))
 
+;; If other categories get guides as well, consider generalizing this (and driving it from Contentful!) 
+;; rather than duplicating it.
+
 (c/defcomponent carousel
   [{:keys [title elements]} _ _]
   [:div.proxima
@@ -16,11 +19,13 @@
    [:div.flex.overflow-scroll.hide-scroll-bar
     (map-indexed 
      (fn [i {:keys [video-src caption]}]
-       [:div.m3.flex-1 {:key   i
-                        :style {:width "120px"}}
-        [:div.bg-gray {:style {:height "215px"
-                               :width  "120px"}}]
-        [:div.mt2.text-sm caption]])
+       [:div.m3.flex-1 {:key i}
+        [:video
+         {:controls         "controls"
+          :width            "240px"
+          :aria-describedby (str "video-" i "-caption")
+          :src              video-src}]
+        [:div.mt2.text-sm {:id (str "video-" i "-caption")} caption]])
      elements)]])
 
 (c/defcomponent faqs
@@ -51,7 +56,7 @@
       [:span (svg/left-arrow {:width  "12"
                               :height "12"}) " " label]))
    [:div.proxima.text-4xl.m3 (:header/title data)]
-   #_(c/build carousel (vt/with :carousel data))
+   (c/build carousel (vt/with :carousel data))
    (c/build faqs (vt/with :faqs data))])
 
 (def placeholder-img
@@ -67,15 +72,15 @@
                               :id     "navigate-back"
                               :label  "Shop All Clip-Ins"}
      #:carousel{:title    "Video Tutorials"
-                :elements [{:video-src     ""
+                :elements [{:video-src     "//ucarecdn.com/0c96e035-469d-479b-a296-c5481d401759/"
                             :caption "How to Find the Best Shade to Match Your Hair"}
-                           {:video-src     ""
+                           {:video-src     "//ucarecdn.com/d972aae9-5c73-4297-9bf2-9eaec9973b87/"
                             :caption "How to Install Clip-Ins"}
-                           {:video-src     ""
+                           #_{:video-src     ""
                             :caption "How to Make Your Clip-Ins Blend with Your Hair"}
-                           {:video-src     ""
+                           #_{:video-src     ""
                             :caption "How to Make Your Clip-Ins Stay in Place"}
-                           {:video-src     ""
+                           #_{:video-src     ""
                             :caption "Where to Place Your Clip-Ins"}]}
      #:faqs{:title    "FAQs"
             :selected-tab (or (get-in app-state (conj k/tabs :guide-clipin-extensions)) 
