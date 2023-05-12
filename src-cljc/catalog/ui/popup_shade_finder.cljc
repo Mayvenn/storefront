@@ -44,7 +44,7 @@
           :finding-your-color-match 
           [:div.proxima.text-base 
            [:div.my2 "Color-matching your natural hair to your extensions is simpler than it sounds. Make sure you're looking at your hair in bright, natural lighting. In front of a window, or even outside, is best."]
-           (ui/img {:src   "https://ucarecdn.com/177c96ce-c31b-49b7-897b-6ab06e5ba146/"
+           #_(ui/img {:src   "https://ucarecdn.com/177c96ce-c31b-49b7-897b-6ab06e5ba146/"
                     :alt   ""
                     :class "col-12"})
            [:div.my2 "Use the mid-shaft (middle) of your hair through your ends to color match. Our roots are sometimes a different color than the rest of our hair, and using the middle lengths will give a more accurate representation. Keep in mind: if you're in between two different shades, it's usually best to go with the lighter option. "]
