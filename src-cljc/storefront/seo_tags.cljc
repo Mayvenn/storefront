@@ -322,6 +322,14 @@
                                      "@type"    "Person"
                                      :name      "Diishan Imira"}}]}
 
+       events/navigate-content-return-and-exchange-policy
+       {:title          "Return and Exchange Policy | Mayvenn"
+        :og-title       "Return and Exchange Policy - Buy Risk Free With Easy Returns and Exchanges!"
+        :description    "Wear it, dye it, even cut it. If you’re not in love with your hair, we’ll exchange it within 30 days of purchase."
+        :og-type        "website"
+        :og-image       og-image-url
+        :og-description "Wear it, dye it, even cut it. If you do not love your Mayvenn hair we will exchange it within 30 days of purchase."}
+
        events/navigate-shop-by-look
        (let [album-keyword (get-in data keypaths/selected-album-keyword)]
          {:title          (-> ugc/album-copy album-keyword :seo-title)
