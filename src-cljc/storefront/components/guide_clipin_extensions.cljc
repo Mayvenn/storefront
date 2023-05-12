@@ -51,10 +51,11 @@
       [:span (svg/left-arrow {:width  "12"
                               :height "12"}) " " label]))
    [:div.proxima.text-4xl.m3 (:header/title data)]
-   (c/build carousel (vt/with :carousel data))
+   #_(c/build carousel (vt/with :carousel data))
    (c/build faqs (vt/with :faqs data))])
 
 (def placeholder-img
+  nil #_
   [:div.bg-gray.my1 {:style {:width "300px"
                              :height "200px"}}])
 
