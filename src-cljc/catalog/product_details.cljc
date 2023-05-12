@@ -870,6 +870,7 @@
   (let [sku-quantity    (get-in state keypaths/browse-sku-quantity 1)
         options         (get-in state catalog.keypaths/detailed-product-options)
         selections      (get-in state catalog.keypaths/detailed-product-selections)
+        selected-sku    (get-in state catalog.keypaths/detailed-product-selected-sku)
         selected-length (get-in facets-db [:hair/length :facet/options (:hair/length selections)])
         selected-color  (get-in facets-db [:hair/color :facet/options (:hair/color selections)])]
     (accordion-neue/accordion-query
@@ -903,7 +904,7 @@
                                                                                                                  {:navigation-event events/navigate-product-details
                                                                                                                   :selection        :hair/color
                                                                                                                   :value            slug}]}]})))))}
-                                                  (when (experiments/help-me-find-my-shade? state)
+                                                  (when (-> selected-sku :hair/family first (= "seamless-clip-ins") (and (experiments/help-me-find-my-shade? state)))
                                                     {:link/content "Help me find my shade"
                                                      :link/target  [events/popup-show-shade-finder]
                                                      :link/id      "help-find-shade"}))})
