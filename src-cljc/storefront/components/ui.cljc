@@ -625,7 +625,7 @@
   ;; NOTE(jeff): picture-classes is deprecated, please do not use
   [{:as   img-attrs
     :keys [width retina-quality default-quality picture-classes retina?
-           square-size max-size preserve-url-transformations? smart-crop]
+           square-size max-size preserve-url-transformations? smart-crop crop]
     :or   {retina-quality  "lightest"
            default-quality "normal"
            retina?         true
@@ -646,6 +646,8 @@
                            :always     (str "-/quality/" quality "/")
                            square-size (str "-/scale_crop/" square-size "x" square-size "/center/")
                            smart-crop  (str "-/scale_crop/" smart-crop "/smart/")
+                           ;; Use crop instead of smart-crop for aspect ratios, e.g. "16:9"
+                           crop        (str "-/crop/" crop "/")
                            width       (str "-/resize/" width "x/"))))
          default-url (compute-url false (when px? width))
          srcset      (->> (for [multiplier (if retina?

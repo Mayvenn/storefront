@@ -1,7 +1,5 @@
 (ns storefront.accessors.experiments
-  (:require [storefront.keypaths :as keypaths]
-            [spice.date :as date]
-            [storefront.accessors.sites :as sites]))
+  (:require [storefront.keypaths :as keypaths]))
 
 ;; IMPORTANT: Don't forget to add your feature flag to storefront.handler/wrap-add-feature-flags!
 
@@ -178,3 +176,7 @@
 (defn plp-header?
   [data]
   (display-feature? data "plp-header"))
+
+(defn product-card-update?
+  [data]
+  (display-feature? data "product-card-update"))
