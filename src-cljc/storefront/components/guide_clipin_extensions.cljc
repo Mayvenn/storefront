@@ -14,19 +14,21 @@
 
 (c/defcomponent carousel
   [{:keys [title elements]} _ _]
-  [:div.proxima
-   [:div.text-3xl.m3 title]
-   [:div.flex.overflow-scroll.hide-scroll-bar
-    (map-indexed 
-     (fn [i {:keys [video-src caption]}]
-       [:div.m3.flex-1 {:key i}
-        [:video
-         {:controls         "controls"
-          :width            "240px"
-          :aria-describedby (str "video-" i "-caption")
-          :src              video-src}]
-        [:div.mt2.text-sm {:id (str "video-" i "-caption")} caption]])
-     elements)]])
+  (let [element-width "240px"]
+    [:div.proxima
+     [:div.text-3xl.m3 title]
+     [:div.flex.overflow-scroll.hide-scroll-bar
+      (map-indexed 
+       (fn [i {:keys [video-src caption]}]
+         [:div.m3.flex-1 {:key i
+                          :style {:width element-width}}
+          [:video
+           {:controls         "controls"
+            :width            element-width
+            :aria-describedby (str "video-" i "-caption")
+            :src              video-src}]
+          [:div.mt2.text-sm {:id (str "video-" i "-caption")} caption]])
+       elements)]]))
 
 (c/defcomponent faqs
   [{:keys [title selected-tab tabs]} _ _]
