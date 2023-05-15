@@ -705,6 +705,7 @@
 ;; email-modal
 (defpath email-modal-submitted)
 (defpath email-modal-dismissed)
+(defpath email-modal-opened)
 
 ;; homepage email
 (defpath homepage-email-submitted)

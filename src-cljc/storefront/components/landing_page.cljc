@@ -23,7 +23,6 @@
 
 (defn ^:private url->navigation-message [url]
   (when-not (nil? url)
-    events/navigate-not-found
     (let [parsed-path (lambdaisland.uri/uri url)
           nav-message (routes/navigation-message-for (:path parsed-path)
                                                      (lambdaisland.uri/query-map parsed-path)
@@ -31,6 +30,21 @@
                                                      (:fragment parsed-path))]
       (when (not= events/navigate-not-found (first nav-message))
         nav-message))))
+
+(defn ^:private button-navigation-message [{:keys [url event-target]}]
+  (cond
+    (= "Open Modal" event-target) (spice.core/spy [events/email-modal-opened])
+
+    url
+    (let [parsed-path (lambdaisland.uri/uri url)
+          nav-message (routes/navigation-message-for (:path parsed-path)
+                                                     (lambdaisland.uri/query-map parsed-path)
+                                                     nil
+                                                     (:fragment parsed-path))]
+      (when (not= events/navigate-not-found (first nav-message))
+        nav-message))
+
+    :else [events/navigate-not-found]))
 
 (defn landing-page-slug [data]
   (->> (get-in data storefront.keypaths/navigation-args)
@@ -389,7 +403,7 @@
       "button"                                   (-> body-layer
                                                      (select-keys [:copy :alignment-to-container :color :size :url])
                                                      determine-alignment
-                                                     (assoc :navigation-message (url->navigation-message (:url body-layer)))
+                                                     (assoc :navigation-message (button-navigation-message body-layer))
                                                      (assoc :layer/type :button))
       "title"                                    (-> body-layer
                                                      (select-keys [:primary :secondary :tertiary :template])
