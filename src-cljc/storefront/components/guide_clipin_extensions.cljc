@@ -74,7 +74,7 @@
                               :id     "navigate-back"
                               :label  "Shop All Clip-Ins"}
      #:carousel{:title    "Video Tutorials"
-                :elements [{:video-src     "//ucarecdn.com/0c96e035-469d-479b-a296-c5481d401759/"
+                :elements [{:video-src     "//ucarecdn.com/002ece8b-f236-4714-a9f6-0830f0b95875/"
                             :caption "How to Find the Best Shade to Match Your Hair"}
                            {:video-src     "//ucarecdn.com/d972aae9-5c73-4297-9bf2-9eaec9973b87/"
                             :caption "How to Install Clip-Ins"}
