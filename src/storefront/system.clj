@@ -45,6 +45,7 @@
    :launchdarkly (feature-flags/map->LaunchDarkly (select-keys config [:launchdarkly-config]))
    :app-handler (map->AppHandler (select-keys config [:storeback-config
                                                       :welcome-config
+                                                      :wirewheel-config
                                                       :environment
                                                       :client-version]))
    :sitemap-cache (->AtomCache nil)
