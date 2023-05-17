@@ -22,6 +22,8 @@
 (def model-keypath [:models :email-capture])
 (def textfield-keypath (conj model-keypath :textfield))
 (def phonefield-keypath (conj model-keypath :phone))
+(def timer-keypath (conj model-keypath :timer?))
+(def toggle-keypath (conj model-keypath :open?))
 (def long-timer-started-keypath (conj model-keypath :long-timer-started?))
 (def short-timer-starteds-keypath (conj model-keypath :short-timer-starteds?))
 
@@ -85,14 +87,25 @@
 
 (defmethod fx/perform-effects e/biz|email-capture|dismissed
   [_ _ {:keys [id trigger-id]} state _]
-  #?(:cljs
-     (cookie-jar/save-email-capture-short-timer-started "1pv" (get-in state k/cookie)))
-  (publish e/biz|email-capture|timer-state-observed))
+  (if (get-in state toggle-keypath)
+    (publish e/biz|email-capture|toggle|dismissed)
+    (do
+      #?(:cljs
+         (cookie-jar/save-email-capture-short-timer-started "1pv" (get-in state k/cookie)))
+      (publish e/biz|email-capture|timer-state-observed))))
 
 (defmethod t/transition-state e/hdyhau-email-capture-submitted
   [_ _ _ app-state]
   (-> app-state
       (assoc-in [:models :hdyhau :submitted] true)))
+
+(defmethod t/transition-state e/email-modal-opened
+  [_ _ _ app-state]
+  (assoc-in app-state toggle-keypath true))
+
+(defmethod t/transition-state e/biz|email-capture|toggle|dismissed
+  [_ _ _ app-state]
+  (assoc-in app-state toggle-keypath false))
 
 (defmethod fx/perform-effects e/hdyhau-email-capture-submitted
   [_ _ data state _]
@@ -112,6 +125,13 @@
      (stringer/track-event "email_capture-deploy" {:email-capture-id      trigger-id
                                                    :variation-description variation-description
                                                    :template-content-id   template-content-id})))
+
+#?(:cljs
+   (defmethod trk/perform-track e/biz|email-capture|toggle|deployed
+     [_ events {:keys [trigger-id variation-description template-content-id]} app-state]
+     (stringer/track-event "email_capture-toggled-deploy" {:email-capture-id      trigger-id
+                                                           :variation-description variation-description
+                                                           :template-content-id   template-content-id})))
 
 #?(:cljs
    (defmethod trk/perform-track e/biz|email-capture|captured

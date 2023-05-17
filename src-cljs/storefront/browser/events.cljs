@@ -99,6 +99,9 @@
     (handle-message message-to-handle))
   (when (-> "first-pageview-email-capture" (email-capture/<-trigger app-state) :displayable?)
     (handle-message events/biz|email-capture|dismissed {:id "first-pageview-email-capture"}))
+
+  (when (get-in app-state email-capture/toggle-keypath)
+    (handle-message events/biz|email-capture|toggle|dismissed))
   (when-let [message-to-handle (dismiss-stylist-filter-modal-event app-state)]
     (handle-message message-to-handle))
   (when-let [message-to-handle (dismiss-look-detail-picker-modal-event app-state)]

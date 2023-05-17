@@ -105,7 +105,6 @@
         facet-filtering-expanded-state      (cond-> facet-filtering-state 
                                               experiment-color-shorthand?
                                               (update :facet-filtering/filters catalog.facets/expand-shorthand-colors)
-                                              
                                               (->> category :selector/electives (filter (partial = :style.color/features)) seq)
                                               (update :facet-filtering/filters (partial catalog.facets/expand-color-features color-facet))) 
         loaded-category-products            (->> (get-in app-state k/v2-products)

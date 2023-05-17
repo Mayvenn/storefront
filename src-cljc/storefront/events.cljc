@@ -745,6 +745,8 @@
 (defpath biz|email-capture|timer-state-observed)
 (defpath biz|hdyhau-capture|captured)
 (defpath biz|sms-capture|captured)
+(defpath biz|email-capture|toggle|deployed)
+(defpath biz|email-capture|toggle|dismissed)
 
 ;; Shopping Quiz iterations
 (defpath navigate-shopping-quiz)

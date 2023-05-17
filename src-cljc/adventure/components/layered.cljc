@@ -1017,13 +1017,19 @@
       (layer-view content opts))
     contents)])
 
-(defcomponent button [{:keys [alignment copy color size url navigation-message]} _ _]
+(defcomponent button [{:keys [alignment copy color size url navigation-message target]} _ _]
   [:div.flex
    {:class alignment}
    (ui/button (str "btn-" size " "
                    "btn-" color " "
                    "button-font-1")
-              (merge {:href url} (when navigation-message (apply utils/route-to navigation-message)))
+              (cond
+                target
+                (apply utils/fake-href target)
+
+                url
+                (merge {:href url}
+                       (when navigation-message (apply utils/route-to navigation-message))))
               copy)])
 
 (defcomponent text [{:keys [url font size alignment content long-content]} _ _]

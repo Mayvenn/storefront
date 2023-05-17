@@ -31,10 +31,8 @@
       (when (not= events/navigate-not-found (first nav-message))
         nav-message))))
 
-(defn ^:private button-navigation-message [{:keys [url event-target]}]
+(defn ^:private button-navigation-message [{:keys [url]}]
   (cond
-    (= "Open Modal" event-target) (spice.core/spy [events/email-modal-opened])
-
     url
     (let [parsed-path (lambdaisland.uri/uri url)
           nav-message (routes/navigation-message-for (:path parsed-path)
@@ -45,6 +43,11 @@
         nav-message))
 
     :else [events/navigate-not-found]))
+
+(defn ^:private button-target
+  [{:keys [event-target]}]
+  (when (= "OpenModal" event-target)
+    [events/email-modal-opened]))
 
 (defn landing-page-slug [data]
   (->> (get-in data storefront.keypaths/navigation-args)
@@ -404,6 +407,7 @@
                                                      (select-keys [:copy :alignment-to-container :color :size :url])
                                                      determine-alignment
                                                      (assoc :navigation-message (button-navigation-message body-layer))
+                                                     (assoc :target (button-target body-layer))
                                                      (assoc :layer/type :button))
       "title"                                    (-> body-layer
                                                      (select-keys [:primary :secondary :tertiary :template])

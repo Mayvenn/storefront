@@ -14,7 +14,8 @@
              :refer [handle-message]
              :rename {handle-message publish}]
             [storefront.platform.component-utils :as utils]
-            [storefront.effects :as fx]))
+            [storefront.effects :as fx]
+            [mayvenn.concept.email-capture :as email-capture]))
 
 (defn m-header [id close-dialog-href]
   [:div.flex.justify-between.items-center.p2.bg-white
@@ -323,6 +324,7 @@
           phone              (get-in state phonefield-keypath)
           hdyhau             (memoize-hdyhau-options)]
       (merge {:id                                    "email-capture"
+              :email-capture/open?                   (get-in state email-capture/toggle-keypath)
               :email-capture/trigger-id              trigger-id
               :email-capture/variation-description   variation-description
               :email-capture/template-content-id     template-content-id
@@ -395,10 +397,11 @@
                                    :landfalls
                                    (map :utm-params)
                                    (some #(= (:value matcher) (get % (:tracker-type matcher)))))
+    "matchesEventTarget"      (= "open-modal" (:event-target matcher))
     ;; TODO: there are other path matchers not accounted for yet.
     (when matcher (js/console.error (str "No matching content/type for matcher " (pr-str matcher))))))
 
-(defn triggered-email-modals<-
+(defn time-triggered-email-modals<-
   [state long-timer short-timers]
   (when-not long-timer
     (let [modals (vals (get-in state k/cms-email-modal))]
@@ -411,12 +414,27 @@
            (filter #(matcher-matches? state (-> % :email-modal-trigger :matcher)))
            ;; Removes triggers under timers
            (remove #(get short-timers (-> % :email-modal-trigger :trigger-id)))
+           ;; Remove modals with target triggers
+           (remove #(->> % :email-modal-trigger :matcher ((juxt :must-satisfy-all-matches :must-satisfy-any-match)) flatten (some :event-target)))
+           not-empty))))
+
+(defn button-triggered-email-modals<-
+  [state]
+  (when (get-in state email-capture/toggle-keypath)
+    (let [modals (vals (get-in state k/cms-email-modal))]
+      (->> modals
+           ;; Verify modal has trigger, for acceptance env
+           (filter #(-> % :email-modal-trigger :trigger-id))
+           ;; Verify modal has content, for acceptance env
+           (filter #(-> % :email-modal-template :template-content-id))
+           ;; Matches trigger
+           (filter #(matcher-matches? state (-> % :email-modal-trigger :matcher)))
            not-empty))))
 
 (defn ^:export built-component [state opts]
   (let [long-timer   (get-in state concept/long-timer-started-keypath)
         short-timers (get-in state concept/short-timer-starteds-keypath)
-        email-modals (triggered-email-modals<- state long-timer short-timers)]
+        email-modals (mapcat seq [(button-triggered-email-modals<- state) (time-triggered-email-modals<- state long-timer short-timers)])]
     ;; FIXME indeterminate behavior when multiple triggers are valid and active
     (when-let [email-modal (first email-modals)]
       (c/build template (query state email-modal) opts))))

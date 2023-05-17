@@ -53,7 +53,7 @@
   ;; This arity is for when we need a matching product for title, product-id, and slug
   ([dimensions skus products]
    (->> skus
-        (reduce (fn [acc sku] 
+        (reduce (fn [acc sku]
                   (let [ix (select-keys sku dimensions)]
                     (if-let [skuer (get acc ix)]
                       (assoc acc ix (-> skuer
@@ -61,7 +61,7 @@
                                         (update :selector/image-cases conj (:selector/image-cases sku))))
                       (assoc acc ix (merge (select-keys sku (concat dimensions
                                                                     [:selector/image-cases]))
-                                           (when products 
+                                           (when products
                                              (let [product (->> products (filter #(get (set (:selector/skus %)) (:catalog/sku-id sku))) first)]
                                                (select-keys product [:copy/title :catalog/product-id :page/slug])))
                                            {:selector/skus [(:catalog/sku-id sku)]}))))) {})
