@@ -43,14 +43,15 @@
 (defn track-sign-up [] #_(track "sign_up" {}))
 
 (defn track-placed-order
-  [{:keys [number shipping-method-price line-item-skuers used-promotion-codes tax]}]
-  (track "purchase" {:transaction_id number
-                     :items          (mapv mayvenn-line-item->ga4-item line-item-skuers)
-                     :currency       "USD"
-                     :value          (reduce + 0 (map :sku/price line-item-skuers))
-                     :coupon         (->> used-promotion-codes (string/join " ") not-empty)
-                     :tax            tax
-                     :shipping       shipping-method-price}))
+  [{:keys [number shipping-method-price line-item-skuers used-promotion-codes tax user-ecd]}]
+  (track "purchase" (merge {:transaction_id number
+                            :items          (mapv mayvenn-line-item->ga4-item line-item-skuers)
+                            :currency       "USD"
+                            :value          (reduce + 0 (map :sku/price line-item-skuers))
+                            :coupon         (->> used-promotion-codes (string/join " ") not-empty)
+                            :tax            tax
+                            :shipping       shipping-method-price}
+                           user-ecd)))
 
 (defn track-begin-checkout
   [{:keys [line-item-skuers used-promotion-codes user-ecd]}]
