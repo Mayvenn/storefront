@@ -630,4 +630,5 @@
                                       {:skus-db          (get-in state k/v2-skus)
                                        :image-catalog    (get-in state k/v2-images)
                                        :store-experience (get-in state k/store-experience)
-                                       :order            order}))))))
+                                       :order            order
+                                       :user-ecd         (get-in state k/user-ecd)}))))))

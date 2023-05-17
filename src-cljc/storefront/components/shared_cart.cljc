@@ -624,7 +624,8 @@
        :images-catalog   (get-in state keypaths/v2-images)
        :store-experience (get-in state keypaths/store-experience)
        :order            order
-       :shared-cart-id   shared-cart-id})))
+       :shared-cart-id   shared-cart-id
+       :user-ecd         (get-in state keypaths/user-ecd)})))
 
 (defmethod transitions/transition-state events/api-failure-shared-cart
   [_ _ _ state]

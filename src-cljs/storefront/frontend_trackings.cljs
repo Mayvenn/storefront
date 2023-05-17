@@ -137,7 +137,8 @@
       :store-is-stylist (not (or (#{"store" "shop" "internal"} store-slug)
                                  (= "retail-location" (get-in app-state keypaths/store-experience))))
       :order-quantity   (orders/product-and-service-quantity order)
-      :line-item-skuers line-item-skuers})
+      :line-item-skuers line-item-skuers
+      :user-ecd         (get-in app-state keypaths/user-ecd)})
     (stringer/track-event "suggested_line_item_added" {:added_skus   added-skus
                                                        :initial_sku  (dissoc (line-item-skuer->stringer-cart-item images-catalog initial-sku)
                                                                              :variant_quantity)
@@ -227,7 +228,7 @@
                            :store_id              (get-in app-state keypaths/store-stylist-id)})))
 
 (defn track-cart-initialization
-  [initialized-by initialized-id {:keys [skus-db images-catalog store-experience order environment]}]
+  [initialized-by initialized-id {:keys [skus-db images-catalog store-experience order environment user-ecd]}]
   (let [line-item-skuers   (waiter-line-items->line-item-skuer skus-db (orders/product-and-service-items order))
         line-item-quantity (->> line-item-skuers (map :item/quantity) (reduce + 0))
         cart-items         (mapv (partial line-item-skuer->stringer-cart-item images-catalog) line-item-skuers)]
@@ -235,7 +236,8 @@
                                                  :content_ids  (map :catalog/sku-id line-item-skuers)
                                                  :num_items    line-item-quantity})
     (google-analytics/track-add-to-cart {:number           (:number order)
-                                         :line-item-skuers line-item-skuers})
+                                         :line-item-skuers line-item-skuers
+                                         :user-ecd         user-ecd})
     (stringer/track-event "cart_initialized"
                           (merge {:store_experience store-experience
                                   :order_number     (:number order)
@@ -251,7 +253,7 @@
 
 ;; If you are intending to track some bulk add event which should always create a new order, use `cart-initialized`
 (defn track-bulk-add-to-cart
-  [{:keys [skus-db images-catalog store-experience order shared-cart-id look-id environment]}]
+  [{:keys [skus-db images-catalog store-experience order shared-cart-id look-id environment user-ecd]}]
   (let [line-item-skuers       (waiter-line-items->line-item-skuer
                                 skus-db
                                 (orders/product-and-service-items order))
@@ -265,7 +267,8 @@
                                                  :content_ids  (map :catalog/sku-id line-item-skuers)
                                                  :num_items    line-item-quantity})
     (google-analytics/track-add-to-cart {:number           (:number order)
-                                         :line-item-skuers line-item-skuers})
+                                         :line-item-skuers line-item-skuers
+                                         :user-ecd         user-ecd})
     (stringer/track-event "bulk_add_to_cart" (merge {:shared_cart_id       shared-cart-id
                                                      :store_experience     store-experience
                                                      :order_number         (:number order)
@@ -309,7 +312,8 @@
         :store-is-stylist (not (or (#{"store" "shop" "internal"} store-slug)
                                    (= "retail-location" (get-in app-state keypaths/store-experience))))
         :order-quantity   order-quantity
-        :line-item-skuers added-line-item-skuers}))))
+        :line-item-skuers added-line-item-skuers
+        :user-ecd         (get-in app-state keypaths/user-ecd)}))))
 
 (def interesting-payment-methods
   #{"apple-pay" "paypal" "quadpay"})

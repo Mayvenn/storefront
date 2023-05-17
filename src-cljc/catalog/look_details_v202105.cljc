@@ -858,7 +858,8 @@
             :skus-db          (get-in state keypaths/v2-skus)
             :image-catalog    (get-in state keypaths/v2-images)
             :store-experience (get-in state keypaths/store-experience)
-            :order            order}) 
+            :order            order
+            :user-ecd         (get-in state keypaths/user-ecd)}) 
           (doseq [promo-code promotion-codes]
             (messages/handle-message events/order-promo-code-added {:order-number (:number order)
                                                                     :promo-code   promo-code})))))))
