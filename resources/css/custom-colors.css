@@ -22,6 +22,7 @@
 .quadpay      { color: var(--quadpay); }
 
 .gray-700 { color: var(--gray-700); }
+.gray-900 { color: var(--gray-900); }
 
 :focus { outline: var(--p-color) auto 5px }
 
@@ -47,4 +48,5 @@
   --quadpay:      #140ca3;
 
   --gray-700: #767377;
+  --gray-900: #3e3c3f;
 }

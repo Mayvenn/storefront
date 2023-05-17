@@ -819,9 +819,11 @@
     (let [index    (:idx product-carousel)
           exhibits (->> selected-sku
                         (detailed-skuer-media images-catalog)
-                        (map (fn [{:keys [alt url] :as image}]
+                        (map (fn [{:keys [alt url media/installation] :as image}]
                                {:src url
                                 :alt alt
+                                :badge (when (= "before" installation)
+                                         {:content "Before"})
                                 :type (:media/type image)})))]
       #:product-carousel
       {:selected-exhibit-idx (if (< -1 index (count exhibits))

@@ -35,14 +35,15 @@
     :style {:aspect-ratio "1 / 1"}}])
 
 (c/defcomponent product-carousel-highlight
-  [{:keys [src type alt]} _ _]
+  [{:keys [src type alt badge]} _ _]
   (c/html
-   [:div
+   [:div.relative
     {:style {:aspect-ratio "3 / 4"
              :overflow     "hidden"}}
+    
     (cond
       (= "video" type)
-      [:video.container-size.contents
+      [:video.container-size
        {:autoPlay    "autoPlay"
         :loop        "loop"
         :muted       "muted"
@@ -50,13 +51,27 @@
         :style       {:object-fit "cover"}
         :aria-label  alt
         :src         src}]
-
       :else
-      (ui/img {:src      src
-               :alt      alt
-               :class    "container-size contents"
-               :style    {:object-fit "cover"}
-               :max-size 800}))]))
+      [:div.container-size
+       (ui/img {:src      src
+                :alt      alt
+                :class    "container-size"
+                :style    {:object-fit "cover"}
+                :max-size 800})])
+    (when badge
+      [:div
+       [:div.hide-on-tb-dt.absolute.bg-warm-gray.gray-900.proxima.text-sm 
+        {:style {:left          "12px"
+                 :top           "12px"
+                 :border-radius "2px"
+                 :padding       "4px 8px"}} 
+        (:content badge)]
+       [:div.hide-on-mb.absolute.bg-warm-gray.gray-900.proxima.text-base 
+        {:style {:left          "20px"
+                 :top           "20px"
+                 :border-radius "2px"
+                 :padding       "4px 12px"}} 
+        (:content badge)]])]))
 
 (c/defcomponent product-carousel-thumbnail
   [{:keys [src type alt]} _ _]
