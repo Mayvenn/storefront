@@ -187,7 +187,8 @@
         :store-is-stylist (not (or (#{"store" "shop" "internal"} store-slug)
                                    (= "retail-location" (get-in app-state keypaths/store-experience))))
         :order-quantity   order-quantity
-        :line-item-skuers [(assoc sku :item/quantity quantity)]}))))
+        :line-item-skuers [(assoc sku :item/quantity quantity)]
+        :user-ecd         (get-in app-state keypaths/user-ecd)}))))
 
 (defmethod perform-track events/order-line-item-removed
   [_ _ {:keys [sku-id quantity order]} app-state] 

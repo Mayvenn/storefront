@@ -1,8 +1,8 @@
 (ns storefront.hooks.google-analytics
   (:require [clojure.string :as string]
             [spice.maps :as maps]
-            [storefront.transitions :as t] 
-            [storefront.keypaths :as k] 
+            [storefront.transitions :as t]
+            [storefront.keypaths :as k]
             [storefront.events :as e]
             [storefront.components.formatters :as f]
             goog.crypt
@@ -15,7 +15,7 @@
     (.push js/dataLayer (clj->js {:event event-name
                                   :ecommerce data}))))
 
-(defn ^:private mayvenn-line-item->ga4-item 
+(defn ^:private mayvenn-line-item->ga4-item
   ([item quantity] (mayvenn-line-item->ga4-item (assoc item :item/quantity quantity)))
   ([item]
    {:item_id   (:catalog/sku-id item)
@@ -28,14 +28,16 @@
   "Track an add-to-cart event in GA4 schema."
   ;; When things settle down we might want to consider the following or more:
   ;; order/number, order/quantity, store/slug, stylist?
-  [{:keys [line-item-skuers]}]
+  [{:keys [line-item-skuers user-ecd]}]
   ;; NOTE: We are ignoring discounts here
   ;; TODO: We should probably minus the discount out of the value.
   (let [value (reduce + 0 (map :sku/price line-item-skuers))]
     (track "add_to_cart"
-           {:items    (mapv mayvenn-line-item->ga4-item line-item-skuers)
-            :currency "USD"
-            :value    value})))
+           (merge
+            {:items    (mapv mayvenn-line-item->ga4-item line-item-skuers)
+             :currency "USD"
+             :value    value}
+            user-ecd))))
 
 (defn track-login [] #_(track "login" {}))
 (defn track-sign-up [] #_(track "sign_up" {}))
@@ -77,7 +79,7 @@
 (defn track-generate-lead
   ;; TODO: We should probably track the trigger/template ids
   []
-  (track "generate_lead" {:currency "USD" 
+  (track "generate_lead" {:currency "USD"
                           :value    0}))
 
 (defn sha256< [message]
@@ -88,10 +90,10 @@
 
 (defmethod t/transition-state e/set-user-ecd
   [_ _event {:keys [email phone first-name last-name address1 city state zipcode]} app-state]
-  (update-in app-state 
-             k/user-ecd 
-             #(maps/deep-merge % (maps/deep-remove-nils {;:email                email
-                                                         ;:phone_number         (f/e164-phone phone)
+  (update-in app-state
+             k/user-ecd
+             #(maps/deep-merge % (maps/deep-remove-nils {:email                email
+                                                         :phone_number         (f/e164-phone phone)
                                                          :sha256_email_address (sha256< email)
                                                          :sha256_phone_number  (sha256< (f/e164-phone phone))
                                                          :address              {:sha256_first_name (sha256< first-name)
