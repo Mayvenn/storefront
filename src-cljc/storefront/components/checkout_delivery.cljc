@@ -199,7 +199,7 @@
       :secondary/copy  (str (shipping/names-with-time-range sku
                                                             drop-shipping?)
                             " "
-                            (shipping/shipping-note sku))
+                            (shipping/shipping-note sku drop-shipping?))
       :quaternary/copy (when (and (not disabled?) drop-shipping?)
                          "This order contains items that are only eligible for Free Standard Shipping.")})))
 

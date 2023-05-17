@@ -6,7 +6,7 @@
 (defn longform-timeframe [rate-sku drop-shipping?]
   (case rate-sku
     "WAITER-SHIPPING-1" (if drop-shipping?
-                          "7-10 days (Weekend Delivery Included)"
+                          "7-10 days (Weekend Delivery Included, No P.O. Box)"
                           "4-6 days (Weekend Delivery Included)")
     "WAITER-SHIPPING-7" "2-4 days (Weekend Delivery Included)"
     "WAITER-SHIPPING-2" "1-2 business days (No Weekend & No P.O. Box)"
@@ -25,11 +25,13 @@
     "WAITER-SHIPPING-8" "In Store Pick-Up"
     nil))
 
-(defn shipping-note [rate-sku-id]
-  (case rate-sku-id
-    "WAITER-SHIPPING-2" "(No P.O. Box)"
-    "WAITER-SHIPPING-4" "(No P.O. Box)"
-    nil) )
+(defn shipping-note [rate-sku-id drop-shipping?]
+  (if drop-shipping?
+    "(No P.O. Box)" 
+    (case rate-sku-id
+      "WAITER-SHIPPING-2" "(No P.O. Box)"
+      "WAITER-SHIPPING-4" "(No P.O. Box)"
+      nil)) )
 
 (defn timeframe [rate-sku drop-shipping?]
   (case rate-sku
