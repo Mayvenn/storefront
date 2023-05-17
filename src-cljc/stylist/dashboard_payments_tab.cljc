@@ -112,7 +112,7 @@
 
 (def empty-payments
   [:div.my6.center
-   [:div.canela.title-3.dark-dark-gray.bold.p1 "No payments yet"]
+   [:div.canela.title-3.gray-700.bold.p1 "No payments yet"]
    [:div.content-3.col-5.mx-auto.line-height-2 "Payments and bonus activity will appear here"]])
 
 (defn payments-table [pending-voucher-row balance-transfers pagination fetching?]

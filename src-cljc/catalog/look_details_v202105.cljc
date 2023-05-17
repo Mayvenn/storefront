@@ -359,7 +359,7 @@
       (component/html
         (if-not (string/blank? secondary)
           [:div.mt1
-           [:div.content-4.proxima.dark-dark-gray
+           [:div.content-4.proxima.gray-700
             (merge {:ref "caption"}
                    caption-attrs)
             secondary]
@@ -573,7 +573,7 @@
                                       selected-hair-length])))
           (-> picker-data
               (update :primary str " - Unavailable")
-              (assoc :primary-attrs {:class "dark-dark-gray"}
+              (assoc :primary-attrs {:class "gray-700"}
                      :image-attrs {:style {:opacity "50%"}}))
 
           (not (boolean
@@ -583,7 +583,7 @@
                                       :inventory/in-stock?])))
           (-> picker-data
               (update :primary str " - Sold Out")
-              (assoc :primary-attrs {:class "dark-dark-gray"}
+              (assoc :primary-attrs {:class "gray-700"}
                      :image-attrs {:style {:opacity "50%"}}))
 
           :else picker-data)))

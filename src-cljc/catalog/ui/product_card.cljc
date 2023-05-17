@@ -134,7 +134,7 @@
     (component/html
      [:div.proxima.text-xs
       (when specs
-        [:div.my1.dark-dark-gray {:key (str id "-specs")} "in " specs])
+        [:div.my1.gray-700 {:key (str id "-specs")} "in " specs])
       (when colors
         [:div.my1 {:key (str id "-color-count")}
          (str "+ " (count colors) " colors")])

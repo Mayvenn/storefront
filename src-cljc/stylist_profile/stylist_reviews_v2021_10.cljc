@@ -75,7 +75,7 @@
            [:div.flex.justify-end whole-stars partial-star empty-stars])]
         [:div.flex.justify-between.items-baseline
          [:div (install-type->display-name install-type)]
-         [:div.dark-dark-gray.right-align review-date]]]
+         [:div.gray-700.right-align review-date]]]
        [:div.relative
         [:div.proxima.content-3
          {:ref   (c/use-ref this (str "slide-" review-id))

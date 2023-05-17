@@ -27,14 +27,14 @@
   (case status
     :sale/shipped     [1 ["titleize" "p-color"]]
     :sale/returned    [2 ["shout"    "error"]]
-    :sale/pending     [2 ["shout"    "dark-dark-gray"]]
+    :sale/pending     [2 ["shout"    "gray-700"]]
     :sale/unknown     [2 ["shout"    "error"]]
     :voucher/pending  nil
     :voucher/returned nil
     :voucher/redeemed [1 ["titleize" "p-color"]]
     :voucher/expired  [1 ["titleize" "error"]]
     :voucher/active   [1 ["titleize" "p-color"]]
-    :voucher/none     [1 ["titleize" "light" "dark-dark-gray"]]
+    :voucher/none     [1 ["titleize" "light" "gray-700"]]
     nil               nil))
 
 (defn sale-status-cell [sale]

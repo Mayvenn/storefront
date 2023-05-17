@@ -94,7 +94,7 @@
         "No")]]
      [:span.content-2.col-10.col-12-on-tb-dt.center-align-on-mb.mtn2.mt0-on-tb-dt.pt3
       label
-      [:span.content-3.block.dark-dark-gray legal]]]))
+      [:span.content-3.block.gray-700 legal]]]))
 
 (defcomponent opt-in-section
   [{:opt-in-legalese/keys [title terms-nav privacy-nav]

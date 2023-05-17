@@ -21,7 +21,7 @@
 .dark-gray    { color: var(--dark-gray); }
 .quadpay      { color: var(--quadpay); }
 
-.dark-dark-gray { color: var(--dark-dark-gray); }
+.gray-700 { color: var(--gray-700); }
 
 :focus { outline: var(--p-color) auto 5px }
 
@@ -46,6 +46,5 @@
   --black:        #000000;
   --quadpay:      #140ca3;
 
-  /* Colors added for accessibility contrast */
-  --dark-dark-gray: #767676;
+  --gray-700: #767377;
 }

@@ -203,7 +203,7 @@
 (defn ^:private floating-label [label id {:keys [value?]}]
   (component/html
    [:div.absolute
-    [:label.floating-label--label.col-12.h8.relative.dark-dark-gray.medium
+    [:label.floating-label--label.col-12.h8.relative.gray-700.medium
      (cond-> {:for id}
        value? (add-classes "has-value"))
      label]]))

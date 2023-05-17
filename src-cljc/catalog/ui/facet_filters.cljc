@@ -185,7 +185,7 @@
     [:div.flex.justify-between.items-center
      [:div.proxima.content-1.my2 (:header.title/primary data)]
      [:div ^:inline (header-close-molecule data)]]
-    [:div.proxima.content-2.dark-dark-gray (:header.title/secondary data)]
+    [:div.proxima.content-2.gray-700 (:header.title/secondary data)]
     [:div.flex.flex-wrap.py1
      (c/elements summary-pill-molecule data :header/pills)]
     (let [{:header.reset/keys [id primary target]} data]

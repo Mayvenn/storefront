@@ -39,7 +39,7 @@
            (when scroll-to
              {:data-scroll scroll-to})]
           (interpose [:br] primary))
-         [:div.content-2.dark-dark-gray.my3
+         [:div.content-2.gray-700.my3
           secondary]])))))
 
 (c/defcomponent quiz-question-choice-button-molecule

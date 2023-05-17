@@ -83,7 +83,7 @@
                   :spinning? redeeming-voucher?
                   :data-test "voucher-redeem"}})]]
 
-    [:div.mt6.proxima.content-4.dark-dark-gray.left-align
+    [:div.mt6.proxima.content-4.gray-700.left-align
      "Vouchers are sent to Mayvenn customers via text and/or email when they buy 3 or more bundles and use a special promo code."]]])
 
 (def ^:private missing-service-menu
