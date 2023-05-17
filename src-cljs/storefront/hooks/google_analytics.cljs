@@ -53,11 +53,12 @@
                      :shipping       shipping-method-price}))
 
 (defn track-begin-checkout
-  [{:keys [line-item-skuers used-promotion-codes]}]
-  (track "begin_checkout" {:items          (mapv mayvenn-line-item->ga4-item line-item-skuers)
-                           :currency       "USD"
-                           :value          (reduce + 0 (map :sku/price line-item-skuers))
-                           :coupon         (->> used-promotion-codes (string/join " ") not-empty)}))
+  [{:keys [line-item-skuers used-promotion-codes user-ecd]}]
+  (track "begin_checkout" (merge {:items          (mapv mayvenn-line-item->ga4-item line-item-skuers)
+                                  :currency       "USD"
+                                  :value          (reduce + 0 (map :sku/price line-item-skuers))
+                                  :coupon         (->> used-promotion-codes (string/join " ") not-empty)}
+                                 user-ecd)))
 
 (defn track-view-item
   [sku]

@@ -410,7 +410,8 @@
                                                :order_number (:number order)})
     (google-analytics/track-begin-checkout {:line-item-skuers     (waiter-line-items->line-item-skuer (get-in app-state keypaths/v2-skus)
                                                                                                       (orders/product-items order))
-                                            :used-promotion-codes (:promotion-codes order)})
+                                            :used-promotion-codes (:promotion-codes order)
+                                            :user-ecd             (get-in app-state keypaths/user-ecd)})
     (facebook-analytics/track-event "InitiateCheckout")))
 
 (defmethod perform-track events/browse-addon-service-menu-button-enabled
