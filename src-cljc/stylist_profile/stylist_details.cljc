@@ -3,7 +3,6 @@
   (:require #?@(:cljs
                 [[storefront.api :as api]
                  [storefront.browser.tags :as tags]
-                 [storefront.hooks.facebook-analytics :as facebook-analytics]
                  [storefront.hooks.google-maps :as google-maps]
                  [storefront.hooks.seo :as seo]])
             adventure.keypaths
@@ -78,13 +77,6 @@
                                        :page       1}))
         #?(:cljs
            (google-maps/insert))))))
-
-(defmethod trackings/perform-track e/navigate-adventure-stylist-profile
-  [_ event {:keys [stylist-id]} app-state]
-  #?(:cljs
-     (facebook-analytics/track-event "ViewContent"
-                                     {:content_type "stylist"
-                                      :content_ids [(spice.core/parse-int stylist-id)]})))
 
 ;; ---------------------------- display
 

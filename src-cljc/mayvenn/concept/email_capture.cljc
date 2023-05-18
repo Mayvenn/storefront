@@ -1,7 +1,6 @@
 (ns mayvenn.concept.email-capture
   (:require #?@(:cljs
                 [[storefront.browser.cookie-jar :as cookie-jar]
-                 [storefront.hooks.facebook-analytics :as facebook-analytics]
                  [storefront.hooks.google-analytics :as google-analytics]
                  [storefront.hooks.stringer :as stringer]])
             [clojure.set :as set]
@@ -140,8 +139,6 @@
            captured-email (get-in app-state textfield-keypath)
            captured-phone (get-in app-state phonefield-keypath)]
        (when no-errors?
-         ;; TODO: CONSIDER READDING THESE
-         ;; (facebook-analytics/subscribe)
          (stringer/identify {:email captured-email})
          (stringer/track-event "email_capture-capture"
                                {:email-capture-id      trigger-id
@@ -166,8 +163,6 @@
            captured-email (get-in app-state textfield-keypath)
            captured-phone (get-in app-state phonefield-keypath)]
        (when no-errors?
-         ;; TODO: CONSIDER READING THESE
-         ;; (facebook-analytics/subscribe)
          (stringer/track-event "sms_capture-capture"
                                {:email-capture-id       trigger-id
                                 :variation-description  variation-description

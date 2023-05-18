@@ -1,8 +1,7 @@
 (ns api.current
   "Current is the model of user-specific session"
   (:require #?@(:cljs
-                [[storefront.api :as api]
-                 [storefront.hooks.facebook-analytics :as facebook-analytics]])
+                [[storefront.api :as api]])
             api.stylist
             [storefront.events :as e]
             [storefront.effects :as fx]
@@ -75,11 +74,7 @@
                                               {:message unavailable-stylist-copy})))})))
 
 (defmethod fx/perform-effects e/biz|current-stylist|selected
-  [_ _ {:keys [order stylist] :on/keys [success]} _ _]
-  #?(:cljs (facebook-analytics/track-event "AddToCart"
-                                           {:content_type "stylist"
-                                            :content_ids  [(:stylist-id stylist)]
-                                            :num_items    1}))
+  [_ _ {:keys [order stylist] :on/keys [success]} _ _] 
   (m/handle-message e/save-order {:order order})
   (when (some? success)
     (success)))

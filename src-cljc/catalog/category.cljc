@@ -4,7 +4,6 @@
               [storefront.api :as api]
               [storefront.browser.scroll :as scroll]
               [storefront.history :as history]
-              [storefront.hooks.facebook-analytics :as facebook-analytics]
               [storefront.platform.messages :as messages]])
    [api.catalog :refer [select]]
    adventure.keypaths
@@ -219,10 +218,3 @@
          (when just-arrived?
            (messages/handle-message e/flow|facet-filtering|initialized))))))
 
-(defmethod trackings/perform-track e/navigate-category
-  [_ event {:keys [catalog/category-id]} app-state]
-  #?(:cljs
-     (when (-> category-id
-               (accessors.categories/id->category (get-in app-state k/categories))
-               accessors.categories/wig-category?)
-       (facebook-analytics/track-event "wig_content_fired"))))

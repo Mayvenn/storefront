@@ -11,7 +11,6 @@
             [storefront.accessors.videos :as videos]
             [storefront.accessors.stylist-urls :as stylist-urls]
             [storefront.events :as events]
-            [storefront.hooks.facebook-analytics :as facebook-analytics]
             [storefront.hooks.google-analytics :as google-analytics]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.stringer :as stringer]
@@ -86,11 +85,6 @@
                         {:filter_name     (pr-str facet)
                          :selected_option option}))
 
-(defmethod perform-track events/viewed-sku [_ event {:keys [sku]} app-state]
-  (when sku
-    (facebook-analytics/track-event "ViewContent" {:content_type "product"
-                                                   :content_ids [(:catalog/sku-id sku)]})))
-
 (defn track-select-bundle-option [selection value]
   (stringer/track-event "select_bundle_option" {:option_name  (name selection)
                                                 :option_value value}))
@@ -144,12 +138,6 @@
                                                                              :variant_quantity)
                                                        :order_number (:number order)
                                                        :order_total  (:total order)})))
-
-
-(defmethod perform-track events/control-add-sku-to-bag [_ event {:keys [sku quantity]} app-state]
-  (facebook-analytics/track-event "AddToCart" {:content_type "product"
-                                               :content_ids  [(:catalog/sku-id sku)]
-                                               :num_items    quantity}))
 
 (defmethod perform-track events/api-success-add-sku-to-bag
   [_ _ {:keys [quantity sku order] :as args} app-state]
@@ -232,9 +220,6 @@
   (let [line-item-skuers   (waiter-line-items->line-item-skuer skus-db (orders/product-and-service-items order))
         line-item-quantity (->> line-item-skuers (map :item/quantity) (reduce + 0))
         cart-items         (mapv (partial line-item-skuer->stringer-cart-item images-catalog) line-item-skuers)]
-    (facebook-analytics/track-event "AddToCart" {:content_type "product"
-                                                 :content_ids  (map :catalog/sku-id line-item-skuers)
-                                                 :num_items    line-item-quantity})
     (google-analytics/track-add-to-cart {:number           (:number order)
                                          :line-item-skuers line-item-skuers
                                          :user-ecd         user-ecd})
@@ -263,9 +248,6 @@
          upsell-skus     true} (group-by
                                 #(->> % :service/type first (= "addon"))
                                 line-item-skuers)]
-    (facebook-analytics/track-event "AddToCart" {:content_type "product"
-                                                 :content_ids  (map :catalog/sku-id line-item-skuers)
-                                                 :num_items    line-item-quantity})
     (google-analytics/track-add-to-cart {:number           (:number order)
                                          :line-item-skuers line-item-skuers
                                          :user-ecd         user-ecd})
@@ -369,11 +351,6 @@
                           :shipping_method_sku   (:sku shipping)
                           :store_slug            store-slug
                           :used_promotion_codes  (:promotion-codes order)}]
-    (facebook-analytics/track-event "Purchase" (merge shared-fields
-                                                      {:value        (str order-total) ;; Facebook wants a string
-                                                       :content_ids  (map :catalog/sku-id line-item-skuers)
-                                                       :content_type "product"
-                                                       :num_items    order-quantity}))
 
     (google-analytics/track-placed-order
      (merge (set/rename-keys shared-fields {:buyer_type            :buyer-type
@@ -391,8 +368,7 @@
 
 (defmethod perform-track events/api-success-auth-sign-in [_ event {:keys [flow user] :as args} app-state]
   (stringer/track-event "sign_in" {:type flow})
-  (google-analytics/track-login)
-  (facebook-analytics/track-custom-event "user_logged_in" {:store_url stylist-urls/store-url}))
+  (google-analytics/track-login))
 
 (defmethod perform-track events/api-success-auth-sign-up [_ event {:keys [flow] :as args} app-state]
   (google-analytics/track-sign-up)
@@ -412,8 +388,7 @@
     (google-analytics/track-begin-checkout {:line-item-skuers     (waiter-line-items->line-item-skuer (get-in app-state keypaths/v2-skus)
                                                                                                       (orders/product-items order))
                                             :used-promotion-codes (:promotion-codes order)
-                                            :user-ecd             (get-in app-state keypaths/user-ecd)})
-    (facebook-analytics/track-event "InitiateCheckout")))
+                                            :user-ecd             (get-in app-state keypaths/user-ecd)})))
 
 (defmethod perform-track events/browse-addon-service-menu-button-enabled
   [_ event args app-state]

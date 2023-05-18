@@ -8,7 +8,6 @@
                        [storefront.components.popup :as popup]
                        [storefront.components.svg :as svg]
                        [storefront.history :as history]
-                       [storefront.hooks.facebook-analytics :as facebook-analytics]
                        [storefront.hooks.google-analytics :as google-analytics]
                        [storefront.hooks.quadpay :as zip]
                        [storefront.hooks.stringer :as stringer]
@@ -1185,11 +1184,7 @@
                              (get-in app-state)
                              (products/extract-product-skus app-state)
                              first))]
-       (google-analytics/track-view-item sku))
-     (when (-> product-id
-               ((get-in app-state keypaths/v2-products))
-               accessors.products/wig-product?)
-       (facebook-analytics/track-event "wig_content_fired"))))
+       (google-analytics/track-view-item sku))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/api-success-v3-products-for-details
