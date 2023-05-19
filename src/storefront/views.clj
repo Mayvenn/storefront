@@ -14,7 +14,8 @@
             [storefront.platform.asset-mappings :as asset-mappings]
             [storefront.safe-hiccup :refer [html5 raw]]
             [storefront.seo-tags :as seo]
-            [storefront.platform.component-utils :as utils])
+            [storefront.platform.component-utils :as utils]
+            [storefront.routes :as routes])
   (:import java.util.zip.GZIPInputStream
            java.io.ByteArrayOutputStream))
 
@@ -250,7 +251,13 @@
                        "var environment=\"" environment "\";"
                        "var clientVersion=\"" client-version "\";"
                        "var apiUrl=\"" (:endpoint storeback-config) "\";"
-                       "var wwUpcpUrl=\"" (:upcp-iframe-src wirewheel-config) "\";"))]
+                       "var wwUpcpUrl=\"" (:upcp-iframe-src wirewheel-config) "\";"
+                       "var WireWheelUPCPConfig=" (json/generate-string {:wwupcp_apiurl               (:api-base-url wirewheel-config)
+                                                                         :wwupcp_apikey               (:api-key wirewheel-config)
+                                                                         :wwupcp_cookie_domain        (routes/environment->hostname environment)
+                                                                         :wwupcp_cookie_duration      400
+                                                                         :wwupcp_cmp_default_consents [{:target "doNotSellOrShareMyPersonalInformationChoosingOptOutMeansWeWillNotSellOrShare"
+                                                                                                        :action "ACCEPT"}]}) ";"))]
 
             (when-not (config/development? environment)
               (for [n js-files]

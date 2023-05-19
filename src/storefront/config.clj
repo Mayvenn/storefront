@@ -125,6 +125,7 @@
                            :webhook-secret             (env :contentful-webhook-secret)}
      :wirewheel-config    {:upcp-iframe-src    (env :wirewheel-upcp-iframe-src)
                            :auth-token-timeout (* 5 minute)
+                           :api-key            (env :wirewheel-api-key)
                            :client-id          (env :wirewheel-api-client-id)
                            :client-secret      (env :wirewheel-api-client-secret)
                            :issuer-base-url    "https://wirewheelio.okta.com"

@@ -9,6 +9,6 @@
 (defn insert [] 
   (when-not (cljs.core/exists? js/window.cmpJavascriptSdk.WireWheelSDK.initEmbeddedParent)
     (tags/insert-tag-with-callback
-     (tags/src-tag "https://ui.upcp.wirewheel.io/extensions/upcp-sdk-0.8.3.min.js"
+     (tags/src-tag "https://s.upcp.wirewheel.io/sdk/upcp-sdk-0.9.2.min.js"
                    "ww-upcp")
      #(messages/handle-message e/inserted-wirewheel-upcp))))
