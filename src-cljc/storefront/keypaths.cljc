@@ -48,7 +48,6 @@
 (def user-must-set-password (conj user :must-set-password))
 (def user-total-available-store-credit (conj user :total-available-store-credit))
 (def user-ecd (conj user :ecd))
-(def user-meta (conj user :meta))
 
 (def order [:order])
 (def order-total (conj order :total))

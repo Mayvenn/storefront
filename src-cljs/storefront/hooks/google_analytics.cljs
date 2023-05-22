@@ -4,8 +4,9 @@
             [storefront.transitions :as t]
             [storefront.keypaths :as k]
             [storefront.events :as e]
-            [storefront.utils :as utils]
-            [storefront.components.formatters :as f]))
+            [storefront.components.formatters :as f]
+            goog.crypt
+            goog.crypt.Sha256))
 
 (defn ^:private track
   [event-name data]
@@ -83,3 +84,38 @@
   (track "generate_lead" {:currency "USD"
                           :value    0}))
 
+(defn sha256< [message]
+  (when (seq message)
+    (let [sha256 (js/goog.crypt.Sha256.)]
+      (->> message string/lower-case string/trim goog.crypt/stringToByteArray (.update sha256))
+      (goog.crypt/byteArrayToHex (.digest sha256)))))
+
+(defmethod t/transition-state e/set-user-ecd
+  [_ _event {:keys [email phone first-name last-name address1 city state zipcode]} app-state]
+  (update-in app-state
+             k/user-ecd
+             #(maps/deep-merge % (maps/deep-remove-nils {:email                email                ;; Meta requires, google accepts
+                                                         :phone_number         (f/e164-phone phone)
+                                                         
+                                                         ;; google accepts these fields
+                                                         :sha256_email_address (sha256< email)
+                                                         :sha256_phone_number  (sha256< (f/e164-phone phone))
+
+                                                         ;; Meta
+                                                         :phone                (f/e164-phone phone) ;; Meta requires
+                                                         :first_name           first-name
+                                                         :last_name            last-name
+                                                         :city                 city 
+                                                         :state                state
+                                                         :zip                  zipcode ; Meta
+                                                         :country              "us" ; Meta
+
+                                                         :address              {:sha256_first_name (sha256< first-name)
+                                                                                :sha256_last_name  (sha256< last-name)
+                                                                                ;:first_name        first-name
+                                                                                ;:last_name         last-name
+                                                                                :street            address1
+                                                                                :city              city
+                                                                                :region            state
+                                                                                :postal_code       zipcode
+                                                                                :country           "us"}}))))

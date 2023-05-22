@@ -1,8 +1,4 @@
-(ns storefront.utils
-  (:require [clojure.string :as string]
-            #?@(:cljs
-                (goog.crypt
-                 goog.crypt.Sha256))))
+(ns storefront.utils)
 
 ;; TODO: move to spice
 (defn ?update
@@ -29,10 +25,3 @@
   [position i coll]
   (let [[h & r] (partition-all position coll)]
     (flatten (into [h] (concat [i] r)))))
-
-(defn sha256< [message]
-  #?(:clj nil
-     :cljs (when (seq message)
-             (let [sha256 (js/goog.crypt.Sha256.)]
-               (->> message string/lower-case string/trim goog.crypt/stringToByteArray (.update sha256))
-               (goog.crypt/byteArrayToHex (.digest sha256))))))
