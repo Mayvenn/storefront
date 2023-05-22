@@ -803,7 +803,7 @@
   [_ _event {:keys [shipping-address email]} _prev-app-state _app-state]
   ;; NOTE(ellie+andres, 2022-02-09): In the future this could actually get a whole new session token from diva
   (messages/handle-later events/biz|hard-session|refresh)
-  (messages/handle-message events/set-user-ecd (assoc shipping-address :email email)))
+  (messages/handle-message events/set-user-data (assoc shipping-address :email email)))
 
 (defmethod effects/perform-effects events/api-success-auth-sign-in
   [_ _ _ _ app-state]
@@ -1043,7 +1043,7 @@
 
 (defmethod effects/perform-effects events/api-success-update-order-update-guest-address
   [_ _ {:keys [order]} _ _]
-  (messages/handle-message events/set-user-ecd 
+  (messages/handle-message events/set-user-data 
                            (assoc (:shipping-address order) 
                                   :email 
                                   (-> order :user :email)))
@@ -1055,7 +1055,7 @@
 
 (defmethod effects/perform-effects events/api-success-update-order-update-address
   [_ event {:keys [order]} _ app-state]
-  (messages/handle-message events/set-user-ecd 
+  (messages/handle-message events/set-user-data 
                            (assoc (:shipping-address order) 
                                   :email
                                   (-> order :user :email))))

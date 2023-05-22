@@ -82,7 +82,7 @@
         #?(:cljs
            (cookie-jar/save-email-capture-long-timer-started (get-in state k/cookie)))
         (publish e/biz|email-capture|timer-state-observed))
-  (publish e/set-user-ecd {:email email}))
+  (publish e/set-user-data {:email email}))
 
 (defmethod fx/perform-effects e/biz|email-capture|dismissed
   [_ _ {:keys [id trigger-id]} state _]
@@ -154,7 +154,7 @@
 
 (defmethod fx/perform-effects e/biz|sms-capture|captured
   [_ _ {:keys [phone]} _state _]
-  (publish e/set-user-ecd {:phone phone}))
+  (publish e/set-user-data {:phone phone}))
 
 #?(:cljs
    (defmethod trk/perform-track e/biz|sms-capture|captured

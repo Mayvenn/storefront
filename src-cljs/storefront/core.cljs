@@ -151,6 +151,10 @@
   ;; Enhanced Conversion Data
   (clj->js (get-in @app-state keypaths/user-ecd)))
 
+(defn ^:export current-user-meta []
+  ;; Meta advanced matching parameters
+  (clj->js (get-in @app-state keypaths/user-meta)))
+
 (defn ^:before-load before-load []
   (handle-message app-state events/app-stop))
 

@@ -17,7 +17,9 @@
              :refer [transition-state
                      sign-in-user
                      clear-fields]
-             :as transitions]))
+             :as transitions]
+            [storefront.utils :as utils]
+            [storefront.components.formatters :as f]))
 
 (defn clear-nav-traversal
   [app-state]
@@ -642,3 +644,30 @@
 (defmethod transition-state events/api-success-fetch-geo-location-from-ip
   [_ event args app-state]
   (update-in app-state keypaths/account-profile-ip-addresses #(conj % args)))
+
+(defmethod transition-state events/set-user-data
+  [_ _event {:keys [email phone first-name last-name address1 city state zipcode]} app-state]
+  (-> app-state
+      (update-in keypaths/user-ecd
+                 #(maps/deep-merge % (maps/deep-remove-nils {;:email                email
+                                                             ;:phone_number         (f/e164-phone phone)
+                                                             :sha256_email_address (utils/sha256< email)
+                                                             :sha256_phone_number  (utils/sha256< (f/e164-phone phone))
+                                                             :address              {:sha256_first_name (utils/sha256< first-name)
+                                                                                    :sha256_last_name  (utils/sha256< last-name)
+                                                                                    ;:first_name        first-name
+                                                                                    ;:last_name         last-name
+                                                                                    :street            address1
+                                                                                    :city              city
+                                                                                    :region            state
+                                                                                    :postal_code       zipcode
+                                                                                    :country           "us"}})))
+      (update-in keypaths/user-meta
+                 #(maps/deep-merge % (maps/deep-remove-nils {:em      (-> email string/lower-case string/trim)
+                                                             :ph      (subs (f/e164-phone phone) 1 11)
+                                                             :fn      first-name
+                                                             :ln      last-name
+                                                             :ct      city
+                                                             :st      state
+                                                             :zp      zipcode
+                                                             :country "us"})))))

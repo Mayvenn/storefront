@@ -429,7 +429,7 @@
 (defpath enable-feature)
 (defpath clear-features)
 (defpath bucketed-for)
-(defpath set-user-ecd)
+(defpath set-user-data)
 
 (defpath inserted)
 (defpath inserted-stringer)
