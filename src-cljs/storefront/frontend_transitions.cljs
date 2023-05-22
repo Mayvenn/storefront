@@ -664,7 +664,7 @@
                                                                                     :country           "us"}})))
       (update-in keypaths/user-meta
                  #(maps/deep-merge % (maps/deep-remove-nils {:em      (some-> email string/lower-case string/trim)
-                                                             :ph      (some-> phone f/e164-phone (subs 1 11))
+                                                             :ph      (some-> phone f/e164-phone (subs 1 12))
                                                              :fn      first-name
                                                              :ln      last-name
                                                              :ct      city
