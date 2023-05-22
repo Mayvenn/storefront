@@ -663,8 +663,8 @@
                                                                                     :postal_code       zipcode
                                                                                     :country           "us"}})))
       (update-in keypaths/user-meta
-                 #(maps/deep-merge % (maps/deep-remove-nils {:em      (-> email string/lower-case string/trim)
-                                                             :ph      (subs (f/e164-phone phone) 1 11)
+                 #(maps/deep-merge % (maps/deep-remove-nils {:em      (some-> email string/lower-case string/trim)
+                                                             :ph      (some-> phone f/e164-phone (subs 1 11))
                                                              :fn      first-name
                                                              :ln      last-name
                                                              :ct      city
