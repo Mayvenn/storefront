@@ -149,7 +149,7 @@
                                 :store-slug            (get-in app-state k/store-slug)
                                 :store-experience      (get-in app-state k/store-experience)
                                 :account-profile       (get-in app-state k/account-profile)})
-         (google-analytics/track-generate-lead)))))
+         (google-analytics/track-generate-lead (get-in app-state k/user-ecd))))))
 
 #?(:cljs
    (defmethod trk/perform-track e/biz|sms-capture|captured

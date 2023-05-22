@@ -80,9 +80,10 @@
 
 (defn track-generate-lead
   ;; TODO: We should probably track the trigger/template ids
-  []
-  (track "generate_lead" {:currency "USD"
-                          :value    0}))
+  [user-ecd]
+  (track "generate_lead" (merge {:currency "USD"
+                                 :value    0}
+                                user-ecd)))
 
 (defn sha256< [message]
   (when (seq message)
