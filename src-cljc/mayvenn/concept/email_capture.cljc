@@ -78,11 +78,10 @@
   [_ _ {:keys [hdyhau email shipping-address]} state _]
   (when-not
       ;; if getting hdyhau, don't set timer until after hdyhau is collected
-      hdyhau
-        #?(:cljs
-           (cookie-jar/save-email-capture-long-timer-started (get-in state k/cookie)))
-        (publish e/biz|email-capture|timer-state-observed))
-  (publish e/set-user-ecd {:email email}))
+   hdyhau
+    #?(:cljs
+       (cookie-jar/save-email-capture-long-timer-started (get-in state k/cookie)))
+    (publish e/biz|email-capture|timer-state-observed)))
 
 (defmethod fx/perform-effects e/biz|email-capture|dismissed
   [_ _ {:keys [id trigger-id]} state _]
@@ -151,10 +150,6 @@
                                 :store-experience      (get-in app-state k/store-experience)
                                 :account-profile       (get-in app-state k/account-profile)})
          (google-analytics/track-generate-lead)))))
-
-(defmethod fx/perform-effects e/biz|sms-capture|captured
-  [_ _ {:keys [phone]} _state _]
-  (publish e/set-user-ecd {:phone phone}))
 
 #?(:cljs
    (defmethod trk/perform-track e/biz|sms-capture|captured

@@ -237,6 +237,8 @@
         email-address (get values "email-capture-input")
         phone-number  (get values "phone-capture-input")
         show-hdydau? (get-in state k/show-hdyhau)]
+    (publish e/set-user-ecd {:email email-address
+                             :phone phone-number})
     ;; TODO Identify with backend and publish after success
     (publish e/funnel|acquisition|succeeded
              {:prompt {:method                       :email-modal/trigger
