@@ -235,7 +235,8 @@
         email-modal
 
         email-address (get values "email-capture-input")
-        phone-number  (get values "phone-capture-input")]
+        phone-number  (get values "phone-capture-input")
+        show-hdydau? (get-in state k/show-hdyhau)]
     ;; TODO Identify with backend and publish after success
     (publish e/funnel|acquisition|succeeded
              {:prompt {:method                       :email-modal/trigger
@@ -249,6 +250,11 @@
               :template-content-id   template-content-id
               :hdyhau                hdyhau
               :email                 email-address})
+    (when-not show-hdydau?
+      (publish e/biz|email-capture|dismissed
+               {:trigger-id            trigger-id
+                :variation-description variation-description
+                :template-content-id   template-content-id}))
     (when phone-number
       (publish e/biz|sms-capture|captured
                {:trigger-id            trigger-id
