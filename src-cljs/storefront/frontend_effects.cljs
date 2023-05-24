@@ -875,13 +875,18 @@
 
 (defmethod effects/perform-effects events/order-completed
   [_ _ order _ app-state]
-  (cookie-jar/save-completed-order (get-in app-state keypaths/cookie)
-                                   (get-in app-state keypaths/completed-order))
-  (messages/handle-message events/clear-order)
-  (when (= :shop (sites/determine-site app-state))
-    (when-let [stylist-id (:servicing-stylist-id order)]
-      (messages/handle-message events/cache|stylist|requested
-                               {:stylist/id stylist-id}))))
+  (let [completed-order (get-in app-state keypaths/completed-order)]
+    (messages/handle-message events/set-user-ecd
+                             (assoc (:shipping-address completed-order)
+                                    :email
+                                    (-> completed-order :user :email)))
+    (cookie-jar/save-completed-order (get-in app-state keypaths/cookie)
+                                     completed-order)
+    (messages/handle-message events/clear-order)
+    (when (= :shop (sites/determine-site app-state))
+      (when-let [stylist-id (:servicing-stylist-id order)]
+        (messages/handle-message events/cache|stylist|requested
+                                 {:stylist/id stylist-id})))))
 
 (defmethod effects/perform-effects events/api-success-update-order-update-cart-payments [_ event {:keys [order place-order?]} _ app-state]
   (when place-order?
