@@ -140,7 +140,7 @@
                                                        :order_total  (:total order)})))
 
 (defmethod perform-track events/api-success-add-sku-to-bag
-  [_ _ {:keys [quantity sku order] :as args} app-state]
+  [_ _ {:keys [quantity sku order user-ecd] :as args} app-state]
   (when sku
     (let [images-catalog        (get-in app-state keypaths/v2-images)
           skus-db               (get-in app-state keypaths/v2-skus)
@@ -169,7 +169,9 @@
                                                   :store_experience (get-in app-state keypaths/store-experience)
                                                   :variant_quantity quantity
                                                   :quantity         quantity
-                                                  :context          {:cart-items cart-items}}))
+                                                  :context          {:cart-items cart-items}}
+                                                 user-ecd))
+
       (google-analytics/track-add-to-cart
        {:number           (:number order)
         :store-slug       store-slug
@@ -264,7 +266,8 @@
                                                      :variant_ids          (->> line-item-skuers (map :legacy/variant-id) (string/join ","))
                                                      :context              {:cart-items cart-items}}
                                                     (when look-id
-                                                      {:look_id look-id})))))
+                                                      {:look_id look-id})
+                                                    user-ecd))))
 
 (defmethod perform-track events/api-success-add-multiple-skus-to-bag
   [_ _ {:keys [sku-id->quantity order] :as args} app-state]
@@ -281,13 +284,15 @@
           store-slug     (get-in app-state keypaths/store-slug)
           order-quantity (orders/product-and-service-quantity order)]
       (stringer/track-event "bulk_add_to_cart"
-                            {:store_experience store-experience
-                             :order_number     (:number order)
-                             :order_total      (:total order)
-                             :order_quantity   (apply + (vals sku-id->quantity))
-                             :skus             (->> added-line-item-skuers (map :catalog/sku-id) (string/join ","))
-                             :variant_ids      (->> added-line-item-skuers (map :legacy/variant-id) (string/join ","))
-                             :context          {:cart-items added-stringer-cart-items}})
+                            (merge
+                             {:store_experience store-experience
+                              :order_number     (:number order)
+                              :order_total      (:total order)
+                              :order_quantity   (apply + (vals sku-id->quantity))
+                              :skus             (->> added-line-item-skuers (map :catalog/sku-id) (string/join ","))
+                              :variant_ids      (->> added-line-item-skuers (map :legacy/variant-id) (string/join ","))
+                              :context          {:cart-items added-stringer-cart-items}}
+                             (get-in app-state keypaths/user-ecd)))
       (google-analytics/track-add-to-cart
        {:number           (:number order)
         :store-slug       store-slug

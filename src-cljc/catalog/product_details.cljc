@@ -1262,7 +1262,8 @@
            (messages/handle-message events/api-success-add-sku-to-bag
                                     {:order    %
                                      :quantity quantity
-                                     :sku      sku})
+                                     :sku      sku
+                                     :user-ecd (get-in state keypaths/user-ecd)})
            (when (not (or (= events/navigate-cart nav-event) stay-on-page?))
              (history/enqueue-navigate events/navigate-cart)))))))
 
