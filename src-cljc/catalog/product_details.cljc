@@ -655,7 +655,7 @@
         :pdp.details.product-details/hair-type                 "Hair Type"                                        (->> current-product :copy/hair-type)
         :pdp.details.product-details/hair-quality              "Hair Quality"                                     (->> current-product :copy/quality)
         :pdp.details.product-details/part-design               "Part Design"                                      (->> current-product :copy/part-design)
-        :pdp.details.product-details/lace-marterial            "Lace Materials"                                   (->> current-product :copy/materials)
+        :pdp.details.product-details/lace-material             "Lace Materials"                                    (->> current-product :copy/materials)
         :pdp.details.product-details/lace-size                 "Lace Size"                                        (->> current-product :copy/lace-size)
         :pdp.details.product-details/silk-size                 "Silk Size"                                        (->> current-product :copy/silk-size)
         :pdp.details.product-details/features                  "Features"                                         (->> current-product :copy/features)
