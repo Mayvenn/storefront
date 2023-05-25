@@ -110,9 +110,11 @@
                                             (assoc % :on/success success))))))
 
 (defmethod t/transition-state e/cache|product|fetched
-  [_ _ {cellar-products :products cellar-skus :skus} state]
+  [_ _ {cellar-products :products cellar-skus :skus cellar-images :images} state]
   (let [state'
         (-> state
+            (update-in k/v2-images #(merge % cellar-images))
+
             ;; legacy skus-db
             (update-in k/v2-skus #(merge % cellar-skus))
 
