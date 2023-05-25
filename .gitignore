@@ -30,3 +30,4 @@ node_modules/
 .rebel_readline_history
 
 .calva
+.portal/vs-code.edn
