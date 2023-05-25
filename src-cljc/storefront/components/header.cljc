@@ -447,6 +447,11 @@
                                        :slide-out-nav-menu-item/nested? false
                                        :slide-out-nav-menu-item/id      "menu-new-arrivals"
                                        :slide-out-nav-menu-item/primary "New Arrivals!"}
+                                      (when (experiments/crm-personal-quiz? data)
+                                        {:slide-out-nav-menu-item/target  [events/navigate-quiz-crm-persona]
+                                         :slide-out-nav-menu-item/nested? false
+                                         :slide-out-nav-menu-item/id      "menu-quiz-crm-persona"
+                                         :slide-out-nav-menu-item/primary "Quiz!"})
                                       {:slide-out-nav-menu-item/target  [events/navigate-shop-by-look {:album-keyword :look}]
                                        :slide-out-nav-menu-item/nested? false
                                        :slide-out-nav-menu-item/id      "menu-shop-by-look"

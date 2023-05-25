@@ -73,7 +73,7 @@
    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug "/reviews"] (edn->bidi events/navigate-adventure-stylist-profile-reviews)
    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug "/gallery"] (edn->bidi events/navigate-adventure-stylist-gallery)})
 
-(def adventure-quiz-routes
+(def quiz-routes
   {"/adv/quiz"                                     (edn->bidi events/navigate-adventure-quiz)
    "/adv/quiz/appointment-booking"                 (edn->bidi events/navigate-adventure-appointment-booking)
    "/quiz/unified-freeinstall/intro"               (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-intro)
@@ -83,7 +83,8 @@
    "/quiz/unified-freeinstall/find-your-stylist"   (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-find-your-stylist)
    "/quiz/unified-freeinstall/stylist-results"     (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-stylist-results)
    "/quiz/unified-freeinstall/match-success"       (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-match-success)
-   "/quiz/unified-freeinstall/appointment-booking" (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-appointment-booking)})
+   "/quiz/unified-freeinstall/appointment-booking" (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-appointment-booking)
+   "/quiz/crm-persona"                             (edn->bidi events/navigate-quiz-crm-persona)})
 
 (def mayvenn-stylist-pay-routes
   {"/pay" (edn->bidi events/navigate-mayvenn-stylist-pay)})
@@ -128,7 +129,7 @@
              {"/" (edn->bidi events/navigate-home)}
              mayvenn-stylist-pay-routes
              stylist-matching-routes
-             adventure-quiz-routes
+             quiz-routes
              sign-in-routes
              {"/password/recover"                                 (edn->bidi events/navigate-forgot-password)
               "/password/set"                                     (edn->bidi events/navigate-force-set-password)

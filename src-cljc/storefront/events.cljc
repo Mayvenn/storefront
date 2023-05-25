@@ -760,6 +760,8 @@
 (defpath navigate-shopping-quiz-unified-freeinstall-match-success)
 (defpath navigate-shopping-quiz-unified-freeinstall-appointment-booking)
 
+(defpath navigate-quiz-crm-persona)
+
 (defpath control-landing-page-email-submit)
 (defpath control-quiz-email-submit)
 (defpath control-quiz-email-skip)
