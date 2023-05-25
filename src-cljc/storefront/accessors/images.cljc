@@ -1,7 +1,8 @@
 (ns storefront.accessors.images)
 
 ;; return images for a given product or sku
-(defn for-skuer [images-catalog skuer]
+(defn for-skuer
+  [images-catalog skuer]
   (or (not-empty ;; v3/products style - normalized
        (into []
              (comp

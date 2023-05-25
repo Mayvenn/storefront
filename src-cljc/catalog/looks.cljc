@@ -436,7 +436,7 @@
                                    :facet/options
                                    (maps/index-by :option/slug))
         promotions            (get-in data storefront.keypaths/promotions)
-        looks-with-prices     (map (fn[look]
+        looks-with-prices     (map (fn [look]
                                      (let [shared-cart-id           (contentful/shared-cart-id look)
                                            sku-id->quantity         (->> (get looks-shared-carts-db shared-cart-id)
                                                                          :line-items

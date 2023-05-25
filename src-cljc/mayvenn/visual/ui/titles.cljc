@@ -7,16 +7,12 @@
   Any text/content box with the following data:
   {id icon primary secondary tertiary}
   "
-  (:require [storefront.component :as c]
+  (:require [clojure.string :as string]
             [mayvenn.visual.tools :refer [with]]
-            [clojure.string :as string]
-            [spice.maps :as maps]
             [spice.core :as spice]
-
+            [spice.maps :as maps]
+            [storefront.component :as c]
             [storefront.components.svg :as svg]))
-
-
-
 
 (def styles
   "These define various classes to assign to parts of a title.
@@ -58,7 +54,6 @@
    :green/mt2           {:green/padding "mt2"}
    :green/myj1          {:green/padding "myj1"}
    :tertiary/content-3  {:tertiary/size "content-3"}})
-
 
 (defn ^:private styling<
   "Given a collection of `style` keywords (see styles above)
