@@ -587,6 +587,7 @@
     [:pdp.details.product-details/unit-weight
      :pdp.details.product-details/density
      :pdp.details.product-details/hair-type
+     :pdp.details.product-details/hair-origin
      :pdp.details.product-details/hair-weft-type
      :pdp.details.product-details/hair-quality
      :pdp.details.product-details/part-design
