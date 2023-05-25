@@ -67,20 +67,66 @@
      {:choice/id     :unsure
       :choice/answer "I'm not sure yet"}]}])
 
+(def crm-persona
+  "Questions focused on understanding customer needs and segments"
+  [[:customer/goals "What are your top hair goals? (Pick up to two)"
+    [[:customer.goals/enhance-natural "Enhance my natural hair (add length and volume)"]
+     [:customer.goals/protect-natural "Protect my natural hair"]
+     [:customer.goals/save-money "Save money"]
+     [:customer.goals/easy-maintenance "Low maintenance"]
+     [:customer.goals/easy-install "Easy to install"]
+     [:unsure "Not Sure"]]]
+   [:id2 "What type of styles are you most interested in? (Pick one)"
+    [[:id2a "My everyday look"]
+     [:id2b "I'm shopping for a special occasion"]
+     [:id2c "A vacation look"]
+     [:id2d "A style for work"]
+     [:id2e "I want to switch it up"]
+     [:id2f "I'm not sure. Surprise me!"]]]
+   [:id3 "How much of your natural hair do you want to leave out?"
+    [[:id3a "All"]
+     [:id3b "Some"]
+     [:id3c "None or Not Sure"]]]
+   [:id4 "Do you want the option to remove your style at night?"
+    [[:id4a "Leave It In"]
+     [:id4a "Remove"]
+     [:id4a "I don't know"]]]
+   [:id5 "Do you prefer a low maintenance style, or are you flexible?"
+    [[:id5a "Low Maintenance"]
+     [:id5b "I don't know"]
+     [:id5c "Flexible"]]]
+   [:id6 "Finally, would you like to be able to put your hair up?"
+    [[:id6a "Yes"]
+     [:id6b "I don't know"]
+     [:id6c "No"]]]])
+
+(defn- inflate-quiz
+  [quiz-data]
+  (letfn [(inflate-choices [choices]
+            (mapv (fn [[id answer]]
+                    {:choice/id     id
+                     :choice/answer answer})
+                  choices))
+          (inflate-question [[id prompt choices]]
+            {:question/id     id
+             :question/prompt [prompt]
+             :question/choices (inflate-choices choices)})]
+    (mapv inflate-question quiz-data)))
+
 (defn <-
   [state id]
   (when-let [questions (case id
                          :unified-freeinstall db-unnamed-v1
-                         :unnamed-v1          db-unnamed-v1)]
+                         :unnamed-v1          db-unnamed-v1
+                         :crm/persona         (inflate-quiz crm-persona))]
     (let [progression (progression/<- state
-                          (keyword "questionings" id))]
-      {:questioning/id id
-       :questioning/unanswered (- (count questions)
-                                  (count progression))
-       :questions      questions
-       :answers        (get-in state
-                               (conj k/models-questionings id))
-       :progression    progression})))
+                                      (keyword "questionings" id))]
+      {:questioning/id         id
+       :questioning/unanswered (- (count questions) (count progression))
+       :questions              questions
+       :answers                (get-in state
+                                       (conj k/models-questionings id))
+       :progression            progression})))
 
 ;; Behavior
 
