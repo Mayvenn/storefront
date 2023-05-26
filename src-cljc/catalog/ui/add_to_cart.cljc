@@ -55,7 +55,7 @@
     [:div.bg-warning-yellow.border.border-warning-yellow.mx3.my5
      [:div.bg-lighten-4.p3
       [:span.bold "Shipping Delay: "]
-      [:span "There is a slight delay in shipping for this product. Ships by Monday (5/1). We apologize for any inconvenience."]]]))
+      [:span "There may be a slight delay in shipping and deliveries as we observe Memorial Day. We apologize for any inconvenience."]]]))
 
 (defcomponent organism
   "Add to Cart organism"

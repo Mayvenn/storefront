@@ -90,7 +90,7 @@
     [:div.bg-warning-yellow.border.border-warning-yellow
      [:div.bg-lighten-4.p3
       [:span.bold "Shipping Delay: "]
-      [:span "There is a slight delay in shipping for 1 or more products in your cart. Ships by Monday (5/1). We apologize for any inconvenience."]]]))
+      [:span "There may be a slight delay in shipping and deliveries as we observe Memorial Day. We apologize for any inconvenience."]]]))
 
 (defn physical-items-component
   [physical-items suggestions]

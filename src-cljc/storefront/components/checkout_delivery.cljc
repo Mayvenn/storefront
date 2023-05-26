@@ -223,7 +223,7 @@
       :delivery/options                      (->> shipping-methods
                                                   (map (partial shipping-method->shipping-method-option
                                                                 selected-sku
-                                                                (if (and (:show-shipping-delay (get-in data keypaths/features))
+                                                                (if (and (:show-date-specified-shipping-delay (get-in data keypaths/features))
                                                                          (->> (orders/product-and-service-items order)
                                                                               (map :variant-attrs)
                                                                               ;; Saddlecreek skus don't have a warehouse
