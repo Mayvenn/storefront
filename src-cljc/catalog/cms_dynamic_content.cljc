@@ -130,20 +130,26 @@
      ;; Selector Match Essentials asserts that the essentials field should never be empty or refer to keys not present in
      ;; the skuer
      (when (seq keys-possible-to-select)
-       (some->> (template-slot-data :selectable-values)
-                (into []
-                      (comp
-                       (map (fn [selectable-value]
-                              (merge selectable-value
-                                     (:selector selectable-value))))
+       (try
+         (some->> (template-slot-data :selectable-values)
+                  (into []
+                        (comp
+                         (map (fn [selectable-value]
+                                (merge selectable-value
+                                       (:selector selectable-value))))
 
-                       (selector/match-essentials skuer)
-                       (map :value)
-                       (map (fn [node]
-                              (assoc node :template-slot/slug (:slug template-slot-data))))
-                       (map build-hiccup-tag)))
-                (not-empty)
-                (conj [template-slot-id]))))))
+                         (selector/match-essentials skuer)
+                         (map :value)
+                         (map (fn [node]
+                                (assoc node :template-slot/slug (:slug template-slot-data))))
+                         (map build-hiccup-tag)))
+                  (not-empty)
+                  (conj [template-slot-id]))
+         #?(:clj (catch Throwable t
+                   (throw t))
+            :cljs (catch js/Error e
+                    (js/console.error (.-stack e))
+                    nil)))))))
 
 
 (defn rename-template-slot-ids [cms-dynamic-content-data]
