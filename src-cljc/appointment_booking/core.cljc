@@ -22,16 +22,6 @@
              :refer [handle-message] :rename {handle-message publish}]
             ui.molecules))
 
-(defmethod fx/perform-effects e/navigate-adventure-appointment-booking
-  [_ _event _ _ _state]
- (publish e/biz|follow|defined
-           {:follow/start    [e/biz|appointment-booking|initialized]
-            :follow/after-id e/biz|appointment-booking|done
-            :follow/then     [e/biz|appointment-booking|navigation-decided
-                              {:choices {:cart    e/navigate-cart
-                                         :success e/navigate-adventure-match-success}}]}))
-
-
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-appointment-booking
   [_ _event _ _ _state]
   (publish e/biz|follow|defined

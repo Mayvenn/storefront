@@ -131,7 +131,6 @@
     events/navigate-product-details
     events/navigate-shared-cart
     events/navigate-cart
-    events/navigate-adventure-appointment-booking
     events/navigate-adventure-find-your-stylist
     events/navigate-adventure-stylist-results
     events/navigate-adventure-match-success

@@ -54,7 +54,7 @@
                       {:follow/after-id e/flow|stylist-matching|matched
                        :follow/then     [e/post-stylist-matched-navigation-decided
                                          {:decision
-                                          {:booking e/navigate-adventure-appointment-booking
+                                          {:booking e/navigate-home
                                            :cart    e/navigate-cart
                                            :success e/navigate-adventure-match-success}}]})
       (handle-message e/cache|product|requested

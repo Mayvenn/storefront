@@ -824,8 +824,6 @@
 
 (defpath post-stylist-matched-navigation-decided)
 
-(defpath navigate-adventure-appointment-booking)
-
 (defpath user-identified)
 
 ;; Email verification

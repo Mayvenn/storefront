@@ -153,7 +153,6 @@
                                                                               events/navigate-adventure-stylist-gallery)
 
    events/navigate-quiz-crm-persona                                      (constantly mayvenn.shopping-quiz.crm-persona/page)
-   events/navigate-adventure-appointment-booking                         (constantly booking.core/adv-flow-page)
    events/navigate-shopping-quiz-unified-freeinstall-intro               #(ui/lazy-load-component
                                                                            :catalog
                                                                            'mayvenn.shopping-quiz.unified-freeinstall/page
@@ -263,8 +262,7 @@
        (or
         (routes/sub-page? [nav-event] [events/navigate-adventure])
         (routes/sub-page? [nav-event] [events/navigate-shopping-quiz])
-        (routes/sub-page? [nav-event] [events/navigate-quiz-crm-persona])
-        (routes/sub-page? [nav-event] [events/navigate-adventure-appointment-booking]))
+        (routes/sub-page? [nav-event] [events/navigate-quiz-crm-persona]))
        [:div {:data-test (keypaths/->component-str nav-event)
               :class (when (some #(= nav-event %) [events/navigate-adventure-stylist-profile])
                        "stylist-profile-details")}
