@@ -87,7 +87,8 @@
                                       "h-s06-s08"
                                       "s04"
                                       "s05"
-                                      "s06w"}}
+                                      "s06w"
+                                      "hl-5brown-blonde"}}
                         {:title     "Burgundys"
                          :slug      "burgundy"
                          :image-id  "5eadafa5-87ac-42ab-9af7-9be9621a0de9"
@@ -116,7 +117,8 @@
                         {:title     "Reds"
                          :slug      "red"
                          :image-id  "27df119d-bc0a-4f97-8f97-ef31bf5694b9"
-                         :selectors #{"s07rb"}}]
+                         :selectors #{"s07rb"
+                                      "30-auburn"}}]
                        (map-indexed (fn [idx {:keys [title slug image-id selectors]}]
                                       (let [swatch-url (str "//ucarecdn.com/" image-id "/-/format/auto/" slug ".jpg")]
                                         [slug
