@@ -223,14 +223,7 @@
       :delivery/options                      (->> shipping-methods
                                                   (map (partial shipping-method->shipping-method-option
                                                                 selected-sku
-                                                                (if (and (:show-date-specified-shipping-delay (get-in data keypaths/features))
-                                                                         (->> (orders/product-and-service-items order)
-                                                                              (map :variant-attrs)
-                                                                              ;; Saddlecreek skus don't have a warehouse
-                                                                              (remove :warehouse/slug)
-                                                                              seq))
-                                                                  (date/to-datetime "2023-05-01T04:00:00.000Z")
-                                                                  now)
+                                                                now
                                                                 east-coast-weekday
                                                                 (= checkout-shipping-note :in-shipping-window)
                                                                 drop-shipping?)))}
