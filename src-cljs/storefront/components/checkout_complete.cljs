@@ -237,21 +237,6 @@
     (matched-with-servicing-stylist-component data)
     (component/build guest-sign-up data nil)]))
 
-(defn shop-query [data]
-  (let [{completed-waiter-order :waiter/order}                             (api.orders/completed data)
-        {service-items :services/items}                                    (api.orders/services data completed-waiter-order)
-        {:mayvenn.concept.booking/keys [selected-date selected-time-slot]} (booking/<- data)
-        appointment-selected                                               (and selected-date selected-time-slot)
-        easy-booking?                                                      (experiments/easy-booking? data)]
-    (when (seq service-items)
-      (merge
-       {:thank-you/primary
-        (str "We've received your order and a Mayvenn Concierge representative will contact you to "
-             (if (and easy-booking? appointment-selected)
-               "confirm your"
-               "make an")
-             " appointment within 3 business days.")}))))
-
 (defn- address->display-string
   [{:keys [address-1 address-2 city state zipcode]}]
   (string/join " "
@@ -436,34 +421,27 @@
 
 (defn query
   [data]
-  (let [shop?             (= :shop (sites/determine-site data))
-        guest?            (not (get-in data keypaths/user-id))
-        matching          (stylist-matching.core/stylist-matching<- data)
-        waiter-order      (:waiter/order (api.orders/completed data))]
+  (let [guest?       (not (get-in data keypaths/user-id))
+        matching     (stylist-matching.core/stylist-matching<- data)
+        waiter-order (:waiter/order (api.orders/completed data))]
 
-    (cond->
-        {:thank-you/primary "We've received your order and will contact you as soon as your package is shipped."}
-
+    (cond-> {:thank-you/primary "We've received your order and will contact you as soon as your package is shipped."}
       guest?
       (merge
-       (let [sign-up-data (sign-up/query data)]
-         (merge
-          {:guest-sign-up/id           "guest-sign-up"
-           :guest-sign-up/sign-up-data (sign-up/query data)})))
-
-      shop?
-      (merge (shop-query data))
+       {:guest-sign-up/id           "guest-sign-up"
+        :guest-sign-up/sign-up-data (sign-up/query data)})
 
       (and (:remove-free-install (get-in data storefront.keypaths/features))
            (->> SV2-rules
                 vals
                 (some (comp empty? (partial failed-rules waiter-order))))
            (-> matching :results/stylists seq))
-      (merge {:spinning? (or
-                          (utils/requesting? data request-keys/fetch-stylists)
-                          (utils/requesting? data request-keys/fetch-stylists-matching-filters))
-              :tertiary  "Check out these stylists in your area that can help you install your hair."
-              :results   (results< matching)}))))
+      (merge
+       {:spinning? (or
+                    (utils/requesting? data request-keys/fetch-stylists)
+                    (utils/requesting? data request-keys/fetch-stylists-matching-filters))
+        :tertiary  "Check out these stylists in your area that can help you install your hair."
+        :results   (results< matching)}))))
 
 (defn hdyhau<-
   "The HDYHAU form helps us understand the effectiveness of our awareness campaigns."
