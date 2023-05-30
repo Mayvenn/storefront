@@ -1,7 +1,6 @@
 (ns storefront.accessors.nav
-  (:require [storefront.events :as events]
-            [storefront.accessors.experiments :as experiments]
-            [clojure.set :as set]))
+  (:require [clojure.set :as set]
+            [storefront.events :as events]))
 
 (def ^:private plain-auth-events
   #{events/navigate-sign-in
@@ -99,12 +98,8 @@
     events/navigate-gallery-image-picker
     events/navigate-gallery-photo})
 
-(def adventures-quiz-events
-  #{events/navigate-adventure-quiz})
-
 (defn hide-footer? [event]
-  (contains? (set/union gallery-page-events
-                        adventures-quiz-events)
+  (contains? gallery-page-events
              event))
 
 (defn show-minimal-footer? [event]

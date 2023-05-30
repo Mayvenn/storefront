@@ -74,8 +74,7 @@
    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug "/gallery"] (edn->bidi events/navigate-adventure-stylist-gallery)})
 
 (def quiz-routes
-  {"/adv/quiz"                                     (edn->bidi events/navigate-adventure-quiz)
-   "/adv/quiz/appointment-booking"                 (edn->bidi events/navigate-adventure-appointment-booking)
+  {"/adv/quiz/appointment-booking"                 (edn->bidi events/navigate-adventure-appointment-booking)
    "/quiz/unified-freeinstall/intro"               (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-intro)
    "/quiz/unified-freeinstall/question"            (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-question)
    "/quiz/unified-freeinstall/recommendations"     (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-recommendations)

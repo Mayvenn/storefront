@@ -710,9 +710,6 @@
 ;; homepage email
 (defpath homepage-email-submitted)
 
-;; Adventure Quiz
-(defpath navigate-adventure-quiz)
-
 (defpath biz|questioning|reset)
 (defpath biz|questioning|answered)
 (defpath biz|questioning|submitted)

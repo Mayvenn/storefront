@@ -279,14 +279,3 @@
                                          answers
                                          progression)
                 :see-results (see-results< questioning)}))))
-
-;;;; Behavior
-
-(defmethod fx/perform-effects e/navigate-adventure-quiz
-  [_ _ _ _ _]
-  #?(:cljs
-     (review-hooks/insert-reviews))
-  (publish e/biz|looks-suggestions|reset
-           {:id shopping-quiz-id})
-  (publish e/biz|questioning|reset
-           {:questioning/id shopping-quiz-id}))

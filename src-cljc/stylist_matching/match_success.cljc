@@ -1,4 +1,5 @@
 (ns stylist-matching.match-success
+  "GROT"
   (:require #?@(:cljs [[storefront.history :as history]])
             api.current
             api.orders
@@ -45,7 +46,7 @@
                                                   "There's no end to what your hair can do."]
    :stylist-matching.ui.congrats.cta/id          "hair-quiz"
    :stylist-matching.ui.congrats.cta/label       "Take Our Hair Quiz"
-   :stylist-matching.ui.congrats.cta/target      [e/navigate-adventure-quiz]})
+   :stylist-matching.ui.congrats.cta/target      []})
 
 (defcomponent template
   [{:keys [header congrats]} _ _]

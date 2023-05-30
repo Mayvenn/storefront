@@ -153,7 +153,6 @@
                                                                               events/navigate-adventure-stylist-gallery)
 
    events/navigate-quiz-crm-persona                                      (constantly mayvenn.shopping-quiz.crm-persona/page)
-   events/navigate-adventure-quiz                                        (constantly mayvenn.shopping-quiz.unnamed-v1/page)
    events/navigate-adventure-appointment-booking                         (constantly booking.core/adv-flow-page)
    events/navigate-shopping-quiz-unified-freeinstall-intro               #(ui/lazy-load-component
                                                                            :catalog
