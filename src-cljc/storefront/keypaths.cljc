@@ -377,6 +377,7 @@
 (def models-products (conj models-root :products))
 (def models-progressions (conj models-root :progressions))
 (def models-questionings (conj models-root :questionings))
+(def models-persona-results (conj models-root :persona-results))
 (def models-looks-suggestions (conj models-root :looks-suggestions))
 (def models-look-selected (conj models-root :look-selected))
 (def models-wait (conj models-root :wait))
@@ -394,4 +395,3 @@
 (def account-profile-ip-addresses (conj account-profile :ip-addresses))
 (def account-profile-experiences (conj account-profile :experiences))
 (def account-profile-landfalls (conj account-profile :landfalls))
-

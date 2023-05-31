@@ -1,6 +1,6 @@
 (ns mayvenn.shopping-quiz.crm-persona
   (:require api.orders
-            [mayvenn.concept.looks-suggestions :as looks-suggestions]
+            [mayvenn.concept.persona-results :as persona-results]
             [mayvenn.concept.questioning :as questioning]
             [mayvenn.visual.lib.progress-bar :as progress-bar]
             [mayvenn.visual.lib.question :as question]
@@ -8,6 +8,8 @@
             [mayvenn.visual.ui.actions :as actions]
             [mayvenn.visual.ui.titles :as titles]
             [spice.selector :as selector]
+            #?(:cljs [storefront.api :as api])
+            [storefront.accessors.contentful :as contentful]
             [storefront.accessors.images :as images]
             [storefront.component :as c]
             [storefront.components.header :as header]
@@ -100,7 +102,7 @@
      :action/target    [e/biz|questioning|submitted
                         {:questioning/id shopping-quiz-id
                          :answers        answers
-                         :on/success     [e/biz|looks-suggestions|queried]}]
+                         :on/success     [e/persona-results|queried]}]
      :action/label     "See Results"}))
 
 (def select
@@ -119,23 +121,25 @@
 
 (defn quiz-results<
   [products-db skus-db images-db results]
-  (let [results-ids [{:catalog/product-id "120"
-                      :page/slug          "malaysian-body-wave-bundles"}
-                     {:catalog/product-id "236"
-                      :page/slug          "malaysian-body-wave-bundles"}
-                     {:catalog/product-id "236"
-                      :page/slug          "malaysian-body-wave-bundles"}
-                     {:catalog/product-id "236"
-                      :page/slug          "malaysian-body-wave-bundles"}]] 
-    {:results (mapv (fn [results-q]
-                      (let [result    (get products-db (:catalog/product-id results-q))
-                            thumbnail (product-image images-db result)]
-                        {:title/primary (:copy/title result)
-                         :image/src     (:url thumbnail)
-                         :action/id     "p-1"
-                         :action/label  "Shop Now"
-                         :action/target [e/navigate-product-details result]}))
-                    results-ids)}))
+  {:results (map-indexed (fn [idx result]
+                           (when (seq (:catalog/product-id result))
+                             (let [product   (get products-db (:catalog/product-id result))
+                                   thumbnail (product-image images-db product)]
+                               {:title/primary (:copy/title product)
+                                :image/src     (:url thumbnail)
+                                :action/id     (str "result-" (inc idx))
+                                :action/label  "Shop Now"
+                                :action/target [e/navigate-product-details product]})))
+                         results)}
+  #_(let [results-ids [{:catalog/product-id "120"
+                        :page/slug          "malaysian-body-wave-bundles"}
+                       {:catalog/product-id "236"
+                        :page/slug          "malaysian-body-wave-bundles"}
+                       {:catalog/product-id "236"
+                        :page/slug          "malaysian-body-wave-bundles"}
+                       {:catalog/product-id "236"
+                        :page/slug          "malaysian-body-wave-bundles"}]] 
+      ))
 
 (defn ^:export page
   [state]
@@ -146,7 +150,7 @@
 
         {:order.items/keys [quantity]} (api.orders/current state)
         questioning                    (questioning/<- state shopping-quiz-id)
-        results                        (looks-suggestions/<- state shopping-quiz-id)
+        results                        (persona-results/<- state shopping-quiz-id)
 
         header-data                    {:forced-mobile-layout? true
                                         :quantity              (or quantity 0)}]
@@ -171,12 +175,36 @@
 
 (defmethod fx/perform-effects e/navigate-quiz-crm-persona
   [_ _ _ _ state]
-  (let [album-keyword :look]
-    (ugc/determine-look-album state album-keyword))
-  ;; TODO(corey) move to show answers
+  (let [cache   (get-in state k/api-cache)
+        handler (fn [result]
+                  #?(:cljs
+                     (when-let [cart-ids (->> (get-in result [:ugc-collection :aladdin-free-install :looks])
+                                              (take 99)
+                                              (mapv contentful/shared-cart-id)
+                                              not-empty)]
+                       (api/fetch-shared-carts cache cart-ids))))]
+    (fx/fetch-cms-keypath state [:ugc-collection :aladdin-free-install] handler))
+  ;; TODO(corey) Move to show answers
+  ;; P1
   (publish e/cache|product|requested "120")
   (publish e/cache|product|requested "236")
-  (publish e/biz|looks-suggestions|reset
-           {:id shopping-quiz-id})
-  (publish e/biz|questioning|reset
-           {:questioning/id shopping-quiz-id}))
+  (publish e/cache|product|requested "9")
+  (publish e/cache|product|requested "353")
+  ;; P2 
+  (publish e/cache|product|requested "335")
+  (publish e/cache|product|requested "354")
+  (publish e/cache|product|requested "268")
+  (publish e/cache|product|requested "249")
+  ;; P3
+  (publish e/cache|product|requested "352")
+  (publish e/cache|product|requested "354")
+  (publish e/cache|product|requested "235")
+  (publish e/cache|product|requested "313")
+  ;; P4
+  (publish e/cache|product|requested "354")
+  (publish e/cache|product|requested "128")
+  (publish e/cache|product|requested "252")
+  (publish e/cache|product|requested "15")
+  ;; Reset
+  (publish e/persona-results|reset {:id shopping-quiz-id})
+  (publish e/biz|questioning|reset {:questioning/id shopping-quiz-id}))
