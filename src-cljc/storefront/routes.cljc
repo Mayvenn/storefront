@@ -82,7 +82,8 @@
    "/quiz/unified-freeinstall/stylist-results"     (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-stylist-results)
    "/quiz/unified-freeinstall/match-success"       (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-match-success)
    "/quiz/unified-freeinstall/appointment-booking" (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-appointment-booking)
-   "/quiz/crm-persona"                             (edn->bidi events/navigate-quiz-crm-persona)})
+   "/quiz/crm-persona"                             (edn->bidi events/navigate-quiz-crm-persona-questions)
+   "/quiz/crm-persona/results"                     (edn->bidi events/navigate-quiz-crm-persona-results)})
 
 (def mayvenn-stylist-pay-routes
   {"/pay" (edn->bidi events/navigate-mayvenn-stylist-pay)})

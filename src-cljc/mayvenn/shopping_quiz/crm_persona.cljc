@@ -16,12 +16,14 @@
             [storefront.components.ui :as ui]
             [storefront.effects :as fx]
             [storefront.events :as e]
+            #?(:cljs [storefront.history :as history])
             [storefront.keypaths :as k]
             [storefront.platform.messages
              :as messages
              :refer [handle-message]
              :rename {handle-message publish}]
-            [storefront.ugc :as ugc]))
+            [storefront.ugc :as ugc]
+            [storefront.transitions :as t]))
 
 (def ^:private shopping-quiz-id :crm/persona)
 
@@ -102,7 +104,11 @@
      :action/target    [e/biz|questioning|submitted
                         {:questioning/id shopping-quiz-id
                          :answers        answers
-                         :on/success     [e/persona-results|queried]}]
+                         :on/success     [e/persona-results|queried
+                                          {:on/success-fn
+                                           #?(:clj nil
+                                              :cljs
+                                              #(history/enqueue-navigate e/navigate-quiz-crm-persona-results {:query-params {:p %}}))}]}]
      :action/label     "See Results"}))
 
 (def select
@@ -163,7 +169,6 @@
                                images-db
                                results)
                 (within :header header-data)))
-      
       :else
       (c/build questioning-template
                {:header      header-data
@@ -173,24 +178,15 @@
 
 ;;;; Behavior
 
-(defmethod fx/perform-effects e/navigate-quiz-crm-persona
-  [_ _ _ _ state]
-  (let [cache   (get-in state k/api-cache)
-        handler (fn [result]
-                  #?(:cljs
-                     (when-let [cart-ids (->> (get-in result [:ugc-collection :aladdin-free-install :looks])
-                                              (take 99)
-                                              (mapv contentful/shared-cart-id)
-                                              not-empty)]
-                       (api/fetch-shared-carts cache cart-ids))))]
-    (fx/fetch-cms-keypath state [:ugc-collection :aladdin-free-install] handler))
+(defn preload-results
+  []
   ;; TODO(corey) Move to show answers
   ;; P1
   (publish e/cache|product|requested "120")
   (publish e/cache|product|requested "236")
   (publish e/cache|product|requested "9")
   (publish e/cache|product|requested "353")
-  ;; P2 
+  ;; P2
   (publish e/cache|product|requested "335")
   (publish e/cache|product|requested "354")
   (publish e/cache|product|requested "268")
@@ -204,7 +200,40 @@
   (publish e/cache|product|requested "354")
   (publish e/cache|product|requested "128")
   (publish e/cache|product|requested "252")
-  (publish e/cache|product|requested "15")
+  (publish e/cache|product|requested "15"))
+
+
+(defmethod fx/perform-effects e/navigate-quiz-crm-persona-questions
+  [_ _ _ _ state]
+  ;; Fetch Products
+  (preload-results)
+  ;; Fetch Looks
+  #?(:cljs
+     (let [cache    (get-in state k/api-cache)
+           cms-path [:ugc-collection :aladdin-free-install :looks]
+           handler  (fn [cms-data]
+                      (when-let [cart-ids (->> (get-in cms-data cms-path)
+                                               (take 99)
+                                               (mapv contentful/shared-cart-id)
+                                               not-empty)]
+                        (api/fetch-shared-carts cache cart-ids)))]
+       (fx/fetch-cms-keypath state [:ugc-collection :aladdin-free-install] handler)))
   ;; Reset
   (publish e/persona-results|reset {:id shopping-quiz-id})
   (publish e/biz|questioning|reset {:questioning/id shopping-quiz-id}))
+
+(defmethod fx/perform-effects e/navigate-quiz-crm-persona-results
+  [_ _ {{persona :p} :query-params} _ state]
+  ;; Fetch Products
+  (preload-results)
+  ;; Fetch Looks
+  #?(:cljs
+     (let [cache    (get-in state k/api-cache)
+           cms-path [:ugc-collection :aladdin-free-install :looks]
+           handler  (fn [cms-data]
+                      (when-let [cart-ids (->> (get-in cms-data cms-path)
+                                               (take 99)
+                                               (mapv contentful/shared-cart-id)
+                                               not-empty)]
+                        (api/fetch-shared-carts cache cart-ids)))]
+       (fx/fetch-cms-keypath state [:ugc-collection :aladdin-free-install] handler))))

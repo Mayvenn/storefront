@@ -8,6 +8,7 @@
             [clojure.string :refer [join]]
             [mayvenn.concept.booking :as booking]
             [mayvenn.concept.questioning :as questioning]
+            [mayvenn.visual.tools :refer [with within]]
             [spice.selector :as selector]
             [storefront.effects :as fx]
             [storefront.events :as e]
@@ -70,17 +71,19 @@
 ;; Queried
 
 (defmethod fx/perform-effects e/persona-results|queried
-  [_ _ {:questioning/keys [id] answers :answers} _ state] 
+  [_ _ {:questioning/keys [id] :keys [on/success-fn answers]} _ state]
   (let [#_#_looks (->> (get-in state k/cms-ugc-collection-all-looks)
-                   (merge-with merge look-annotations)
-                   vals)
-        products (->> (get-in state k/models-products)
+                       (merge-with merge look-annotations)
+                       vals)
+        products  (->> (get-in state k/models-products)
                       (merge-with merge product-annotations)
-                      vals)]
-    #_(prn "looks " (count looks) (count (select #_{:customer/goals :customer.goals/enhance-natural} answers looks)))
+                      vals)
+        persona   (select-keys answers [:customer/persona])
+        results   (select persona products)]
+    (success-fn "1")
     (publish e/persona-results|resulted
              {:id      id
-              :results (select (select-keys answers [:customer/persona]) products)})))
+              :results results})))
 
 ;; Resulted
 
