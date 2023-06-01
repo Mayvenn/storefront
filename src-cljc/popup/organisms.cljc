@@ -6,7 +6,6 @@
 
 ;; MOLECULES
 
-
 (defn close-x
   ([close-event]
    (close-x close-event nil))

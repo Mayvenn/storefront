@@ -18,12 +18,16 @@
   (let [close-attrs (utils/route-to e/navigate-guide-clipin-extensions)]
     (ui/modal
      {:close-attrs close-attrs}
-     (c/html
-      [:div.flex.flex-column.bg-cover.bg-top.bg-white.p2.col-12
-       ^:inline (ui/modal-close {:class       "stroke-black fill-gray"
-                                 :data-test   "transcript-close"
-                                 :close-attrs close-attrs})
-       transcript]))))
+     [:div.bg-white.stretch.p4
+      [:div.bg-white.col-12.flex.justify-between.items-center
+       [:div {:style {:min-width "42px"}}]
+       [:div "Transcript"]
+       [:a.p3
+        (merge close-attrs
+               {:data-test "close-transcript-modal"})
+        (svg/x-sharp {:style {:width  "12px"
+                              :height "12px"}})]]
+      [:div.m3 transcript]])))
 
 (c/defcomponent carousel
   [{:keys [title modal-id elements]} _ _]
@@ -96,7 +100,7 @@
 
      #:carousel{:title    "Video Tutorials"
                 :modal-id (:modal (get-in app-state k/navigation-query-params))
-                :elements [{:id "how-to-find-the-best-shade-to-match-your-hair"
+                :elements [{:id         "how-to-find-the-best-shade-to-match-your-hair"
                             :video-src  "//ucarecdn.com/002ece8b-f236-4714-a9f6-0830f0b95875/"
                             :caption    "How to Find the Best Shade to Match Your Hair"
                             :cta/copy   "Transcript"
@@ -113,7 +117,7 @@
                                          [:p "Narrator: Determine your hair's undertones. Look for red, orange or yellow undertones, for warm. Blues or greens indicate cool undertones. If nothing stands out, you're likely neutral. Identify your tones and choose accordingly."]
                                          [:p "The woman has installed the clip-in hair extensions. The woman moves and flips her hair to show the results. The clip-ins blend seamlessly with her natural hair."]
                                          [:p "Narrator: If you're in between shades, opt for the lighter color for a closer match. Remember, since Mayvenn clip-ins are made of human hair, your stylist can easily tone them for more customization."]]}
-                           {:id "how-to-install-clip-ins"
+                           {:id         "how-to-install-clip-ins"
                             :video-src  "//ucarecdn.com/d972aae9-5c73-4297-9bf2-9eaec9973b87/"
                             :caption    "How to Install Clip-Ins"
                             :cta/copy   "Transcript"
@@ -126,12 +130,46 @@
                                          [:p "The woman presses her thumb and index finger along each weft to snap each clip securely into her hair."]
                                          [:p "Narrator: Clip in the weft right below your part line in each section. It should feel secure, allowing easy movement and styling, and ensure enough room around your hairline so the clip-ins remain invisible. And there you have it. Achieve flawless hair extensions with these quick and easy steps."]
                                          [:p "The woman poses with the clip-in hair extensions fully installed and blended into her hair."]]}
-                           #_{:video-src ""
-                              :caption   "How to Make Your Clip-Ins Blend with Your Hair"}
-                           #_{:video-src ""
-                              :caption   "How to Make Your Clip-Ins Stay in Place"}
-                           #_{:video-src ""
-                              :caption   "Where to Place Your Clip-Ins"}]}
+                           {:id         "how-to-blend-clip-ins"
+                            :video-src  "//ucarecdn.com/3b92a8bd-4b60-4425-a3f8-a42b66646ef5/"
+                            :caption    "How to Make Your Clip-Ins Blend with Your Hair"
+                            :cta/copy   "Transcript"
+                            :cta/target [e/navigate-guide-clipin-extensions {:query-params {:modal "how-to-blend-clip-ins"}}]
+                            :transcript [:div
+                                         [:p "Title: How to Make Your Clip-Ins Blend with Your Hair"]
+                                         [:p "Narrator: Make sure your clip-ins are tangle-free."]
+                                         [:p ""]
+                                         [:p "Narrator: Once installed, style your hair and the clip-ins together - curl or flat iron them together for a more seamless blend."]
+                                         [:p ""]
+                                         [:p "Narrator: Don't be afraid to have your stylist lightly trim or layer them so that they blend even better with the way your hair naturally falls."]
+                                         [:p ""]]}
+                           {:id         "how-keep-clip-ins-in-place"
+                            :video-src  "//ucarecdn.com/5ed6bf30-02ef-4392-8c92-193e932062a4/"
+                            :caption    "How to Make Your Clip-Ins Stay in Place"
+                            :cta/target [e/navigate-guide-clipin-extensions {:query-params {:modal "how-to-clip-ins-in-place"}}]
+                            :transcript [:div
+                                         [:p "Title: How to Make Your Clip-Ins Stay in Place"]
+                                         [:p "Narrator: If your hair is fine, or if you’re just having trouble getting your clip-in wefts to stay put, try this tip."]
+                                         [:p ""]
+                                         [:p "Narrator: Lightly back comb, or “tease”, your roots along your part lines."]
+                                         [:p ""]
+                                         [:p "Narrator: Then, place the clip-ins on top of those sections, close to the base of your roots."]
+                                         [:p ""]
+                                         [:p "Narrator: The extra grip should help! Make sure to leave enough room so that they’re comfortable, and not too tight."]
+                                         [:p ""]]}
+                           {:id         "where-place-clip-ins"
+                            :video-src  "//ucarecdn.com/22cbc48c-9a20-4e68-8b6b-abaf83127220/"
+                            :caption    "Where to Place Your Clip-Ins"
+                            :cta/copy   "Transcript"
+                            :cta/target [e/navigate-guide-clipin-extensions {:query-params {:modal "where-to-place-clip-ins"}}]
+                            :transcript [:div
+                                         [:p "Title: Where to Place Your Clip-Ins"]
+                                         [:p "Narrator: Focus on placing the clip-ins according to the side of your head and length of your part in each section."]
+                                         [:p ""]
+                                         [:p "Narrator: Place the medium-sized pieces on the very bottom, the widest pieces in the middle of the head at the widest section, and so on."]
+                                         [:p ""]
+                                         [:p "Narrator: Use smaller pieces at a diagonal along part lines on top of the ear and in smaller sections around your head."]
+                                         [:p ""]]}]}
      #:faqs{:title        "FAQs"
             :selected-tab (or (get-in app-state (conj k/tabs :guide-clipin-extensions))
                               :choosing-your-extensions)

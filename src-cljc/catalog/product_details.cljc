@@ -26,7 +26,6 @@
             [catalog.ui.add-to-cart :as add-to-cart]
             [catalog.ui.pre-accordion :as pre-accordion]
             [catalog.ui.molecules :as catalog.M]
-            [catalog.ui.popup-shade-finder :as popup-shade-finder]
             [catalog.reviews :as reviews]
             [clojure.string]
             [homepage.ui.faq :as faq]
