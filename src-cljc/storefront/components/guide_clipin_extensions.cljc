@@ -85,11 +85,6 @@
    (c/build carousel (vt/with :carousel data))
    (c/build faqs (vt/with :faqs data))])
 
-(def placeholder-img
-  nil #_
-  [:div.bg-gray.my1 {:style {:width "300px"
-                             :height "200px"}}])
-
 (defn ^:private query [app-state]
   (let [category (first categories/seamless-clip-ins-category)]
     (merge
@@ -180,33 +175,51 @@
                             :question-answers [{:question "What’s the difference between your different color options?"
                                                 :answer   [:div
                                                            [:div.mb3 "Allover color is a single allover color that is the same color from top to bottom."]
+                                                           (ui/ucare-img {:width "275px"
+                                                                          :height "200px"
+                                                                          :alt "A close-up of black hair with allover color. The color is uniform throughout the hair."}
+                                                                         "a88d0355-bdd8-4dc7-959f-1ecef669c76f")
                                                            [:div.mb3 "Our Balayage shades are a subtle hand-painted version of a highlight. The Balayage pieces are painted throughout the hair to add dimension."]
+                                                           (ui/ucare-img {:width "275px"
+                                                                          :height "200px"
+                                                                          :alt "A close-up of brown hair with balayage. The hair has a subtle, graduated color that is a medium brown at the roots and is a lighter, caramel brown towards the ends."}
+                                                                         "2c09c3aa-80ef-4f06-9346-fb9fd7b755f9")
                                                            [:div.mb3 "Our Highlighted shades are our colors that have more exaggerated highlights with a higher contrast than Balayage. The color placement is often more pronounced and has the most variation in color throughout."]
-                                                           placeholder-img]}
+                                                           (ui/ucare-img {:width "275px"
+                                                                          :height "200px"
+                                                                          :alt "A close-up of blonde hair with highlights. There is a contrast between the lighter blonde and darker blonde strands, giving a multi-tonal effect to the hair."}
+                                                                         "0c082a25-fc98-4fd7-bfef-38e0109f8be9")]}
                                                {:question "How do I know if this color will match my hair?"
                                                 :answer   [:div
                                                            [:div.mb3 "Color-matching your natural hair to your extensions is simpler than it sounds. Make sure you're looking at your hair in bright, natural lighting. In front of a window, or even outside, is best."]
+                                                           (ui/ucare-img {:width "275px"
+                                                                          :alt "A woman standing indoors in bright, natural lighting."}
+                                                                         "2ec39103-4e23-4363-8f31-6905c915b35b")
                                                            [:div.mb3 "Use the mid-shaft (middle) of your hair through your ends to color match. Our roots are sometimes a different color than the rest of our hair, and using the middle lengths will give a more accurate representation. Keep in mind: if you're in between two different shades, it's usually best to go with the lighter option."]
                                                            [:div.mb3 "To figure out if your hair's undertones are warm, cool, or neutral, try this tip. Does your hair appear more red, orange, or yellow-based in natural light? You're leaning warm. Do your strands appear to have more of a blue or green hue? Cool is the way to go. If there's not a strong indication either way, you're neutral."]
-                                                           [:div.mb3 "And most of all, don't worry if you're not 100% sure! Our 30-day exchange policy makes it super simple to switch out your clip-ins for a different color once they arrive. Need expert help? Text 34649 to reach our Customer Support team."]
-                                                           placeholder-img]}
+                                                           [:div.mb3 "And most of all, don't worry if you're not 100% sure! Our 30-day exchange policy makes it super simple to switch out your clip-ins for a different color once they arrive. Need expert help? Text 34649 to reach our Customer Support team."]]}
                                                {:question "How do I know if this texture will match my hair?"
                                                 :answer   [:div
                                                            [:div.mb3 "Out of the package, our Straight Clip-Ins will blend with naturally straight to slight wavy hair.  For wavy and curly textures, blowing out or flat ironing your hair before using your Clip-Ins will help create a more seamless blend. Keep in mind that our Straight Clip-Ins can be curled with heat protectant to better match waves and coils."]
-                                                           placeholder-img]}
+                                                           (ui/ucare-img {:width "275px"
+                                                                          :alt "A model wearing clip-in hair extensions styled into loose curls."}
+                                                                         "fecc4a1f-057c-4d23-a9f1-c2049a42fd72")]}
                                                {:question "How many packages of clip-ins do I need for a full look?"
                                                 :answer   [:div
                                                            [:div.mb3 "If your hair is fine to medium density, 1 pack of Clip-Ins should work for a full look."]
                                                            [:div.mb3 "For medium to thick hair 2 packs will create a better blend and match your natural density. You can always mix and match packs for a truly customized look!"]
-                                                           placeholder-img]}
+                                                           (ui/ucare-img {:width "275px"
+                                                                          :alt "A model wearing clip-in hair extensions styled into waves."}
+                                                                         "a0658a72-e7fd-4d74-a9ed-e8a7ba8d19f7")]}
                                                {:question "What is a seamless weft?"
                                                 :answer   [:div
                                                            [:div.mb3 "Our Seamless Clip-Ins are created with a thin, polyurethane (PU) weft. This allows the clip-ins to lay flat and is gentle on your own strands for a damage-free, blended look."]
-                                                           placeholder-img]}
+                                                           (ui/ucare-img {:width "275px"
+                                                                          :alt "A model putting in clip-in hair extensions. The top half of her natural hair is sectioned off into a bun, and the weft is clipped in below, blending effortlessly with her hair. The seamless polyurethane weft is a thin, flexible strip that runs along the top of the clip-in hair extension."}
+                                                                         "0b38d218-913e-42f1-acc6-9741015bd2fd")]}
                                                {:question "What does 100% remy human hair mean?"
                                                 :answer   [:div
-                                                           [:div.mb3 "All of our products are of remy grade, which means that all cuticles are in alignment. This helps to reduce shedding, limits tangling, and maximizes the lifespan of your human hair extensions."]
-                                                           placeholder-img]}]}
+                                                           [:div.mb3 "All of our products are of remy grade, which means that all cuticles are in alignment. This helps to reduce shedding, limits tangling, and maximizes the lifespan of your human hair extensions."]]}]}
                            {:title            "Wearing your extensions"
                             :id               :wearing-your-extensions
                             :message          [e/control-tab-selected {:tabs-id :guide-clipin-extensions
@@ -226,7 +239,9 @@
                                                            [:ul
                                                             [:li.mb3 "After detangling, store your clip-ins in your Mayvenn box, or inside a satin or silk pillowcase."]
                                                             [:li.mb3 "Remove clip-ins before bedtime to ensure they'll stand the test of time."]]
-                                                           placeholder-img]}]}]})))
+                                                           (ui/ucare-img {:width "275px"
+                                                                          :alt "Mayvenn Seamless Clip-Ins product packaging. The Mayvenn logo and the product name \"Seamless Clip-Ins\" are printed in white lettering on a small, purple and gray box."}
+                                                                         "665b3c79-2b8a-46a4-8f59-ac1331c7703a")]}]}]})))
 
 (defn built-component [app-state opts]
   (c/build component (query app-state) opts))
