@@ -138,9 +138,10 @@
                                          [:p ""]
                                          [:p "Narrator: Don't be afraid to have your stylist lightly trim or layer them so that they blend even better with the way your hair naturally falls."]
                                          [:p ""]]}
-                           {:id         "how-keep-clip-ins-in-place"
+                           {:id         "how-to-clip-ins-in-place"
                             :video-src  "//ucarecdn.com/5ed6bf30-02ef-4392-8c92-193e932062a4/"
                             :caption    "How to Make Your Clip-Ins Stay in Place"
+                            :cta/copy   "Transcript"
                             :cta/target [e/navigate-guide-clipin-extensions {:query-params {:modal "how-to-clip-ins-in-place"}}]
                             :transcript [:div
                                          [:p "Title: How to Make Your Clip-Ins Stay in Place"]
@@ -152,7 +153,7 @@
                                          [:p ""]
                                          [:p "Narrator: The extra grip should help! Make sure to leave enough room so that they’re comfortable, and not too tight."]
                                          [:p ""]]}
-                           {:id         "where-place-clip-ins"
+                           {:id         "where-to-place-clip-ins"
                             :video-src  "//ucarecdn.com/22cbc48c-9a20-4e68-8b6b-abaf83127220/"
                             :caption    "Where to Place Your Clip-Ins"
                             :cta/copy   "Transcript"
