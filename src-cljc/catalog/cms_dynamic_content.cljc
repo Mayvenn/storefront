@@ -112,6 +112,14 @@
   (println "Attempting to render unknown node type" node)
   nil)
 
+(defn make-selector-essentials-sets [input-skuer]
+  (loop [skuer input-skuer
+         essential-keys (:selector/essentials input-skuer)]
+    (let [k (first essential-keys)]
+      (if k
+        (recur (update skuer k set) (rest essential-keys))
+        skuer))))
+
 (defn template-slot-kv->hiccup-content
   "Takes CMS template-slot key-value from contentful and tur"
   ([sku template-slot-kv]
@@ -124,7 +132,9 @@
          keys-on-sku               (set (keys sku))
          keys-possible-to-select   (set/intersection keys-in-selectable-values
                                                      keys-on-sku)
-         skuer                     (assoc sku :selector/essentials keys-possible-to-select)]
+         skuer                     (->> keys-possible-to-select
+                                        (assoc sku :selector/essentials)
+                                        make-selector-essentials-sets)]
 
      ;; This handles the case where there are no selectable values which could possibly apply to the passed in sku
      ;; Selector Match Essentials asserts that the essentials field should never be empty or refer to keys not present in
@@ -137,7 +147,6 @@
                          (map (fn [selectable-value]
                                 (merge selectable-value
                                        (:selector selectable-value))))
-
                          (selector/match-essentials skuer)
                          (map :value)
                          (map (fn [node]
