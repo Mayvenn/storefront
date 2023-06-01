@@ -1,4 +1,4 @@
-(ns mayvenn.concept.persona-results
+(ns mayvenn.concept.persona
   (:require #?@(:cljs
                 [[storefront.hooks.stringer :as stringer]
                  [storefront.api :as api]
@@ -20,6 +20,7 @@
             [storefront.trackings :as trk]
             [storefront.transitions :as t]))
 
+#_
 (def product-annotations
   {"120" {:customer/persona :customer.persona/p1}
    "236" {:customer/persona :customer.persona/p1}
@@ -37,66 +38,47 @@
    "128" {:customer/persona :customer.persona/p4}
    "252" {:customer/persona :customer.persona/p4}
    "15" {:customer/persona :customer.persona/p4}})
-
+#_
 (def look-annotations
   {:7e4F9lGZHmTphADJxRFL6a {:customer/goals :customer.goals/enhance-natural}
    :2LcC986WiwwveAsh9HwEKZ {:customer/goals :customer.goals/protect-natural}
    :2KKdNG4k1JlFQWtOIXWHWB {:customer/goals :customer.goals/save-money}
    :74i7UgWjKVrAtV1mqMVMoh {:customer/goals :customer.goals/easy-maintenance}})
 
-(def select
-  (comp seq
-        (partial selector/match-all
-                 {:selector/strict? true})))
-
 ;;;; Models
 
 (defn <-
   "Get the results model of a look suggestion"
-  [state id]
-  (->> id
-       (conj k/models-persona-results)
-       (get-in state)))
-
+  [state]
+  (get-in state k/models-persona))
 
 ;;;; Behavior
 
 ;; Reset
 
-(defmethod t/transition-state e/persona-results|reset
-  [_ _ {:keys [id]} state]
+(defmethod t/transition-state e/persona|reset
+  [_ _ _ state]
   (-> state
-      (assoc-in (conj k/models-persona-results id) nil)))
+      (assoc-in k/models-persona nil)))
 
-;; Queried
+;; Selected
+;; Assume the event id or query the questionings for an answer
 
-(defmethod fx/perform-effects e/persona-results|queried
-  [_ _ {:questioning/keys [id] :keys [on/success-fn answers]} _ state]
-  (let [#_#_looks (->> (get-in state k/cms-ugc-collection-all-looks)
-                       (merge-with merge look-annotations)
-                       vals)
-        products  (->> (get-in state k/models-products)
-                      (merge-with merge product-annotations)
-                      vals)
-        persona   (select-keys answers [:customer/persona])
-        results   (select persona products)]
-    (success-fn "1")
-    (publish e/persona-results|resulted
-             {:id      id
-              :results results})))
+(defn ^:private calculate-persona-from-quiz
+  [state]
+  (let [{:keys [answers]} (questioning/<- state :crm/persona)]
+    (:crm/persona answers))
+  :p1)
 
-;; Resulted
-
-(defmethod t/transition-state e/persona-results|resulted
-  [_ _ {:keys [id results]} state]
+(defmethod t/transition-state e/persona|selected
+  [_ _ {:persona/keys [id]} state]
+  (prn "selected! id" id)
   (-> state
-      (assoc-in (conj k/models-persona-results id)
-                results)))
+      (assoc-in k/models-persona (or id
+                                     (calculate-persona-from-quiz state)))))
 
-(defmethod fx/perform-effects e/persona-results|resulted
-  [_ _ {:keys [id results]} _]
-  (publish e/ensure-sku-ids
-           {:sku-ids (set
-                      (concat
-                       (mapcat :product/sku-ids results)
-                       (map :service/sku-id results)))}))
+(defmethod fx/perform-effects e/persona|selected
+  [_ _ {:keys [on/success-fn]} _ state]
+  (when (fn? success-fn)
+    (when-let [persona-id (name (get-in state k/models-persona))]
+      (success-fn persona-id))))

@@ -1,6 +1,6 @@
 (ns mayvenn.shopping-quiz.crm-persona
   (:require api.orders
-            [mayvenn.concept.persona-results :as persona-results]
+            [mayvenn.concept.persona :as persona]
             [mayvenn.concept.questioning :as questioning]
             [mayvenn.visual.lib.progress-bar :as progress-bar]
             [mayvenn.visual.lib.question :as question]
@@ -110,11 +110,13 @@
      :action/target    [e/biz|questioning|submitted
                         {:questioning/id shopping-quiz-id
                          :answers        answers
-                         :on/success     [e/persona-results|queried
+                         :on/success     [e/persona|selected
                                           {:on/success-fn
-                                           #?(:clj nil
+                                           #?(:clj identity
                                               :cljs
-                                              #(history/enqueue-navigate e/navigate-quiz-crm-persona-results {:query-params {:p %}}))}]}]
+                                              #(history/enqueue-navigate
+                                                e/navigate-quiz-crm-persona-results
+                                                {:query-params {:p %}}))}]}]
      :action/label     "See Results"}))
 
 (def select
@@ -132,26 +134,21 @@
        first))
 
 (defn quiz-results<
-  [products-db skus-db images-db results]
-  {:results (map-indexed (fn [idx result]
-                           (when (seq (:catalog/product-id result))
-                             (let [product   (get products-db (:catalog/product-id result))
-                                   thumbnail (product-image images-db product)]
-                               {:title/secondary (:copy/title product)
-                                :image/src     (:url thumbnail)
-                                :action/id     (str "result-" (inc idx))
-                                :action/label  "Shop Now"
-                                :action/target [e/navigate-product-details product]})))
-                         results)}
-  #_(let [results-ids [{:catalog/product-id "120"
-                        :page/slug          "malaysian-body-wave-bundles"}
-                       {:catalog/product-id "236"
-                        :page/slug          "malaysian-body-wave-bundles"}
-                       {:catalog/product-id "236"
-                        :page/slug          "malaysian-body-wave-bundles"}
-                       {:catalog/product-id "236"
-                        :page/slug          "malaysian-body-wave-bundles"}]] 
-      ))
+  [products-db skus-db images-db persona-id]
+  (let [results [{:catalog/product-id "120"}
+                 {:catalog/product-id "236"}
+                 {:catalog/product-id "9"}
+                 {:catalog/product-id "353"}]]
+    {:results (map-indexed (fn [idx result]
+                             (when (seq (:catalog/product-id result))
+                               (let [product   (get products-db (:catalog/product-id result))
+                                     thumbnail (product-image images-db product)]
+                                 {:title/secondary (:copy/title product)
+                                  :image/src     (:url thumbnail)
+                                  :action/id     (str "result-" (inc idx))
+                                  :action/label  "Shop Now"
+                                  :action/target [e/navigate-product-details product]})))
+                           results)}))
 
 (defn ^:export page
   [state]
@@ -162,18 +159,18 @@
 
         {:order.items/keys [quantity]} (api.orders/current state)
         questioning                    (questioning/<- state shopping-quiz-id)
-        results                        (persona-results/<- state shopping-quiz-id)
+        persona-id                     (persona/<- state)
 
         header-data                    {:forced-mobile-layout? true
                                         :quantity              (or quantity 0)}]
     (cond
-      (seq results)
+      persona-id
       (c/build results-template
                (merge
                 (quiz-results< products-db
                                skus-db
                                images-db
-                               results)
+                               persona-id)
                 (within :header header-data)))
       :else
       (c/build questioning-template
@@ -184,7 +181,7 @@
 
 ;;;; Behavior
 
-(defn preload-results
+(defn preload-products
   []
   ;; TODO(corey) Move to show answers
   ;; P1
@@ -208,31 +205,8 @@
   (publish e/cache|product|requested "252")
   (publish e/cache|product|requested "15"))
 
-
-(defmethod fx/perform-effects e/navigate-quiz-crm-persona-questions
-  [_ _ _ _ state]
-  ;; Fetch Products
-  (preload-results)
-  ;; Fetch Looks
-  #?(:cljs
-     (let [cache    (get-in state k/api-cache)
-           cms-path [:ugc-collection :aladdin-free-install :looks]
-           handler  (fn [cms-data]
-                      (when-let [cart-ids (->> (get-in cms-data cms-path)
-                                               (take 99)
-                                               (mapv contentful/shared-cart-id)
-                                               not-empty)]
-                        (api/fetch-shared-carts cache cart-ids)))]
-       (fx/fetch-cms-keypath state [:ugc-collection :aladdin-free-install] handler)))
-  ;; Reset
-  (publish e/persona-results|reset {:id shopping-quiz-id})
-  (publish e/biz|questioning|reset {:questioning/id shopping-quiz-id}))
-
-(defmethod fx/perform-effects e/navigate-quiz-crm-persona-results
-  [_ _ {{persona :p} :query-params} _ state]
-  ;; Fetch Products
-  (preload-results)
-  ;; Fetch Looks
+(defn preload-looks
+  [state]
   #?(:cljs
      (let [cache    (get-in state k/api-cache)
            cms-path [:ugc-collection :aladdin-free-install :looks]
@@ -243,3 +217,22 @@
                                                not-empty)]
                         (api/fetch-shared-carts cache cart-ids)))]
        (fx/fetch-cms-keypath state [:ugc-collection :aladdin-free-install] handler))))
+
+(defmethod fx/perform-effects e/navigate-quiz-crm-persona-questions
+  [_ _ _ _ state]
+  ;; Preloads
+  (preload-products) 
+  (preload-looks state)
+  ;; Reset
+  (publish e/persona|reset)
+  (publish e/biz|questioning|reset {:questioning/id shopping-quiz-id}))
+
+(defmethod fx/perform-effects e/navigate-quiz-crm-persona-results
+  [_ _ {{persona :p} :query-params} _ state]
+  ;; Preloads
+  (preload-products)
+  (preload-looks state)
+  ;; Set persona
+  (let [persona-id (keyword persona)]
+    (when (contains? #{:p1 :p2 :p3 :p4} persona-id)
+      (publish e/persona|selected {:persona/id persona-id}))))

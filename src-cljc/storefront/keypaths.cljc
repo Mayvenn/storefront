@@ -378,6 +378,7 @@
 (def models-progressions (conj models-root :progressions))
 (def models-questionings (conj models-root :questionings))
 (def models-persona-results (conj models-root :persona-results))
+(def models-persona (conj models-root :persona))
 (def models-looks-suggestions (conj models-root :looks-suggestions))
 (def models-look-selected (conj models-root :look-selected))
 (def models-wait (conj models-root :wait))

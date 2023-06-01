@@ -730,9 +730,8 @@
 (defpath biz|looks-suggestions|selected)
 (defpath biz|looks-suggestions|confirmed)
 
-(defpath persona-results|reset)
-(defpath persona-results|queried)
-(defpath persona-results|resulted)
+(defpath persona|reset)
+(defpath persona|selected)
 
 ;; generalized concept of progress
 (defpath biz|progression|reset)
