@@ -136,19 +136,22 @@
      [_ event {:keys [trigger-id variation-description template-content-id details]} app-state]
      (let [no-errors?     (empty? (get-in app-state k/errors))
            captured-email (get-in app-state textfield-keypath)
-           captured-phone (get-in app-state phonefield-keypath)]
+           captured-phone (get-in app-state phonefield-keypath)
+           persona        (get-in app-state k/models-persona)]
        (when no-errors?
          (stringer/identify {:email captured-email})
          (stringer/track-event "email_capture-capture"
-                               {:email-capture-id      trigger-id
-                                :variation-description variation-description
-                                :template-content-id   template-content-id
-                                :email                 captured-email
-                                :details               details
-                                :test-variations       (get-in app-state k/features)
-                                :store-slug            (get-in app-state k/store-slug)
-                                :store-experience      (get-in app-state k/store-experience)
-                                :account-profile       (get-in app-state k/account-profile)})
+                               (merge
+                                (when persona {:persona persona})
+                                {:email-capture-id      trigger-id
+                                 :variation-description variation-description
+                                 :template-content-id   template-content-id
+                                 :email                 captured-email
+                                 :details               details
+                                 :test-variations       (get-in app-state k/features)
+                                 :store-slug            (get-in app-state k/store-slug)
+                                 :store-experience      (get-in app-state k/store-experience)
+                                 :account-profile       (get-in app-state k/account-profile)}))
          (google-analytics/track-generate-lead (get-in app-state k/user-ecd))))))
 
 #?(:cljs
