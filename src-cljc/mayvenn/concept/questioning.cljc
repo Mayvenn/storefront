@@ -89,8 +89,8 @@
      [:id3c "None or Not Sure"]]]
    [:id4 "Do you want the option to remove your style at night?"
     [[:id4a "Leave It In"]
-     [:id4a "Remove"]
-     [:id4a "I don't know"]]]
+     [:id4b "Remove"]
+     [:id4c "I don't know"]]]
    [:id5 "Do you prefer a low maintenance style, or are you flexible?"
     [[:id5a "Low Maintenance"]
      [:id5b "I don't know"]
