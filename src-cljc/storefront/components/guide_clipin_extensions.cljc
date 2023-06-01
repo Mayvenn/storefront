@@ -96,7 +96,7 @@
      #:carousel{:title    "Video Tutorials"
                 :modal-id (:modal (get-in app-state k/navigation-query-params))
                 :elements [{:id         "how-to-find-the-best-shade-to-match-your-hair"
-                            :video-src  "//ucarecdn.com/002ece8b-f236-4714-a9f6-0830f0b95875/"
+                            :video-src  "//ucarecdn.com/f792edd1-03f8-4dd9-86d7-70b9928a9a7f/"
                             :caption    "How to Find the Best Shade to Match Your Hair"
                             :cta/copy   "Transcript"
                             :cta/target [e/navigate-guide-clipin-extensions {:query-params {:modal "how-to-find-the-best-shade-to-match-your-hair"}}]
