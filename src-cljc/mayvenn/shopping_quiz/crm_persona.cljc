@@ -29,20 +29,26 @@
 
 (c/defcomponent result-card
   [data _ _]
-  [:div.col-6.flex.flex-column.p2
+  [:div.bg-white.block
    [:div
-    (ui/img (merge {:width "100%"
-                    :max-size 200}
+    {:style {:aspect-ratio "3 / 4"
+             :overflow "hidden"}}
+    (ui/img (merge {:max-size   200
+                    :style {:object-fit "cover"}
+                    :class "container-size contents"}
                    (with :image data)))]
-   (titles/proxima-content (with :title data))
-   (actions/small-primary (with :action data))])
+   [:div.p2.flex.flex-column.justify-between
+    {:style {:height "100px"}}
+    (titles/proxima-content (with :title data))
+    (actions/small-tertiary (with :action data))]])
 
 (c/defcomponent results-template
   [data _ _]
-  [:div.bg-cool-gray
+  [:div.bg-refresh-gray
    [:div.col-12.bg-white
     (c/build header/nav-header-component (with :header data))]
-   [:div.flex.flex-wrap.col-12
+   [:div.grid.grid-cols-2.gap-5.p2
+    {:style {:align-items "stretch"}}
     (c/elements result-card
                 data
                 :results)]])
@@ -131,7 +137,7 @@
                            (when (seq (:catalog/product-id result))
                              (let [product   (get products-db (:catalog/product-id result))
                                    thumbnail (product-image images-db product)]
-                               {:title/primary (:copy/title product)
+                               {:title/secondary (:copy/title product)
                                 :image/src     (:url thumbnail)
                                 :action/id     (str "result-" (inc idx))
                                 :action/label  "Shop Now"

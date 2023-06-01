@@ -109,3 +109,14 @@
         {:data-test id}
         (apply utils/fake-href target))
        label]])))
+
+(defn small-tertiary
+  [{:keys [id disabled? label target]}]
+  (when id
+    (c/html
+     [:div
+      [:a.p-color.center.title-3.shout.bold.underline.proxima
+       (merge
+        {:data-test id}
+        (apply utils/fake-href target))
+       label]])))
