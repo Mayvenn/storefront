@@ -131,41 +131,42 @@
                             :cta/copy   "Transcript"
                             :cta/target [e/navigate-guide-clipin-extensions {:query-params {:modal "how-to-blend-clip-ins"}}]
                             :transcript [:div
-                                         [:p "Title: How to Make Your Clip-Ins Blend with Your Hair"]
-                                         [:p "Narrator: Make sure your clip-ins are tangle-free."]
-                                         [:p ""]
-                                         [:p "Narrator: Once installed, style your hair and the clip-ins together - curl or flat iron them together for a more seamless blend."]
-                                         [:p ""]
-                                         [:p "Narrator: Don't be afraid to have your stylist lightly trim or layer them so that they blend even better with the way your hair naturally falls."]
-                                         [:p ""]]}
+                                         [:p "Title: How to Install, Blend Your Clip-ins"]
+                                         [:p "A woman wearing clip-in extensions and flipping her hair is shown."]
+                                         [:p "Narrator: To achieve a flawless blend with your clip-in extensions, follow these tips."]
+                                         [:p "A stylist brushes the woman's hair. "]
+                                         [:p "Narrator: First, ensure your clip-ins are tangle-free before installation."]
+                                         [:p "A stylist styles the woman's hair with a curling iron."]
+                                         [:p "Narrator: Then, style your hair and the clip-ins together using a curling or flatiron for a seamless look."]
+                                         [:p "A stylist trims the woman's hair, blending the clip-ins with her natural hair."]
+                                         [:p "Narrator: Lastly, don't be afraid to consult with your stylist to lightly trim or lay the extensions for a better natural blend."]
+                                         [:p "A woman wearing clip-in extensions and flipping her hair is shown again."]
+                                         [:p "Enjoy an effortless hairstyle with these simple steps from Mayvenn Hair."]]}
                            {:id         "how-to-clip-ins-in-place"
                             :video-src  "//ucarecdn.com/5ed6bf30-02ef-4392-8c92-193e932062a4/"
                             :caption    "How to Make Your Clip-Ins Stay in Place"
                             :cta/copy   "Transcript"
                             :cta/target [e/navigate-guide-clipin-extensions {:query-params {:modal "how-to-clip-ins-in-place"}}]
                             :transcript [:div
-                                         [:p "Title: How to Make Your Clip-Ins Stay in Place"]
-                                         [:p "Narrator: If your hair is fine, or if you’re just having trouble getting your clip-in wefts to stay put, try this tip."]
-                                         [:p ""]
-                                         [:p "Narrator: Lightly back comb, or “tease”, your roots along your part lines."]
-                                         [:p ""]
-                                         [:p "Narrator: Then, place the clip-ins on top of those sections, close to the base of your roots."]
-                                         [:p ""]
-                                         [:p "Narrator: The extra grip should help! Make sure to leave enough room so that they’re comfortable, and not too tight."]
-                                         [:p ""]]}
+                                         [:p "Title: How to Make Your Clip-ins Stay in Place"]
+                                         [:p "Narrator: If your hair is fine or if you're just having trouble getting clip-in wefts to stay put, try this tip."]
+                                         [:p "A stylist parts the woman's hair horizontally on one side of her head and clips the top section of hair off, leaving the bottom half down. She then takes a thin portion of the bottom section of hair and backcombs it towards the roots of the woman's hair."]
+                                         [:p "Narrator: Lightly backcomb or tease your roots along your part lines. Remember to backcomb in one direction, only to minimize any unecessary friction."]
+                                         [:p "The stylist places a weft of clip-ins over this section of hair at the root and clips it in place."]
+                                         [:p "Narrator: Once you've done that, place the clip-ins on top of those sections, close to the base of your roots. This added texture and grip should provide extra support to keep clip-ins secure throughout the day."]
+                                         [:p "The woman twirls and flips her hair to show the results of the clip-ins."]
+                                         [:p "Narrator: It's important to ensure that the clip-ins are comfortable and not too tight, so leave enough room for a comfortable fit. Give it a try and enjoy a secure look with your Mayvenn Hair Clip-ins."]]}
                            {:id         "where-to-place-clip-ins"
                             :video-src  "//ucarecdn.com/22cbc48c-9a20-4e68-8b6b-abaf83127220/"
                             :caption    "Where to Place Your Clip-Ins"
                             :cta/copy   "Transcript"
                             :cta/target [e/navigate-guide-clipin-extensions {:query-params {:modal "where-to-place-clip-ins"}}]
                             :transcript [:div
-                                         [:p "Title: Where to Place Your Clip-Ins"]
-                                         [:p "Narrator: Focus on placing the clip-ins according to the side of your head and length of your part in each section."]
-                                         [:p ""]
-                                         [:p "Narrator: Place the medium-sized pieces on the very bottom, the widest pieces in the middle of the head at the widest section, and so on."]
-                                         [:p ""]
-                                         [:p "Narrator: Use smaller pieces at a diagonal along part lines on top of the ear and in smaller sections around your head."]
-                                         [:p ""]]}]}
+                                         [:p "Title: Where to Place Your Clip-ins"]
+                                         [:p "A woman has her hair parted horizontally across her head, the top half sectioned into a bun. The bottom section of her hair is left down. Three wefts of clip-in hair extensions are clipped into the bottom section of her hair."]
+                                         [:p "Narrator: When applying clip-ins, remember to place them according to the side of your head and the length of your part in each section. Start with medium sized pieces at the bottom, widest pieces in the middle, and smaller pieces diagonally along your parted line and in smaller sections."]
+                                         [:p "The woman slowly turns her head back and forth, showing a wide weft of hair in the middle and small wefts closer to her face"]
+                                         [:p "Enjoy a flawless and natural look with these placement tips with Mayvenn Hair Clip-ins."]]}]}
      #:faqs{:title        "FAQs"
             :selected-tab (or (get-in app-state (conj k/tabs :guide-clipin-extensions))
                               :choosing-your-extensions)
@@ -176,25 +177,25 @@
                             :question-answers [{:question "What’s the difference between your different color options?"
                                                 :answer   [:div
                                                            [:div.mb3 "Allover color is a single allover color that is the same color from top to bottom."]
-                                                           (ui/ucare-img {:width "275px"
+                                                           (ui/ucare-img {:width  "275px"
                                                                           :height "200px"
-                                                                          :alt "A close-up of black hair with allover color. The color is uniform throughout the hair."}
+                                                                          :alt    "A close-up of black hair with allover color. The color is uniform throughout the hair."}
                                                                          "a88d0355-bdd8-4dc7-959f-1ecef669c76f")
                                                            [:div.mb3 "Our Balayage shades are a subtle hand-painted version of a highlight. The Balayage pieces are painted throughout the hair to add dimension."]
-                                                           (ui/ucare-img {:width "275px"
+                                                           (ui/ucare-img {:width  "275px"
                                                                           :height "200px"
-                                                                          :alt "A close-up of brown hair with balayage. The hair has a subtle, graduated color that is a medium brown at the roots and is a lighter, caramel brown towards the ends."}
+                                                                          :alt    "A close-up of brown hair with balayage. The hair has a subtle, graduated color that is a medium brown at the roots and is a lighter, caramel brown towards the ends."}
                                                                          "2c09c3aa-80ef-4f06-9346-fb9fd7b755f9")
                                                            [:div.mb3 "Our Highlighted shades are our colors that have more exaggerated highlights with a higher contrast than Balayage. The color placement is often more pronounced and has the most variation in color throughout."]
-                                                           (ui/ucare-img {:width "275px"
+                                                           (ui/ucare-img {:width  "275px"
                                                                           :height "200px"
-                                                                          :alt "A close-up of blonde hair with highlights. There is a contrast between the lighter blonde and darker blonde strands, giving a multi-tonal effect to the hair."}
+                                                                          :alt    "A close-up of blonde hair with highlights. There is a contrast between the lighter blonde and darker blonde strands, giving a multi-tonal effect to the hair."}
                                                                          "0c082a25-fc98-4fd7-bfef-38e0109f8be9")]}
                                                {:question "How do I know if this color will match my hair?"
                                                 :answer   [:div
                                                            [:div.mb3 "Color-matching your natural hair to your extensions is simpler than it sounds. Make sure you're looking at your hair in bright, natural lighting. In front of a window, or even outside, is best."]
                                                            (ui/ucare-img {:width "275px"
-                                                                          :alt "A woman standing indoors in bright, natural lighting."}
+                                                                          :alt   "A woman standing indoors in bright, natural lighting."}
                                                                          "2ec39103-4e23-4363-8f31-6905c915b35b")
                                                            [:div.mb3 "Use the mid-shaft (middle) of your hair through your ends to color match. Our roots are sometimes a different color than the rest of our hair, and using the middle lengths will give a more accurate representation. Keep in mind: if you're in between two different shades, it's usually best to go with the lighter option."]
                                                            [:div.mb3 "To figure out if your hair's undertones are warm, cool, or neutral, try this tip. Does your hair appear more red, orange, or yellow-based in natural light? You're leaning warm. Do your strands appear to have more of a blue or green hue? Cool is the way to go. If there's not a strong indication either way, you're neutral."]
@@ -203,20 +204,20 @@
                                                 :answer   [:div
                                                            [:div.mb3 "Out of the package, our Straight Clip-Ins will blend with naturally straight to slight wavy hair.  For wavy and curly textures, blowing out or flat ironing your hair before using your Clip-Ins will help create a more seamless blend. Keep in mind that our Straight Clip-Ins can be curled with heat protectant to better match waves and coils."]
                                                            (ui/ucare-img {:width "275px"
-                                                                          :alt "A model wearing clip-in hair extensions styled into loose curls."}
+                                                                          :alt   "A model wearing clip-in hair extensions styled into loose curls."}
                                                                          "fecc4a1f-057c-4d23-a9f1-c2049a42fd72")]}
                                                {:question "How many packages of clip-ins do I need for a full look?"
                                                 :answer   [:div
                                                            [:div.mb3 "If your hair is fine to medium density, 1 pack of Clip-Ins should work for a full look."]
                                                            [:div.mb3 "For medium to thick hair 2 packs will create a better blend and match your natural density. You can always mix and match packs for a truly customized look!"]
                                                            (ui/ucare-img {:width "275px"
-                                                                          :alt "A model wearing clip-in hair extensions styled into waves."}
+                                                                          :alt   "A model wearing clip-in hair extensions styled into waves."}
                                                                          "a0658a72-e7fd-4d74-a9ed-e8a7ba8d19f7")]}
                                                {:question "What is a seamless weft?"
                                                 :answer   [:div
                                                            [:div.mb3 "Our Seamless Clip-Ins are created with a thin, polyurethane (PU) weft. This allows the clip-ins to lay flat and is gentle on your own strands for a damage-free, blended look."]
                                                            (ui/ucare-img {:width "275px"
-                                                                          :alt "A model putting in clip-in hair extensions. The top half of her natural hair is sectioned off into a bun, and the weft is clipped in below, blending effortlessly with her hair. The seamless polyurethane weft is a thin, flexible strip that runs along the top of the clip-in hair extension."}
+                                                                          :alt   "A model putting in clip-in hair extensions. The top half of her natural hair is sectioned off into a bun, and the weft is clipped in below, blending effortlessly with her hair. The seamless polyurethane weft is a thin, flexible strip that runs along the top of the clip-in hair extension."}
                                                                          "0b38d218-913e-42f1-acc6-9741015bd2fd")]}
                                                {:question "What does 100% remy human hair mean?"
                                                 :answer   [:div
@@ -230,7 +231,9 @@
                                                {:question "How long can I keep my clip-ins in?"
                                                 :answer   [:div [:div.mb3 "While your Clip-Ins will stay put for a whole day (or night!) of events, make sure to remove them completely before you go to sleep. This is key for both product longevity and the health of your own hair."]]}
                                                {:question "How long do clip-ins last?"
-                                                :answer   [:div [:div.mb3 "With proper care and maintenance, your Clip-Ins can last for up to a year or more."]]}]}
+                                                :answer   [:div [:div.mb3 "With proper care and maintenance, your Clip-Ins can last for up to a year or more."]]}
+                                               {:question "What does 100% remy human hair mean?"
+                                                :answer   [:div [:div.mb3 "All of our products are of remy grade, which means that all cuticles are in alignment. This helps to reduce shedding, limits tangling, and maximizes the lifespan of your human hair extensions."]]}]}
                            {:title            "Caring for your extensions"
                             :id               :caring-for-your-extensions
                             :message          [e/control-tab-selected {:tabs-id :guide-clipin-extensions
@@ -241,7 +244,7 @@
                                                             [:li.mb3 "After detangling, store your clip-ins in your Mayvenn box, or inside a satin or silk pillowcase."]
                                                             [:li.mb3 "Remove clip-ins before bedtime to ensure they'll stand the test of time."]]
                                                            (ui/ucare-img {:width "275px"
-                                                                          :alt "Mayvenn Seamless Clip-Ins product packaging. The Mayvenn logo and the product name \"Seamless Clip-Ins\" are printed in white lettering on a small, purple and gray box."}
+                                                                          :alt   "Mayvenn Seamless Clip-Ins product packaging. The Mayvenn logo and the product name \"Seamless Clip-Ins\" are printed in white lettering on a small, purple and gray box."}
                                                                          "665b3c79-2b8a-46a4-8f59-ac1331c7703a")]}]}]})))
 
 (defn built-component [app-state opts]
