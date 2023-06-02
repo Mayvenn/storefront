@@ -181,6 +181,7 @@
            :category/tags                    #{"closures-and-frontals"}
            :selector/essentials              [:catalog/department :hair/family :hair/color.process :hair/source :hair/base-material]
            :selector/electives               [:hair/origin :hair/texture :hair.closure/area :hair/color]
+           :selector/dimensions              [:hair/origin :hair/texture :hair.closure/area :hair/color]
            :subsections/subsection-selectors texture-subsection-selectors
            :header/title                     "Lace Virgin Hair Closures"
 
@@ -1226,10 +1227,10 @@
                                        :seo/title
                                        ". Featuring a thin, polyurethane"
                                        " weft that flawlessly blends with your own hair."]
-    :subcategories.old/ids             ["47" "46" "42"]
-    :subcategories.old/layout          :list
-    :subcategories/ids                 ["47" "46" "42"]
-    :subcategories/layout              :spotlights
+    :subcategories.old/ids            ["47" "46" "42"]
+    :subcategories.old/layout         :list
+    :subcategories/ids                ["47" "46" "42"]
+    :subcategories/layout             :spotlights
     :subsections/subsection-selectors [{:subsection/title    "HD Lace Closures"
                                         :subsection/selector {:hair/family #{"closures"}}}
                                        {:subsection/title    "HD Lace Frontals"
@@ -1286,6 +1287,7 @@
     :hair/base-material             #{"hd-lace"}
     :selector/essentials            [:hair/family :catalog/department :hair/base-material]
     :selector/electives             [:hair/texture :hair/origin :hair/color :hair.closure/area]
+    :selector/dimensions            [:hair/origin :hair/texture :hair.closure/area :hair/color]
     :page/title                     "100% Virgin Hair HD Lace Closures | Mayvenn"
     :page.meta/description          (copy "Mayvenn’s HD Lace comes complete with 4x4 or 5x5 inches of parting space."
                                           "Crafted with high-quality 100% virgin human hair.")
