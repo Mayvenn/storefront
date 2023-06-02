@@ -27,5 +27,6 @@
 (defn ^:export built-component [app-state opts]
   (c/html
    [:div
+    {:style {:height "1px"}}
     (c/build component {:artsai {:action "misc"}} opts)
     (c/build component (query app-state) opts)]))
