@@ -76,13 +76,13 @@
      [:customer.goals/easy-maintenance "Low maintenance"]
      [:customer.goals/easy-install "Easy to install"]
      [:unsure "Not Sure"]]]
-   [:customer/persona "What type of styles are you most interested in? (Pick one)"
-    [[:customer.persona/p1 "My everyday look"]
-     [:customer.persona/p4 "I'm shopping for a special occasion"]
-     [:customer.persona/p4 "A vacation look"]
-     [:customer.persona/p2 "A style for work"]
-     [:customer.persona/p3 "I want to switch it up"]
-     [:customer.persona/p3 "I'm not sure. Surprise me!"]]]
+   [:customer/styles "What type of styles are you most interested in? (Pick one)"
+    [[:customer.styles/everyday-look "My everyday look"]
+     [:customer.styles/special-occasion "I'm shopping for a special occasion"]
+     [:customer.styles/vacation "A vacation look"]
+     [:customer.styles/work "A style for work"]
+     [:customer.styles/switch-it-up "I want to switch it up"]
+     [:unsure "I'm not sure. Surprise me!"]]]
    [:id3 "How much of your natural hair do you want to leave out?"
     [[:id3a "All"]
      [:id3b "Some"]

@@ -67,12 +67,17 @@
 (defn ^:private calculate-persona-from-quiz
   [state]
   (let [{:keys [answers]} (questioning/<- state :crm/persona)]
-    (:crm/persona answers))
-  :p1)
+    (case (:customer/styles answers)
+      :customer.styles/everyday-look    :p1
+      :customer.styles/work             :p2
+      :customer.styles/switch-it-up     :p3
+      :unsure                           :p3
+      :customer.styles/special-occasion :p4
+      :customer.styles/vacation         :p4
+      :p3)))
 
 (defmethod t/transition-state e/persona|selected
   [_ _ {:persona/keys [id]} state]
-  (prn "selected! id" id)
   (-> state
       (assoc-in k/models-persona (or id
                                      (calculate-persona-from-quiz state)))))
