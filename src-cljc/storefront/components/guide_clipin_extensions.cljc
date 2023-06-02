@@ -113,7 +113,7 @@
                                          [:p "The woman has installed the clip-in hair extensions. The woman moves and flips her hair to show the results. The clip-ins blend seamlessly with her natural hair."]
                                          [:p "Narrator: If you're in between shades, opt for the lighter color for a closer match. Remember, since Mayvenn clip-ins are made of human hair, your stylist can easily tone them for more customization."]]}
                            {:id         "how-to-install-clip-ins"
-                            :video-src  "//ucarecdn.com/d972aae9-5c73-4297-9bf2-9eaec9973b87/"
+                            :video-src  "//ucarecdn.com/b123c0c2-0f48-482f-a024-ea6f3190e26a/"
                             :caption    "How to Install Clip-Ins"
                             :cta/copy   "Transcript"
                             :cta/target [e/navigate-guide-clipin-extensions {:query-params {:modal "how-to-install-clip-ins"}}]
@@ -143,7 +143,7 @@
                                          [:p "A woman wearing clip-in extensions and flipping her hair is shown again."]
                                          [:p "Enjoy an effortless hairstyle with these simple steps from Mayvenn Hair."]]}
                            {:id         "how-to-clip-ins-in-place"
-                            :video-src  "//ucarecdn.com/5ed6bf30-02ef-4392-8c92-193e932062a4/"
+                            :video-src  "//ucarecdn.com/d800b421-5605-4c08-acbc-7ba2a60e77bd/"
                             :caption    "How to Make Your Clip-Ins Stay in Place"
                             :cta/copy   "Transcript"
                             :cta/target [e/navigate-guide-clipin-extensions {:query-params {:modal "how-to-clip-ins-in-place"}}]
