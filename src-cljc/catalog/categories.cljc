@@ -735,7 +735,7 @@
            :catalog/department  #{"hair"}
            :hair/family         #{"ready-wigs"}
            :selector/essentials [:hair/family :catalog/department]
-           :selector/electives  [:hair/texture :wig/trait]
+           :selector/electives  [:hair/texture :wig/trait :hair/color]
            :selector/dimensions [:hair/color :hair/texture :wig/trait]
 
            :page/title-template            [:computed/selected-facet-string " Wigs: " :computed/selected-facet-string " " :seo/title " | Mayvenn"]
