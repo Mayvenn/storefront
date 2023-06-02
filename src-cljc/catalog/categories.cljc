@@ -254,9 +254,9 @@
            :menu/hide?                       true
            :page/icp?                        true
            :category/description             (copy "Protect your tresses and finish off your style with 100% virgin hair"
-                                                "frontals that blend flawlessly with bundles and your natural hairline."
-                                                "Lace frontals give you the freedom to part your hair in any direction"
-                                                "with gorgeous texture and style.")
+                                                   "frontals that blend flawlessly with bundles and your natural hairline."
+                                                   "Lace frontals give you the freedom to part your hair in any direction"
+                                                   "with gorgeous texture and style.")
            :catalog/department               #{"hair"}
            :hair/family                      #{"frontals" "360-frontals"}
            :hair/color.process               #{"natural" "dyed"}
@@ -310,6 +310,7 @@
            :category/tags            #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
            :selector/essentials      [:catalog/department :hair/family :hair/base-material]
            :selector/electives       [:hair/origin :hair/texture :hair/color]
+           :selector/dimensions      [:hair/origin :hair/texture :hair/color]
            :subcategory/image-id     "47e29e97-821e-4c20-aeac-35eadc1a653d"
            :subcategory/description  "Our 13x4 inch virgin lace frontals stretch from ear-to-ear for a look that can be parted in any direction."
            :category/description     "Our 13x4 inch virgin lace frontals stretch from ear-to-ear for a look that can be parted in any direction."}
