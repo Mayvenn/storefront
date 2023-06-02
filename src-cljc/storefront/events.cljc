@@ -184,7 +184,6 @@
 (defpath flow--orderhistory--stylists--resulted)
 (defpath flow--orderdetails--resulted)
 (defpath flow--orderdetails--stylist-resulted)
-(defpath flow--orderdetails--vouchers-resulted)
 
 (defpath poll-stylist-portrait)
 (defpath poll-gallery)

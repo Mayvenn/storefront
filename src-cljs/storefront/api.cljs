@@ -1140,18 +1140,6 @@
     :error-handler error-handler
     :cache/bypass? bypass?}))
 
-(defn fetch-vouchers-for-order
-  [user-id user-token order-number {:keys [error-handler success-handler]}]
-  (storeback-api-req
-   GET
-   "/vouchers-for-order"
-   request-keys/fetch-vouchers-for-order
-   {:params        {:user-id    user-id
-                    :user-token user-token
-                    :number     order-number}
-    :handler       success-handler
-    :error-handler error-handler}))
-
 (defn fetch-matched-stylist
   ([cache stylist-id]
    (fetch-matched-stylist cache stylist-id nil))

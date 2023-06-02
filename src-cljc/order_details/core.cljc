@@ -166,43 +166,6 @@
        [:div.my2 nickname ", " [:a {:href (ui/phone-url phone) :aria-label (str "Phone number " phone)}
                                 phone]]])]))
 
-(defn vouchers-details-template
-  [{:vouchers-details/keys [id spinning? vouchers]}]
-  (cond
-    spinning?
-    [:div
-     {:style {:min-height "400px"}}
-     ui/spinner]
-
-    id
-    (into [:div.my6.max-960.mx-auto
-           {:key       id
-            :data-test id}]
-          (map (fn [{:vouchers-details/keys [qr-code-url voucher-code services expiration-date redemption-date status]}]
-                 (titled-content "Voucher"
-                                 [:div
-                                  (when qr-code-url
-                                    [:div.flex.flex-column.items-center.my6
-                                     (ui/img {:src   qr-code-url
-                                              :alt   voucher-code
-                                              :style {:max-width "150px"}})
-                                     [:div {:data-test "voucher-code"} voucher-code]])
-                                  (titled-subcontent "Status" status)
-                                  (if redemption-date
-                                    (titled-subcontent "voucher-redemption-date" "Redemption date" redemption-date)
-                                    (titled-subcontent "voucher-expiration-date" "Expiration date" expiration-date))
-                                  (titled-subcontent "What's included"
-                                                     [:div {:data-test "voucher-whats-included"}
-                                                      (map (fn [{:keys [included-services]}]
-                                                             [:ul
-                                                              (map (fn [service-line]
-                                                                     [:li service-line])
-                                                                   included-services)])
-                                                           services)
-                                                      [:div.content-3.mt2
-                                                       "*Shampoo, Condition, Braid down, and Basic styling included."]])]))
-               vouchers)) ))
-
 (c/defcomponent template
   [data _ _]
   [:div.py2.px8.max-960.mx-auto.bg-refresh-gray
@@ -211,7 +174,6 @@
    (order-details-template data)
    (appointment-details-template data)
    (stylist-details-template data)
-   (vouchers-details-template data)
    #_[:p.mt8 "If you need to edit or cancel your order, please contact our customer service at "
     (ui/link :link/email :a {} "help@mayvenn.com")
     " or "
@@ -381,42 +343,6 @@
 
 ;; Voucher states: pending, active, redeemed, expired, canceled, new
 
-(defn vouchers-details-query [app-state]
-  (cond
-    (utils/requesting? app-state request-keys/fetch-vouchers-for-order)
-    {:vouchers-details/spinning? true}
-
-    (seq (get-in app-state [:models :order-details :vouchers]))
-    {:vouchers-details/id       "vouchers-details"
-     :vouchers-details/vouchers (map (fn [{:keys [services qr-code-url voucher-code
-                                                  expiration-date redemption-date
-                                                  disabled-reason fulfilled? redeemed? identified?]}]
-                                       (let [past-expiration-date? (date/after? (date/now) expiration-date)
-                                             status                (cond disabled-reason       "Canceled"
-                                                                         redeemed?             "Redeemed"
-                                                                         past-expiration-date? "Expired"
-                                                                         fulfilled?            "Issued"
-                                                                         identified?           "Pending"
-                                                                         :else                 "Unknown")]
-                                         (merge #:vouchers-details
-                                                {:qr-code-url     (when (= "Issued" status) qr-code-url)
-                                                 :voucher-code    voucher-code
-                                                 :expiration-date (f/short-date expiration-date)
-                                                 :services        (map (fn [{:keys [service-awards/offered-service-slugs]}]
-                                                                         {:included-services (map (fn [service-slug]
-                                                                                                    (let [specialty-key (str "specialty-"service-slug)
-                                                                                                          addon?        (stylist-filters/service-menu-key->addon? specialty-key)]
-                                                                                                      (str
-                                                                                                       (stylist-filters/service-menu-key->title specialty-key)
-                                                                                                       (if addon? " (add-on)" "*"))))
-                                                                                                  offered-service-slugs)})
-                                                                       services)
-                                                 :whats-included  (mapcat :service-awards/offered-service-slugs services)
-                                                 :status          status}
-                                                (when redemption-date
-                                                  #:vouchers-details{:redemption-date (f/short-date expiration-date)}))))
-                                     (get-in app-state [:models :order-details :vouchers]))}))
-
 (defn query [app-state]
   (when (boolean (get-in app-state k/user-verified-at))
     (let [order-number       (:order-number (last (get-in app-state k/navigation-message)))
@@ -457,8 +383,7 @@
               :canceled         (->canceled-query app-state canceled-shipment)
               :pending          (->pending-fulfillment-query app-state pending-line-items)}
              (appointment-details-query app-state)
-             (stylist-details-query app-state)
-             (vouchers-details-query app-state)))))
+             (stylist-details-query app-state)))))
 
 (defn ^:export page
   [app-state]
@@ -506,12 +431,6 @@
                                                              (mapcat :line-items)
                                                              (filter line-items/product-or-service?)
                                                              (map :sku))})
-    #?(:cljs
-       (api/fetch-vouchers-for-order (get-in app-state k/user-id)
-                                     (get-in app-state k/user-token)
-                                     (:number order)
-                                     {:success-handler #(messages/handle-message e/flow--orderdetails--vouchers-resulted %)
-                                      :error-handler   identity}))
     (when-let [ssid (:servicing-stylist-id order)]
       #?(:cljs
          (api/fetch-stylist api-cache
@@ -519,10 +438,6 @@
                             (get-in app-state k/user-token)
                             ssid
                             {:success-handler #(messages/handle-message e/flow--orderdetails--stylist-resulted %)})))))
-
-(defmethod transitions/transition-state e/flow--orderdetails--vouchers-resulted
-  [_ _ {:keys [vouchers]} app-state]
-  (assoc-in app-state [:models :order-details :vouchers] vouchers))
 
 (defmethod transitions/transition-state e/flow--orderdetails--stylist-resulted
   [_ _ stylist app-state]
