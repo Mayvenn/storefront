@@ -118,5 +118,5 @@
       [:a.p-color.center.title-3.shout.bold.underline.proxima
        (merge
         {:data-test id}
-        (apply utils/fake-href target))
+        (apply utils/route-to target))
        label]])))
