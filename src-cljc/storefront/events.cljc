@@ -764,9 +764,14 @@
 (defpath navigate-quiz-crm-persona-questions)
 (defpath navigate-quiz-crm-persona-results)
 
+(defpath control-quiz-results-feedback)
+
 (defpath control-landing-page-email-submit)
 (defpath control-quiz-email-submit)
 (defpath control-quiz-email-skip)
+
+(defpath biz|quiz-feedback|question-answered)
+(defpath biz|quiz-explanation|explained)
 
 ;; Hard Session
 (defpath biz|hard-session|timeout|begin)

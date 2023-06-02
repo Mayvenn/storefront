@@ -4,6 +4,7 @@
             [mayvenn.concept.questioning :as questioning]
             [mayvenn.visual.lib.progress-bar :as progress-bar]
             [mayvenn.visual.lib.question :as question]
+            [mayvenn.visual.lib.radio-section :as radio-section]
             [mayvenn.visual.tools :refer [with within]]
             [mayvenn.visual.ui.actions :as actions]
             [mayvenn.visual.ui.titles :as titles]
@@ -17,15 +18,23 @@
             [storefront.effects :as fx]
             [storefront.events :as e]
             #?(:cljs [storefront.history :as history])
+            #?(:cljs [storefront.hooks.stringer :as stringer])
             [storefront.keypaths :as k]
+            [storefront.platform.component-utils :as utils]
             [storefront.platform.messages
              :as messages
              :refer [handle-message]
              :rename {handle-message publish}]
             [storefront.ugc :as ugc]
+            [storefront.trackings :as tr]
             [storefront.transitions :as t]))
 
 (def ^:private shopping-quiz-id :crm/persona)
+(def ^:private model-keypath [:models :quiz-feedback])
+(def ^:private answer-keypath [:models :quiz-feedback :answer])
+(def ^:private explanation-keypath [:models :quiz-feedback :explanation])
+(def ^:private submitted-keypath [:models :quiz-feedback :submitted?])
+(def ^:private hide-keypath [:models :quiz-feedback :hide?])
 
 (c/defcomponent result-card
   [data _ _]
@@ -42,6 +51,59 @@
     (titles/proxima-content (with :title data))
     (actions/small-tertiary (with :action data))]])
 
+(c/defcomponent feedback-radio
+  [{:keys [radio-name primary answer slots]} _ _]
+  [:div
+   [:div.bold primary]
+   (into [:div {:required true}]
+         (for [{:slot/keys        [id]
+                :slot.picker/keys [copy]} slots
+               :let                       [radio-id (str radio-name "-" id)]]
+           (radio-section/v2
+            (merge {:dial.attrs/name          radio-name
+                    :dial.attrs/id            radio-id
+                    :dial.attrs/data-test     radio-id
+                    :dial.attrs/class         "order-0"
+                    :label.attrs/class        "col-12 py2"
+                    :label.attrs/on-click     (utils/send-event-callback e/biz|quiz-feedback|question-answered
+                                                                         {:id id}
+                                                                         {:prevent-default?  true
+                                                                          :stop-propagation? true})
+                    :copy.attrs/class         "order-last flex-auto proxima px2 "
+                    :copy.content/text        copy}
+                   (when (= id answer)
+                     {:state/checked "checked"})))))])
+
+(c/defcomponent feedback-explanation
+  [{:keys [primary explanation id target]} _ _]
+  [:div.py2
+   [:div.bold primary]
+   (ui/text-field-large
+    {:value       explanation
+     :id          id
+     :data-test   id
+     :autoFocus   false
+     :focused     false
+     :on-change   (fn [e]
+                    (apply publish (conj target {:explanation (.. e -target -value)})))})])
+
+(c/defcomponent quiz-feedback
+  [{:keys [id disabled? target label primary] :as data} _ _]
+  (if id
+    [:form.p2
+     (c/build feedback-radio (with :radio data))
+     (c/build feedback-explanation (with :explanation data))
+     [:div.flex
+      (ui/button-small-primary
+       (merge {:data-test id}
+              (when disabled? {:disabled? disabled?})
+              (apply utils/route-to target))
+       label)]]
+    [:div.p2
+     [:div.bg-s-color.border.border-s-color
+      [:div.bg-lighten-4.p2
+       primary]]]))
+
 (c/defcomponent results-template
   [data _ _]
   [:div.bg-refresh-gray
@@ -51,7 +113,8 @@
     {:style {:align-items "stretch"}}
     (c/elements result-card
                 data
-                :results)]])
+                :results)]
+   (c/build quiz-feedback (with :feedback data))])
 
 (c/defcomponent questioning-template
   [{:keys [header progress questions see-results]} _ _]
@@ -133,6 +196,23 @@
        (sort-by :order)
        first))
 
+(defn quiz-feedback<
+  [state]
+  {:feedback/label                   "Submit"
+   :feedback/disabled?               (not (get-in state answer-keypath))
+   :feedback/target                  [e/control-quiz-results-feedback]
+   :feedback/id                      (when (not (get-in state hide-keypath)) "submit")
+   :feedback/primary                 "We've received your response. Thank you for your feedback!"
+   :feedback.explanation/id          "feedback-explanation"
+   :feedback.explanation/primary     "Why or why not?"
+   :feedback.explanation/target      [e/biz|quiz-explanation|explained]
+   :feedback.explanation/explanation (get-in state explanation-keypath)
+   :feedback.radio/answer            (get-in state answer-keypath)
+   :feedback.radio/primary           "Did you find the results of this quiz helpful"
+   :feedback.radio/radio-name        "results-feedback"
+   :feedback.radio/slots             [{:slot/id "yes" :slot.picker/copy "Yes"}
+                                      {:slot/id "no" :slot.picker/copy "No"}]})
+
 (defn quiz-results<
   [products-db skus-db images-db persona-id]
   {:results (->> (case persona-id
@@ -165,7 +245,8 @@
                                      :image/src     (:url thumbnail)
                                      :action/id     (str "result-" (inc idx))
                                      :action/label  "Shop Now"
-                                     :action/target [e/navigate-product-details product]})))))})
+                                     :action/target [e/navigate-product-details {:catalog/product-id (:catalog/product-id product)
+                                                                                 :page/slug          (:page/slug product)}]})))))})
 
 (defn ^:export page
   [state]
@@ -184,6 +265,7 @@
       persona-id
       (c/build results-template
                (merge
+                (quiz-feedback< state)
                 (quiz-results< products-db
                                skus-db
                                images-db
@@ -253,3 +335,33 @@
   (let [persona-id (keyword persona)]
     (when (contains? #{:p1 :p2 :p3 :p4} persona-id)
       (publish e/persona|selected {:persona/id persona-id}))))
+
+(defmethod t/transition-state e/control-quiz-results-feedback
+  [_ _event {:keys [] :as _args} state]
+  (-> state
+      (assoc-in submitted-keypath _args)))
+
+(defmethod t/transition-state e/biz|quiz-feedback|question-answered
+  [_ _event {:keys [id] :as _args} state]
+  (-> state
+      (assoc-in answer-keypath id)))
+
+(defmethod t/transition-state e/biz|quiz-explanation|explained
+  [_ _event {:keys [explanation] :as _args} state]
+  (-> state
+      (assoc-in explanation-keypath explanation)))
+
+(defmethod t/transition-state e/control-quiz-results-feedback
+  [_ _event {:keys [explanation] :as _args} state]
+  (-> state
+      (assoc-in hide-keypath true)))
+
+#?(:cljs
+   (defmethod tr/perform-track e/control-quiz-results-feedback
+     [_ event _ app-state]
+     (stringer/track-event "quiz_results_feedback_form"
+                           {:quiz-helpful?    (get-in app-state answer-keypath)
+                            :quiz-explanation (get-in app-state explanation-keypath)
+                            :store-slug       (get-in app-state k/store-slug)
+                            :test-variations  (get-in app-state k/features)
+                            :store-experience (get-in app-state k/store-experience)})))
