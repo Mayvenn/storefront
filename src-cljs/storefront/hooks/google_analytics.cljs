@@ -32,6 +32,8 @@
   ;; NOTE: We are ignoring discounts here
   ;; TODO: We should probably minus the discount out of the value.
   (let [value (reduce + 0 (map :sku/price line-item-skuers))]
+    (when (not= "us" (:country user-ecd))
+      (throw (ex-info (str "Country code: " (:country user-ecd)) {:country (:country user-ecd)})))
     (track "add_to_cart"
            (merge
             {:items    (mapv mayvenn-line-item->ga4-item line-item-skuers)
