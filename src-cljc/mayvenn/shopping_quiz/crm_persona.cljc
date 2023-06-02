@@ -337,9 +337,9 @@
       (publish e/persona|selected {:persona/id persona-id}))))
 
 (defmethod t/transition-state e/control-quiz-results-feedback
-  [_ _event {:keys [] :as _args} state]
+  [_ _event {:keys [explanation] :as _args} state]
   (-> state
-      (assoc-in submitted-keypath _args)))
+      (assoc-in hide-keypath true)))
 
 (defmethod t/transition-state e/biz|quiz-feedback|question-answered
   [_ _event {:keys [id] :as _args} state]
@@ -350,11 +350,6 @@
   [_ _event {:keys [explanation] :as _args} state]
   (-> state
       (assoc-in explanation-keypath explanation)))
-
-(defmethod t/transition-state e/control-quiz-results-feedback
-  [_ _event {:keys [explanation] :as _args} state]
-  (-> state
-      (assoc-in hide-keypath true)))
 
 #?(:cljs
    (defmethod tr/perform-track e/control-quiz-results-feedback
