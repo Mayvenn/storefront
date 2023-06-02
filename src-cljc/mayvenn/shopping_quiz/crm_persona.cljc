@@ -30,10 +30,8 @@
             [storefront.transitions :as t]))
 
 (def ^:private shopping-quiz-id :crm/persona)
-(def ^:private model-keypath [:models :quiz-feedback])
 (def ^:private answer-keypath [:models :quiz-feedback :answer])
 (def ^:private explanation-keypath [:models :quiz-feedback :explanation])
-(def ^:private submitted-keypath [:models :quiz-feedback :submitted?])
 (def ^:private hide-keypath [:models :quiz-feedback :hide?])
 
 (c/defcomponent result-card
