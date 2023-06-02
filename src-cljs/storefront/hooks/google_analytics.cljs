@@ -31,9 +31,15 @@
   [{:keys [line-item-skuers user-ecd]}]
   ;; NOTE: We are ignoring discounts here
   ;; TODO: We should probably minus the discount out of the value.
-  (let [value (reduce + 0 (map :sku/price line-item-skuers))]
-    (when (not= "us" (:country user-ecd))
-      (throw (ex-info (str "Country code: " (:country user-ecd)) {:country (:country user-ecd)})))
+  (let [value        (reduce + 0 (map :sku/price line-item-skuers))
+        country-root (-> user-ecd :country)
+        country-addr (-> user-ecd :address :country)]
+    ;; Trying to figure out why Meta is complaining about country codes
+    (when (and (seq user-ecd) 
+               (or (not= "us" country-root)
+                   (not= "us" country-addr)))
+      (throw (ex-info (str "Country codes: " country-root " " country-addr) {:country-root country-root
+                                                                             :country-addr country-addr})))
     (track "add_to_cart"
            (merge
             {:items    (mapv mayvenn-line-item->ga4-item line-item-skuers)
