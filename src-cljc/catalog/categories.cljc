@@ -246,35 +246,35 @@
                          "//ucarecdn.com/7837332a-2ca5-40dd-aa0e-86a2417cd723/")
           {:page/title "360 Lace Frontals: Virgin Hair 360 Frontals | Mayvenn"}
           frontals-templates)
-   (merge {:catalog/category-id           "1"
-           :copy/title                    "Frontals"
-           :page/slug                     "virgin-frontals"
-           :seo/title                     "Hair Frontals"
-           :legacy/named-search-slug      "frontals"
-           :menu/hide?                    true
-           :page/icp?                     true
-           :category/description          (copy "Protect your tresses and finish off your style with 100% virgin hair"
+   (merge {:catalog/category-id              "1"
+           :copy/title                       "Frontals"
+           :page/slug                        "virgin-frontals"
+           :seo/title                        "Hair Frontals"
+           :legacy/named-search-slug         "frontals"
+           :menu/hide?                       true
+           :page/icp?                        true
+           :category/description             (copy "Protect your tresses and finish off your style with 100% virgin hair"
                                                 "frontals that blend flawlessly with bundles and your natural hairline."
                                                 "Lace frontals give you the freedom to part your hair in any direction"
                                                 "with gorgeous texture and style.")
-           :catalog/department            #{"hair"}
-           :hair/family                   #{"frontals" "360-frontals"}
-           :hair/color.process            #{"natural" "dyed"}
-           :desktop-menu/title            "Frontals"
-           :desktop-menu/order            3
-           :homepage.ui-v2022-09/order    3
-           :homepage.ui-v2022-09/image-id "aae6c15c-00b3-43d0-be89-f4b9173212dc"
-           :footer/order                  6
-           :footer/title                  "Frontals"
-           :hair/source                   #{"virgin"}
-           :category/tags                 #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
-           :selector/essentials           [:catalog/department :hair/family :hair/color.process :hair/source]
-           :selector/electives            [:hair/origin :hair/texture :hair/color :hair/base-material]
-           :product-list/title            "Shop All Frontals"
-           :subcategories.old/ids         ["29" "10" "47"]
-           :subcategories.old/layout      :list
-           :subcategories/ids             ["29" "10" "47"]
-           :subcategories/layout          :spotlights
+           :catalog/department               #{"hair"}
+           :hair/family                      #{"frontals" "360-frontals"}
+           :hair/color.process               #{"natural" "dyed"}
+           :desktop-menu/title               "Frontals"
+           :desktop-menu/order               3
+           :homepage.ui-v2022-09/order       3
+           :homepage.ui-v2022-09/image-id    "aae6c15c-00b3-43d0-be89-f4b9173212dc"
+           :footer/order                     6
+           :footer/title                     "Frontals"
+           :hair/source                      #{"virgin"}
+           :category/tags                    #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
+           :selector/essentials              [:catalog/department :hair/family :hair/color.process :hair/source]
+           :selector/electives               [:hair/origin :hair/texture :hair/color :hair/base-material]
+           :product-list/title               "Shop All Frontals"
+           :subcategories.old/ids            ["29" "10" "47"]
+           :subcategories.old/layout         :list
+           :subcategories/ids                ["29" "10" "47"]
+           :subcategories/layout             :spotlights
            :subsections/subsection-selectors [#:subsection{:title "Standard Lace Frontals" :selector #:hair{:family #{"frontals"} :base-material #{"lace"}}}
                                               #:subsection{:title "360 frontals" :selector #:hair{:family #{"360-frontals"}}}
                                               #:subsection{:title "HD Lace Frontals" :selector #:hair{:family #{"frontals"} :base-material #{"hd-lace"}}}]
@@ -304,10 +304,11 @@
            :hair/color.process       #{"natural" "dyed"}
            :header/title             "Virgin Frontals"
            :hair/source              #{"virgin"}
+           :hair/base-material       #{"lace"}
            :menu/title               "Virgin Frontals"
            :contentful/faq-id        :category-lace-frontals
            :category/tags            #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
-           :selector/essentials      [:catalog/department :hair/family :hair/color.process :hair/source]
+           :selector/essentials      [:catalog/department :hair/family :hair/base-material]
            :selector/electives       [:hair/origin :hair/texture :hair/color]
            :subcategory/image-id     "47e29e97-821e-4c20-aeac-35eadc1a653d"
            :subcategory/description  "Our 13x4 inch virgin lace frontals stretch from ear-to-ear for a look that can be parted in any direction."
