@@ -734,6 +734,7 @@
            :hair/family         #{"ready-wigs"}
            :selector/essentials [:hair/family :catalog/department]
            :selector/electives  [:hair/texture :wig/trait]
+           :selector/dimensions [:hair/color :hair/texture :wig/trait]
 
            :page/title-template            [:computed/selected-facet-string " Wigs: " :computed/selected-facet-string " " :seo/title " | Mayvenn"]
            :page.meta/description-template ["Mayvenn’s "
@@ -1315,7 +1316,7 @@
     :subcategories.old/layout :list
     :subcategories/ids    ["29" "10"]
     :subcategories/layout :spotlights
-    
+
     :subsections/subsection-selectors [{:subsection/title    "Lace Front Wigs"
                                         :subsection/selector {:hair/family #{"lace-front-wigs"}}}
                                        {:subsection/title    "360 Wigs"
