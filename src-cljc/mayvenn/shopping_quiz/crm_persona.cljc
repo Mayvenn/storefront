@@ -135,20 +135,37 @@
 
 (defn quiz-results<
   [products-db skus-db images-db persona-id]
-  (let [results [{:catalog/product-id "120"}
-                 {:catalog/product-id "236"}
-                 {:catalog/product-id "9"}
-                 {:catalog/product-id "353"}]]
-    {:results (map-indexed (fn [idx result]
-                             (when (seq (:catalog/product-id result))
-                               (let [product   (get products-db (:catalog/product-id result))
-                                     thumbnail (product-image images-db product)]
-                                 {:title/secondary (:copy/title product)
-                                  :image/src     (:url thumbnail)
-                                  :action/id     (str "result-" (inc idx))
-                                  :action/label  "Shop Now"
-                                  :action/target [e/navigate-product-details product]})))
-                           results)}))
+  {:results (->> (case persona-id
+                   :p1 [{:catalog/product-id "120"}
+                        {:catalog/product-id "236"}
+                        {:catalog/product-id "9"}
+                        {:catalog/product-id "353"}]
+                   :p2 [{:catalog/product-id "335"}
+                        {:catalog/product-id "354"}
+                        {:catalog/product-id "268"}
+                        {:catalog/product-id "249"}]
+                   :p3 [{:catalog/product-id "352"}
+                        {:catalog/product-id "354"}
+                        {:catalog/product-id "235"}
+                        {:catalog/product-id "313"}]
+                   :p4 [{:catalog/product-id "354"}
+                        {:catalog/product-id "128"}
+                        {:catalog/product-id "252"}
+                        {:catalog/product-id "15"}]
+                     ;; default is p1
+                   [{:catalog/product-id "120"}
+                    {:catalog/product-id "236"}
+                    {:catalog/product-id "9"}
+                    {:catalog/product-id "353"}])
+                 (map-indexed (fn [idx result]
+                                (when (seq (:catalog/product-id result))
+                                  (let [product   (get products-db (:catalog/product-id result))
+                                        thumbnail (product-image images-db product)]
+                                    {:title/secondary (:copy/title product)
+                                     :image/src     (:url thumbnail)
+                                     :action/id     (str "result-" (inc idx))
+                                     :action/label  "Shop Now"
+                                     :action/target [e/navigate-product-details product]})))))})
 
 (defn ^:export page
   [state]
