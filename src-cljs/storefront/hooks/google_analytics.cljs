@@ -63,11 +63,12 @@
 
 (defn track-view-items
   [skuers]
-  (let [ga4-items (map mayvenn-line-item->ga4-item skuers)]
-    (track "view_item" {:currency "USD"
-                        :value    (reduce (fn [acc {:keys [price quantity]}] 
-                                            (+ acc (* quantity price))) 0 ga4-items)
-                        :items    ga4-items})))
+  (when (seq skuers)
+    (let [ga4-items (map mayvenn-line-item->ga4-item skuers)]
+      (track "view_item" {:currency "USD"
+                          :value    (reduce (fn [acc {:keys [price quantity]}] 
+                                              (+ acc (* quantity price))) 0 ga4-items)
+                          :items    ga4-items}))))
 
 (defn track-select-promotion
   [{:keys [promotion]}]
