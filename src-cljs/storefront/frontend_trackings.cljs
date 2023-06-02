@@ -100,22 +100,6 @@
            (select-keys % [:hair/color :hair/length]))
    selections))
 
-(defn ^:private product-selections->skus
-  [availability product-selections]
-  (mapv
-   (fn [{:hair/keys [color length]}]
-     (get-in availability [color length]))
-   product-selections))
-
-(defn ^:private ->data-event-format
-  [selections availability]
-  (let [product-selections (selections->product-selections selections)]
-    {:products           (->> product-selections
-                              (product-selections->skus availability)
-                              (mapv sku->data-sku-reference)
-                              (map #(when (seq %) %)))
-     :product-selections product-selections}))
-
 (defmethod perform-track events/control-product-detail-picker-option-select
   [_ event {:keys [selection value] :as options} app-state]
   (track-select-bundle-option selection value))
@@ -526,3 +510,7 @@
 (defmethod perform-track events/external-redirect-instagram-profile
   [_ _ {:keys [ig-username]} _]
   (stringer/track-event "stylist_instagram_link-clicked" {:instagram-username ig-username}))
+
+(defmethod perform-track events/look|viewed
+  [_ _ {:keys [skus]} _]
+  (google-analytics/track-view-items skus))

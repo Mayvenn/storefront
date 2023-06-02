@@ -1184,7 +1184,7 @@
                              (get-in app-state)
                              (products/extract-product-skus app-state)
                              first))]
-       (google-analytics/track-view-item sku))))
+       (google-analytics/track-view-items [sku]))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/api-success-v3-products-for-details

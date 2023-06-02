@@ -61,11 +61,13 @@
                                   :coupon         (->> used-promotion-codes (string/join " ") not-empty)}
                                  user-ecd)))
 
-(defn track-view-item
-  [sku]
-  (track "view_item" {:currency "USD"
-                      :value    (:sku/price sku)
-                      :items    [(mayvenn-line-item->ga4-item sku)]}))
+(defn track-view-items
+  [skuers]
+  (let [ga4-items (map mayvenn-line-item->ga4-item skuers)]
+    (track "view_item" {:currency "USD"
+                        :value    (reduce (fn [acc {:keys [price quantity]}] 
+                                            (+ acc (* quantity price))) 0 ga4-items)
+                        :items    ga4-items})))
 
 (defn track-select-promotion
   [{:keys [promotion]}]
@@ -103,13 +105,15 @@
                                                          :sha256_phone_number  (sha256< (f/e164-phone phone))
 
                                                          ;; Meta
-                                                         :phone                (f/e164-phone phone) ;; Meta requires
+                                                         :phone                (f/e164-phone phone)
                                                          :first_name           first-name
                                                          :last_name            last-name
                                                          :city                 city 
                                                          :state                state
-                                                         :zip                  zipcode ; Meta
-                                                         :country              "us" ; Meta
+                                                         :zip                  zipcode
+                                                         :country              "us"
+                                                        ;; :fbc                  (spice.core/spy (.get (get-in app-state k/cookie) "_fbc"))
+                                                        ;; :fbp                  (spice.core/spy (.get (get-in app-state k/cookie) "_fbp"))
 
                                                          :address              {:sha256_first_name (sha256< first-name)
                                                                                 :sha256_last_name  (sha256< last-name)

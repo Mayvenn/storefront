@@ -142,7 +142,7 @@
 
 (defn ^:private sku->data-sku-reference
   [s]
-  (select-keys s [:catalog/sku-id :legacy/variant-id]) )
+  (select-keys s [:catalog/sku-id :legacy/variant-id]))
 ;; Initialization
 (defn- generate-product-options
   [skus-db images-db facets product]
@@ -291,6 +291,16 @@
                              (get-in app-state catalog.keypaths/detailed-look-availability)
                              (get-in app-state catalog.keypaths/detailed-look-services))))))
 
+#?(:cljs
+   (defmethod effects/perform-effects events/initialize-look-details
+     [_ event _ _ app-state]
+     (let [skus-matching-selections (->> (get-in app-state catalog.keypaths/detailed-look-selections)
+                                         selections->product-selections
+                                         (product-selections->skus (get-in app-state catalog.keypaths/detailed-look-availability))
+                                         (filter (complement nil?)))]
+       (when (seq skus-matching-selections)
+         (messages/handle-later events/look|viewed {:skus skus-matching-selections})))))
+
 ;; END Initialization
 
 (defn ^:private add-to-cart-button
@@ -335,8 +345,8 @@
   (constructor [this]
     (set! (.-show-more this)
           (.bind
-          #(component/set-state! this :show-more?
-                                  (not (:show-more? (component/get-state this))))))
+           #(component/set-state! this :show-more?
+                                   (not (:show-more? (component/get-state this))))))
     {:show-more?   false
      :truncatable? false})
   (did-mount [this]
@@ -356,20 +366,20 @@
                                                                                :overflow           "hidden"
                                                                                :-webkit-line-clamp 3}}
                                                        :cta/label     "Read More"}))]
-      (component/html
-        (if-not (string/blank? secondary)
-          [:div.mt1
-           [:div.content-4.proxima.gray-700
-            (merge {:ref "caption"}
-                   caption-attrs)
-            secondary]
-           (when cta-id
-             (ui/button-small-underline-primary
-              {:href     nil
-               :on-click #?(:cljs (.-show-more this)
-                            :clj identity)}
-              cta-label))]
-          [:div {:ref "caption"}])))))
+           (component/html
+             (if-not (string/blank? secondary)
+               [:div.mt1
+                [:div.content-4.proxima.gray-700
+                 (merge {:ref "caption"}
+                        caption-attrs)
+                 secondary]
+                (when cta-id
+                  (ui/button-small-underline-primary
+                   {:href     nil
+                    :on-click #?(:cljs (.-show-more this)
+                                 :clj identity)}
+                   cta-label))]
+               [:div {:ref "caption"}])))))
 
 (component/defcomponent ^:private look-card
   [{:look-card/keys [primary] :as queried-data} _ _]
@@ -815,8 +825,14 @@
                         vec))))))
 
 (defmethod effects/perform-effects events/control-look-detail-picker-option-select
-  [_ event _ _ _]
-  #?(:cljs (messages/handle-message events/control-look-detail-picker-close)))
+  [_ event _ _ app-state]
+  #?(:cljs 
+     (let [skus-matching-selections (->> (get-in app-state catalog.keypaths/detailed-look-selections)
+                                         selections->product-selections
+                                         (product-selections->skus (get-in app-state catalog.keypaths/detailed-look-availability))
+                                         (filter (complement nil?)))]
+       (messages/handle-message events/control-look-detail-picker-close)
+       (messages/handle-message events/look|viewed {:skus skus-matching-selections}))))
 
 (defmethod transitions/transition-state events/control-look-detail-picker-open
   [_ event {:keys [picker-id]} app-state]

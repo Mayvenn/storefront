@@ -287,6 +287,7 @@
 (defpath control-look-detail-picker-close)
 
 (defpath initialize-look-details)
+(defpath look|viewed)
 
 (defpath video-played)
 
