@@ -351,6 +351,7 @@
            :hair/family                   #{"bundles"}
            :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source :hair/family]
            :selector/electives            [:hair/origin :hair/color],
+           :selector/dimensions           [:hair/origin :hair/color],
            :category/description          (copy "For those who want it given to them"
                                                 "straight, our collection of 100% virgin straight hair bundles"
                                                 "is your go-to for a sleek look with"
@@ -453,6 +454,7 @@
            :hair/family                   #{"bundles"}
            :selector/essentials           [:catalog/department :hair/color.process :hair/family :hair/source :hair/texture]
            :selector/electives            [:hair/origin :hair/color]
+           :selector/dimensions           [:hair/origin :hair/color]
            :content-block/type            :about-attributes
            :content-block/title           "Hair Bundles 101:"
            :content-block/header          "How to Style"
@@ -486,6 +488,7 @@
            :hair/family                   #{"bundles"}
            :selector/essentials           [:catalog/department :hair/color.process :hair/family :hair/source :hair/texture]
            :selector/electives            [:hair/origin :hair/color]
+           :selector/dimensions           [:hair/origin :hair/color]
            :content-block/type            :about-attributes
            :content-block/title           "Hair Bundles 101:"
            :content-block/header          "How to Style"
@@ -559,6 +562,7 @@
            :hair/family                   #{"bundles"}
            :selector/essentials           [:catalog/department :hair/color.process :hair/family :hair/source :hair/texture]
            :selector/electives            [:hair/origin :hair/color]
+           :selector/dimensions           [:hair/origin :hair/color]
            :category/description          (copy "Reigning supreme in versatility, the Deep Wave hair bundle collection features"
                                                 "a soft, spiral wave full of body and bounce. Our deep wave hair is perfect"
                                                 "for those who want big waves that make an even bigger splash.")
