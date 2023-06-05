@@ -163,12 +163,12 @@
            drill-category-list] :as queried-data} _ _]
   [:div
    (component/build category-hero/organism category-hero)
-   
+
    (when-let [data (:spotlights queried-data)]
      [:div.pt5
       (component/build spotlighting/organism {:spotlights data} {})])
-   
-   [:div.mx-auto 
+
+   [:div.mx-auto
     (component/build drill-category-list-organism drill-category-list)
     (component/build drill-category-grid-organism drill-category-grid)]
    [:div.py5
@@ -263,7 +263,7 @@
                         :navigation-args                (select-keys interstitial-category [:catalog/category-id :page/slug])
                         :child-component-data           {:product-card-listing (product-card-listing/query state
                                                                                                            interstitial-category
-                                                                                                           category-products-matching-criteria)}})
+                                                                                                           (if splay? card-skuers category-products-matching-criteria))}})
                       (case (:subcategories/layout interstitial-category)
                         :spotlights ;; Note: this might be the only layout we still use.
                         {:spotlights (map (fn [{:keys [:subcategory/image-id
@@ -280,7 +280,6 @@
                                                          {:page/slug           slug
                                                           :catalog/category-id category-id}]})
                                           subcategories)}
-                        
                         :grid
                         {:drill-category-grid {:drill-category-grid/values (mapv category->drill-category-grid-entry subcategories)
                                                :drill-category-grid/title  (:subcategories/title interstitial-category)}}
