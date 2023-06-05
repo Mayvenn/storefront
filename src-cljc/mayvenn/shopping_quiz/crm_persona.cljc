@@ -326,7 +326,7 @@
                                       (when (:content/id contentful-look)
                                         {:title/secondary (:title contentful-look)
                                          :target          [e/control-quiz-shop-now-look {:look-id       (:content/id contentful-look)
-                                                                                         :album-keyword :aladdin-free-install}]
+                                                                                         :album-keyword :look}]
                                          :image/src       (:photo-url contentful-look)
                                          :action/id       (str "result-" (inc idx))
                                          :action/label    "Shop Now"})))))))})
