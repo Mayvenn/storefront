@@ -273,7 +273,6 @@
            :category/tags                    #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
            :selector/essentials              [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives               [:hair/origin :hair/texture :hair/color :hair/base-material]
-           :selector/dimensions              [:hair/origin :hair/texture :hair/color :hair/base-material]
            :product-list/title               "Shop All Frontals"
            :subcategories.old/ids            ["29" "10" "47"]
            :subcategories.old/layout         :list
