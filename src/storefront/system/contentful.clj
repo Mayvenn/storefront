@@ -220,7 +220,7 @@
        (if (and status (<= 200 status 299))
          (swap! cache merge
                 (cond
-                  (contains? #{:mayvennMadePage :advertisedPromo} content-type)
+                  (contains? #{:mayvennMadePage :advertisedPromo :phoneConsultCta} content-type)
                   (some-> body extract resolve-all walk/keywordize-keys (select-keys [content-type]))
 
                   (= :ugc-collection content-type)
@@ -283,6 +283,8 @@
                                     :select         ["fields.faqSection"
                                                      "fields.questionsAnswers"]}
                                    {:content-type :advertisedPromo
+                                    :latest?      true}
+                                   {:content-type :phoneConsultCta
                                     :latest?      true}
                                    {:content-type   :ugc-collection
                                     :exists         ["fields.slug"]

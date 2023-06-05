@@ -407,7 +407,7 @@
                 (is (string/includes? (:body response) "Something nice here"))))))))))
 
 (def contentful-content-types
-  [:faq :advertisedPromo :ugc-collection])
+  [:faq :advertisedPromo :ugc-collection :phoneConsultCta])
 
 (deftest fetches-data-from-contentful
   (testing "transforming content"

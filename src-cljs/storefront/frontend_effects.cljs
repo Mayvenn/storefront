@@ -315,6 +315,7 @@
   (effects/fetch-cms2 app-state [:homepage :classic])
   (effects/fetch-cms2 app-state [:homepage :omni])
   (doseq [keypath [[:advertisedPromo]
+                   [:phoneConsultCta]
                    [:ugc-collection :free-install-mayvenn]
                    [:faq :free-mayvenn-services]]]
     (effects/fetch-cms-keypath app-state keypath)))

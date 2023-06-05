@@ -13,6 +13,7 @@
 (def cms-advertised-promo (conj cms :advertisedPromo))
 (def cms-advertised-promo-text (conj cms-advertised-promo :advertised-text))
 (def cms-advertised-promo-uri (conj cms-advertised-promo :uri))
+(def cms-phone-consult-cta (conj cms :phoneConsultCta))
 (def cms-landing-page (conj cms :landingPage))
 (def cms-landing-page-v2 (conj cms :landingPageV2))
 (def cms-retail-location (conj cms :retailLocation))
