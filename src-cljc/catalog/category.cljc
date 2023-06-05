@@ -96,12 +96,12 @@
 
 (defn page
   [app-state _]
-  (let [category                            (accessors.categories/current-category app-state) 
+  (let [category                            (accessors.categories/current-category app-state)
         color-facet                         (:hair/color (catalog.facets/by-slug app-state))
         experiment-color-shorthand?         (experiments/color-shorthand? app-state)
         facet-filtering-state               (merge (get-in app-state catalog.keypaths/k-models-facet-filtering)
                                                    {:facet-filtering/item-label "item"})
-        facet-filtering-expanded-state      (cond-> facet-filtering-state 
+        facet-filtering-expanded-state      (cond-> facet-filtering-state
                                               experiment-color-shorthand?
                                               (update :facet-filtering/filters catalog.facets/expand-shorthand-colors)
                                               (->> category :selector/electives (filter (partial = :style.color/features)) seq)
@@ -118,7 +118,7 @@
                                                           (skuers/electives< category)
                                                           (skuers/essentials< category))))
         category-skus-matching-criteria     (select selections category-skus)
-        category-products-matching-criteria (select selections loaded-category-products) 
+        category-products-matching-criteria (select selections loaded-category-products)
         dimensions                          (:selector/dimensions category)
         category-skuers                     (skuers/skus->skuers dimensions
                                                                  category-skus
@@ -126,7 +126,6 @@
         card-skuers                         (skuers/skus->skuers dimensions
                                                                  category-skus-matching-criteria
                                                                  category-products-matching-criteria)
-
         shop?                               (or (= "shop" (get-in app-state k/store-slug))
                                                 (= "retail-location" (get-in app-state k/store-experience)))
         faq                                 (get-in app-state (conj storefront.keypaths/cms-faq (:contentful/faq-id category)))

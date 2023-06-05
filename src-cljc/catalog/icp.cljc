@@ -195,53 +195,64 @@
 (defn page
   [state _]
   (let [interstitial-category               (accessors.categories/current-category state)
-
         facet-filtering-state               (assoc (get-in state catalog.keypaths/k-models-facet-filtering)
-                                                   :facet-filtering/item-label "item") 
-        facet-filtering-expanded-state      (update facet-filtering-state 
-                                                    :facet-filtering/filters 
+                                                   :facet-filtering/item-label "item")
+        facet-filtering-expanded-state      (update facet-filtering-state
+                                                    :facet-filtering/filters
                                                     catalog.facets/expand-shorthand-colors)
-        selections                          (:facet-filtering/filters facet-filtering-expanded-state)
         loaded-category-products            (->> (get-in state keypaths/v2-products)
+                                                 vals
+                                                 (select (merge
+                                                          (skuers/electives< interstitial-category)
+                                                          (skuers/essentials< interstitial-category))))
+        selections                          (:facet-filtering/filters facet-filtering-expanded-state)
+        category-skus                       (->> (get-in state keypaths/v2-skus)
                                                  vals
                                                  (select (merge
                                                           (skuers/electives< interstitial-category)
                                                           (skuers/essentials< interstitial-category))))
         categories                          (get-in state keypaths/categories)
         subcategories                       (category->subcategories categories (:subcategories/ids interstitial-category))
-        spotlight-subcategories             (map #(accessors.categories/id->category % categories)
-                                                 (:spotlighting/category-ids interstitial-category))
+        category-skus-matching-criteria     (select selections category-skus)
         category-products-matching-criteria (->> loaded-category-products
                                                  (select (merge
                                                           (skuers/essentials< interstitial-category)
                                                           selections)))
+        dimensions                          (:selector/dimensions interstitial-category)
+        category-skuers                     (skuers/skus->skuers dimensions
+                                                                 category-skus
+                                                                 loaded-category-products)
+        card-skuers                         (skuers/skus->skuers dimensions
+                                                                 category-skus-matching-criteria
+                                                                 category-products-matching-criteria)
         shop?                               (or (= "shop" (get-in state keypaths/store-slug))
                                                 (= "retail-location" (get-in state keypaths/store-experience)))
         faq                                 (get-in state (conj keypaths/cms-faq (:contentful/faq-id interstitial-category)))
+        splay?                              (-> dimensions seq boolean)
         experiment-color-shorthand?         (experiments/color-shorthand? state)]
     (component/build template
                      (merge
                       (when-let [filter-title (:product-list/title interstitial-category)]
                         {:title filter-title})
-                      {:category-hero          (category-hero-query interstitial-category)
-                       :content-box            (when (and shop? (:content-block/type interstitial-category))
-                                                 {:title    (:content-block/title interstitial-category)
-                                                  :header   (:content-block/header interstitial-category)
-                                                  :summary  (:content-block/summary interstitial-category)
-                                                  :sections (:content-block/sections interstitial-category)})
-                       :expanding-content-box  (when (and shop? faq)
-                                                 (let [{:keys [question-answers]} faq]
-                                                   {:faq/expanded-index (get-in state keypaths/faq-expanded-section)
-                                                    :list/sections      (for [{:keys [question answer]} question-answers]
-                                                                          {:faq/title   (:text question)
-                                                                           :faq/content answer})}))
-                       :product-card-listing   (product-card-listing/query state
-                                                                           interstitial-category
-                                                                           category-products-matching-criteria)}
+                      {:category-hero         (category-hero-query interstitial-category)
+                       :content-box           (when (and shop? (:content-block/type interstitial-category))
+                                                {:title    (:content-block/title interstitial-category)
+                                                 :header   (:content-block/header interstitial-category)
+                                                 :summary  (:content-block/summary interstitial-category)
+                                                 :sections (:content-block/sections interstitial-category)})
+                       :expanding-content-box (when (and shop? faq)
+                                                (let [{:keys [question-answers]} faq]
+                                                  {:faq/expanded-index (get-in state keypaths/faq-expanded-section)
+                                                   :list/sections      (for [{:keys [question answer]} question-answers]
+                                                                         {:faq/title   (:text question)
+                                                                          :faq/content answer})}))
+                       :product-card-listing  (product-card-listing/query state
+                                                                          interstitial-category
+                                                                          (if splay? card-skuers category-products-matching-criteria))}
 
                       (facet-filters/filters<-
                        {:facets-db                      (get-in state storefront.keypaths/v2-facets)
-                        :faceted-models                 loaded-category-products
+                        :faceted-models                 (if splay? category-skuers loaded-category-products)
                         :facet-filtering-state          facet-filtering-state
                         :experiment-color-shorthand?    experiment-color-shorthand?
                         :facet-filtering-expanded-state (if experiment-color-shorthand?
