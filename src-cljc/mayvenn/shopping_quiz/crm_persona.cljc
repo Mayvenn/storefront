@@ -34,20 +34,38 @@
 (def ^:private explanation-keypath [:models :quiz-feedback :explanation])
 (def ^:private hide-keypath [:models :quiz-feedback :hide?])
 
+(defn shop-now
+  [{:keys [id label]}]
+  (when id
+    [:div.p-color.title-3.shout.bold.underline.proxima
+     label]))
+
 (c/defcomponent result-card
-  [data _ _]
-  [:div.bg-white.block
-   [:div
-    {:style {:aspect-ratio "3 / 4"
-             :overflow "hidden"}}
-    (ui/img (merge {:max-size   200
-                    :style {:object-fit "cover"}
-                    :class "container-size contents"}
-                   (with :image data)))]
-   [:div.p2.flex.flex-column.justify-between
-    {:style {:height "100px"}}
-    (titles/proxima-content (with :title data))
-    (actions/small-tertiary (with :action data))]])
+  [{:keys [target] :as data} _ _]
+  (if target
+    [:a.bg-white.block.pointer
+     {:on-click (apply utils/send-event-callback target)}
+     [:div
+      {:style {:aspect-ratio "3 / 4"
+               :overflow "hidden"}}
+      (ui/img (merge {:max-size   200
+                      :style {:object-fit "cover"}
+                      :class "container-size contents"}
+                     (with :image data)))]
+     [:div.p2.flex.flex-column.justify-between
+      {:style {:height "100px"}}
+      (titles/proxima-content (with :title data))
+      (shop-now (with :action data))]]
+    [:div
+     ;; CONTENT SHIFT
+     [:div.bg-warm-gray.flex.align-middle
+      {:style {:aspect-ratio "3 / 4"
+               :heigh "100vh"
+               :overflow "hidden"}}
+      ui/spinner]
+     [:div.bg-white.flex.align-middle
+      {:style {:height "100px"}}
+      ui/spinner]]))
 
 (c/defcomponent feedback-radio
   [{:keys [radio-name primary answer slots]} _ _]
@@ -87,32 +105,44 @@
 
 (c/defcomponent quiz-feedback
   [{:keys [id disabled? target label primary] :as data} _ _]
-  (if id
-    [:form.p2
-     (c/build feedback-radio (with :radio data))
-     (c/build feedback-explanation (with :explanation data))
-     [:div.flex
-      (ui/button-small-primary
-       (merge {:data-test id}
-              (when disabled? {:disabled? disabled?})
-              (apply utils/route-to target))
-       label)]]
-    [:div.p2
-     [:div.bg-s-color.border.border-s-color
-      [:div.bg-lighten-4.p2
-       primary]]]))
+  [:div.py4
+   (if id
+     [:form
+      (c/build feedback-radio (with :radio data))
+      (c/build feedback-explanation (with :explanation data))
+      [:div.flex
+       (ui/button-small-primary
+        (merge {:data-test id}
+               (when disabled? {:disabled? disabled?})
+               (apply utils/route-to target))
+        label)]]
+     [:div
+      [:div.bg-s-color.border.border-s-color
+       [:div.bg-lighten-4.p2
+        primary]]])])
+
+(c/defcomponent results-profile-content
+  [{:keys [primary secondary tertiary quaternary]} _ _]
+  [:div
+   [:div.proxima.title-1 primary]
+   [:div.py4
+    [:div.proxima.title-2 secondary]
+    [:div.pt2 tertiary]]
+   [:div.proxima.title-2.pb2 quaternary]])
 
 (c/defcomponent results-template
   [data _ _]
   [:div.bg-refresh-gray
    [:div.col-12.bg-white
     (c/build header/nav-header-component (with :header data))]
-   [:div.grid.grid-cols-2.gap-5.p2
-    {:style {:align-items "stretch"}}
-    (c/elements result-card
-                data
-                :results)]
-   (c/build quiz-feedback (with :feedback data))])
+   [:div.p4
+    (c/build results-profile-content (with :results.content data))
+    [:div.grid.grid-cols-2.gap-5
+     {:style {:align-items "stretch"}}
+     (c/elements result-card
+                 data
+                 :results)]
+    (c/build quiz-feedback (with :feedback data))]])
 
 (c/defcomponent questioning-template
   [{:keys [header progress questions see-results]} _ _]
@@ -211,6 +241,32 @@
    :feedback.radio/slots             [{:slot/id "yes" :slot.picker/copy "Yes"}
                                       {:slot/id "no" :slot.picker/copy "No"}]})
 
+(defn quiz-results-content<
+  [persona-id]
+  (within :results.content
+          (case persona-id
+            :p1 {:primary    "Your Personalized Hair Profile"
+                 :secondary  "Serving Signature Styles"
+                 :tertiary   "You know what you want, and why you want it - and your hairstyle is no different. You’re looking for your everyday, go-to look. You need something that is functional, super cute, and serves a look without breaking the bank. Your signature style awaits."
+                 :quaternary "We think you'll love these looks:"}
+            :p2 {:primary    "Your Personalized Hair Profile"
+                 :secondary  "Keeping it Classic"
+                 :tertiary   "Classic, timeless, chic - you’re all of the above. Making sure your look is on point is important to you, so it’s only fair that all the quality and info you deserve is ready and available. Whether you’re sticking to your tried and true texture or ready to branch out, rest assured that we’ve got you covered."
+                 :quaternary "We think you'll love these Ready to Wear wigs:"}
+            :p3 {:primary    "Your Personalized Hair Profile"
+                 :secondary  "Alter Your Ego"
+                 :tertiary   "You’re her, and her…and her, too. The bottom line is this - you can do it all! You’re ready for a switch-up at any given moment, and your look needs to understand the assignment. Whether it’s the latest color trend or a brand-new product moment, you’re ready for the spotlight."
+                 :quaternary "We think you'll love these Ready to Wear wigs:"}
+            :p4 {:primary    "Your Personalized Hair Profile"
+                 :secondary  "I Need All The Inspo"
+                 :tertiary   "No matter the occasion, you deserve to feel like your best self. Whether you’re planning a vacay, date night, or saying “I do”, we’ve got a look for you. Need a little extra inspiration? Never fear - we’ll show you all the best ways to wear your next favorite style IRL."
+                 :quaternary "We think you'll love these Ready to Wear wigs:"}
+            ;; default is p1
+            {:primary    "Your Personalized Hair Profile"
+             :secondary  "Serving Signature Styles"
+             :tertiary   "You know what you want, and why you want it - and your hairstyle is no different. You're looking for your everyday, go-to look. You need something that is functional, super cute, and serves a look without breaking the bank. Your signature style awaits."
+             :quaternary "We think you'll love these looks:"})))
+
 (defn quiz-results<
   [products-db skus-db images-db persona-id]
   {:results (->> (case persona-id
@@ -239,12 +295,14 @@
                                 (when (seq (:catalog/product-id result))
                                   (let [product   (get products-db (:catalog/product-id result))
                                         thumbnail (product-image images-db product)]
-                                    {:title/secondary (:copy/title product)
-                                     :image/src     (:url thumbnail)
-                                     :action/id     (str "result-" (inc idx))
-                                     :action/label  "Shop Now"
-                                     :action/target [e/navigate-product-details {:catalog/product-id (:catalog/product-id product)
-                                                                                 :page/slug          (:page/slug product)}]})))))})
+                                      (merge {:idx idx}
+                                             (when product
+                                               {:title/secondary (:copy/title product)
+                                                :target [e/control-quiz-shop-now {:catalog/product-id (:catalog/product-id product)
+                                                                                     :page/slug          (:page/slug product)}]
+                                                :image/src     (:url thumbnail)
+                                                :action/id     (str "result-" (inc idx))
+                                                :action/label  "Shop Now"})))))))})
 
 (defn ^:export page
   [state]
@@ -263,6 +321,7 @@
       persona-id
       (c/build results-template
                (merge
+                (quiz-results-content< persona-id)
                 (quiz-feedback< state)
                 (quiz-results< products-db
                                skus-db
@@ -333,6 +392,10 @@
   (let [persona-id (keyword persona)]
     (when (contains? #{:p1 :p2 :p3 :p4} persona-id)
       (publish e/persona|selected {:persona/id persona-id}))))
+
+(defmethod fx/perform-effects e/control-quiz-shop-now
+  [_ _ args _ state]
+  #?(:cljs (history/enqueue-redirect e/navigate-product-details args)))
 
 (defmethod t/transition-state e/control-quiz-results-feedback
   [_ _event {:keys [explanation] :as _args} state]
