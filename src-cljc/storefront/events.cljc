@@ -768,7 +768,8 @@
 (defpath control-landing-page-email-submit)
 (defpath control-quiz-email-submit)
 (defpath control-quiz-email-skip)
-(defpath control-quiz-shop-now)
+(defpath control-quiz-shop-now-product)
+(defpath control-quiz-shop-now-look)
 
 (defpath biz|quiz-feedback|question-answered)
 (defpath biz|quiz-explanation|explained)

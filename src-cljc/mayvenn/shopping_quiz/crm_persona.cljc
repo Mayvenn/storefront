@@ -58,12 +58,12 @@
       (shop-now (with :action data))]]
     [:div
      ;; CONTENT SHIFT
-     [:div.bg-warm-gray.flex.align-middle
+     [:div.bg-warm-gray.flex.flex-column.justify-center
       {:style {:aspect-ratio "3 / 4"
                :heigh "100vh"
                :overflow "hidden"}}
       ui/spinner]
-     [:div.bg-white.flex.align-middle
+     [:div.bg-white.flex.flex-column.justify-center
       {:style {:height "100px"}}
       ui/spinner]]))
 
@@ -268,48 +268,75 @@
              :quaternary "We think you'll love these looks:"})))
 
 (defn quiz-results<
-  [products-db skus-db images-db persona-id]
+  [products-db skus-db images-db looks-db persona-id]
   {:results (->> (case persona-id
-                   :p1 [{:catalog/product-id "120"}
-                        {:catalog/product-id "236"}
-                        {:catalog/product-id "9"}
-                        {:catalog/product-id "353"}]
-                   :p2 [{:catalog/product-id "335"}
-                        {:catalog/product-id "354"}
-                        {:catalog/product-id "268"}
-                        {:catalog/product-id "249"}]
-                   :p3 [{:catalog/product-id "352"}
-                        {:catalog/product-id "354"}
-                        {:catalog/product-id "235"}
-                        {:catalog/product-id "313"}]
-                   :p4 [{:catalog/product-id "354"}
-                        {:catalog/product-id "128"}
-                        {:catalog/product-id "252"}
-                        {:catalog/product-id "15"}]
-                     ;; default is p1
-                   [{:catalog/product-id "120"}
-                    {:catalog/product-id "236"}
-                    {:catalog/product-id "9"}
-                    {:catalog/product-id "353"}])
+                   :p1 [{:catalog/product-id "120"
+                         :catalog/sku-id     "WIG-BOB-SCP-10-1B"}
+                        {:catalog/product-id "236"
+                         :catalog/sku-id     "BNSHBW16"}
+                        {:look/id "5bg4Gcijd9AEI1lUp6PPOd"}
+                        {:catalog/product-id "353"
+                         :catalog/sku-id     "WIG-BOB-CTL-12-1B"}]
+                   :p2 [{:catalog/product-id "335"
+                         :catalog/sku-id     "BYSHDLFW16"}
+                        {:catalog/product-id "354"
+                         :catalog/sku-id     "CLIP-S-B-4-6-20-180"}
+                        {:look/id "4EUTW0z7cQzUPOoDSRQTFT"}
+                        {:catalog/product-id "249"
+                         :catalog/sku-id     "BLWHDLFW20"}]
+                   :p3 [{:catalog/product-id "352"
+                         :catalog/sku-id     "WIG-BOB-SCP-14-HL1B27"}
+                        {:catalog/product-id "354"
+                         :catalog/sku-id     "CLIP-S-H-4-8-20-180"}
+                        {:catalog/product-id "235"
+                         :catalog/sku-id     "ILWBLFW20"}
+                        {:look/id "1VxWKFdouTl7jRCzTktnLs"}]
+                   :p4 [{:catalog/product-id "354"
+                         :catalog/sku-id     "CLIP-S-B-4-7-20-180"}
+                        {:catalog/product-id "128"
+                         :catalog/sku-id     "WIG-STL-20-1B"}
+                        {:catalog/product-id "252"
+                         :catalog/sku-id     "MBWHDLFW20"}
+                        {:look/id "5s26Upsk2tEWYQFNaw1PBe"}]
+                   ;; default is p1
+                   [{:catalog/product-id "120"
+                     :catalog/sku-id     "WIG-BOB-SCP-10-1B"}
+                    {:catalog/product-id "236"
+                     :catalog/sku-id     "BNSHBW16"}
+                    {:look/id "5bg4Gcijd9AEI1lUp6PPOd"}
+                    {:catalog/product-id "353"
+                     :catalog/sku-id     "WIG-BOB-CTL-12-1B"}])
                  (map-indexed (fn [idx result]
-                                (when (seq (:catalog/product-id result))
-                                  (let [product   (get products-db (:catalog/product-id result))
-                                        thumbnail (product-image images-db product)]
-                                      (merge {:idx idx}
-                                             (when product
-                                               {:title/secondary (:copy/title product)
-                                                :target [e/control-quiz-shop-now {:catalog/product-id (:catalog/product-id product)
-                                                                                     :page/slug          (:page/slug product)}]
-                                                :image/src     (:url thumbnail)
-                                                :action/id     (str "result-" (inc idx))
-                                                :action/label  "Shop Now"})))))))})
+                                (let [look-id (:look/id result)]
+                                  (cond
+                                    (seq (:catalog/product-id result))
+                                    (let [product   (get products-db (:catalog/product-id result))
+                                          thumbnail (product-image images-db product)]
+                                      (when (:catalog/product-id product)
+                                        {:title/secondary (:copy/title product)
+                                         :target          [e/control-quiz-shop-now-product {:catalog/product-id (:catalog/product-id product)
+                                                                                            :page/slug          (:page/slug product)
+                                                                                            :query-params       {:SKU (:catalog/sku-id result)}}]
+                                         :image/src       (:url thumbnail)
+                                         :action/id       (str "result-" (inc idx))
+                                         :action/label    "Shop Now"}))
+
+                                    (seq look-id)
+                                    (let [contentful-look (get looks-db (keyword look-id))]
+                                      (when (:content/id contentful-look)
+                                        {:title/secondary (:title contentful-look)
+                                         :target          [e/control-quiz-shop-now-look {:look-id       (:content/id contentful-look)
+                                                                                         :album-keyword :aladdin-free-install}]
+                                         :image/src       (:photo-url contentful-look)
+                                         :action/id       (str "result-" (inc idx))
+                                         :action/label    "Shop Now"})))))))})
 
 (defn ^:export page
   [state]
-  (let [#_#_looks-shared-carts-db          (get-in state storefront.keypaths/v1-looks-shared-carts)
-        products-db                    (get-in state k/v2-products)
+  (let [products-db                    (get-in state k/v2-products)
         skus-db                        (get-in state k/v2-skus)
         images-db                      (get-in state k/v2-images)
+        looks-shared-carts-db          (get-in state k/cms-ugc-collection-all-looks)
 
         {:order.items/keys [quantity]} (api.orders/current state)
         questioning                    (questioning/<- state shopping-quiz-id)
@@ -326,6 +353,7 @@
                 (quiz-results< products-db
                                skus-db
                                images-db
+                               looks-shared-carts-db
                                persona-id)
                 (within :header header-data)))
       :else
@@ -393,9 +421,14 @@
     (when (contains? #{:p1 :p2 :p3 :p4} persona-id)
       (publish e/persona|selected {:persona/id persona-id}))))
 
-(defmethod fx/perform-effects e/control-quiz-shop-now
+(defmethod fx/perform-effects e/control-quiz-shop-now-product
   [_ _ args _ state]
   #?(:cljs (history/enqueue-redirect e/navigate-product-details args)))
+
+
+(defmethod fx/perform-effects e/control-quiz-shop-now-look
+  [_ _ args _ state]
+  #?(:cljs (history/enqueue-redirect e/navigate-shop-by-look-details args)))
 
 (defmethod t/transition-state e/control-quiz-results-feedback
   [_ _event {:keys [explanation] :as _args} state]
