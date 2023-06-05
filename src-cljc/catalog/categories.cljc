@@ -126,6 +126,7 @@
            :subcategories/layout             :spotlights
            :selector/essentials              [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives               [:hair/origin :hair/texture :hair.closure/area :hair/color :hair/base-material]
+           :selector/dimensions              [:hair/origin :hair/texture :hair.closure/area :hair/color :hair/base-material]
            :subsections/subsection-selectors [#:subsection{:title "Standard Lace Closures" :selector #:hair{:base-material #{"lace"}}}
                                               #:subsection{:title "Silk Closures" :selector #:hair{:base-material #{"silk"}}}
                                               #:subsection{:title "HD Lace Closures" :selector #:hair{:family #{"closures"} :base-material #{"hd-lace"}}}]
@@ -210,6 +211,7 @@
            :category/tags                    #{"closures-and-frontals"}
            :selector/essentials              [:catalog/department :hair/family :hair/color.process :hair/source :hair/base-material]
            :selector/electives               [:hair/origin :hair/texture :hair/color]
+           :selector/dimensions              [:hair/origin :hair/texture :hair/color]
            :subsections/subsection-selectors texture-subsection-selectors
            :header/title                     "Silk Virgin Hair Closures"
 
@@ -234,10 +236,10 @@
            :category/tags                    #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
            :subsections/subsection-selectors texture-subsection-selectors
 
-           :contentful/faq-id   :category-360-frontals
-           :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
-           :selector/electives  [:hair/origin :hair/texture]
-
+           :contentful/faq-id    :category-360-frontals
+           :selector/essentials  [:catalog/department :hair/family :hair/color.process :hair/source]
+           :selector/electives   [:hair/origin :hair/texture]
+           :selector/dimensions  [:hair/origin :hair/texture :hair/color]
            :category/description "Spanning your entire hairline, 360 lace frontals are the most versatile option to get your desired look, including up-dos."
            :header/title         "Virgin 360 Frontals"}
           (category->seo "360 Frontals"
@@ -271,6 +273,7 @@
            :category/tags                    #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
            :selector/essentials              [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives               [:hair/origin :hair/texture :hair/color :hair/base-material]
+           :selector/dimensions              [:hair/origin :hair/texture :hair/color :hair/base-material]
            :product-list/title               "Shop All Frontals"
            :subcategories.old/ids            ["29" "10" "47"]
            :subcategories.old/layout         :list
@@ -388,6 +391,7 @@
            :hair/family                   #{"bundles"}
            :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source :hair/family]
            :selector/electives            [:hair/origin]
+           :selector/dimensions           [:hair/origin :hair/color]
            :category/description          (copy "Tired of having to break out the hot"
                                                 "tools for a textured straight look? Our Yaki"
                                                 "Straight hair buncdle collection is here to save your"
@@ -417,6 +421,7 @@
            :hair/family                   #{"bundles"}
            :selector/essentials           [:catalog/department :hair/color.process :hair/family :hair/source :hair/texture]
            :selector/electives            [:hair/origin :hair/color]
+           :selector/dimensions           [:hair/origin :hair/color]
            :content-block/type            :about-attributes
            :content-block/title           "Hair Bundles 101:"
            :content-block/header          "How to Style"
@@ -525,6 +530,7 @@
            :hair/family                   #{"bundles"}
            :selector/essentials           [:catalog/department :hair/color.process :hair/family :hair/source :hair/texture]
            :selector/electives            [:hair/origin]
+           :selector/dimensions           [:hair/origin :hair/color]
            :category/description          (copy "Ride the lush, carefree waves of the bundles"
                                                 "in our Water Wave hair bundle"
                                                 "collection. For curls you can rock everywhere from"
@@ -599,6 +605,7 @@
            :hair/family                   #{"bundles"}
            :selector/essentials           [:catalog/department :hair/color.process :hair/family :hair/source :hair/texture]
            :selector/electives            [:hair/origin]
+           :selector/dimensions           [:hair/origin :hair/color]
            :category/description          (copy "Let your bold, beautiful curls take center stage! Our curly hair bundle collection is a tight,"
                                                 "kinky curl perfect for creating voluminous coily styles that mimic natural 3C hair textures.")
            :content-block/type            :about-attributes
@@ -717,6 +724,7 @@
            :hair/family         #{"lace-front-wigs"}
            :selector/essentials [:hair/family :catalog/department]
            :selector/electives  [:hair/texture :hair/origin :hair/base-material]
+           :selector/dimensions [:hair/texture :hair/origin :hair/base-material :hair/color]
            :contentful/faq-id   :category-virgin-lace-front-wigs}
           (category->seo "Lace Front Wigs: Virgin Lace Front Wigs"
                          (copy "Mayvenn’s human hair lace front wigs mimic a natural hairline"
@@ -771,7 +779,8 @@
            :catalog/department  #{"hair"}
            :hair/family         #{"360-wigs"}
            :selector/essentials [:hair/family :catalog/department]
-           :selector/electives  [:hair/texture :hair/origin]}
+           :selector/electives  [:hair/texture :hair/origin]
+           :selector/dimensions  [:hair/texture :hair/origin :hair/color]}
           (category->seo "360 Lace Wigs: Virgin 360 Lace Frontal Wigs"
                          (copy "Mayvenn’s human hair 360 lace wigs give you all around protection and"
                                "come in different variations such as Brazilian, Malaysian, straight,"
@@ -792,6 +801,7 @@
            :hair/family           #{"headband-wigs"}
            :selector/essentials   [:hair/family :catalog/department]
            :selector/electives    [:hair/texture :hair/origin]
+           :selector/dimensions   [:hair/texture :hair/origin :hair/color]
            :page/title            "100% Virgin Hair Headband Wigs | Mayvenn"
            :opengraph/title       "Mayvenn Headband Wigs - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
            :page.meta/description "Mayvenn’s Headband Wigs come in Straight, Body Wave, Loose Wave, and Deep Wave. Crafted with high-quality 100% virgin human hair."
@@ -823,6 +833,7 @@
            :hair/family           #{"closure-wigs"}
            :selector/essentials   [:hair/family :catalog/department]
            :selector/electives    [:hair/texture :hair/origin :hair.closure/area :hair/base-material]
+           :selector/dimensions   [:hair/texture :hair/origin :hair.closure/area :hair/base-material :hair/color]
            :page/title            "100% Virgin Hair Lace Closure Wig | Mayvenn"
            :page.meta/description (copy "Mayvenn’s Lace Closure Wigs come complete with 4x4 or 5x5 inches of parting space."
                                         "Crafted with HD Lace or Standard Lace and high-quality 100% virgin human hair.")
@@ -851,6 +862,7 @@
            :hair/base-material     #{"hd-lace"}
            :selector/essentials    [:hair/family :catalog/department :hair/base-material]
            :selector/electives     [:hair/family :hair/texture :hair/origin]
+           :selector/dimensions    [:hair/family :hair/texture :hair/origin :hair/color]
            :page/title             "100% Virgin Hair HD Lace Wig | Mayvenn"
            :page.meta/description  (copy "Mayvenn’s HD Lace Wigs come complete with 13x4, 4x4, or 5x5 inches of parting space."
                                          "Crafted with high-quality 100% virgin human hair.")
@@ -900,6 +912,7 @@
            :hair/base-material     #{"lace"}
            :selector/essentials    [:hair/family :catalog/department :hair/base-material]
            :selector/electives     [:hair/family :hair/texture :hair/origin :hair/color]
+           :selector/dimensions    [:hair/family :hair/texture :hair/origin :hair/color]
            :page/title             "100% Virgin Hair Standard Lace Wig | Mayvenn"
            :page.meta/description  (copy "Mayvenn’s Standard Lace Wigs come complete with 13x4, 4x4, or 5x5 inches of parting space."
                                          "Crafted with high-quality 100% virgin human hair. ")
@@ -949,6 +962,7 @@
     :opengraph/title                  "Natural Human Hair Bundles - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
     :selector/electives               [:hair/texture :hair/family :hair/origin :hair/color :hair/base-material]
     :selector/essentials              [:catalog/department]
+    :selector/dimensions              [:catalog/department :hair/color :wig/trait]
     :subsections/subsection-selectors texture-subsection-selectors}])
 
 (def human-hair-bundles
@@ -975,8 +989,9 @@
            :opengraph/description            (copy "100% virgin human hair, machine-wefted and backed by our 30 Day Quality Guarantee,"
                                                    "our natural human hair bundles are the best quality products on the market and ship free!")
            :opengraph/title                  "Natural Human Hair Bundles - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
-           :selector/electives               [:hair/texture :hair/origin :hair/color]
            :selector/essentials              [:catalog/department :hair/family]
+           :selector/electives               [:hair/texture :hair/origin :hair/color]
+           :selector/dimensions              [:hair/texture :hair/origin :hair/color]
            :subcategories.old/layout         :grid
            :subcategories.old/ids            ["2" "3" "4" "5" "6" "7" "8" "9"]
            :subcategories.old/title          "Textures"
@@ -1013,8 +1028,8 @@
    :catalog/department        #{"stylist-exclusives"},
    :kits/contents             #{"rings"},
    :stylist-exclusives/family #{"kits"}
-   :selector/electives        []
    :selector/essentials       [:catalog/department :kits/contents :stylist-exclusives/family]
+   :selector/electives        []
    :page/title                "Stylist"
    :opengraph/title           (copy "Stylist Exclusives - Free shipping."
                                     "Free 30 day returns. Made with 100% virgin human hair.")
@@ -1043,6 +1058,7 @@
                                     "curly"}
            :selector/essentials   [:catalog/department :hair/color.process :hair/texture :hair/source]
            :selector/electives    []
+           :selector/dimensions   [:hair/color]
            :page/title            ""
            :opengraph/title       (copy "" "")
            :page.meta/description (copy "")
@@ -1060,6 +1076,7 @@
            :selector/essentials  [:catalog/department :hair/family :hair/color.process :hair/source :category/tags]
            :hamburger/order      1
            :selector/electives   []
+           :selector/dimensions  [:hair/color]
            :category/description (copy "Save your precious strands and top your look"
                                        "off with the ultimate tool in protective weave"
                                        "styling. Our collection of closures and frontals blend"
@@ -1110,6 +1127,7 @@
           :hair/family         #{"tape-ins"}
           :selector/essentials [:catalog/department :hair/family]
           :selector/electives  [:hair/color :hair/weight :hair/length]
+          :selector/dimensions [:hair/color :hair/weight :hair/length]
 
           :copy/title           "Tape-In Hair Extensions"
           :category/description "Our straight tape-in extensions lie completely flat against the head and blend seamlessly with your own hair."
@@ -1138,6 +1156,7 @@
      :hair/family         #{"seamless-clip-ins"}
      :selector/essentials [:catalog/department :hair/family]
      :selector/electives  [:hair/color :hair/texture]
+     :selector/dimensions [:hair/color :hair/texture]
      :desktop-menu/title  "Hair Extensions"
 
      :homepage.ui-v2022-09/order    4
@@ -1202,6 +1221,7 @@
     :hair/base-material               #{"hd-lace"}
     :selector/essentials              [:hair/family :catalog/department :hair/base-material]
     :selector/electives               [:hair/family :hair/texture :hair/origin :hair/color]
+    :selector/dimensions              [:hair/family :hair/texture :hair/origin :hair/color]
     :page/title                       "100% Virgin Hair HD Lace Wig | Mayvenn"
     :page.meta/description            (copy "Mayvenn’s HD Lace comes complete with 13x4, 4x4, or 5x5 inches of parting space."
                                             "Crafted with high-quality 100% virgin human hair.")
@@ -1336,6 +1356,7 @@
     :hair/family         #{"lace-front-wigs" "360-wigs"}
     :selector/essentials [:hair/family :catalog/department]
     :selector/electives  [:hair/family :hair/texture :hair/origin]
+    :selector/dimensions [:hair/family :hair/texture :hair/origin :hair/color]
     :page/title          "Wigs | Mayvenn"
     :page/title-template [:computed/selected-facet-string " Virgin " :seo/title " | Mayvenn"]}])
 
@@ -1353,6 +1374,7 @@
     :promo.clearance/eligible         #{true}
     :selector/essentials              [:promo.clearance/eligible]
     :selector/electives               [:hair/family :hair/texture :hair/origin :hair/color]
+    :selector/dimensions              [:hair/family :hair/texture :hair/origin :hair/color]
     :page/title                       "Clearance Wigs | Mayvenn"
     :page.meta/description            (copy "Mayvenn’s virgin human hair wigs are on clearance! "
                                             "These wigs allow you to achieve a new look in minutes "
