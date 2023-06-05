@@ -512,5 +512,5 @@
   (stringer/track-event "stylist_instagram_link-clicked" {:instagram-username ig-username}))
 
 (defmethod perform-track events/look|viewed
-  [_ _ {:keys [skus]} _]
-  (google-analytics/track-view-items skus))
+  [_ _ {:keys [skus]} app-state]
+  (google-analytics/track-view-items skus (get-in app-state keypaths/user-ecd)))
