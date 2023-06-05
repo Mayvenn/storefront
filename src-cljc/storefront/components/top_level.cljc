@@ -152,7 +152,9 @@
                                                                               'adventure.stylist-matching.stylist-gallery/built-component
                                                                               events/navigate-adventure-stylist-gallery)
    events/navigate-quiz-crm-persona-questions                            (constantly mayvenn.shopping-quiz.crm-persona/page)
-   events/navigate-quiz-crm-persona-results                              (constantly mayvenn.shopping-quiz.crm-persona/page)
+   events/navigate-quiz-crm-persona-results                              #(ui/lazy-load-component :catalog
+                                                                                                  'mayvenn.shopping-quiz.crm-persona/page
+                                                                                                  events/navigate-quiz-crm-persona-results)
    events/navigate-shopping-quiz-unified-freeinstall-intro               #(ui/lazy-load-component
                                                                            :catalog
                                                                            'mayvenn.shopping-quiz.unified-freeinstall/page

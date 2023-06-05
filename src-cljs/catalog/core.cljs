@@ -18,6 +18,9 @@
 
             ;; Stylist matching/profile
             appointment-booking.core ; TODO is this right?
+
+            mayvenn.shopping-quiz.crm-persona
+
             stylist-matching.find-your-stylist
             stylist-matching.stylist-results
             stylist-profile.core
