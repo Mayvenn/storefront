@@ -651,7 +651,7 @@
            :catalog/department               #{"hair"}
            :hair/family                      #{"360-wigs" "lace-front-wigs" "ready-wigs" "headband-wigs" "closure-wigs"}
            :selector/essentials              [:hair/family :catalog/department]
-           :selector/electives               [:hair/family :hair/texture :hair/origin :hair/base-material :hair/color]
+           :selector/electives               [:hair/family :hair/color :hair/texture :hair/origin :hair/base-material :style.color/features]
            :selector/dimensions              [:hair/family :hair/texture :hair/origin :hair/base-material :hair/color :wig/trait]
            :page/title                       "Human Hair Wigs: 100% Human Hair Wigs | Mayvenn"
            :page.meta/description            (copy "Mayvenn’s virgin human hair wigs allow you to achieve a new look in minutes"
@@ -749,7 +749,7 @@
            :catalog/department  #{"hair"}
            :hair/family         #{"ready-wigs"}
            :selector/essentials [:hair/family :catalog/department]
-           :selector/electives  [:hair/texture :wig/trait :hair/color]
+           :selector/electives  [:hair/texture :wig/trait :hair/color :style.color/features]
            :selector/dimensions [:hair/color :hair/texture :wig/trait]
 
            :page/title-template            [:computed/selected-facet-string " Wigs: " :computed/selected-facet-string " " :seo/title " | Mayvenn"]
@@ -962,7 +962,7 @@
     :opengraph/title                  "Natural Human Hair Bundles - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
     :selector/electives               [:hair/texture :hair/family :hair/origin :hair/color :hair/base-material]
     :selector/essentials              [:catalog/department]
-    :selector/dimensions              [:catalog/department :hair/color :wig/trait]
+    :selector/dimensions              [:catalog/department :hair/color :wig/trait :hair/texture :hair/origin :hair/base-material :hair.closure/area]
     :subsections/subsection-selectors texture-subsection-selectors}])
 
 (def human-hair-bundles
