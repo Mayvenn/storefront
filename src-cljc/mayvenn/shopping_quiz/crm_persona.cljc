@@ -34,11 +34,17 @@
 (def ^:private explanation-keypath [:models :quiz-feedback :explanation])
 (def ^:private hide-keypath [:models :quiz-feedback :hide?])
 
-(defn shop-now
-  [{:keys [id label]}]
+(defn underline-button
+  [{:keys [id label target]}]
   (when id
-    [:div.p-color.title-3.shout.bold.underline.proxima
-     label]))
+    (if target
+      [:a.p-color.title-3.shout.bold.underline.proxima
+       (merge {:data-test id}
+              (apply utils/route-to target))
+       label]
+      [:div.p-color.title-3.shout.bold.underline.proxima
+       {:data-test id}
+       label])))
 
 (c/defcomponent result-card
   [{:keys [target] :as data} _ _]
@@ -55,7 +61,7 @@
      [:div.p2.flex.flex-column.justify-between
       {:style {:height "100px"}}
       (titles/proxima-content (with :title data))
-      (shop-now (with :action data))]]
+      (underline-button (with :action data))]]
     [:div
      ;; CONTENT SHIFT
      [:div.bg-warm-gray.flex.flex-column.justify-center
@@ -130,6 +136,12 @@
     [:div.pt2 tertiary]]
    [:div.proxima.title-2.pb2 quaternary]])
 
+(defn need-more-inspo
+  [{:keys [primary] :as data}]
+  [:div.pt4
+   [:div.proxima.title-1 primary]
+   (underline-button data)])
+
 (c/defcomponent results-template
   [data _ _]
   [:div.bg-refresh-gray
@@ -142,6 +154,7 @@
      (c/elements result-card
                  data
                  :results)]
+    (need-more-inspo (with :action data))
     (c/build quiz-feedback (with :feedback data))]])
 
 (c/defcomponent questioning-template
@@ -348,6 +361,11 @@
       persona-id
       (c/build results-template
                (merge
+                (within :action {:id "need-more-inspiration"
+                                 :primary "Need more inspiration?"
+                                 :label "Shop all ready to wear wigs"
+                                 :target [e/navigate-category {:page/slug           "ready-wear-wigs"
+                                                               :catalog/category-id "25"}]})
                 (quiz-results-content< persona-id)
                 (quiz-feedback< state)
                 (quiz-results< products-db
