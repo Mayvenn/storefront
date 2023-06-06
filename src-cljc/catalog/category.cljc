@@ -76,7 +76,7 @@
    experiment-plp-header?]
   (cond-> {:category-hero.title/primary title
            :category-hero.body/primary  description}
-    
+
     (and experiment-plp-header? guide-page)
     (merge {:category-hero.action/label  "Help me choose"
             :category-hero.action/aria   "Help me choose"
@@ -104,6 +104,7 @@
         facet-filtering-expanded-state      (cond-> facet-filtering-state
                                               experiment-color-shorthand?
                                               (update :facet-filtering/filters catalog.facets/expand-shorthand-colors)
+
                                               (->> category :selector/electives (filter (partial = :style.color/features)) seq)
                                               (update :facet-filtering/filters (partial catalog.facets/expand-color-features color-facet))) 
         loaded-category-products            (->> (get-in app-state k/v2-products)

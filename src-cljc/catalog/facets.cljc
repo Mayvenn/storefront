@@ -162,37 +162,55 @@
     color-shorthand (update :hair/color intersection-ignoring-empties (set (mapcat shorthand-slug>color-slugs color-shorthand)))))
 
 (defn colors-facet->color-features-facet [colors]
-  {:facet/name    "Hair Features"
+ {:facet/name    "Hair Features"
    :facet/slug    :style.color/features
    :filter/order  7
    :facet/options (let [{:strs [balayage
-                                highlights]} (->> colors
-                                                  (map (fn [composite-color]
-                                                         (into {} (map (fn [[feature _feature-color]]
-                                                                         [feature #{(:option/slug composite-color)}])
-                                                                       (:style.color/features composite-color)))))
-                                                  (apply merge-with clojure.set/union))]
-                    {"balayage"   {:filter/order 1
-                                   :option/name  "Balayage"
-                                   :option/slug  "balayage"
-                                   :sku/name     "Balayage"
-                                   :selectors    balayage}
-                     "highlights" {:filter/order 2
-                                   :option/name  "Highlights"
-                                   :option/slug  "highlights"
-                                   :sku/name     "Highlights" 
-                                   :selectors    highlights}})})
+                                highlights
+                                dark-roots
+                                two-toned
+                                money-pieces]} (->> colors
+                                                    (map (fn [composite-color]
+                                                           (into {} (map (fn [[feature _feature-color]]
+                                                                           [feature #{(:option/slug composite-color)}])
+                                                                         (:style.color/features composite-color)))))
+                                                    (apply merge-with clojure.set/union))]
+                    {"balayage"     {:filter/order 1
+                                     :option/name  "Balayage"
+                                     :option/slug  "balayage"
+                                     :sku/name     "Balayage"
+                                     :selectors    balayage}
+                     "highlights"   {:filter/order 2
+                                     :option/name  "Highlights"
+                                     :option/slug  "highlights"
+                                     :sku/name     "Highlights"
+                                     :selectors    highlights}
+                     "dark-roots"   {:filter/order 3
+                                     :option/name  "Dark Roots"
+                                     :option/slug  "dark-roots"
+                                     :sku/name     "Dark Roots"
+                                     :selectors    dark-roots}
+                     "two-toned"    {:filter/order 4
+                                     :option/name  "Two-Toned"
+                                     :option/slug  "two-toned"
+                                     :sku/name     "Two-Toned"
+                                     :selectors    two-toned}
+                     "money-pieces" {:filter/order 5
+                                     :option/name  "Money Pieces"
+                                     :option/slug  "money-pieces"
+                                     :sku/name     "Money Pieces"
+                                     :selectors    money-pieces}})})
 
 (defn expand-color-features
   [colors-facet {:as                          args
-                 selected-color-feature-slugs :style.color/features}] 
+                 selected-color-feature-slugs :style.color/features}]
   (cond-> (dissoc args :style.color/features)
     selected-color-feature-slugs
-    (update :hair/color 
-            intersection-ignoring-empties 
+    (update :hair/color
+            intersection-ignoring-empties
             (let [color-features-facet (->> colors-facet :facet/options vals colors-facet->color-features-facet)
                   selected-color-slugs (mapcat :selectors (-> color-features-facet
                                                               :facet/options
                                                               (select-keys selected-color-feature-slugs)
-                                                              vals))] 
+                                                              vals))]
               (set selected-color-slugs)))))

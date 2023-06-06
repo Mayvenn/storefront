@@ -410,6 +410,23 @@
     [:div.mx-auto.max-960
      (c/build child-component child-component-data)]))
 
+(defn- applicable-color-features
+  [indexed-facets-pre faceted-models]
+  (let [{:facet/keys [options] :as color-features} (facets/colors-facet->color-features-facet
+                                                    (-> indexed-facets-pre :hair/color :facet/options vals))
+        colors-of-models (->> faceted-models
+                              (mapcat :hair/color)
+                              set)]
+    (assoc color-features
+           :facet/options
+           (into {} (filter (fn [option]
+                              (->> option
+                                   val
+                                   :selectors
+                                   (clojure.set/intersection colors-of-models)
+                                   seq))
+                            options)))))
+
 (defn filters<-
   [{:keys
     [facets-db
@@ -428,66 +445,64 @@
                                                    (update facet :facet/options
                                                            (partial maps/index-by :option/slug)))))
         ;; These include the synthetic hair/color.shorthand and style.color/features facets
-        indexed-facets (merge indexed-facets-pre
-                              ;; Hack on synthetic facets
-                              {:hair/color.shorthand facets/color-shorthand} 
-                              (when ((set facets-to-filter-on) :style.color/features)
-                                {:style.color/features  (facets/colors-facet->color-features-facet
-                                                         (-> indexed-facets-pre :hair/color :facet/options vals))}))
-        item-count     (->> faceted-models
-                            (select (:facet-filtering/filters facet-filtering-expanded-state))
-                            count)]
+        indexed-facets     (merge indexed-facets-pre
+                                  ;; Hack on synthetic facets
+                                  {:hair/color.shorthand facets/color-shorthand}
+                                  (when ((set facets-to-filter-on) :style.color/features)
+                                    {:style.color/features (applicable-color-features indexed-facets-pre faceted-models)}))
+        item-count         (->> faceted-models
+                                (select (:facet-filtering/filters facet-filtering-expanded-state))
+                                count)]
+
     (cond-> {:filtering/child-component-data  child-component-data}
 
       (seq facets-to-filter-on)
-
       (merge
-       {:filtering/summary               (summary<- indexed-facets
-                                                    item-count
-                                                    navigation-event
-                                                    navigation-args
-                                                    facet-filtering-state)
-        :filtering/header                (merge 
-                                          {:header.reset/primary    "Clear All"
-                                           :header.reset/target     [e/flow|facet-filtering|reset
-                                                                     {:navigation-event navigation-event
-                                                                      :navigation-args  navigation-args}]
-                                           :header.reset/id         (when (-> facet-filtering-state :facet-filtering/filters seq) "filters-header-reset")
-                                           :header.close/id         "filters-close"
-                                           :header.close/aria-label "close"
-                                           :header.close/target     [e/flow|facet-filtering|panel-toggled false]
-                                           :header.title/primary    "Filters"
-                                           :header.title/secondary  (str item-count " items")
-                                           :header/pills            (pills<- indexed-facets
-                                                                             navigation-event
-                                                                             navigation-args
-                                                                             facet-filtering-state)}
-                                          (when (zero? item-count)
-                                            {:header.warning/id      "filters-zero-matches-note"
-                                             :header.warning/color   "warning-yellow"
-                                             :header.warning/content (str "Sorry, we could not find any products that match "
-                                                                          "your filter criteria. Please try adjusting your filters or "
-                                                                          "removing some of them to broaden your search.")}))
-        
+       {:filtering/summary (summary<- indexed-facets
+                                      item-count
+                                      navigation-event
+                                      navigation-args
+                                      facet-filtering-state)
+        :filtering/header  (merge
+                            {:header.reset/primary    "Clear All"
+                             :header.reset/target     [e/flow|facet-filtering|reset
+                                                       {:navigation-event navigation-event
+                                                        :navigation-args  navigation-args}]
+                             :header.reset/id         (when (-> facet-filtering-state :facet-filtering/filters seq) "filters-header-reset")
+                             :header.close/id         "filters-close"
+                             :header.close/aria-label "close"
+                             :header.close/target     [e/flow|facet-filtering|panel-toggled false]
+                             :header.title/primary    "Filters"
+                             :header.title/secondary  (str item-count " items")
+                             :header/pills            (pills<- indexed-facets
+                                                               navigation-event
+                                                               navigation-args
+                                                               facet-filtering-state)}
+                            (when (zero? item-count)
+                              {:header.warning/id      "filters-zero-matches-note"
+                               :header.warning/color   "warning-yellow"
+                               :header.warning/content (str "Sorry, we could not find any products that match "
+                                                            "your filter criteria. Please try adjusting your filters or "
+                                                            "removing some of them to broaden your search.")}))
 
-        :filtering/sections              (sections<- indexed-facets
-                                                     (let [facet-slug->option-slugs (->> faceted-models
-                                                                                         (mapv #(select-keys % facets-to-filter-on))
-                                                                                         (apply merge-with clojure.set/union))]
-                                                       (cond-> facet-slug->option-slugs
-                                                         :always
-                                                         (assoc :style.color/features #{"balayage" "highlights"})
-                                                         
-                                                         experiment-color-shorthand?
-                                                         (assoc :hair/color.shorthand (->> facet-slug->option-slugs
-                                                                                           :hair/color
-                                                                                           (map facets/color-slug>shorthand-slug)
-                                                                                           (into (hash-set))) )
-                                                         experiment-color-shorthand?
-                                                         (dissoc :hair/color)))
-                                                     navigation-event
-                                                     navigation-args
-                                                     facet-filtering-state)
+        :filtering/sections (sections<- indexed-facets
+                                        (let [facet-slug->option-slugs (->> faceted-models
+                                                                            (mapv #(select-keys % facets-to-filter-on))
+                                                                            (apply merge-with clojure.set/union))]
+                                          (cond-> facet-slug->option-slugs
+                                            :always
+                                            (assoc :style.color/features #{"balayage" "highlights" "money-pieces" "dark-roots" "two-toned"})
+
+                                            experiment-color-shorthand?
+                                            (assoc :hair/color.shorthand (->> facet-slug->option-slugs
+                                                                              :hair/color
+                                                                              (map facets/color-slug>shorthand-slug)
+                                                                              (into (hash-set))) )
+                                            experiment-color-shorthand?
+                                            (dissoc :hair/color)))
+                                        navigation-event
+                                        navigation-args
+                                        facet-filtering-state)
         :filtering.footer.apply/primary  "Apply"
         :filtering.footer.apply/id       "filters-apply"
         :filtering.footer.apply/target   [e/flow|facet-filtering|panel-toggled false]
