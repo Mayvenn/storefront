@@ -47,10 +47,52 @@
 
 ;;;; Models
 
+(defn results
+  [persona-id]
+  (case persona-id
+    :p1 [{:catalog/product-id "120"
+          :catalog/sku-id     "WIG-BOB-SCP-10-1B"}
+         {:catalog/product-id "236"
+          :catalog/sku-id     "BNSHBW16"}
+         {:look/id "5bg4Gcijd9AEI1lUp6PPOd"}
+         {:catalog/product-id "353"
+          :catalog/sku-id     "WIG-BOB-CTL-12-1B"}]
+    :p2 [{:catalog/product-id "335"
+          :catalog/sku-id     "BYSHDLFW16"}
+         {:catalog/product-id "354"
+          :catalog/sku-id     "CLIP-S-B-4-6-20-180"}
+         {:look/id "4EUTW0z7cQzUPOoDSRQTFT"}
+         {:catalog/product-id "249"
+          :catalog/sku-id     "BLWHDLFW20"}]
+    :p3 [{:catalog/product-id "352"
+          :catalog/sku-id     "WIG-BOB-SCP-14-HL1B27"}
+         {:catalog/product-id "354"
+          :catalog/sku-id     "CLIP-S-H-4-8-20-180"}
+         {:catalog/product-id "235"
+          :catalog/sku-id     "ILWBLFW20"}
+         {:look/id "1VxWKFdouTl7jRCzTktnLs"}]
+    :p4 [{:catalog/product-id "354"
+          :catalog/sku-id     "CLIP-S-B-4-7-20-180"}
+         {:catalog/product-id "128"
+          :catalog/sku-id     "WIG-STL-20-1B"}
+         {:catalog/product-id "252"
+          :catalog/sku-id     "MBWHDLFW20"}
+         {:look/id "5s26Upsk2tEWYQFNaw1PBe"}]
+    ;; default is p1
+    [{:catalog/product-id "120"
+      :catalog/sku-id     "WIG-BOB-SCP-10-1B"}
+     {:catalog/product-id "236"
+      :catalog/sku-id     "BNSHBW16"}
+     {:look/id "5bg4Gcijd9AEI1lUp6PPOd"}
+     {:catalog/product-id "353"
+      :catalog/sku-id     "WIG-BOB-CTL-12-1B"}]))
+
 (defn <-
   "Get the results model of a look suggestion"
   [state]
-  (get-in state k/models-persona))
+  (when-let [persona-id (get-in state k/models-persona)]
+    {:persona/id  persona-id
+     :results     (results persona-id)}))
 
 ;;;; Behavior
 
@@ -87,3 +129,10 @@
   (when (fn? success-fn)
     (when-let [persona-id (name (get-in state k/models-persona))]
       (success-fn persona-id))))
+
+#?(:cljs
+   (defmethod trk/perform-track e/persona|selected
+     [_ _ {:persona/keys [id]} state]
+     (stringer/track-event "persona_assigned" {:persona id
+                                               ;; Hardcoded for now
+                                               :quiz_id :crm/persona})))

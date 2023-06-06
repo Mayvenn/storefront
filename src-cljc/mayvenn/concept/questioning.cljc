@@ -163,15 +163,19 @@
             :progression/value idx}))
 
 (defmethod trk/perform-track e/biz|questioning|answered
-  [_ _ {question-idx :question/idx
-        choice-idx   :choice/idx} state]
-  (let [questions                         (:questions (<- state :unnamed-v1))
+  [_ _ {question-idx   :question/idx
+        questioning-id :questioning/id
+        choice-idx     :choice/idx} state]
+  (let [{:keys [progression questions]}   (<- state questioning-id)
         {:question/keys [prompt choices]} (get questions question-idx)
         {:choice/keys [answer]}           (get choices choice-idx)]
     (->> {:question_copy          (join " " prompt)
+          :questioning_id         questioning-id
           :answer_option_selected answer
           :question_position      question-idx
-          :answer_position        choice-idx}
+          :answer_position        choice-idx
+          :number_answered        (count progression)
+          :total_questions        (count questions)}
          #?(:cljs
             (stringer/track-event "quiz_question_answered")))))
 
@@ -187,3 +191,11 @@
                         args
                         (<- state id)
                         {:answers answers})))))
+
+#?(:cljs
+   (defmethod trk/perform-track e/biz|questioning|submitted
+     [_ _ {:questioning/keys [id]
+           :keys             [answers]} state]
+     (stringer/track-event "quiz_question_submitted" (merge
+                                                      (<- state id)
+                                                      {:answers answers}))))

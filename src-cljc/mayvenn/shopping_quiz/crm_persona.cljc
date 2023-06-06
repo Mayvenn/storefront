@@ -255,9 +255,9 @@
                                       {:slot/id "no" :slot.picker/copy "No"}]})
 
 (defn quiz-results-content<
-  [persona-id]
+  [persona]
   (within :results.content
-          (case persona-id
+          (case (:persona/id persona)
             :p1 {:primary    "Your Personalized Hair Profile"
                  :secondary  "Serving Signature Styles"
                  :tertiary   "You know what you want, and why you want it - and your hairstyle is no different. You’re looking for your everyday, go-to look. You need something that is functional, super cute, and serves a look without breaking the bank. Your signature style awaits."
@@ -281,44 +281,9 @@
              :quaternary "We think you'll love these looks:"})))
 
 (defn quiz-results<
-  [products-db skus-db images-db looks-db persona-id]
-  {:results (->> (case persona-id
-                   :p1 [{:catalog/product-id "120"
-                         :catalog/sku-id     "WIG-BOB-SCP-10-1B"}
-                        {:catalog/product-id "236"
-                         :catalog/sku-id     "BNSHBW16"}
-                        {:look/id "5bg4Gcijd9AEI1lUp6PPOd"}
-                        {:catalog/product-id "353"
-                         :catalog/sku-id     "WIG-BOB-CTL-12-1B"}]
-                   :p2 [{:catalog/product-id "335"
-                         :catalog/sku-id     "BYSHDLFW16"}
-                        {:catalog/product-id "354"
-                         :catalog/sku-id     "CLIP-S-B-4-6-20-180"}
-                        {:look/id "4EUTW0z7cQzUPOoDSRQTFT"}
-                        {:catalog/product-id "249"
-                         :catalog/sku-id     "BLWHDLFW20"}]
-                   :p3 [{:catalog/product-id "352"
-                         :catalog/sku-id     "WIG-BOB-SCP-14-HL1B27"}
-                        {:catalog/product-id "354"
-                         :catalog/sku-id     "CLIP-S-H-4-8-20-180"}
-                        {:catalog/product-id "235"
-                         :catalog/sku-id     "ILWBLFW20"}
-                        {:look/id "1VxWKFdouTl7jRCzTktnLs"}]
-                   :p4 [{:catalog/product-id "354"
-                         :catalog/sku-id     "CLIP-S-B-4-7-20-180"}
-                        {:catalog/product-id "128"
-                         :catalog/sku-id     "WIG-STL-20-1B"}
-                        {:catalog/product-id "252"
-                         :catalog/sku-id     "MBWHDLFW20"}
-                        {:look/id "5s26Upsk2tEWYQFNaw1PBe"}]
-                   ;; default is p1
-                   [{:catalog/product-id "120"
-                     :catalog/sku-id     "WIG-BOB-SCP-10-1B"}
-                    {:catalog/product-id "236"
-                     :catalog/sku-id     "BNSHBW16"}
-                    {:look/id "5bg4Gcijd9AEI1lUp6PPOd"}
-                    {:catalog/product-id "353"
-                     :catalog/sku-id     "WIG-BOB-CTL-12-1B"}])
+  [products-db skus-db images-db looks-db persona]
+  {:results (->> persona
+                 :results
                  (map-indexed (fn [idx result]
                                 (let [look-id (:look/id result)]
                                   (cond
@@ -346,33 +311,33 @@
 
 (defn ^:export page
   [state]
-  (let [products-db                    (get-in state k/v2-products)
-        skus-db                        (get-in state k/v2-skus)
-        images-db                      (get-in state k/v2-images)
-        looks-shared-carts-db          (get-in state k/cms-ugc-collection-all-looks)
+  (let [products-db           (get-in state k/v2-products)
+        skus-db               (get-in state k/v2-skus)
+        images-db             (get-in state k/v2-images)
+        looks-shared-carts-db (get-in state k/cms-ugc-collection-all-looks)
 
         {:order.items/keys [quantity]} (api.orders/current state)
         questioning                    (questioning/<- state shopping-quiz-id)
-        persona-id                     (persona/<- state)
+        persona                        (persona/<- state)
 
-        header-data                    {:forced-mobile-layout? true
-                                        :quantity              (or quantity 0)}]
+        header-data {:forced-mobile-layout? true
+                     :quantity              (or quantity 0)}]
     (cond
-      persona-id
+      persona
       (c/build results-template
                (merge
-                (within :action {:id "need-more-inspiration"
+                (within :action {:id      "need-more-inspiration"
                                  :primary "Need more inspiration?"
-                                 :label "Shop all ready to wear wigs"
-                                 :target [e/navigate-category {:page/slug           "ready-wear-wigs"
-                                                               :catalog/category-id "25"}]})
-                (quiz-results-content< persona-id)
+                                 :label   "Shop all ready to wear wigs"
+                                 :target  [e/navigate-category {:page/slug           "ready-wear-wigs"
+                                                                :catalog/category-id "25"}]})
+                (quiz-results-content< persona)
                 (quiz-feedback< state)
                 (quiz-results< products-db
                                skus-db
                                images-db
                                looks-shared-carts-db
-                               persona-id)
+                               persona)
                 (within :header header-data)))
       :else
       (c/build questioning-template
@@ -467,8 +432,5 @@
    (defmethod tr/perform-track e/control-quiz-results-feedback
      [_ event _ app-state]
      (stringer/track-event "quiz_results_feedback_form"
-                           {:quiz-helpful?    (get-in app-state answer-keypath)
-                            :quiz-explanation (get-in app-state explanation-keypath)
-                            :store-slug       (get-in app-state k/store-slug)
-                            :test-variations  (get-in app-state k/features)
-                            :store-experience (get-in app-state k/store-experience)})))
+                           {:quiz_helpful?    (get-in app-state answer-keypath)
+                            :quiz_explanation (get-in app-state explanation-keypath)})))
