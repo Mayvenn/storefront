@@ -44,7 +44,7 @@
                                                   (stylists/->display-name stylist) "!")
    :stylist-matching.ui.congrats.title/secondary ["Now it's time to choose your hair."
                                                   "There's no end to what your hair can do."]
-   :stylist-matching.ui.congrats.cta/id          "hair-quiz"
+   ;; :stylist-matching.ui.congrats.cta/id          "hair-quiz"
    :stylist-matching.ui.congrats.cta/label       "Take Our Hair Quiz"
    :stylist-matching.ui.congrats.cta/target      []})
 
