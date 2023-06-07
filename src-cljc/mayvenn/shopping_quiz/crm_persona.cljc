@@ -406,12 +406,12 @@
 
 (defmethod fx/perform-effects e/control-quiz-shop-now-product
   [_ _ args _ state]
-  #?(:cljs (history/enqueue-redirect e/navigate-product-details args)))
+  #?(:cljs (history/enqueue-navigate e/navigate-product-details args)))
 
 
 (defmethod fx/perform-effects e/control-quiz-shop-now-look
   [_ _ args _ state]
-  #?(:cljs (history/enqueue-redirect e/navigate-shop-by-look-details args)))
+  #?(:cljs (history/enqueue-navigate e/navigate-shop-by-look-details args)))
 
 (defmethod t/transition-state e/control-quiz-results-feedback
   [_ _event {:keys [explanation] :as _args} state]
