@@ -284,8 +284,17 @@
                                                      "fields.questionsAnswers"]}
                                    {:content-type :advertisedPromo
                                     :latest?      true}
-                                   {:content-type :phoneConsultCta
-                                    :latest?      true}
+                                   {:content-type   :phoneConsultCta
+                                    :latest?        false
+                                    :primary-key-fn (constantly true)
+                                    :select         ["fields.checkoutConfirmation"
+                                                     "fields.checkoutShipping"
+                                                     "fields.checkoutAddress"
+                                                     "fields.checkoutCart"
+                                                     "fields.shoppingPdp"
+                                                     "fields.shoppingCategory"
+                                                     "fields.shoppingHomepage"
+                                                     "fields.shopOrOmni"]}
                                    {:content-type   :ugc-collection
                                     :exists         ["fields.slug"]
                                     :primary-key-fn (comp keyword :slug)
