@@ -135,4 +135,4 @@
      [_ _ {:persona/keys [id]} state]
      (stringer/track-event "persona_assigned" {:persona id
                                                ;; Hardcoded for now
-                                               :quiz_id :crm/persona})))
+                                               :quiz_id "crm-persona"})))

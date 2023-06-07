@@ -170,7 +170,7 @@
         {:question/keys [prompt choices]} (get questions question-idx)
         {:choice/keys [answer]}           (get choices choice-idx)]
     (->> {:question_copy          (join " " prompt)
-          :questioning_id         questioning-id
+          :quiz_id                "crm-persona"
           :answer_option_selected answer
           :question_position      question-idx
           :answer_position        choice-idx
