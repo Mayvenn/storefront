@@ -1,6 +1,7 @@
 (ns storefront.components.share-links
   (:require [cemerick.url :as url]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [storefront.platform.numbers :as numbers]))
 
 (defn with-utm-medium [share-url medium]
   (assoc-in share-url [:query :utm_medium] medium))
@@ -16,6 +17,11 @@
    ;; NOTE: the ?& is to get this to work on iOS8 and Android at the same time
    ;; NOTE: Android Messenger crashes if %25 is included in body, so we're using Full-Width Percent Sign
    (str "sms:" number "?&body=" (string/replace (url/url-encode body) "%25" "%EF%BC%85"))))
+
+
+(defn phone-link
+  [number]
+  (str "tel:+" (numbers/digits-only number)))
 
 (defn twitter-link [share-url tweet]
   (-> (url/url "https://twitter.com/intent/tweet")

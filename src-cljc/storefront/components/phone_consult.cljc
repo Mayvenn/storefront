@@ -1,13 +1,27 @@
 (ns storefront.components.phone-consult
   (:require [storefront.accessors.experiments :as experiments]
             [storefront.component :as c :refer [defcomponent]]
-            [catalog.cms-dynamic-content :as cms-dynamic-content]))
+            [storefront.components.share-links :as share-links]
+            [storefront.effects :as fx]
+            [storefront.trackings :as trk]
+            [storefront.events :as e]
+            [catalog.cms-dynamic-content :as cms-dynamic-content]
+            [storefront.platform.component-utils :as utils]
+            #?(:cljs [storefront.hooks.stringer :as stringer])))
+
+(defmethod fx/perform-effects e/external-redirect-phone
+  [_ _ {:keys [number]} _ _]
+  #?(:cljs
+     (set! (.-location js/window) (share-links/phone-link number))))
+
+(defmethod trk/perform-track e/external-redirect-phone
+  [_ _ {:keys [number]} _]
+  (->> {:number number}
+       #?(:cljs (stringer/track-event "external-redirect-phone"))))
 
 (defcomponent component
   [{:keys [message-rich-text released] :as data} owner _]
   (when released
-    [:div.m1.border.p4.center.black
-     [:a.black
-      (merge {:href (str "tel:+")})
-      (map cms-dynamic-content/build-hiccup-tag (:content message-rich-text))]])
-  )
+    [:a.block.black.m1.border.p4.center.black
+     (utils/fake-href e/external-redirect-phone {:number "1 (855) 287-6868"})
+     (map cms-dynamic-content/build-hiccup-tag (:content message-rich-text))]))
