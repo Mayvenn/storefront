@@ -23,5 +23,5 @@
   [{:keys [message-rich-text released] :as data} owner _]
   (when released
     [:a.block.black.m1.border.p4.center.black
-     (utils/fake-href e/external-redirect-phone {:number "1 (855) 287-6868"})
+     (utils/fake-href e/external-redirect-phone {:number "+1 (888) 562-7952"})
      (map cms-dynamic-content/build-hiccup-tag (:content message-rich-text))]))
