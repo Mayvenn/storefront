@@ -66,7 +66,10 @@
                           {:number   support-phone-number
                            :place-id place-id})
          (map cms-dynamic-content/build-hiccup-tag (:content message-rich-text))
+         [:div.m2.flex.justify-center
+          (ui/button-small-primary {} "Call Now")]
+         [:div.content-3
+          (str "Phone: " support-phone-number)]
          (when (seq (:order/items data))
-           (str "Ref: " (->> data :waiter/order :number)))
-         [:div.flex.justify-center
-          (ui/button-small-primary {} "Call Now")]])))))
+           [:div.content-3
+            (str "Ref: " (->> data :waiter/order :number))])])))))
