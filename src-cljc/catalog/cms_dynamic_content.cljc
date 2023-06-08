@@ -99,8 +99,8 @@
        :cljs (js/console.warn "Unable to determine a css class to use for CMS rich text 'mark':" mark))))
 
 (defmethod build-hiccup-tag :rich-text/text [{:keys [marks value]}]
-  ;; TODO: Strip initial newlines?
-  [:div {:class (map (comp contentful-mark->css-class :type) marks)}
+  [:span
+   {:class (map (comp contentful-mark->css-class :type) marks)}
    value])
 
 (defmethod build-hiccup-tag :rich-text/document [{:keys [content]}]

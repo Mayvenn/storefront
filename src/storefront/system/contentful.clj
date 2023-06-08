@@ -288,7 +288,7 @@
                                     :latest?        false
                                     :primary-key-fn (constantly true)
                                     :select         ["fields.checkoutConfirmation"
-                                                     "fields.checkoutShipping"
+                                                     "fields.checkoutPayment"
                                                      "fields.checkoutAddress"
                                                      "fields.checkoutCart"
                                                      "fields.shoppingPdp"
