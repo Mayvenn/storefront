@@ -12,7 +12,8 @@
              :refer [handle-message handle-later] :rename {handle-message publish}]
             [storefront.platform.component-utils :as utils]
             #?(:cljs [storefront.api :as api])
-            #?(:cljs [storefront.hooks.stringer :as stringer])))
+            #?(:cljs [storefront.hooks.stringer :as stringer])
+            [storefront.components.ui :as ui]))
 
 (def support-phone-number "+1 (888) 562-7952")
 
@@ -66,4 +67,6 @@
                            :place-id place-id})
          (map cms-dynamic-content/build-hiccup-tag (:content message-rich-text))
          (when (seq (:order/items data))
-           (str "Ref: " (->> data :waiter/order :number)))])))))
+           (str "Ref: " (->> data :waiter/order :number)))
+         [:div.flex.justify-center
+          (ui/button-small-primary {} "Call Now")]])))))
