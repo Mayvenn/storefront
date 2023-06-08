@@ -5,6 +5,7 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.checkout-steps :as checkout-steps]
+            [storefront.components.phone-consult :as phone-consult]
             [storefront.components.ui :as ui]
             [ui.promo-banner :as promo-banner]
             [storefront.platform.component-utils :as utils]
@@ -266,8 +267,10 @@
                          :value       (:state billing-address)})]])])
 
 (defcomponent component
-  [{:keys [saving? step-bar billing-address-data shipping-address-data free-install-added] :as data} _ _]
+  [{:keys [saving? phone-consult-cta step-bar billing-address-data shipping-address-data free-install-added] :as data} _ _]
   [:div.container
+   (when (:checkout-address phone-consult-cta)
+     (component/build phone-consult/component phone-consult-cta))
   (molecules/free-install-added-atom free-install-added)
    (component/build checkout-steps/component step-bar)
 
@@ -324,6 +327,7 @@
         free-install-added? (:free-install-added (get-in data keypaths/navigation-query-params))]
     (merge
      {:saving?               (utils/requesting? data request-keys/update-addresses)
+      :phone-consult-cta     (get-in data keypaths/cms-phone-consult-cta)
       :step-bar              (cond-> (checkout-steps/query data)
                                (= :guest (::auth/as (auth/signed-in data)))
                                (assoc :checkout-title "Guest Checkout"))

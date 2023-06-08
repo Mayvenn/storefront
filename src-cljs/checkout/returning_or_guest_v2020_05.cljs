@@ -7,6 +7,7 @@
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.checkout-address :as checkout-address]
             [storefront.component :as c :refer [defcomponent]]
+            [storefront.components.phone-consult :as phone-consult]
             [storefront.events :as e]
             [storefront.keypaths :as k]
             [storefront.platform.component-utils :as utils]
@@ -22,9 +23,12 @@
   [{:keys [secure-checkout
            checkout-steps
            checkout-address-form
-           free-install-added]}
+           free-install-added
+           phone-consult-cta]}
    _ _]
   [:div.container
+   (when (:checkout-address phone-consult-cta)
+     (c/build phone-consult/component phone-consult-cta))
    (molecules/free-install-added-atom free-install-added)
    (c/build secure-checkout/organism secure-checkout)
    or-separator
@@ -313,4 +317,5 @@
                                                          saving?
                                                          show-phone-marketing-opt-in?
                                                          phone-transactional-opt-in-value
-                                                         phone-marketing-opt-in-value)}))
+                                                         phone-marketing-opt-in-value)
+     :phone-consult-cta     (get-in app-state k/cms-phone-consult-cta)}))

@@ -44,6 +44,7 @@
             [storefront.components.money-formatters :as mf]
             [storefront.components.accordion-v2022-10 :as accordion-neue]
             [storefront.components.ui :as ui]
+            [storefront.components.phone-consult :as phone-consult]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -215,6 +216,7 @@
 
 (c/defcomponent template
   [{:keys [carousel-images
+           phone-consult-cta
            product
            selected-sku
            ugc
@@ -234,6 +236,8 @@
           (c/build ugc/popup-component (assoc ugc :id "popup-ugc") opts)])
        [:div
         {:key "page"}
+        (when (:shopping-pdp phone-consult-cta)
+          (c/build phone-consult/component phone-consult-cta))
         (two-column-layout
          (c/html
           (if (seq (with :product-carousel data))
@@ -1023,6 +1027,7 @@
                                     (select {:hair/family #{"seamless-clip-ins"}} [detailed-product])))]
     (c/build (if detailed-product template loading-template)
              (merge (query state)
+                    {:phone-consult-cta (get-in state keypaths/cms-phone-consult-cta)}
                     (options-picker< state facets-db options-accordion)
                     {:add-to-cart (add-to-cart-query state)}
                     (product-carousel<- images-db product-carousel selected-sku carousel-redesign?)

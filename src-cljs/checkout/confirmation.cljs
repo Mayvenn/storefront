@@ -26,6 +26,7 @@
             [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.money-formatters :as mf]
+            [storefront.components.phone-consult :as phone-consult]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.trackings :as trackings]
@@ -123,7 +124,8 @@
 
 (defcomponent component
   [{:as   queried-data
-    :keys [checkout-button-data
+    :keys [phone-consult-cta
+           checkout-button-data
            checkout-steps
            cart-summary
            delivery
@@ -140,6 +142,9 @@
            service-line-items]}
    _ _]
   [:div.container.p2
+   (when (:checkout-confirmation phone-consult-cta)
+       (component/build phone-consult/component phone-consult-cta))
+
    (component/build checkout-steps/component checkout-steps nil)
    (if order
      [:form
@@ -462,7 +467,7 @@
 
 (defn query
   [data]
-  (let [order                                 (get-in data keypaths/order)
+  (let [order (get-in data keypaths/order)
 
         selected-quadpay?                     (-> order :cart-payments :quadpay)
         {service-items     :services/items
@@ -478,8 +483,13 @@
         addon-service-line-items              (->> order
                                                    orders/service-line-items
                                                    (filter (comp boolean #{"addon"} :service/type :variant-attrs)))
-        addon-service-skus                    (map (fn [addon-service] (get skus (:sku addon-service))) addon-service-line-items)]
+        addon-service-skus                    (map (fn [addon-service] (get skus (:sku addon-service))) addon-service-line-items)
+        phone-consult-cta                     (get-in data keypaths/cms-phone-consult-cta)]
     (merge
+     (when (:checkout-confirmation phone-consult-cta)
+       ;;TODO omni flag
+       ;;TODO order number
+       {:phone-consult-cta phone-consult-cta})
      {:order                        order
       :easy-booking?                (experiments/easy-booking? data)
       :booking                      (booking/<- data)
@@ -513,15 +523,15 @@
              (:appointment-time-slot order))
 
      (when (and services-on-order? servicing-stylist)
-       {:servicing-stylist-banner/id        "servicing-stylist-banner"
-        :servicing-stylist-banner/heading   "Your Mayvenn Certified Stylist"
-        :servicing-stylist-banner/title     (stylists/->display-name servicing-stylist)
-        :servicing-stylist-banner/subtitle  (-> servicing-stylist :salon :name)
-        :servicing-stylist-banner/rating    {:rating/value (:rating servicing-stylist)
-                                             :rating/id    "stylist-rating-id"}
-        :servicing-stylist-banner/image-url (some-> servicing-stylist :portrait :resizable-url)
+       {:servicing-stylist-banner/id                           "servicing-stylist-banner"
+        :servicing-stylist-banner/heading                      "Your Mayvenn Certified Stylist"
+        :servicing-stylist-banner/title                        (stylists/->display-name servicing-stylist)
+        :servicing-stylist-banner/subtitle                     (-> servicing-stylist :salon :name)
+        :servicing-stylist-banner/rating                       {:rating/value (:rating servicing-stylist)
+                                                                :rating/id    "stylist-rating-id"}
+        :servicing-stylist-banner/image-url                    (some-> servicing-stylist :portrait :resizable-url)
         :servicing-stylist-banner.edit-appointment-icon/target [events/control-show-edit-appointment-menu]
-        :servicing-stylist-banner.edit-appointment-icon/id      "edit-appointment"}))))
+        :servicing-stylist-banner.edit-appointment-icon/id     "edit-appointment"}))))
 
 (defn ^:private built-non-auth-component [data opts]
   (component/build component (query data) opts))

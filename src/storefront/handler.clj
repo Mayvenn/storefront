@@ -335,6 +335,7 @@
    :homepage            [:experience]
    :retailLocation      [:slug]
    :templateSlot        [:slug]
+   :phoneConsultCta     [:slug]
    :copyUrlSlug         [:slug]})
 
 
@@ -386,7 +387,8 @@
       (h (update-in-req-state req keypaths/cms
                               maps/deep-merge
                               (update-data {} [:advertisedPromo])
-                              (update-data {} [:phoneConsultCta])
+                              ;; (update-data {} [:phoneConsultCta])
+                              {:phoneConsultCta (first (assemble-cms-node normalized-cms-cache :phoneConsultCta))}
                               {:copyUrlSlug (maps/index-by :slug  (assemble-cms-node normalized-cms-cache :copyUrlSlug :banner-omni))}
                               {:emailModal (into {} (for [modal (filter (comp (partial = "emailModal") :id :sys :contentType :sys) (vals normalized-cms-cache))]
                                                       [(-> modal :sys :id) (->> modal
@@ -603,11 +605,13 @@
       (assoc _ :help-me-find-my-shade (feature-flags/retrieve-flag ld "help-me-find-my-shade" :bool false))
       (assoc _ :plp-header (feature-flags/retrieve-flag ld "plp-header" :bool false))
       (assoc _ :show-shipping-delay (feature-flags/retrieve-flag ld "show-shipping-delay" :bool false))
-      (assoc _ :show-date-specified-shipping-delay (feature-flags/retrieve-flag ld "show-date-specified-shipping-delay" :bool false))
+      (assoc _ :show-date-specified-shipping-delay (feature-flags/retrieve-flag ld "show-date-specified-shipping-delay" :bool false)) ;; Not currently implemented
       (assoc _ :product-card-update (feature-flags/retrieve-flag ld "product-card-update" :bool false))
       (assoc _ :hide-old-classic-homepage (feature-flags/retrieve-flag ld "hide-old-classic-homepage" :bool false))
       (assoc _ :hide-old-static-homepage-content (feature-flags/retrieve-flag ld "hide-old-static-homepage-content" :bool false))
       (assoc _ :show-return-and-shipping-modals (feature-flags/retrieve-flag ld "show-return-and-shipping-modals" :bool false))
+      (assoc _ :show-return-and-shipping-modals (feature-flags/retrieve-flag ld "show-return-and-shipping-modals" :bool false))
+      (assoc _ :phone-consult-cta (feature-flags/retrieve-flag ld "phone-consult-cta" :bool false))
       (assoc-in-req-state req keypaths/features _)
       (h _))))
 
