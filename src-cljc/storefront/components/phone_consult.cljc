@@ -24,7 +24,7 @@
   [_ _ {:keys [number place-id]} _]
   (->> {:number number
         :place-id place-id}
-       #?(:cljs (stringer/track-event "external-redirect-phone"))))
+       #?(:cljs (stringer/track-event "phone_consult_cta_clicked"))))
 
 (defmethod fx/perform-effects e/external-redirect-phone
   [_ _ {:keys [number]} _ _]

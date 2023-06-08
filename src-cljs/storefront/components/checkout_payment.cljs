@@ -207,7 +207,8 @@
                                (when-not fully-covered?
                                  " Please enter an additional payment method below for the remaining total on your order."))}))
      {:phone-consult-cta  (merge (get-in data keypaths/cms-phone-consult-cta)
-                                 (api.orders/current data))}
+                                 (api.orders/current data)
+                                 {:place-id :checkout-payment})}
 
      {:credit-card-entry/credit-card  (:credit-card (cc/query data))
       :credit-card-entry/id           (when loaded-stripe?

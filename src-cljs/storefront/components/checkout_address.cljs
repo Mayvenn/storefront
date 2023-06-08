@@ -329,7 +329,8 @@
     (merge
      {:saving?               (utils/requesting? data request-keys/update-addresses)
       :phone-consult-cta     (merge (get-in data keypaths/cms-phone-consult-cta)
-                                    (api.orders/current data))
+                                    (api.orders/current data)
+                                    {:place-id :checkout-address})
       :step-bar              (cond-> (checkout-steps/query data)
                                (= :guest (::auth/as (auth/signed-in data)))
                                (assoc :checkout-title "Guest Checkout"))

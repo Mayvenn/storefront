@@ -490,7 +490,8 @@
        ;;TODO omni flag
        ;;TODO order number
        {:phone-consult-cta (merge phone-consult-cta
-                                  (api.orders/current data))})
+                                  (api.orders/current data)
+                                  {:place-id :checkout-confirmation})})
      {:order                        order
       :easy-booking?                (experiments/easy-booking? data)
       :booking                      (booking/<- data)

@@ -320,4 +320,5 @@
                                                          phone-transactional-opt-in-value
                                                          phone-marketing-opt-in-value)
      :phone-consult-cta    (merge (get-in app-state k/cms-phone-consult-cta)
-                                  (api.orders/current app-state)) }))
+                                  (api.orders/current app-state)
+                                  {:place-id :checkout-address}) }))
