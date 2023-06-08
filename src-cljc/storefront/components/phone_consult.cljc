@@ -1,6 +1,6 @@
 (ns storefront.components.phone-consult
   (:require [storefront.accessors.experiments :as experiments]
-            [storefront.component :as c :refer [defcomponent]]
+            [storefront.component :as c :refer [defdynamic-component]]
             [storefront.components.share-links :as share-links]
             [storefront.transitions :as t]
             [storefront.effects :as fx]
@@ -42,17 +42,26 @@
   (handle-later e/phone-consult-cta-poll {} (* 1000 60 5)))
 
 (defmethod trk/perform-track e/phone-consult-cta-impression
-  [_ _ {:keys [number]} _]
-  (->> {:number number}
+  [_ _ {:keys [number place-id]} _]
+  (->> {:number number
+        :place-id place-id}
        #?(:cljs (stringer/track-event "external-redirect-phone"))))
 
-(defcomponent component
-  [{:keys [message-rich-text released place-id] :as data} owner _]
-  (when released
-    [:a.block.black.m1.border.p4.center.black
-     (utils/fake-href e/phone-consult-cta-click
-                      {:number support-phone-number
-                       :place-id place-id})
-     (map cms-dynamic-content/build-hiccup-tag (:content message-rich-text))
-     (when (seq (:order/items data))
-       (str "Ref: " (->> data :waiter/order :number)))]))
+(defdynamic-component component
+  (did-mount
+   [this]
+   (let [{:keys [place-id]} (c/get-props this)]
+     (publish e/phone-consult-cta-impression {:number   support-phone-number
+                                              :place-id place-id})))
+  (render
+   [this]
+   (c/html
+    (let [{:keys [message-rich-text released place-id] :as data} (c/get-props this)]
+      (when released
+        [:a.block.black.m1.border.p4.center.black
+         (utils/fake-href e/phone-consult-cta-click
+                          {:number   support-phone-number
+                           :place-id place-id})
+         (map cms-dynamic-content/build-hiccup-tag (:content message-rich-text))
+         (when (seq (:order/items data))
+           (str "Ref: " (->> data :waiter/order :number)))])))))
