@@ -4,7 +4,7 @@
             [storefront.component :as c]
             [adventure.components.layered :as layered]
             [storefront.components.svg :as svg]
-            [storefront.components.ui :as ui] 
+            [storefront.components.ui :as ui]
             [storefront.events :as e]
             [storefront.keypaths :as k]
             [storefront.platform.component-utils :as utils]
@@ -13,7 +13,8 @@
             [storefront.components.accordion-v2022-10 :as accordion]
             [storefront.platform.component-utils :as util]
             [storefront.components.accordions.product-info :as product-info]
-            [storefront.accessors.auth :as auth]))
+            [storefront.accessors.auth :as auth]
+            [storefront.components.phone-consult :as phone-consult]))
 
 (def ^:private dns-url "https://mayvenn.wirewheel.io/privacy-page/5f22b71054ee7d0012420211")
 
@@ -53,7 +54,7 @@
     [:div.border.hide-on-tb-dt]
     (contact-tile (svg/phone-ringing {})
                   "Call Us"
-                  (ui/link :link/phone :a.inherit-color {} "+1 (888) 562-7952"))
+                  (ui/link :link/phone :a.inherit-color {} phone-consult/support-phone-number))
     (contact-tile (svg/message-bubble {})
                   "Text"
                   (ui/link :link/sms :a.inherit-color {:aria-label "text us at 34649"} "34649"))

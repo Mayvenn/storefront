@@ -9,7 +9,7 @@
 ;; format it properly for "tel:" (see ui/phone-url)
 ;;
 ;; Don't forget to update static html pages & config.clj if you change this.
-(def support-phone-number "1 (855) 287-6868")
+(def support-phone-number "+1 (888) 562-7952")
 
 (def feature-block-look-ids
   ;;NOTE edit the clj config too!
