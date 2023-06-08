@@ -34,6 +34,7 @@
    [ui.molecules :as ui-molecules]
    [ui.promo-banner :as promo-banner]
    [mayvenn.visual.tools :refer [within]]
+   [mayvenn.concept.account :as accounts]
    [mayvenn.concept.booking :as booking]
    [mayvenn.live-help.core :as live-help]))
 
@@ -770,7 +771,8 @@
                      {:cart {:return-link          (return-link<- items)
                              :phone-consult-cta    (merge (get-in app-state keypaths/cms-phone-consult-cta)
                                                           (api.orders/current app-state)
-                                                          {:place-id :checkout-cart})
+                                                          {:place-id :checkout-cart
+                                                           :in-omni? (:experience/omni (:experiences (accounts/<- app-state)))})
                              :clear-cart-link      (clear-cart-link<- app-state)
                              :promo-banner         (when (zero? (orders/product-quantity waiter-order))
                                                      (promo-banner/query app-state))

@@ -56,8 +56,10 @@
   (render
    [this]
    (c/html
-    (let [{:keys [message-rich-text released place-id] :as data} (c/get-props this)]
-      (when released
+    (let [{:keys [message-rich-text released place-id shop-or-omni in-omni?] :as data} (c/get-props this)]
+      (when (and released
+                 ;; shop-or-omni (shop = true, omni = false)
+                 (= shop-or-omni (not in-omni?)))
         [:a.block.black.m1.border.p4.center.black
          (utils/fake-href e/phone-consult-cta-click
                           {:number   support-phone-number

@@ -2,6 +2,7 @@
   (:require api.orders
             [checkout.ui.molecules :as molecules]
             [ui.legal :refer [opt-in-section]]
+            [mayvenn.concept.account :as accounts]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
@@ -330,7 +331,8 @@
      {:saving?               (utils/requesting? data request-keys/update-addresses)
       :phone-consult-cta     (merge (get-in data keypaths/cms-phone-consult-cta)
                                     (api.orders/current data)
-                                    {:place-id :checkout-address})
+                                    {:place-id :checkout-address
+                                     :in-omni? (:experience/omni (:experiences (accounts/<- data)))})
       :step-bar              (cond-> (checkout-steps/query data)
                                (= :guest (::auth/as (auth/signed-in data)))
                                (assoc :checkout-title "Guest Checkout"))

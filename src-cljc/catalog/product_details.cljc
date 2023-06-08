@@ -30,6 +30,7 @@
             [clojure.string]
             [homepage.ui.faq :as faq]
             [markdown-to-hiccup.core :as markdown]
+            [mayvenn.concept.account :as accounts]
             [mayvenn.visual.tools :refer [with within]]
             [mayvenn.visual.ui.titles :as titles]
             [spice.selector :as selector]
@@ -1029,7 +1030,8 @@
              (merge (query state)
                     {:phone-consult-cta (merge (get-in state keypaths/cms-phone-consult-cta)
                                                (api.orders/current state)
-                                               {:place-id :pdp})}
+                                               {:place-id :pdp
+                                                :in-omni? (:experience/omni (:experiences (accounts/<- state)))})}
                     (options-picker< state facets-db options-accordion)
                     {:add-to-cart (add-to-cart-query state)}
                     (product-carousel<- images-db product-carousel selected-sku carousel-redesign?)

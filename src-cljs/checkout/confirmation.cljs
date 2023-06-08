@@ -37,6 +37,7 @@
             [storefront.request-keys :as request-keys]
             [storefront.effects :as effects]
             [storefront.platform.messages :as messages]
+            [mayvenn.concept.account :as accounts]
             [mayvenn.concept.booking :as booking]))
 
 (defn requires-additional-payment?
@@ -491,7 +492,8 @@
        ;;TODO order number
        {:phone-consult-cta (merge phone-consult-cta
                                   (api.orders/current data)
-                                  {:place-id :checkout-confirmation})})
+                                  {:place-id :checkout-confirmation
+                                   :in-omni? (:experience/omni (:experiences (accounts/<- data)))})})
      {:order                        order
       :easy-booking?                (experiments/easy-booking? data)
       :booking                      (booking/<- data)

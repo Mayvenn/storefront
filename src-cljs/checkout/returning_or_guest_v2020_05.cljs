@@ -3,6 +3,7 @@
             [checkout.ui.checkout-address-form :as checkout-address-form]
             [checkout.ui.secure-checkout :as secure-checkout]
             [checkout.ui.molecules :as molecules]
+            [mayvenn.concept.account :as accounts]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.components.checkout-steps :as checkout-steps]
@@ -321,4 +322,5 @@
                                                          phone-marketing-opt-in-value)
      :phone-consult-cta    (merge (get-in app-state k/cms-phone-consult-cta)
                                   (api.orders/current app-state)
-                                  {:place-id :checkout-address}) }))
+                                  {:place-id :checkout-address
+                                   :in-omni? (:experience/omni (:experiences (accounts/<- app-state)))})}))
