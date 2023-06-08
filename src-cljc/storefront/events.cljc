@@ -23,7 +23,6 @@
 (defpath external-redirect-paypal-setup)
 (defpath external-redirect-quadpay-checkout)
 (defpath external-redirect-google-maps)
-(defpath external-redirect-phone)
 (defpath external-redirect-typeform-recommend-stylist)
 (defpath external-redirect-instagram-profile)
 
