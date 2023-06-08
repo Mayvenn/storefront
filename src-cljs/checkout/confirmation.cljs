@@ -489,7 +489,8 @@
      (when (:checkout-confirmation phone-consult-cta)
        ;;TODO omni flag
        ;;TODO order number
-       {:phone-consult-cta phone-consult-cta})
+       {:phone-consult-cta (merge phone-consult-cta
+                                  (api.orders/current data))})
      {:order                        order
       :easy-booking?                (experiments/easy-booking? data)
       :booking                      (booking/<- data)

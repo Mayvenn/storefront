@@ -1,5 +1,6 @@
 (ns storefront.components.checkout-address
-  (:require [checkout.ui.molecules :as molecules]
+  (:require api.orders
+            [checkout.ui.molecules :as molecules]
             [ui.legal :refer [opt-in-section]]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
@@ -327,7 +328,8 @@
         free-install-added? (:free-install-added (get-in data keypaths/navigation-query-params))]
     (merge
      {:saving?               (utils/requesting? data request-keys/update-addresses)
-      :phone-consult-cta     (get-in data keypaths/cms-phone-consult-cta)
+      :phone-consult-cta     (merge (get-in data keypaths/cms-phone-consult-cta)
+                                    (api.orders/current data))
       :step-bar              (cond-> (checkout-steps/query data)
                                (= :guest (::auth/as (auth/signed-in data)))
                                (assoc :checkout-title "Guest Checkout"))

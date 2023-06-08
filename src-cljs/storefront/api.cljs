@@ -167,7 +167,10 @@
     (api-request GET uri-path
                  request-keys/fetch-cms2
                  {:handler (fn [result]
-                             (messages/handle-message events/api-success-fetch-cms-keypath result)
+                             (messages/handle-message events/api-success-fetch-cms-keypath
+                                                      (if (= [:phoneConsultCta] keypath)
+                                                        {:phoneConsultCta (:entry (:phoneConsultCta result))}
+                                                        result))
                              (handler result))})))
 
 (defn cache-req

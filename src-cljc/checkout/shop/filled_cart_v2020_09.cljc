@@ -768,7 +768,8 @@
         no-items?   (empty? items)]
     (component/build template
                      {:cart {:return-link          (return-link<- items)
-                             :phone-consult-cta    (get-in app-state keypaths/cms-phone-consult-cta)
+                             :phone-consult-cta    (merge (get-in app-state keypaths/cms-phone-consult-cta)
+                                                          (api.orders/current app-state))
                              :clear-cart-link      (clear-cart-link<- app-state)
                              :promo-banner         (when (zero? (orders/product-quantity waiter-order))
                                                      (promo-banner/query app-state))

@@ -206,7 +206,8 @@
                                " in store credit will be applied to this order."
                                (when-not fully-covered?
                                  " Please enter an additional payment method below for the remaining total on your order."))}))
-     {:phone-consult-cta  (get-in data keypaths/cms-phone-consult-cta)}
+     {:phone-consult-cta  (merge (get-in data keypaths/cms-phone-consult-cta)
+                                 (api.orders/current data))}
 
      {:credit-card-entry/credit-card  (:credit-card (cc/query data))
       :credit-card-entry/id           (when loaded-stripe?

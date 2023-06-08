@@ -1027,7 +1027,8 @@
                                     (select {:hair/family #{"seamless-clip-ins"}} [detailed-product])))]
     (c/build (if detailed-product template loading-template)
              (merge (query state)
-                    {:phone-consult-cta (get-in state keypaths/cms-phone-consult-cta)}
+                    {:phone-consult-cta (merge (get-in state keypaths/cms-phone-consult-cta)
+                                               (api.orders/current state))}
                     (options-picker< state facets-db options-accordion)
                     {:add-to-cart (add-to-cart-query state)}
                     (product-carousel<- images-db product-carousel selected-sku carousel-redesign?)

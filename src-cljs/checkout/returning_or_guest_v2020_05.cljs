@@ -1,5 +1,6 @@
 (ns checkout.returning-or-guest-v2020-05
-  (:require [checkout.ui.checkout-address-form :as checkout-address-form]
+  (:require api.orders
+            [checkout.ui.checkout-address-form :as checkout-address-form]
             [checkout.ui.secure-checkout :as secure-checkout]
             [checkout.ui.molecules :as molecules]
             [storefront.accessors.auth :as auth]
@@ -318,4 +319,5 @@
                                                          show-phone-marketing-opt-in?
                                                          phone-transactional-opt-in-value
                                                          phone-marketing-opt-in-value)
-     :phone-consult-cta     (get-in app-state k/cms-phone-consult-cta)}))
+     :phone-consult-cta    (merge (get-in app-state k/cms-phone-consult-cta)
+                                  (api.orders/current app-state)) }))

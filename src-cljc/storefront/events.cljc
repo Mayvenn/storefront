@@ -866,3 +866,7 @@
 
 (defpath hdyhau-post-purchase-submitted)
 (defpath hdyhau-email-capture-submitted)
+
+(defpath phone-consult-cta-impression)
+(defpath phone-consult-cta-click)
+(defpath phone-consult-cta-poll)

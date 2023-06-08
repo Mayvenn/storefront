@@ -283,6 +283,9 @@
         (messages/handle-message events/popup-hide))
       (quadpay/hide-modal))
 
+    (when-not (get-in app-state [:polling-consult])
+      (messages/handle-message events/phone-consult-cta-poll {}))
+
     (live-help/maybe-start app-state)
 
     (let [utm-params (some-> query-params
