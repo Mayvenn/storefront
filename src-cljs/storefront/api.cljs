@@ -169,7 +169,7 @@
                  {:handler (fn [result]
                              (messages/handle-message events/api-success-fetch-cms-keypath
                                                       (if (= [:phoneConsultCta] keypath)
-                                                        {:phoneConsultCta (:entry (:phoneConsultCta result))}
+                                                        {:phoneConsultCta (:phone-consult-cta (:phoneConsultCta result))}
                                                         result))
                              (handler result))})))
 
