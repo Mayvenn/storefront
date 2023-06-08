@@ -26,3 +26,4 @@
   (when released
     [:a.block.black.m1.border.p4.center.black
      (utils/fake-href e/external-redirect-phone {:number support-phone-number})
+     (map cms-dynamic-content/build-hiccup-tag (:content message-rich-text))]))
