@@ -1,5 +1,6 @@
 (ns homepage.shop-v2022-09
-  (:require [homepage.ui-v2022-09 :as ui]
+  (:require api.orders
+            [homepage.ui-v2022-09 :as ui]
             [storefront.events :as e]
             [storefront.component :as c]
             [mayvenn.concept.email-capture :as email-capture]
@@ -19,9 +20,14 @@
                                :omni
                                :unified)]
     (c/build ui/template
-             {:layers
-              (mapv (partial landing-page/determine-and-shape-layer app-state)
-                    (->> cms-slug
-                         (conj storefront.keypaths/cms-homepage)
-                         (get-in app-state)
-                         :body))})))
+             (merge
+              {:layers
+               (mapv (partial landing-page/determine-and-shape-layer app-state)
+                     (->> cms-slug
+                          (conj storefront.keypaths/cms-homepage)
+                          (get-in app-state)
+                          :body))}
+              {:phone-consult-cta  (merge (get-in app-state k/cms-phone-consult-cta)
+                                          (api.orders/current app-state)
+                                          {:place-id :checkout-payment
+                                           :in-omni? (:experience/omni (:experiences (accounts/<- app-state)))})}))))

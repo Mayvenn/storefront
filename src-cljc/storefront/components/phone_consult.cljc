@@ -46,7 +46,7 @@
   [_ _ {:keys [number place-id]} _]
   (->> {:number number
         :place-id place-id}
-       #?(:cljs (stringer/track-event "external-redirect-phone"))))
+       #?(:cljs (stringer/track-event "phone_consult_cta_impression"))))
 
 (defdynamic-component component
   (did-mount
@@ -61,15 +61,15 @@
       (when (and released
                  ;; shop-or-omni (shop = true, omni = false)
                  (= shop-or-omni (not in-omni?)))
-        [:a.block.black.m1.border.p4.center.black
-         (utils/fake-href e/phone-consult-cta-click
-                          {:number   support-phone-number
-                           :place-id place-id})
-         (map cms-dynamic-content/build-hiccup-tag (:content message-rich-text))
-         [:div.m2.flex.justify-center
-          (ui/button-small-primary {} "Call Now")]
+        [:div.m1.border.p4.center.black
+         [:a.block.black
+          (utils/fake-href e/phone-consult-cta-click
+                           {:number   support-phone-number
+                            :place-id place-id})
+          (map cms-dynamic-content/build-hiccup-tag (:content message-rich-text))
+          [:div.m2.flex.justify-center
+           (ui/button-small-primary {} "Call Now")]]
          [:div.content-3
-          (str "Phone: " support-phone-number)]
-         (when (seq (:order/items data))
-           [:div.content-3
-            (str "Ref: " (->> data :waiter/order :number))])])))))
+          (str "Phone: " support-phone-number " ")
+          (when (seq (:order/items data))
+            (str "Ref: " (->> data :waiter/order :number)))]])))))

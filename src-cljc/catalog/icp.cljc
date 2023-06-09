@@ -1,5 +1,6 @@
 (ns catalog.icp
-  (:require [api.catalog :refer [select]]
+  (:require api.orders
+            [api.catalog :refer [select]]
             [adventure.components.layered :as layered]
             catalog.facets
             catalog.keypaths
@@ -13,11 +14,13 @@
             [clojure.string]
             [homepage.ui.faq :as faq]
             [mayvenn.visual.ui.dividers :as dividers]
+            [mayvenn.concept.account :as accounts]
             [spice.maps :as maps]
             [storefront.accessors.categories :as accessors.categories]
             [storefront.accessors.experiments :as experiments]
             [storefront.assets :as assets]
             [storefront.component :as component :refer [defcomponent]]
+            [storefront.components.phone-consult :as phone-consult]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -155,13 +158,16 @@
 
 (defcomponent ^:private template
   "This lays out different ux pieces to form a cohesive ux experience"
-  [{:keys [category-hero
+  [{:keys [phone-consult-cta
+           category-hero
            title
            content-box
            expanding-content-box
            drill-category-grid
            drill-category-list] :as queried-data} _ _]
   [:div
+   (when (:shopping-plp phone-consult-cta)
+     (component/build phone-consult/component phone-consult-cta))
    (component/build category-hero/organism category-hero)
 
    (when-let [data (:spotlights queried-data)]
@@ -234,6 +240,10 @@
                      (merge
                       (when-let [filter-title (:product-list/title interstitial-category)]
                         {:title filter-title})
+                      {:phone-consult-cta  (merge (get-in state keypaths/cms-phone-consult-cta)
+                                                  (api.orders/current state)
+                                                  {:place-id :checkout-payment
+                                                   :in-omni? (:experience/omni (:experiences (accounts/<- state)))})}
                       {:category-hero         (category-hero-query interstitial-category)
                        :content-box           (when (and shop? (:content-block/type interstitial-category))
                                                 {:title    (:content-block/title interstitial-category)

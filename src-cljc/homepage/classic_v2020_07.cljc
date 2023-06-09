@@ -1,5 +1,7 @@
 (ns homepage.classic-v2020-07
-  (:require [homepage.ui-v2020-07 :as ui]
+  (:require api.orders
+            [homepage.ui-v2020-07 :as ui]
+            [mayvenn.concept.account :as accounts]
             [storefront.component :as c]
             [storefront.keypaths :as k]
             [storefront.components.landing-page :as landing-page]))
@@ -11,6 +13,10 @@
         categories           (get-in app-state k/categories)
         ugc                  (get-in app-state k/cms-ugc-collection)]
     (c/build ui/template (merge
+                          {:phone-consult-cta  (merge (get-in app-state k/cms-phone-consult-cta)
+                                                      (api.orders/current app-state)
+                                                      {:place-id :checkout-payment
+                                                       :in-omni? (:experience/omni (:experiences (accounts/<- app-state)))})}
                           {:lp-data              {:layers
                                                   (mapv (partial landing-page/determine-and-shape-layer app-state)
                                                         (->> :classic

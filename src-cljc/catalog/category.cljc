@@ -8,6 +8,7 @@
    [api.catalog :refer [select]]
    adventure.keypaths
    api.current
+   api.orders
    catalog.facets
    [catalog.icp :as icp]
    catalog.keypaths
@@ -16,10 +17,12 @@
    [catalog.ui.content-box :as content-box]
    [catalog.ui.product-card-listing :as product-card-listing]
    [homepage.ui.faq :as faq]
+   [mayvenn.concept.account :as accounts]
    [storefront.accessors.categories :as accessors.categories]
    [storefront.accessors.experiments :as experiments]
    [storefront.assets :as assets]
    [storefront.component :as c]
+   [storefront.components.phone-consult :as phone-consult]
    [storefront.components.video :as video]
    [storefront.effects :as effects]
    [storefront.events :as e]
@@ -43,10 +46,13 @@
 
 (c/defcomponent ^:private template
   [{:keys [category-hero
+           phone-consult-cta
            content-box
            faq-section
            video] :as queried-data} _ _]
   [:div
+   (when (:shopping-plp phone-consult-cta)
+     (c/build phone-consult/component phone-consult-cta))
    (c/build category-hero/organism category-hero)
    (when video
      (c/build video/component
@@ -135,6 +141,10 @@
              (merge
               (when-let [filter-title (:product-list/title category)]
                 {:title filter-title})
+              {:phone-consult-cta  (merge (get-in app-state storefront.keypaths/cms-phone-consult-cta)
+                                          (api.orders/current app-state)
+                                          {:place-id :checkout-payment
+                                           :in-omni? (:experience/omni (:experiences (accounts/<- app-state)))})}
               {:category-hero (category-hero-query category (experiments/plp-header? app-state))
                :video         (when-let [video (get-in app-state adventure.keypaths/adventure-home-video)] video)
                :content-box   (when (and shop? (:content-block/type category))
