@@ -200,12 +200,17 @@
 
 (defn page
   [state _]
-  (let [interstitial-category               (accessors.categories/current-category state)
-        facet-filtering-state               (assoc (get-in state catalog.keypaths/k-models-facet-filtering)
+  (let [interstitial-category          (accessors.categories/current-category state)
+        color-facet                    (:hair/color (catalog.facets/by-slug state))
+        experiment-color-shorthand?    (experiments/color-shorthand? state)
+        facet-filtering-state          (assoc (get-in state catalog.keypaths/k-models-facet-filtering)
                                                    :facet-filtering/item-label "item")
-        facet-filtering-expanded-state      (update facet-filtering-state
-                                                    :facet-filtering/filters
-                                                    catalog.facets/expand-shorthand-colors)
+        facet-filtering-expanded-state (cond-> facet-filtering-state
+                                         experiment-color-shorthand?
+                                         (update :facet-filtering/filters catalog.facets/expand-shorthand-colors)
+
+                                         (->> interstitial-category :selector/electives (filter (partial = :style.color/features)) seq)
+                                         (update :facet-filtering/filters (partial catalog.facets/expand-color-features color-facet)))
         loaded-category-products            (->> (get-in state keypaths/v2-products)
                                                  vals
                                                  (select (merge
@@ -240,7 +245,7 @@
                      (merge
                       (when-let [filter-title (:product-list/title interstitial-category)]
                         {:title filter-title})
-                      {:phone-consult-cta  (merge (get-in state keypaths/cms-phone-consult-cta)
+                      {:phone-consult-cta (merge (get-in state keypaths/cms-phone-consult-cta)
                                                   (api.orders/current state)
                                                   {:place-id :checkout-payment
                                                    :in-omni? (:experience/omni (:experiences (accounts/<- state)))})}
