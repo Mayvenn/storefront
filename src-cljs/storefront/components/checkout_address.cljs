@@ -269,9 +269,9 @@
                          :value       (:state billing-address)})]])])
 
 (defcomponent component
-  [{:keys [saving? phone-consult-cta step-bar billing-address-data shipping-address-data free-install-added] :as data} _ _]
+  [{:keys [logged-in? saving? phone-consult-cta step-bar billing-address-data shipping-address-data free-install-added] :as data} _ _]
   [:div.container
-   (when (:checkout-address phone-consult-cta)
+   (when (and logged-in? (:checkout-address phone-consult-cta))
      (component/build phone-consult/component phone-consult-cta))
   (molecules/free-install-added-atom free-install-added)
    (component/build checkout-steps/component step-bar)
@@ -349,7 +349,8 @@
                               :google-maps-loaded? google-maps-loaded?
                               :field-errors        field-errors
                               :focused             (get-in data keypaths/ui-focus)}
-      :free-install-added (free-install-added-query free-install-added?)}
+      :free-install-added (free-install-added-query free-install-added?)
+      :logged-in? (get-in data keypaths/user-id)}
      (opt-in-query true
                    (get-in data keypaths/checkout-phone-transactional-opt-in)
                    (get-in data keypaths/checkout-phone-marketing-opt-in)))))
