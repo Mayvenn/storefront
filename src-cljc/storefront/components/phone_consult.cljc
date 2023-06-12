@@ -51,9 +51,12 @@
 (defdynamic-component component
   (did-mount
    [this]
-   (let [{:keys [place-id]} (c/get-props this)]
-     (publish e/phone-consult-cta-impression {:number   support-phone-number
-                                              :place-id place-id})))
+   (let [{:keys [released shop-or-omni in-omni? place-id]} (c/get-props this)]
+     ((and released
+           ;; shop-or-omni (shop = true, omni = false)
+           (= shop-or-omni (not in-omni?)))
+      (publish e/phone-consult-cta-impression {:number   support-phone-number
+                                               :place-id place-id}))))
   (render
    [this]
    (c/html
