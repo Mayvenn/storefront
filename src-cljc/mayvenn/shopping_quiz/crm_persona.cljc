@@ -343,57 +343,15 @@
 
 ;;;; Behavior
 
-(defn preload-products
-  []
-  ;; TODO(corey) Move to show answers
-  ;; P1
-  (publish e/cache|product|requested "120")
-  (publish e/cache|product|requested "236")
-  (publish e/cache|product|requested "9")
-  (publish e/cache|product|requested "353")
-  ;; P2
-  (publish e/cache|product|requested "335")
-  (publish e/cache|product|requested "354")
-  (publish e/cache|product|requested "268")
-  (publish e/cache|product|requested "249")
-  ;; P3
-  (publish e/cache|product|requested "352")
-  (publish e/cache|product|requested "354")
-  (publish e/cache|product|requested "235")
-  (publish e/cache|product|requested "313")
-  ;; P4
-  (publish e/cache|product|requested "354")
-  (publish e/cache|product|requested "128")
-  (publish e/cache|product|requested "252")
-  (publish e/cache|product|requested "15"))
-
-(defn preload-looks
-  [state]
-  #?(:cljs
-     (let [cache    (get-in state k/api-cache)
-           cms-path [:ugc-collection :aladdin-free-install :looks]
-           handler  (fn [cms-data]
-                      (when-let [cart-ids (->> (get-in cms-data cms-path)
-                                               (take 99)
-                                               (mapv contentful/shared-cart-id)
-                                               not-empty)]
-                        (api/fetch-shared-carts cache cart-ids)))]
-       (fx/fetch-cms-keypath state [:ugc-collection :aladdin-free-install] handler))))
 
 (defmethod fx/perform-effects e/navigate-quiz-crm-persona-questions
   [_ _ _ _ state]
-  ;; Preloads
-  (preload-products) 
-  (preload-looks state)
   ;; Reset
   (publish e/persona|reset)
   (publish e/biz|questioning|reset {:questioning/id shopping-quiz-id}))
 
 (defmethod fx/perform-effects e/navigate-quiz-crm-persona-results
   [_ _ {{persona :p} :query-params} _ state]
-  ;; Preloads
-  (preload-products)
-  (preload-looks state)
   ;; Set persona
   (let [persona-id (keyword persona)]
     (when (contains? #{:p1 :p2 :p3 :p4} persona-id)
