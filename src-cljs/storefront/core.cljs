@@ -149,7 +149,13 @@
 
 (defn ^:export current-user-ecd []
   ;; Enhanced Conversion Data
-  (clj->js (get-in @app-state keypaths/user-ecd)))
+  
+  ;; Explicitly making country "us" while we debug Meta's insistence that we are sending an unknown country
+  (let [country (if (= (get-in @app-state keypaths/environment) "acceptance") "bad" "us")]
+    (clj->js (-> @app-state
+                 (get-in keypaths/user-ecd)
+                 (assoc :country country)
+                 (assoc-in [:address :country] country)))))
 
 (defn ^:before-load before-load []
   (handle-message app-state events/app-stop))
