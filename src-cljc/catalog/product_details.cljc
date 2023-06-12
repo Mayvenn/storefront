@@ -935,13 +935,13 @@
                                                                           model-image))
                                             (cms-override-template-slots< (get-in state keypaths/cms-template-slots)
                                                                           selected-sku))]
-    (spice.core/spy "information<" (accordion-neue/accordion-query
-                     (template-slots->accordion-slots accordion-ordering
-                                                      accordion-template-slot-data
-                                                      detailed-product
-                                                      length-guide-image
-                                                      (:accordion/open-drawers pdp-details-accordion)
-                                                      debug-template-slots?)))))
+    (accordion-neue/accordion-query
+     (template-slots->accordion-slots accordion-ordering
+                                      accordion-template-slot-data
+                                      detailed-product
+                                      length-guide-image
+                                      (:accordion/open-drawers pdp-details-accordion)
+                                      debug-template-slots?))))
 
 (defn ^:export page
   [state opts]
