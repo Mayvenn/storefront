@@ -265,15 +265,15 @@
             :p2 {:primary    "Your Personalized Hair Profile"
                  :secondary  "Keeping it Classic"
                  :tertiary   "Classic, timeless, chic - you’re all of the above. Making sure your look is on point is important to you, so it’s only fair that all the quality and info you deserve is ready and available. Whether you’re sticking to your tried and true texture or ready to branch out, rest assured that we’ve got you covered."
-                 :quaternary "We think you'll love these Ready to Wear wigs:"}
+                 :quaternary "We think you'll love these looks:"}
             :p3 {:primary    "Your Personalized Hair Profile"
                  :secondary  "Alter Your Ego"
                  :tertiary   "You’re her, and her…and her, too. The bottom line is this - you can do it all! You’re ready for a switch-up at any given moment, and your look needs to understand the assignment. Whether it’s the latest color trend or a brand-new product moment, you’re ready for the spotlight."
-                 :quaternary "We think you'll love these Ready to Wear wigs:"}
+                 :quaternary "We think you'll love these looks:"}
             :p4 {:primary    "Your Personalized Hair Profile"
                  :secondary  "I Need All The Inspo"
                  :tertiary   "No matter the occasion, you deserve to feel like your best self. Whether you’re planning a vacay, date night, or saying “I do”, we’ve got a look for you. Need a little extra inspiration? Never fear - we’ll show you all the best ways to wear your next favorite style IRL."
-                 :quaternary "We think you'll love these Ready to Wear wigs:"}
+                 :quaternary "We think you'll love these looks:"}
             ;; default is p1
             {:primary    "Your Personalized Hair Profile"
              :secondary  "Serving Signature Styles"
@@ -284,30 +284,25 @@
   [products-db skus-db images-db looks-db persona]
   {:results (->> persona
                  :results
-                 (map-indexed (fn [idx result]
-                                (let [look-id (:look/id result)]
-                                  (cond
-                                    (seq (:catalog/product-id result))
-                                    (let [product   (get products-db (:catalog/product-id result))
-                                          thumbnail (product-image images-db product)]
-                                      (when (:catalog/product-id product)
-                                        {:title/secondary (:copy/title product)
-                                         :target          [e/control-quiz-shop-now-product {:catalog/product-id (:catalog/product-id product)
-                                                                                            :page/slug          (:page/slug product)
-                                                                                            :query-params       {:SKU (:catalog/sku-id result)}}]
-                                         :image/src       (:url thumbnail)
-                                         :action/id       (str "result-" (inc idx))
-                                         :action/label    "Shop Now"}))
-
-                                    (seq look-id)
-                                    (let [contentful-look (get looks-db (keyword look-id))]
-                                      (when (:content/id contentful-look)
-                                        {:title/secondary (:title contentful-look)
-                                         :target          [e/control-quiz-shop-now-look {:look-id       (:content/id contentful-look)
-                                                                                         :album-keyword :look}]
-                                         :image/src       (:photo-url contentful-look)
-                                         :action/id       (str "result-" (inc idx))
-                                         :action/label    "Shop Now"})))))))})
+                 (map-indexed (fn [idx {:keys [content/id catalog/product-id] :as result}]
+                                (cond
+                                  (seq product-id)
+                                  (let [{:keys [copy/title catalog/sku-id page/slug url]} result]
+                                    {:title/secondary title
+                                    :target          [e/control-quiz-shop-now-product {:catalog/product-id product-id
+                                                                                       :page/slug          slug
+                                                                                       :query-params       {:SKU sku-id}}]
+                                    :image/src       url
+                                    :action/id       (str "result-" (inc idx))
+                                    :action/label    "Shop Now"})
+                                  (seq id)
+                                  (let [{:keys [title photo-url]} result]
+                                    {:title/secondary title
+                                     :target          [e/control-quiz-shop-now-look {:look-id       id
+                                                                                     :album-keyword :look}]
+                                     :image/src       photo-url
+                                     :action/id       (str "result-" (inc idx))
+                                     :action/label    "Shop Now"})))))})
 
 (defn ^:export page
   [state]
