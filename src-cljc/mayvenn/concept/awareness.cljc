@@ -6,15 +6,16 @@
    :friends-family  "Friends / Family"
    :news            "News Article"
    :tiktok          "TikTok"
-   :social-other    "Other Social (YouTube, Snapchat, etc)"
+   :social-other    "Other Social Media (YouTube, Snapchat, etc)"
    :search-engine   "Search Engine (Google, Bing)"
    :stylist         "Stylist"
    :billboard       "Billboard / Poster"
-   :saw-store       "Saw the store/Walk-in"
+   :saw-store       "Saw the store / Walk-in"
    :other           "Other"
-   :streaming-radio "Pandora, Spotify, etc"
+   :streaming-radio "Streaming Radio (iHeart, Pandora, SoundCloud)"
+   :broadcast-radio "Broadcast Radio (Ashlee on 92.7)"
    :mirror-cling    "Restroom Mirror Cling"
-   :scratch-off     "Scratch-Off Ticket"
+   :scratch-off     "Events/Scratch-Off Ticket"
    :valpak-mailer   "ValPak Mailer"})
 
 (defn hdyhau-answered-data
