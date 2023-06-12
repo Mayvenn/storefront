@@ -63,7 +63,7 @@
    :filter/order  6 ; Same as color, which it replaces
    :facet/options (->> [{:title     "Blacks"
                          :slug      "black"
-                         :image-id  "cf2e6d44-4e93-4792-801b-1e2aacdac408"
+                         :image-id  "5f560cc7-a7e9-4b85-8c0c-ea790eb8cf6c"
                          :selectors #{"#1-jet-black"
                                       "black"
                                       "hl-1b-blonde"
@@ -73,7 +73,7 @@
                                       "s02a"}}
                         {:title     "Browns"
                          :slug      "brown"
-                         :image-id  "9830b374-9ad5-46f7-b9ed-842dc0770cee"
+                         :image-id  "64593cfd-fa35-43ec-99db-0aa225278f5f"
                          :selectors #{"#2-chocolate-brown"
                                       "1c-mocha-brown"
                                       "#4-caramel-brown"
@@ -116,7 +116,7 @@
                                       "s09w"}}
                         {:title     "Reds"
                          :slug      "red"
-                         :image-id  "27df119d-bc0a-4f97-8f97-ef31bf5694b9"
+                         :image-id  "d3538ff2-049d-43bd-acd7-528d71ff9ddb"
                          :selectors #{"s07rb"
                                       "30-auburn"}}]
                        (map-indexed (fn [idx {:keys [title slug image-id selectors]}]
