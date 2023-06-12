@@ -143,7 +143,7 @@
                 {:title filter-title})
               {:phone-consult-cta  (merge (get-in app-state storefront.keypaths/cms-phone-consult-cta)
                                           (api.orders/current app-state)
-                                          {:place-id :checkout-payment
+                                          {:place-id :shopping-plp
                                            :in-omni? (:experience/omni (:experiences (accounts/<- app-state)))})}
               {:category-hero (category-hero-query category (experiments/plp-header? app-state))
                :video         (when-let [video (get-in app-state adventure.keypaths/adventure-home-video)] video)

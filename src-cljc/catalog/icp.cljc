@@ -247,7 +247,7 @@
                         {:title filter-title})
                       {:phone-consult-cta (merge (get-in state keypaths/cms-phone-consult-cta)
                                                   (api.orders/current state)
-                                                  {:place-id :checkout-payment
+                                                  {:place-id :shopping-plp
                                                    :in-omni? (:experience/omni (:experiences (accounts/<- state)))})}
                       {:category-hero         (category-hero-query interstitial-category)
                        :content-box           (when (and shop? (:content-block/type interstitial-category))

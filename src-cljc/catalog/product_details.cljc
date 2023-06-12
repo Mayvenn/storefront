@@ -1030,7 +1030,7 @@
              (merge (query state)
                     {:phone-consult-cta (merge (get-in state keypaths/cms-phone-consult-cta)
                                                (api.orders/current state)
-                                               {:place-id :pdp
+                                               {:place-id :shopping-pdp
                                                 :in-omni? (:experience/omni (:experiences (accounts/<- state)))})}
                     (options-picker< state facets-db options-accordion)
                     {:add-to-cart (add-to-cart-query state)}
