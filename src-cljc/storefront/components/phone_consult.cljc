@@ -2,6 +2,8 @@
   (:require [storefront.accessors.experiments :as experiments]
             [storefront.component :as c :refer [defdynamic-component]]
             [storefront.components.share-links :as share-links]
+            [storefront.components.svg :as svg]
+            [storefront.components.ui :as ui]
             [storefront.transitions :as t]
             [storefront.effects :as fx]
             [storefront.trackings :as trk]
@@ -69,6 +71,7 @@
           (utils/fake-href e/phone-consult-cta-click
                            {:number   support-phone-number
                             :place-id place-id})
+          (svg/phone-ringing-large {})
           (map cms-dynamic-content/build-hiccup-tag (:content message-rich-text))
           [:div.m2.flex.justify-center
            (ui/button-small-primary {} "Call Now")]]

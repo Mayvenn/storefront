@@ -63,6 +63,11 @@
 
 ;; Help
 
+(defn phone-ringing-large [opts]
+  (component/html
+   [:svg (merge {:class "stroke-black" :style {:width "70px" :height "70px"}} opts)
+    ^:inline (svg-xlink "phone-ringing")]))
+
 (defn phone-ringing [opts]
   (component/html
    [:svg (merge {:class "stroke-black" :style {:width "30px" :height "30px"}} opts)
