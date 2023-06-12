@@ -29,5 +29,5 @@
                           :body))}
               {:phone-consult-cta  (merge (get-in app-state k/cms-phone-consult-cta)
                                           (api.orders/current app-state)
-                                          {:place-id :checkout-payment
+                                          {:place-id :shopping-homepage
                                            :in-omni? (:experience/omni (:experiences (accounts/<- app-state)))})}))))
