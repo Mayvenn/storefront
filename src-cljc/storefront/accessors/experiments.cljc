@@ -132,15 +132,6 @@
   ;;      so we honor both flags here to prevent mixups
   (display-feature? data "pdp-template-slots--cms-only"))
 
-(defn pdp-template-slots?
-  [data]
-  ;;NOTE: Originally these were called content slots, but we changed their name to template slots
-  ;;      so we honor both flags here to prevent mixups
-  (or
-   (pdp-template-slots-from-cms-only? data) ;; If cms data only is turned on, then pdp-template-slots must also be on
-   (display-feature? data "pdp-content-slots")
-   (display-feature? data "pdp-template-slots")))
-
 (defn footer-email-capture?
   [data]
   (display-feature? data "footer-email-capture"))

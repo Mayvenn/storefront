@@ -266,9 +266,9 @@
               :else        (c/build add-to-cart/organism add-to-cart))]
            (when (products/stylist-only? product)
              shipping-and-guarantee)
-           (c/build pre-accordion/component (with :pre-accordion data)) 
+           (c/build pre-accordion/component (with :pre-accordion data))
            (c/build accordion-neue/component
-                    (with :info-accordion data)
+                    (with :pdp-details-accordion data)
                     {:opts {:accordion.drawer.open/face-component   accordions.product-info/face-open
                             :accordion.drawer.closed/face-component accordions.product-info/face-closed
                             :accordion.drawer/contents-component    accordions.product-info/contents}})
@@ -557,30 +557,6 @@
       :sub-cta/learn-more-copy   "Find my store"
       :sub-cta/learn-more-target [events/navigate-retail-walmart {}]})))
 
-(def drawer-and-template-slot-ordering-v1
-  [{:pdp.details/hair-info
-    [:pdp.details.hair-info/model-wearing
-     ;; TODO: length guide
-     :pdp.details.hair-info/unit-weight
-     :pdp.details.hair-info/hair-quality
-     :pdp.details.hair-info/hair-origin
-     :pdp.details.hair-info/hair-weft-type
-     :pdp.details.hair-info/part-design
-     :pdp.details.hair-info/features
-     :pdp.details.hair-info/available-materials
-     :pdp.details.hair-info/lace-size
-     :pdp.details.hair-info/silk-size
-     :pdp.details.hair-info/cap-size
-     :pdp.details.hair-info/density
-     :pdp.details.hair-info/tape--in-glue-information]}
-   {:pdp.details/description
-    [:pdp.details.description/description
-     :pdp.details.description/hair-type
-     :pdp.details.description/what's-included]}
-   {:pdp.details/care
-    [:pdp.details.care/maintenance-level
-     :pdp.details.care/can-it-be-colored?]}])
-
 (def drawer-and-template-slot-ordering-v2
   [{:pdp.details/overview
     [:pdp.details.overview/description
@@ -611,35 +587,6 @@
    {:pdp.details/customize-your-wig
     [:pdp.details.customize-your-wig/in-store-services
      :pdp.details.customize-your-wig/video-tutorial]}])
-
-(defn v1-default-template-slots<
-  "Converts cellar SKU and cellar Product to template-slots"
-  [current-product selected-sku model-image]
-  ;;    Key                                               Title                Sub Text
-  (->> [:pdp.details.description/description              nil                       (->> current-product :copy/description)
-        :pdp.details.description/what's-included          "What's Included"         (->> current-product :copy/whats-included)
-        :pdp.details.description/hair-type               "Hair Type"                (->> current-product :copy/hair-type)
-        :pdp.details.hair-info/model-wearing             "Model Wearing"            (or (:copy/model-wearing model-image)
-                                                                                        (:copy/model-wearing current-product))
-        :pdp.details.hair-info/unit-weight               "Unit Weight"              (or (->> selected-sku :hair/weight)
-                                                                                        (->> current-product :copy/weights))
-        :pdp.details.hair-info/hair-quality              "Hair Quality"             (->> current-product :copy/quality)
-        :pdp.details.hair-info/density                   "Density"                  (->> current-product :copy/density)
-        :pdp.details.hair-info/hair-origin               "Hair Origin"              (->> current-product :copy/origin)
-        :pdp.details.hair-info/hair-weft-type            "Hair Weft Type"           (->> current-product :copy/weft-type)
-        :pdp.details.hair-info/part-design               "Part Design"              (->> current-product :copy/part-design)
-        :pdp.details.hair-info/features                  "Features"                 (->> current-product :copy/features)
-        :pdp.details.hair-info/available-materials       "Available Materials"      (->> current-product :copy/materials)
-        :pdp.details.hair-info/lace-size                 "Lace Size"                (->> current-product :copy/lace-size)
-        :pdp.details.hair-info/silk-size                 "Silk Size"                (->> current-product :copy/silk-size)
-        :pdp.details.hair-info/cap-size                  "Cap Size"                 (->> current-product :copy/cap-size)
-        :pdp.details.hair-info/tape--in-glue-information "Tape-in Glue Information" (->> current-product :copy/tape-in-glue)
-        :pdp.details.care/maintenance-level              "Maintenance Level"        (->> current-product :copy/maintenance-level)]
-       (partition 3)
-       (keep (fn [[k heading content]]
-               (when content
-                 [k (str "<div>" (when heading (str "<h3>" heading "</h3>")) "<p>" (apply str content) "</p></div>")])))
-       (into {})))
 
 (defn v2-default-template-slots<
   "Converts cellar SKU and cellar Product to template-slots"
@@ -722,18 +669,16 @@
      (contains? (:catalog/department product) "stylist-exclusives")
      {:allow-all-closed?    false
       :initial-open-drawers #{:pdp.details/description}}
-     (select {:hair/family #{"ready-wigs"}} [product])
-     {:allow-all-closed?    true
-      :initial-open-drawers #{:pdp.details/overview}}
+
      :else
      {:allow-all-closed?    true
-      :initial-open-drawers #{:pdp.details/hair-info}})
+      :initial-open-drawers #{:pdp.details/overview}})
 
    {:allow-multi-open?    false
     :drawers (into []
                    (keep (partial template-slot-drawer< template-slot-data length-guide-image debug-template-slots?))
                    accordion-ordering)
-    :id                   :info-accordion
+    :id                   :pdp-details-accordion
     :open-drawers         open-drawers}))
 
 (defn query [data]
@@ -786,10 +731,10 @@
              #:pre-accordion{:primary      "Good to Know:"
                              :blocks-left  [{:primary "10 pieces (wefts) included"
                                              :icon    :svg/box-open
-                                             :content ["1 x 8 inch weft" 
-                                                       "1 x 7 inch weft" 
-                                                       "2 x 6 inch wefts" 
-                                                       "2 x 4 inch wefts" 
+                                             :content ["1 x 8 inch weft"
+                                                       "1 x 7 inch weft"
+                                                       "2 x 6 inch wefts"
+                                                       "2 x 4 inch wefts"
                                                        "4 x 1.5 inch weft"]}
                                             {:primary "Clips come attached to weft"
                                              :icon    :svg/comb}
@@ -965,7 +910,7 @@
                                                                                                   {:value qty}]}]})))))}})]})))
 
 (defn information<
-  [state images-db info-accordion detailed-product selected-sku]
+  [state images-db pdp-details-accordion detailed-product selected-sku]
   (let [length-guide-image    (->> (images/for-skuer images-db detailed-product)
                                    (select {:use-case #{"length-guide"}})
                                   first)
@@ -983,47 +928,37 @@
         model-image     (first (filter :copy/model-wearing carousel-images))
 
         use-cms-only?                (experiments/pdp-template-slots-from-cms-only? state)
-        use-v2-drawers?              (experiments/pdp-template-slots? state)
-        accordion-ordering           (if use-v2-drawers?
-                                       drawer-and-template-slot-ordering-v2
-                                       drawer-and-template-slot-ordering-v1)
-        accordion-template-slot-data (merge (when (and (not use-v2-drawers?)
-                                                       (not use-cms-only?))
-                                              (v1-default-template-slots< detailed-product
-                                                                          selected-sku
-                                                                          model-image))
-                                            (when (and use-v2-drawers?
-                                                       (not use-cms-only?))
+        accordion-ordering           drawer-and-template-slot-ordering-v2
+        accordion-template-slot-data (merge (when (not use-cms-only?)
                                               (v2-default-template-slots< detailed-product
                                                                           selected-sku
                                                                           model-image))
-                                            (when use-v2-drawers?
-                                              (cms-override-template-slots< (get-in state keypaths/cms-template-slots)
-                                                                            selected-sku)))]
-    (accordion-neue/accordion-query
-     (template-slots->accordion-slots accordion-ordering
-                                      accordion-template-slot-data
-                                      detailed-product
-                                      length-guide-image
-                                      (:accordion/open-drawers info-accordion)
-                                      debug-template-slots?))))
+                                            (cms-override-template-slots< (get-in state keypaths/cms-template-slots)
+                                                                          selected-sku))]
+    (spice.core/spy "information<" (accordion-neue/accordion-query
+                     (template-slots->accordion-slots accordion-ordering
+                                                      accordion-template-slot-data
+                                                      detailed-product
+                                                      length-guide-image
+                                                      (:accordion/open-drawers pdp-details-accordion)
+                                                      debug-template-slots?)))))
 
 (defn ^:export page
   [state opts]
   (let [;; Databases
-        facets-db          (facets/by-slug state)
-        images-db          (get-in state keypaths/v2-images)
-        skus-db            (get-in state keypaths/v2-skus)
-        product-carousel   (carousel-neue/<- state :product-carousel)
-        options-accordion  (accordion-neue/<- state :pdp-picker)
-        info-accordion     (accordion-neue/<- state :info-accordion)
+        facets-db             (facets/by-slug state)
+        images-db             (get-in state keypaths/v2-images)
+        skus-db               (get-in state keypaths/v2-skus)
+        product-carousel      (carousel-neue/<- state :product-carousel)
+        options-accordion     (accordion-neue/<- state :pdp-picker)
+        pdp-details-accordion (accordion-neue/<- state :pdp-details-accordion)
         ;; external loads
-        loaded-quadpay?    (get-in state keypaths/loaded-quadpay)
+        loaded-quadpay?       (get-in state keypaths/loaded-quadpay)
         ;; Focus
-        detailed-product   (products/current-product state)
-        selected-sku       (get-in state catalog.keypaths/detailed-product-selected-sku) 
+        detailed-product      (products/current-product state)
+        selected-sku          (get-in state catalog.keypaths/detailed-product-selected-sku)
         ;; Flags
-        carousel-redesign? (and (experiments/carousel-redesign? state)
+        carousel-redesign?    (and (experiments/carousel-redesign? state)
                                 (or (select ?wig [detailed-product])
                                     (select {:hair/family #{"seamless-clip-ins"}} [detailed-product])))]
     (c/build (if detailed-product template loading-template)
@@ -1039,7 +974,7 @@
                     (zip-payment< selected-sku loaded-quadpay?)
                     (information< state
                                   images-db
-                                  info-accordion
+                                  pdp-details-accordion
                                   detailed-product
                                   selected-sku)
                     (reviews< skus-db detailed-product)
@@ -1173,8 +1108,7 @@
                              (not= (:catalog/product-id args)
                                    (:catalog/product-id prev-args))
                              (= :first-nav (:navigate/caused-by args)))]
-       (when (experiments/pdp-template-slots? app-state)
-         (effects/fetch-cms2 app-state [:templateSlot]))
+       (effects/fetch-cms2 app-state [:templateSlot])
        (when (nil? product)
          (fetch-product-details app-state product-id))
        (when just-arrived?
