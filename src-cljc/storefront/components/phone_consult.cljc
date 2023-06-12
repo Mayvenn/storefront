@@ -52,11 +52,11 @@
   (did-mount
    [this]
    (let [{:keys [released shop-or-omni in-omni? place-id]} (c/get-props this)]
-     ((and released
-           ;; shop-or-omni (shop = true, omni = false)
-           (= shop-or-omni (not in-omni?)))
-      (publish e/phone-consult-cta-impression {:number   support-phone-number
-                                               :place-id place-id}))))
+     (when (and released
+                ;; shop-or-omni (shop = true, omni = false)
+                (= shop-or-omni (not in-omni?)))
+       (publish e/phone-consult-cta-impression {:number   support-phone-number
+                                                :place-id place-id}))))
   (render
    [this]
    (c/html

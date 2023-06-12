@@ -268,16 +268,14 @@
      [:main.bg-white.flex-auto
       {:data-test (keypaths/->component-str nav-event)}
       [:div
+       (when (:checkout-cart (:phone-consult-cta cart))
+         (component/build phone-consult/component (:phone-consult-cta cart)))
        [:div.hide-on-tb-dt
         [:div.border-bottom.border-gray.border-width-1.m-auto.col-7-on-dt
-         (when (:checkout-cart (:phone-consult-cta cart))
-           (component/build phone-consult/component (:phone-consult-cta cart)))
          [:div.flex.justify-between
           [:div.px2.my2.flex.items-center (ui-molecules/return-link (:return-link cart))]
           (clear-cart-link (:clear-cart-link cart))]]]
        [:div.hide-on-mb.col-7-on-dt.mx-auto
-        (when (:checkout-cart (:phone-consult-cta cart))
-          (component/build phone-consult/component (:phone-consult-cta cart)))
         [:div.m-auto.container
          [:div.flex.justify-between
           [:div.px2.my2 (ui-molecules/return-link (:return-link cart))]
