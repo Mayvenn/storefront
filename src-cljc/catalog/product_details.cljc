@@ -127,9 +127,8 @@
    #?(:cljs
       (c/build zip/pdp-component data _))])
 
-(defn diamond-swatch [ucare-id facet-slug option-slug option-name selected? target size]
-  (let [container-width #?(:clj (.hypot java.lang.Math size size)
-                           :cljs (js/Math.hypot size size))]
+(defn color-swatch [ucare-id facet-slug option-slug option-name selected? target size]
+  (let [container-width 50]
     [(if target :a :div)
      (merge {:style {:width (str container-width "px")
                      :height (str container-width "px")}
@@ -140,16 +139,14 @@
               {:data-test (str "picker-" facet-slug "-" option-slug)})
             (when target
               (apply utils/fake-href target)))
-     [:div.overflow-hidden.flex.items-center.justify-center
-      {:style {:transform "rotate(45deg)"
-               :width     (str size "px")
+     [:div.flex.items-center.justify-center
+      {:style {:width     (str size "px")
                :height    (str size "px")
-               :padding   "0"}
-       :class (when selected? "border border-width-2 border-s-color")}
+               :padding   "2"}
+       :class (when selected? "border border-width-4 border-s-color")}
       [:img
        {:key   (str "product-details-" option-name "-" option-slug)
-        :style {:transform "rotate(-45deg)"
-                :width     (str (inc container-width) "px")
+        :style {:width     (str (inc container-width) "px")
                 :height    (str (inc container-width) "px")}
         :alt   option-name
         :src   (str "https://ucarecdn.com/" (ui/ucare-img-id ucare-id) "/-/format/auto/")}]]]))
@@ -163,7 +160,7 @@
    [:div.flex.items-center.gap-2
     {:data-test (str "picker-selected-" facet-slug "-" option-slug)}
     (when swatch
-      (diamond-swatch swatch facet-slug option-slug option-name false nil 20))
+      (color-swatch swatch facet-slug option-slug option-name false nil 55))
     option-name]])
 
 (c/defcomponent picker-accordion-face-closed
@@ -175,7 +172,7 @@
    [:div.flex.items-center.gap-2
     {:data-test (str "picker-selected-" facet-slug "-" option-slug)}
     (when swatch
-      (diamond-swatch swatch facet-slug option-slug option-name false nil 20))
+      (color-swatch swatch facet-slug option-slug option-name false nil 55))
     option-name]])
 
 (c/defcomponent picker-accordion-contents
@@ -186,7 +183,7 @@
    [:div.flex.flex-wrap.gap-2
     (if swatches?
       (for [{:keys [option-slug selected? option-name rectangle-swatch target]} options]
-        (diamond-swatch rectangle-swatch facet option-slug option-name selected? target 30))
+        (color-swatch rectangle-swatch facet option-slug option-name selected? target 55))
       (for [{:keys [option-slug copy selected? target]} options]
         [(if target :a :div)
          (merge {:key   option-slug
