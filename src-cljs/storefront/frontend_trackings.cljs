@@ -356,7 +356,7 @@
              :tax              (:tax-total order)
              :number           (:number order)
              :line-item-skuers line-item-skuers
-             :user-ecd         (get-in app-state keypaths/user-ecd)}))))
+             :user-ecd         (google-analytics/retrieve-user-ecd app-state)}))))
 
 (defmethod perform-track events/api-success-auth-sign-in [_ event {:keys [flow user] :as args} app-state]
   (stringer/track-event "sign_in" {:type flow})
