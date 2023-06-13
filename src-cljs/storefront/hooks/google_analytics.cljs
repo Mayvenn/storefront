@@ -108,10 +108,10 @@
 
 (defn retrieve-user-ecd
   [app-state]
-  (let [user-ecd (get-in app-state k/user-ecd)]
+  (when-let [user-ecd (get-in app-state k/user-ecd)]
     (assert-country-is-us user-ecd)
     ;; Explicitly making country "us" while we debug Meta's insistence that we are sending an unknown country
-    (let [country (if (= (get-in app-state k/environment) "acceptance") "bad" "us")]
+    (let [country (if (= (get-in app-state k/environment) "development") "bad" "us")]
       (-> user-ecd 
           (assoc :country country)
           (assoc-in [:address :country] country)))))
