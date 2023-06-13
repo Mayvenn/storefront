@@ -100,17 +100,24 @@
      [:id6b "I don't know"]
      [:id6c "No"]]]])
 
+(defn inflate-choices
+  [choices]
+  (->> choices
+       (mapv (fn [[id answer]]
+               {:choice/id     id
+                :choice/answer answer}))
+       shuffle))
+
+(def mem-inflate-choices
+  (memoize inflate-choices))
+
 (defn- inflate-quiz
   [quiz-data]
-  (letfn [(inflate-choices [choices]
-            (mapv (fn [[id answer]]
-                    {:choice/id     id
-                     :choice/answer answer})
-                  choices))
-          (inflate-question [[id prompt choices]]
+  (letfn [(inflate-question
+            [[id prompt choices]]
             {:question/id     id
              :question/prompt [prompt]
-             :question/choices (inflate-choices choices)})]
+             :question/choices (mem-inflate-choices choices)})]
     (mapv inflate-question quiz-data)))
 
 (defn <-
