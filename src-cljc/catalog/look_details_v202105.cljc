@@ -6,7 +6,6 @@
                        [storefront.trackings]
                        [storefront.hooks.quadpay :as quadpay]
                        [storefront.hooks.stringer :as stringer]
-                       [storefront.hooks.google-analytics :as google-analytics]
                        [storefront.platform.messages :as messages]])
             [adventure.components.layered :as layered]
             [api.catalog :refer [select ?discountable ?model-image ?cart-product-image]]
@@ -876,7 +875,7 @@
             :image-catalog    (get-in state keypaths/v2-images)
             :store-experience (get-in state keypaths/store-experience)
             :order            order
-            :user-ecd         (google-analytics/retrieve-user-ecd state)}) 
+            :user-ecd         (get-in state keypaths/user-ecd)}) 
           (doseq [promo-code promotion-codes]
             (messages/handle-message events/order-promo-code-added {:order-number (:number order)
                                                                     :promo-code   promo-code})))))))

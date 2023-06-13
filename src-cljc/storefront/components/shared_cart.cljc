@@ -1,8 +1,7 @@
 (ns storefront.components.shared-cart
   (:require #?@(:cljs [[storefront.api :as api]
                        [storefront.history :as history]
-                       [storefront.hooks.quadpay :as quadpay] 
-                       [storefront.hooks.google-analytics :as google-analytics]
+                       [storefront.hooks.quadpay :as quadpay]
                        [storefront.accessors.orders :as orders]
                        [storefront.accessors.auth :as auth]
                        storefront.trackings
@@ -626,7 +625,7 @@
        :store-experience (get-in state keypaths/store-experience)
        :order            order
        :shared-cart-id   shared-cart-id
-       :user-ecd         (google-analytics/retrieve-user-ecd state)})))
+       :user-ecd         (get-in state keypaths/user-ecd)})))
 
 (defmethod transitions/transition-state events/api-failure-shared-cart
   [_ _ _ state]

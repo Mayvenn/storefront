@@ -1124,7 +1124,7 @@
                              (get-in app-state)
                              (products/extract-product-skus app-state)
                              first))]
-       (google-analytics/track-view-items [sku] (google-analytics/retrieve-user-ecd app-state)))))
+       (google-analytics/track-view-items [sku] (get-in app-state keypaths/user-ecd)))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/api-success-v3-products-for-details
@@ -1202,7 +1202,8 @@
            (messages/handle-message events/api-success-add-sku-to-bag
                                     {:order    %
                                      :quantity quantity
-                                     :sku      sku})
+                                     :sku      sku
+                                     :user-ecd (get-in state keypaths/user-ecd)})
            (when (not (or (= events/navigate-cart nav-event) stay-on-page?))
              (history/enqueue-navigate events/navigate-cart)))))))
 

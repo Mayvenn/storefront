@@ -116,7 +116,7 @@
                                  (= "retail-location" (get-in app-state keypaths/store-experience))))
       :order-quantity   (orders/product-and-service-quantity order)
       :line-item-skuers line-item-skuers
-      :user-ecd         (google-analytics/retrieve-user-ecd app-state)})
+      :user-ecd         (get-in app-state keypaths/user-ecd)})
     (stringer/track-event "suggested_line_item_added" {:added_skus   added-skus
                                                        :initial_sku  (dissoc (line-item-skuer->stringer-cart-item images-catalog initial-sku)
                                                                              :variant_quantity)
@@ -124,7 +124,7 @@
                                                        :order_total  (:total order)})))
 
 (defmethod perform-track events/api-success-add-sku-to-bag
-  [_ _ {:keys [quantity sku order] :as args} app-state]
+  [_ _ {:keys [quantity sku order user-ecd] :as args} app-state]
   (when sku
     (let [images-catalog        (get-in app-state keypaths/v2-images)
           skus-db               (get-in app-state keypaths/v2-skus)
@@ -145,8 +145,7 @@
                                      (filter :catalog/sku-id)
                                      (mapv (partial line-item-skuer->stringer-cart-item images-catalog)))
           store-slug            (get-in app-state keypaths/store-slug)
-          order-quantity        (orders/product-and-service-quantity order)
-          user-ecd              (google-analytics/retrieve-user-ecd app-state)]
+          order-quantity        (orders/product-and-service-quantity order)]
       (stringer/track-event "add_to_cart" (merge cart-item-being-added
                                                  {:order_number     (:number order)
                                                   :order_total      (:total order)
@@ -164,7 +163,7 @@
                                    (= "retail-location" (get-in app-state keypaths/store-experience))))
         :order-quantity   order-quantity
         :line-item-skuers [(assoc sku :item/quantity quantity)]
-        :user-ecd         user-ecd}))))
+        :user-ecd         (get-in app-state keypaths/user-ecd)}))))
 
 (defmethod perform-track events/order-line-item-removed
   [_ _ {:keys [sku-id quantity order]} app-state] 
@@ -255,21 +254,19 @@
                                                     user-ecd))))
 
 (defmethod perform-track events/api-success-add-multiple-skus-to-bag
-  [_ _ {:keys [sku-id->quantity order]
-        :as   args} app-state]
+  [_ _ {:keys [sku-id->quantity order] :as args} app-state]
   ;; NOTE: Currently does not handle cases where one of the skus being added in a free-install sku
   (when (some-> sku-id->quantity count pos?)
-    (let [images-catalog            (get-in app-state keypaths/v2-images)
-          skus-db                   (get-in app-state keypaths/v2-skus)
-          store-experience          (get-in app-state keypaths/store-experience)
+    (let [images-catalog   (get-in app-state keypaths/v2-images)
+          skus-db          (get-in app-state keypaths/v2-skus)
+          store-experience (get-in app-state keypaths/store-experience)
 
           added-line-item-skuers    (sku-id->quantity-to-line-item-skuer skus-db sku-id->quantity)
           added-stringer-cart-items (map (partial line-item-skuer->stringer-cart-item images-catalog)
                                          added-line-item-skuers)
 
-          store-slug                (get-in app-state keypaths/store-slug)
-          order-quantity            (orders/product-and-service-quantity order)
-          user-ecd                  (google-analytics/retrieve-user-ecd app-state)]
+          store-slug     (get-in app-state keypaths/store-slug)
+          order-quantity (orders/product-and-service-quantity order)]
       (stringer/track-event "bulk_add_to_cart"
                             (merge
                              {:store_experience store-experience
@@ -279,7 +276,7 @@
                               :skus             (->> added-line-item-skuers (map :catalog/sku-id) (string/join ","))
                               :variant_ids      (->> added-line-item-skuers (map :legacy/variant-id) (string/join ","))
                               :context          {:cart-items added-stringer-cart-items}}
-                             user-ecd))
+                             (get-in app-state keypaths/user-ecd)))
       (google-analytics/track-add-to-cart
        {:number           (:number order)
         :store-slug       store-slug
@@ -287,7 +284,7 @@
                                    (= "retail-location" (get-in app-state keypaths/store-experience))))
         :order-quantity   order-quantity
         :line-item-skuers added-line-item-skuers
-        :user-ecd         user-ecd}))))
+        :user-ecd         (get-in app-state keypaths/user-ecd)}))))
 
 (def interesting-payment-methods
   #{"apple-pay" "paypal" "quadpay"})
@@ -380,7 +377,7 @@
     (google-analytics/track-begin-checkout {:line-item-skuers     (waiter-line-items->line-item-skuer (get-in app-state keypaths/v2-skus)
                                                                                                       (orders/product-items order))
                                             :used-promotion-codes (:promotion-codes order)
-                                            :user-ecd             (google-analytics/retrieve-user-ecd app-state)})))
+                                            :user-ecd             (get-in app-state keypaths/user-ecd)})))
 
 (defmethod perform-track events/browse-addon-service-menu-button-enabled
   [_ event args app-state]
@@ -516,4 +513,4 @@
 
 (defmethod perform-track events/look|viewed
   [_ _ {:keys [skus]} app-state]
-  (google-analytics/track-view-items skus (google-analytics/retrieve-user-ecd app-state)))
+  (google-analytics/track-view-items skus (get-in app-state keypaths/user-ecd)))
