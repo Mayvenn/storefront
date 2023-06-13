@@ -8,6 +8,7 @@
             [storefront.components.top-level :refer [top-level-component]]
             [storefront.history :as history]
             [storefront.hooks.exception-handler :as exception-handler]
+            [storefront.hooks.google-analytics :as google-analytics]
             [storefront.platform.messages :as messages]
             [storefront.effects :refer [perform-effects]]
             [storefront.frontend-effects]
@@ -149,13 +150,7 @@
 
 (defn ^:export current-user-ecd []
   ;; Enhanced Conversion Data
-  
-  ;; Explicitly making country "us" while we debug Meta's insistence that we are sending an unknown country
-  (let [country (if (= (get-in @app-state keypaths/environment) "acceptance") "bad" "us")]
-    (clj->js (-> @app-state
-                 (get-in keypaths/user-ecd)
-                 (assoc :country country)
-                 (assoc-in [:address :country] country)))))
+  (clj->js (google-analytics/retrieve-user-ecd (get-in @app-state keypaths/user-ecd))))
 
 (defn ^:before-load before-load []
   (handle-message app-state events/app-stop))
