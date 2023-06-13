@@ -8,6 +8,7 @@
             [storefront.components.top-level :refer [top-level-component]]
             [storefront.history :as history]
             [storefront.hooks.exception-handler :as exception-handler]
+            [storefront.hooks.google-analytics :as google-analytics]
             [storefront.platform.messages :as messages]
             [storefront.effects :refer [perform-effects]]
             [storefront.frontend-effects]
@@ -149,7 +150,7 @@
 
 (defn ^:export current-user-ecd []
   ;; Enhanced Conversion Data
-  (clj->js (get-in @app-state keypaths/user-ecd)))
+  (clj->js (google-analytics/retrieve-user-ecd @app-state)))
 
 (defn ^:before-load before-load []
   (handle-message app-state events/app-stop))

@@ -15,15 +15,6 @@
     (.push js/dataLayer (clj->js {:event event-name
                                   :ecommerce data}))))
 
-;; Trying to figure out why Meta is complaining about country codes
-(defn assert-country-is-us [user-ecd]
-  (let [country-root (-> user-ecd :country)
-        country-addr (-> user-ecd :address :country)]
-    (when (and (seq user-ecd)
-               (or (not= "us" country-root)
-                   (not= "us" country-addr)))
-      (throw (ex-info (str "Country codes: " country-root " " country-addr) {:country-root country-root
-                                                                             :country-addr country-addr})))))
 
 (defn ^:private mayvenn-line-item->ga4-item
   ([item quantity] (mayvenn-line-item->ga4-item (assoc item :item/quantity quantity)))
@@ -42,7 +33,6 @@
   ;; NOTE: We are ignoring discounts here
   ;; TODO: We should probably minus the discount out of the value.
   (let [value (reduce + 0 (map :sku/price line-item-skuers))]
-    (assert-country-is-us user-ecd)
     (track "add_to_cart"
            (merge
             {:items    (mapv mayvenn-line-item->ga4-item line-item-skuers)
@@ -66,7 +56,6 @@
 
 (defn track-begin-checkout
   [{:keys [line-item-skuers used-promotion-codes user-ecd]}]
-  (assert-country-is-us user-ecd)
   (track "begin_checkout" (merge {:items    (mapv mayvenn-line-item->ga4-item line-item-skuers)
                                   :currency "USD"
                                   :value    (reduce + 0 (map :sku/price line-item-skuers))
@@ -77,7 +66,6 @@
   [skuers user-ecd] 
   (when (seq skuers)
     (let [ga4-items (map mayvenn-line-item->ga4-item skuers)]
-      (assert-country-is-us user-ecd)
       (track "view_item" (merge {:currency "USD"
                                  :value    (reduce (fn [acc {:keys [price quantity]}] 
                                                      (+ acc (* quantity price))) 0 ga4-items)
@@ -107,6 +95,25 @@
     (let [sha256 (js/goog.crypt.Sha256.)]
       (->> message string/lower-case string/trim goog.crypt/stringToByteArray (.update sha256))
       (goog.crypt/byteArrayToHex (.digest sha256)))))
+
+;; Trying to figure out why Meta is complaining about country codes
+(defn assert-country-is-us [user-ecd]
+  (let [country-root (-> user-ecd :country)
+        country-addr (-> user-ecd :address :country)]
+    (when (or (not= "us" country-root)
+              (not= "us" country-addr))
+      (throw (ex-info (str "Country codes: " country-root " " country-addr) {:country-root country-root
+                                                                             :country-addr country-addr})))))
+
+(defn retrieve-user-ecd
+  [app-state]
+  (when-let [user-ecd (get-in app-state k/user-ecd)]
+    (assert-country-is-us user-ecd)
+    ;; Explicitly making country "us" while we debug Meta's insistence that we are sending an unknown country
+    (let [country (if (= (get-in app-state k/environment) "acceptance") "bad" "us")]
+      (-> user-ecd 
+          (assoc :country country)
+          (assoc-in [:address :country] country)))))
 
 (defmethod t/transition-state e/set-user-ecd
   [_ _event {:keys [email phone first-name last-name address1 city state zipcode]} app-state]
