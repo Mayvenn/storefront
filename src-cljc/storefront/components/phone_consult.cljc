@@ -71,7 +71,11 @@
           (utils/fake-href e/phone-consult-cta-click
                            {:number   support-phone-number
                             :place-id place-id})
-          (svg/phone-ringing-large {})
+          (ui/img {:class    "container-size"
+                   :style    {:max-width "300px"}
+                   :src      "//ucarecdn.com/2047ed67-93b4-44f2-bf59-87d8884c157a/bigstockSmilingBeautifulBlackBusine306369811.jpg"
+                   :max-size 749
+                   :alt      "Customer Support"})
           (map cms-dynamic-content/build-hiccup-tag (:content message-rich-text))
           [:div.m2.flex.justify-center
            (ui/button-small-primary {} "Call Now")]]
