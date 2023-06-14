@@ -158,34 +158,25 @@
          (stringer/identify {:email captured-email})
          (stringer/track-event "email_capture-capture"
                                (merge
-                                (let [{:keys [persona/id results]} (persona/<- app-state)
-                                      products-db                  (get-in app-state k/v2-products)
-                                      skus-db                      (get-in app-state k/v2-skus)
-                                      looks-db                     (get-in app-state k/cms-ugc-collection-all-looks)
-                                      images-db                    (get-in app-state k/v2-images)]
+                                (let [{:keys [persona/id results]} (persona/<- app-state)]
                                   (when id
                                     {:persona id
                                      :results (->> results
                                                    (map-indexed (fn [idx result]
                                                                   (cond
                                                                     (seq (:catalog/product-id result))
-                                                                    (let [product   (get products-db (:catalog/product-id result))
-                                                                          thumbnail (product-image images-db product)]
-                                                                      (when (:catalog/product-id product)
-                                                                        {:title     (:copy/title product)
-                                                                         :url       (str "https://www.mayvenn.com" "/products/" (:catalog/product-id product) "-" (:page/slug product)
-                                                                                         (when-let [sku-id (:catalog/sku-id result)] (str "?SKU=" sku-id)))
-                                                                         ;; ucare only
-                                                                         :image_url (str (:url thumbnail) "/-/format/auto/-/quality/lightest/-/crop/1:1/-/resize/350x350/")}))
+                                                                    (let [{:keys [catalog/product-id copy/title catalog/sku-id page/slug url]} result]
+                                                                      {:title     title
+                                                                       :url       (str "https://www.mayvenn.com" "/products/" product-id "-" slug
+                                                                                       (when sku-id (str "?SKU=" sku-id)))
+                                                                       :image_url (str url "-/format/auto/-/quality/lightest/-/crop/1:1/-/resize/350x350/")})
 
                                                                     (seq (:look/id result))
-                                                                    (let [contentful-look (get looks-db (keyword (:look/id result)))]
-                                                                      (when (:content/id contentful-look)
-                                                                        {:title         (:title contentful-look)
-                                                                         :url           (str "https://www.mayvenn.com" "/shop/look/" (:content/id contentful-look))
-                                                                         :album-keyword :look
-                                                                         ;; ucare only
-                                                                         :image_url     (str (:photo-url contentful-look) "/-/format/auto/-/quality/lightest/-/crop/1:1/-/resize/350x350/")}))))))}))
+                                                                    (let [{:keys [title photo-url]} result]
+                                                                      {:title         title
+                                                                       :url           (str "https://www.mayvenn.com" "/shop/look/" (:look/id result))
+                                                                       :image_url     (str photo-url "-/format/auto/-/quality/lightest/-/crop/1:1/-/resize/350x350/")
+                                                                       :album-keyword :look})))))}))
                                 {:email-capture-id      trigger-id
                                  :variation-description variation-description
                                  :template-content-id   template-content-id

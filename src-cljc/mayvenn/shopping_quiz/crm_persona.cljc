@@ -223,20 +223,6 @@
                                                 {:query-params {:p %}}))}]}]
      :action/label     "See Results"}))
 
-(def select
-  (comp seq
-        (partial selector/match-all
-                 {:selector/strict? true})))
-
-(defn- product-image
-  [images-db product]
-  (->> product
-       (images/for-skuer images-db)
-       (select {:use-case #{"carousel"}
-                :image/of #{"model" "product"}})
-       (sort-by :order)
-       first))
-
 (defn quiz-feedback<
   [state]
   {:feedback/label                   "Submit"
@@ -281,7 +267,7 @@
              :quaternary "We think you'll love these looks:"})))
 
 (defn quiz-results<
-  [products-db skus-db images-db looks-db persona]
+  [persona]
   {:results (->> persona
                  :results
                  (map-indexed (fn [idx {:keys [content/id catalog/product-id] :as result}]
@@ -306,12 +292,7 @@
 
 (defn ^:export page
   [state]
-  (let [products-db           (get-in state k/v2-products)
-        skus-db               (get-in state k/v2-skus)
-        images-db             (get-in state k/v2-images)
-        looks-shared-carts-db (get-in state k/cms-ugc-collection-all-looks)
-
-        {:order.items/keys [quantity]} (api.orders/current state)
+  (let [{:order.items/keys [quantity]} (api.orders/current state)
         questioning                    (questioning/<- state shopping-quiz-id)
         persona                        (persona/<- state)
 
@@ -328,11 +309,7 @@
                                                                 :catalog/category-id "25"}]})
                 (quiz-results-content< persona)
                 (quiz-feedback< state)
-                (quiz-results< products-db
-                               skus-db
-                               images-db
-                               looks-shared-carts-db
-                               persona)
+                (quiz-results< persona)
                 (within :header header-data)))
       :else
       (c/build questioning-template
