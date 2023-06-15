@@ -1,14 +1,14 @@
 (ns api.orders
-  (:require [api.catalog :refer [select ?addons ?discountable ?new-world-service ?physical ?service]]
+  (:require [api.catalog :refer [?addons ?discountable ?new-world-service
+                                 ?physical ?service select]]
             api.stylist
-            [storefront.accessors.experiments :as ff]
+            [clojure.string :refer [starts-with?]]
+            [spice.maps :as maps]
             [storefront.accessors.images :as images]
-            [storefront.accessors.line-items :as line-items]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.sites :as sites]
             storefront.keypaths
-            [stylist-matching.search.accessors.filters :as stylist-filters]
-            [spice.maps :as maps]))
+            [stylist-matching.search.accessors.filters :as stylist-filters]))
 
 ;;; Utils
 
@@ -470,24 +470,22 @@
                          :promotion-codes           promotion-codes}]
      :adjustments      (map (fn [{:keys [promotion discount-amount]}]
                               {:coupon-code promotion
-                               :name        (if (= "freeinstall" promotion) "Free Install" promotion)
+                               :name        promotion
                                :price       (- discount-amount)})
                             discounts)
      :line-items-total subtotal
      :total            (- subtotal total-discounted-amount)}))
 
-(defn shared-cart->order [state sku-db shared-cart]
-  (let [holiday-promo        (->> (get-in state storefront.keypaths/promotions)
-                                  (filter #(= "holiday" (:code %)))
-                                  first)
-        remove-free-install? (:remove-free-install (get-in state storefront.keypaths/features))]
+(defn shared-cart->order
+  [state sku-db shared-cart]
+  (let [holiday-promo (->> (get-in state storefront.keypaths/promotions)
+                           (filter #(= "holiday" (:code %)))
+                           first)]
     (some->> shared-cart
-             ;; GROT: Remove this HACK when all services have been removed from shared carts
              (#(update %
                        :line-items
                        (fn [line-items]
-                         (remove (fn [li] (and remove-free-install?
-                                               (clojure.string/starts-with? (:catalog/sku-id li) "SV2"))) line-items))))
+                         (remove (fn [li] (starts-with? (:catalog/sku-id li) "SV2")) line-items))))
              (enrich-line-items-with-sku-data sku-db)
              (apply-promos holiday-promo)
              shared-cart->waiter-order
