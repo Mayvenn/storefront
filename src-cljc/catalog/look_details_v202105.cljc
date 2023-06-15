@@ -9,7 +9,7 @@
                        [storefront.hooks.google-analytics :as google-analytics]
                        [storefront.platform.messages :as messages]])
             [adventure.components.layered :as layered]
-            [api.catalog :refer [select ?discountable ?model-image ?cart-product-image]]
+            [api.catalog :refer [select ?model-image ?cart-product-image]]
             api.orders
             api.products
             [catalog.facets :as facets]
@@ -22,7 +22,6 @@
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.images :as images]
             [storefront.accessors.shared-cart :as shared-cart]
-            [storefront.accessors.sites :as sites]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
             [storefront.components.picker.picker-two :as picker]
@@ -39,7 +38,6 @@
             [storefront.ugc :as ugc]
             [catalog.keypaths :as catalog.keypaths]
             [spice.selector :as selector]
-            [spice.core :as spice]
             [ui.molecules]))
 
 ;; A customizable look is a product merging all of the products that the base
@@ -213,8 +211,6 @@
 (defn ^:private fan-out-items
   [items]
   (mapcat #(repeat (:item/quantity %) (dissoc % :item/quantity)) items))
-
-
 
 (defmethod transitions/transition-state events/initialize-look-details
   [_ _ {:keys [shared-cart]} app-state]
@@ -608,15 +604,11 @@
                                                        (get-in data keypaths/selected-look-id)))
         contentful-look             (contentful/look->look-detail-social-card album-keyword
                                                                               (contentful/selected-look data))
-        faq                         (-> (get-in data keypaths/cms) :faq :shop-by-look)
         back                        (first (get-in data keypaths/navigation-undo-stack))
         album-copy                  (get ugc/album-copy album-keyword)
         back-event                  (:default-back-event album-copy)
-        shop?                       (= :shop (sites/determine-site data))
         promotion-codes             (get-in data storefront.keypaths/promotions)
         shared-cart-promotion-codes (:promotion-codes shared-cart)
-
-        remove-free-install? (:remove-free-install (get-in data storefront.keypaths/features))
 
         ;; Looks query
         facets-db (facets/by-slug data)
@@ -625,11 +617,10 @@
         picker-options (get-in data catalog.keypaths/detailed-look-options)
 
         ;; look items
-        {uncustomized-look-product-items "hair"
-         services                        "service"} (->> shared-cart
-                                                         (enrich-and-sort-shared-cart-items skus-db)
-                                                         fan-out-items
-                                                         (group-by (comp first :catalog/department)))
+        {uncustomized-look-product-items "hair"} (->> shared-cart
+                                                      (enrich-and-sort-shared-cart-items skus-db)
+                                                      fan-out-items
+                                                      (group-by (comp first :catalog/department)))
         look-selections                             (get-in data catalog.keypaths/detailed-look-selections)
         skus-matching-selections                    (->> (get-in data catalog.keypaths/detailed-look-selections)
                                                          selections->product-selections
@@ -639,7 +630,7 @@
                                                           (count skus-matching-selections))
 
         raw-order (api.orders/look-customization->order data
-                                                        {:line-items      (->> (concat skus-matching-selections (when (not remove-free-install?) services))
+                                                        {:line-items      (->> skus-matching-selections
                                                                                (group-by :catalog/sku-id)
                                                                                (maps/map-values (fn [skus]
                                                                                                   {:sku           (first skus)
@@ -648,9 +639,6 @@
                                                          :promotion-codes shared-cart-promotion-codes})
 
         items                 (:order/items raw-order)
-        discountable-services (when (not remove-free-install?)
-                                (select ?discountable items))
-
         {:keys [adjustments line-items-total total]} (:waiter/order raw-order)]
     (merge #?(:cljs (reviews/query-look-detail shared-cart data))
            {:spinning? (or (not contentful-look)
@@ -667,16 +655,7 @@
                                                                      :facet/options
                                                                      (:hair/texture look-selections)
                                                                      :option/name])
-                                                            "Hair"
-                                                            (when-let [discountable-service-category
-                                                                       (some->> discountable-services
-                                                                                first
-                                                                                :service/category
-                                                                                first)]
-                                                              (case discountable-service-category
-                                                                "install"      "+ FREE Install Service"
-                                                                "construction" "+ FREE Custom Wig"
-                                                                nil))])
+                                                            "Hair"])
                  secondary        (if discounted? discounted-price total-price)
                  tertiary         (when discounted? total-price)]
              {:look-title/primary    title
@@ -689,10 +668,6 @@
                                     (= "holiday" (:code applied-promo))
                                     (:description applied-promo)
 
-                                    (some (comp zero? :promo.mayvenn-install/hair-missing-quantity)
-                                          discountable-services)
-                                    "HAIR + FREE Install"
-
                                     applied-promo
                                     (:description applied-promo)
 
@@ -700,28 +675,6 @@
                                     (-> adjustments first :name))
               :look-total/secondary secondary
               :look-total/tertiary  tertiary})
-
-           (when (and (not remove-free-install?)
-                      shop?)
-             {:faq          (let [{:keys [question-answers]} faq]
-                              {:background-color "bg-pale-purple"
-                               :expanded-index   (get-in data keypaths/faq-expanded-section)
-                               :sections         (for [{:keys [question answer]} question-answers]
-                                                   {:title   (:text question)
-                                                    :content answer})})
-              :how-it-works {:layer/type     :shop-bulleted-explainer
-                             :layer/id       "heres-how-it-works"
-                             :title/value    ["You buy the hair,"
-                                              "we cover the install."]
-                             :subtitle/value ["Here's how it works."]
-                             :bullets        [{:title/value "Pick Your Dream Look"
-                                               :body/value  "Have a vision in mind? We’ve got the hair for it. Otherwise, peruse our site for inspiration to find your next look."}
-                                              {:title/value ["Select A Mayvenn" ui/hyphen "Certified Stylist"]
-                                               :body/value  "We’ve hand-picked thousands of talented stylists around the country. We’ll cover the cost of your salon appointment with them when you buy 3 or more bundles."}
-                                              {:title/value ["Book Any Add-On Service"]
-                                               :body/value  "Want an additional service? On the cart page, you can book a Natural Hair Trim, Weave Take Down, or Deep Conditioning service. Then, continue toward checkout."}
-                                              {:title/value "Schedule Your Appointment"
-                                               :body/value  "We’ll connect you with your stylist to set up your install. Then, we’ll send you a prepaid voucher to cover the cost of service."}]}})
 
            {:look-card/primary   (:title contentful-look)
             :look-card/secondary (:description contentful-look)
@@ -827,7 +780,7 @@
 
 (defmethod effects/perform-effects events/control-look-detail-picker-option-select
   [_ event _ _ app-state]
-  #?(:cljs 
+  #?(:cljs
      (let [skus-matching-selections (->> (get-in app-state catalog.keypaths/detailed-look-selections)
                                          selections->product-selections
                                          (product-selections->skus (get-in app-state catalog.keypaths/detailed-look-availability))
@@ -849,8 +802,8 @@
   [_ _ {:keys [items promotion-codes look-id]} _ state]
   #?(:cljs
      (let [removed-items (orders/product-items (get-in state keypaths/order))]
-       (api/new-order-from-sku-ids 
-        (get-in state keypaths/session-id) 
+       (api/new-order-from-sku-ids
+        (get-in state keypaths/session-id)
         {:store-stylist-id     (get-in state keypaths/store-stylist-id)
          :user-id              (get-in state keypaths/user-id)
          :user-token           (get-in state keypaths/user-token)
@@ -876,7 +829,7 @@
             :image-catalog    (get-in state keypaths/v2-images)
             :store-experience (get-in state keypaths/store-experience)
             :order            order
-            :user-ecd         (google-analytics/retrieve-user-ecd state)}) 
+            :user-ecd         (google-analytics/retrieve-user-ecd state)})
           (doseq [promo-code promotion-codes]
             (messages/handle-message events/order-promo-code-added {:order-number (:number order)
                                                                     :promo-code   promo-code})))))))
