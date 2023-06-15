@@ -69,7 +69,7 @@
 
 (def crm-persona
   "Questions focused on understanding customer needs and segments"
-  [[:customer/goals "What are your top hair goals? (Pick up to two)"
+  [[:customer/goals "What are your top hair goals?"
     [[:customer.goals/enhance-natural "Enhance my natural hair (add length and volume)"]
      [:customer.goals/protect-natural "Protect my natural hair"]
      [:customer.goals/save-money "Save money"]
@@ -83,22 +83,22 @@
      [:customer.styles/work "A style for work"]
      [:customer.styles/switch-it-up "I want to switch it up"]
      [:unsure "I'm not sure. Surprise me!"]]]
-   [:id3 "How much of your natural hair do you want to leave out?"
-    [[:id3a "All"]
-     [:id3b "Some"]
-     [:id3c "None or Not Sure"]]]
-   [:id4 "Do you want the option to remove your style at night?"
-    [[:id4a "Leave It In"]
-     [:id4b "Remove"]
-     [:id4c "I don't know"]]]
-   [:id5 "Do you prefer a low maintenance style, or are you flexible?"
-    [[:id5a "Low Maintenance"]
-     [:id5b "I don't know"]
-     [:id5c "Flexible"]]]
-   [:id6 "Finally, would you like to be able to put your hair up?"
-    [[:id6a "Yes"]
-     [:id6b "I don't know"]
-     [:id6c "No"]]]])
+   [:customer/leave-out "How much of your natural hair do you want to leave out?"
+    [[:customer.leave-out/all "All"]
+     [:customer.leave-out/some "Some"]
+     [:unsure "None or Not Sure"]]]
+   [:customer/night "Do you want the option to remove your style at night?"
+    [[:customer.night/in "Leave It In"]
+     [:customer.night/out "Remove"]
+     [:unsure "I don't know"]]]
+   [:customer/low-maintenance "Do you prefer a low maintenance style, or are you flexible?"
+    [[:customer.low-maintenance/important "Low Maintenance"]
+     [:unsure "I don't know"]
+     [:customer.low-maintenance/flexible "Flexible"]]]
+   [:customer/hair-up "Finally, would you like to be able to put your hair up?"
+    [[:customer.hair-up/yes "Yes"]
+     [:unsure "I don't know"]
+     [:customer.hair-up/no "No"]]]])
 
 (defn inflate-choices
   [choices]
