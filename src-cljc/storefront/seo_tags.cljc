@@ -346,7 +346,7 @@
        (product-details-tags data)
 
        events/navigate-home
-       {:title           "Sew-In Weave Bundles, Human Hair Wigs, and Free Install Salon Services | Mayvenn",
+       {:title           "Sew-In Weave Bundles, Closures, Frontals, and Human Hair Wigs | Mayvenn",
         :description     "Quality virgin human hair & extensions trusted & recommended by 100,000 stylists, and backed by the only 30-day return policy in the industry. Try Mayvenn hair today!",
         :og-title        "100% Virgin Hair Extensions With a 30 Day Money Back Guarantee and Free Shipping!",
         :og-type         "website",
