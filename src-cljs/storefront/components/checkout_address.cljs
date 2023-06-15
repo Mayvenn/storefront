@@ -10,6 +10,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
+            [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
             [ui.legal :refer [opt-in-section]]))
 
