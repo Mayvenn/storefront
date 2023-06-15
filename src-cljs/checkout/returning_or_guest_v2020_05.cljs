@@ -2,13 +2,10 @@
   (:require api.orders
             [checkout.ui.checkout-address-form :as checkout-address-form]
             [checkout.ui.secure-checkout :as secure-checkout]
-            [checkout.ui.molecules :as molecules]
             [mayvenn.concept.account :as accounts]
-            [storefront.accessors.auth :as auth]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.components.checkout-steps :as checkout-steps]
-            [storefront.components.checkout-address :as checkout-address]
             [storefront.component :as c :refer [defcomponent]]
+            [storefront.components.checkout-address :as checkout-address]
+            [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.phone-consult :as phone-consult]
             [storefront.events :as e]
             [storefront.keypaths :as k]
@@ -63,23 +60,22 @@
    phone-transactional-opt-in-value
    phone-marketing-opt-in-value]
   (cond->
-      (merge
-       #:checkout-address-title {:primary "Shipping Address"
-                                 :secondary "Billing Address"}
-       {:shipping-address-first-name {:label         "First Name"
-                                      :keypath       k/checkout-shipping-address-first-name
-                                      :errors        (get field-errors ["shipping-address" "first-name"])
-                                      :focused       focused
-                                      :value         (:first-name shipping-address)
-                                      :id            "shipping-first-name"
-                                      :name          "shipping-first-name"
-                                      :data-test     "shipping-first-name"
-                                      :auto-complete "shipping given-name"
-                                      :required      true
-                                      :type          "text"
-                                      :max-length    24}
-
-        :shipping-address-last-name {:label         "Last Name"
+   (merge
+    #:checkout-address-title {:primary   "Shipping Address"
+                              :secondary "Billing Address"}
+    {:shipping-address-first-name   {:label         "First Name"
+                                     :keypath       k/checkout-shipping-address-first-name
+                                     :errors        (get field-errors ["shipping-address" "first-name"])
+                                     :focused       focused
+                                     :value         (:first-name shipping-address)
+                                     :id            "shipping-first-name"
+                                     :name          "shipping-first-name"
+                                     :data-test     "shipping-first-name"
+                                     :auto-complete "shipping given-name"
+                                     :required      true
+                                     :type          "text"
+                                     :max-length    24}
+     :shipping-address-last-name    {:label         "Last Name"
                                      :keypath       k/checkout-shipping-address-last-name
                                      :errors        (get field-errors ["shipping-address" "last-name"])
                                      :focused       focused
@@ -91,93 +87,84 @@
                                      :required      true
                                      :type          "text"
                                      :max-length    25}
-
-        :shipping-address-email {:label     "Email"
-                                 :keypath   k/checkout-guest-email
-                                 :errors    (get field-errors ["email"])
-                                 :focused   focused
-                                 :value     email
-                                 :id        "shipping-email"
-                                 :name      "shipping-email"
-                                 :data-test "shipping-email"
-                                 :type      "email"
-                                 :required  true}
-
-        :shipping-address-phone {:label     "Mobile Phone"
-                                 :keypath   k/checkout-shipping-address-phone
-                                 :errors    (get field-errors ["shipping-address" "phone"])
-                                 :focused   focused
-                                 :value     (:phone shipping-address)
-                                 :type      "tel"
-                                 :id        "shipping-phone"
-                                 :name      "shipping-phone"
-                                 :data-test "shipping-phone"
-                                 :required  true}
-
-
-
-        :shipping-address-address2 {:label         "Apt/Suite"
-                                    :keypath       k/checkout-shipping-address-address2
-                                    :errors        (get field-errors ["shipping-address" "address2"])
-                                    :focused       focused
-                                    :value         (:address2 shipping-address)
-                                    :id            "shipping-address2"
-                                    :name          "shipping-address2"
-                                    :data-test     "shipping-address2"
-                                    :auto-complete "shipping address-line2"
-                                    :type          "text"
-                                    :max-length    100}
-
-        :shipping-address-zipcode {:label         "Zipcode"
-                                   :keypath       k/checkout-shipping-address-zip
-                                   :errors        (get field-errors ["shipping-address" "zipcode"])
-                                   :focused       focused
-                                   :value         (:zipcode shipping-address)
-                                   :id            "shipping-zip"
-                                   :name          "shipping-zip"
-                                   :data-test     "shipping-zip"
-                                   :required      true
-                                   :auto-complete "shipping postal-code"
-                                   :type          "text"
-                                   :max-length    5}
-
-        :shipping-address-city {:label     "City"
-                                :keypath   k/checkout-shipping-address-city
-                                :errors    (get field-errors ["shipping-address" "city"])
-                                :focused   focused
-                                :value     (:city shipping-address)
-                                :id        "shipping-city"
-                                :name      "shipping-city"
-                                :data-test "shipping-city"
-                                :required  true
-                                :type      "text"}
-
-        :shipping-address-state {:label     "State"
-                                 :keypath   k/checkout-shipping-address-state
-                                 :errors    (get field-errors ["shipping-address" "state"])
-                                 :focused   focused
-                                 :value     (:state shipping-address)
-                                 :options   states
-                                 :placeholder "State"
-                                 :id        "shipping-state"
-                                 :name      "shipping-state"
-                                 :data-test "shipping-state"
-                                 :required  true}
-
-        :billing-address-checkbox {:type      "checkbox"
-                                   :label     "Use same address?"
-                                   :id        "use_billing"
-                                   :data-test "use-billing"
-                                   :value     bill-to-shipping-address?
-                                   :keypath   k/checkout-bill-to-shipping-address}
-        :continue-to-pay-cta/spinning? saving?
-        :continue-to-pay-cta/label     "Continue to Payment"
-        :continue-to-pay-cta/data-test "address-form-submit"
-        :continue-to-pay-cta/id        "address-form-submit"
-        :become-guest?                 true}
-       (checkout-address/opt-in-query show-phone-marketing-opt-in?
-                                      phone-transactional-opt-in-value
-                                      phone-marketing-opt-in-value))
+     :shipping-address-email        {:label     "Email"
+                                     :keypath   k/checkout-guest-email
+                                     :errors    (get field-errors ["email"])
+                                     :focused   focused
+                                     :value     email
+                                     :id        "shipping-email"
+                                     :name      "shipping-email"
+                                     :data-test "shipping-email"
+                                     :type      "email"
+                                     :required  true}
+     :shipping-address-phone        {:label     "Mobile Phone"
+                                     :keypath   k/checkout-shipping-address-phone
+                                     :errors    (get field-errors ["shipping-address" "phone"])
+                                     :focused   focused
+                                     :value     (:phone shipping-address)
+                                     :type      "tel"
+                                     :id        "shipping-phone"
+                                     :name      "shipping-phone"
+                                     :data-test "shipping-phone"
+                                     :required  true}
+     :shipping-address-address2     {:label         "Apt/Suite"
+                                     :keypath       k/checkout-shipping-address-address2
+                                     :errors        (get field-errors ["shipping-address" "address2"])
+                                     :focused       focused
+                                     :value         (:address2 shipping-address)
+                                     :id            "shipping-address2"
+                                     :name          "shipping-address2"
+                                     :data-test     "shipping-address2"
+                                     :auto-complete "shipping address-line2"
+                                     :type          "text"
+                                     :max-length    100}
+     :shipping-address-zipcode      {:label         "Zipcode"
+                                     :keypath       k/checkout-shipping-address-zip
+                                     :errors        (get field-errors ["shipping-address" "zipcode"])
+                                     :focused       focused
+                                     :value         (:zipcode shipping-address)
+                                     :id            "shipping-zip"
+                                     :name          "shipping-zip"
+                                     :data-test     "shipping-zip"
+                                     :required      true
+                                     :auto-complete "shipping postal-code"
+                                     :type          "text"
+                                     :max-length    5}
+     :shipping-address-city         {:label     "City"
+                                     :keypath   k/checkout-shipping-address-city
+                                     :errors    (get field-errors ["shipping-address" "city"])
+                                     :focused   focused
+                                     :value     (:city shipping-address)
+                                     :id        "shipping-city"
+                                     :name      "shipping-city"
+                                     :data-test "shipping-city"
+                                     :required  true
+                                     :type      "text"}
+     :shipping-address-state        {:label       "State"
+                                     :keypath     k/checkout-shipping-address-state
+                                     :errors      (get field-errors ["shipping-address" "state"])
+                                     :focused     focused
+                                     :value       (:state shipping-address)
+                                     :options     states
+                                     :placeholder "State"
+                                     :id          "shipping-state"
+                                     :name        "shipping-state"
+                                     :data-test   "shipping-state"
+                                     :required    true}
+     :billing-address-checkbox      {:type      "checkbox"
+                                     :label     "Use same address?"
+                                     :id        "use_billing"
+                                     :data-test "use-billing"
+                                     :value     bill-to-shipping-address?
+                                     :keypath   k/checkout-bill-to-shipping-address}
+     :continue-to-pay-cta/spinning? saving?
+     :continue-to-pay-cta/label     "Continue to Payment"
+     :continue-to-pay-cta/data-test "address-form-submit"
+     :continue-to-pay-cta/id        "address-form-submit"
+     :become-guest?                 true}
+    (checkout-address/opt-in-query show-phone-marketing-opt-in?
+                                   phone-transactional-opt-in-value
+                                   phone-marketing-opt-in-value))
 
     (not bill-to-shipping-address?)
     (merge
@@ -192,72 +179,72 @@
                                    :data-test     "billing-first-name"
                                    :auto-complete "billing given-name"
                                    :required      true}
-      :billing-address-last-name {:type          "text"
-                                  :label         "Last Name"
-                                  :keypath       k/checkout-billing-address-last-name
-                                  :focused       focused
-                                  :value         (:last-name billing-address)
-                                  :errors        (get field-errors ["billing-address" "last-name"])
-                                  :name          "billing-last-name"
-                                  :id            "billing-last-name"
-                                  :data-test     "billing-last-name"
-                                  :auto-complete "billing family-name"
-                                  :required      true}
-      :billing-address-phone {:data-test "billing-phone"
-                              :errors    (get field-errors ["billing-address" "phone"])
-                              :id        "billing-phone"
-                              :keypath   k/checkout-billing-address-phone
-                              :focused   focused
-                              :label     "Mobile Phone"
-                              :name      "billing-phone"
-                              :required  true
-                              :type      "tel"
-                              :value     (:phone billing-address)}
-      :billing-address-address2 {:type          "text"
-                                 :label         "Apt/Suite"
-                                 :keypath       k/checkout-billing-address-address2
-                                 :focused       focused
-                                 :value         (:address2 billing-address)
-                                 :errors        (get field-errors ["billing-address" "address2"])
-                                 :name          "billing-address2"
-                                 :id            "billing-address2"
-                                 :auto-complete "billing address-line2"
-                                 :data-test     "billing-address2"}
-      :billing-address-zipcode {:type           "text"
-                                :label         "Zip Code"
-                                :keypath       k/checkout-billing-address-zip
-                                :focused       focused
-                                :value         (:zipcode billing-address)
-                                :errors        (get field-errors ["billing-address" "zipcode"])
-                                :name          "billing-zip"
-                                :id            "billing-zip"
-                                :data-test     "billing-zip"
-                                :required      true
-                                :auto-complete "billing postal-code"
-                                :max-length    5
-                                :min-length    5
-                                :pattern       "\\d{5}"
-                                :title         "zip code must be 5 digits"}
-      :billing-address-city {:data-test "billing-city"
-                             :errors    (get field-errors ["billing-address" "city"])
-                             :id        "billing-city"
-                             :keypath   k/checkout-billing-address-city
-                             :focused   focused
-                             :label     "City"
-                             :name      "billing-city"
-                             :required  true
-                             :type      "text"
-                             :value     (:city billing-address)}
-      :billing-address-state {:data-test   "billing-state"
-                              :errors      (get field-errors ["billing-address" "state"])
-                              :id          "billing-state"
-                              :keypath     k/checkout-billing-address-state
-                              :focused     focused
-                              :label       "State"
-                              :options     states
-                              :placeholder "State"
-                              :required    true
-                              :value       (:state billing-address)}})
+      :billing-address-last-name  {:type          "text"
+                                   :label         "Last Name"
+                                   :keypath       k/checkout-billing-address-last-name
+                                   :focused       focused
+                                   :value         (:last-name billing-address)
+                                   :errors        (get field-errors ["billing-address" "last-name"])
+                                   :name          "billing-last-name"
+                                   :id            "billing-last-name"
+                                   :data-test     "billing-last-name"
+                                   :auto-complete "billing family-name"
+                                   :required      true}
+      :billing-address-phone      {:data-test "billing-phone"
+                                   :errors    (get field-errors ["billing-address" "phone"])
+                                   :id        "billing-phone"
+                                   :keypath   k/checkout-billing-address-phone
+                                   :focused   focused
+                                   :label     "Mobile Phone"
+                                   :name      "billing-phone"
+                                   :required  true
+                                   :type      "tel"
+                                   :value     (:phone billing-address)}
+      :billing-address-address2   {:type          "text"
+                                   :label         "Apt/Suite"
+                                   :keypath       k/checkout-billing-address-address2
+                                   :focused       focused
+                                   :value         (:address2 billing-address)
+                                   :errors        (get field-errors ["billing-address" "address2"])
+                                   :name          "billing-address2"
+                                   :id            "billing-address2"
+                                   :auto-complete "billing address-line2"
+                                   :data-test     "billing-address2"}
+      :billing-address-zipcode    {:type          "text"
+                                   :label         "Zip Code"
+                                   :keypath       k/checkout-billing-address-zip
+                                   :focused       focused
+                                   :value         (:zipcode billing-address)
+                                   :errors        (get field-errors ["billing-address" "zipcode"])
+                                   :name          "billing-zip"
+                                   :id            "billing-zip"
+                                   :data-test     "billing-zip"
+                                   :required      true
+                                   :auto-complete "billing postal-code"
+                                   :max-length    5
+                                   :min-length    5
+                                   :pattern       "\\d{5}"
+                                   :title         "zip code must be 5 digits"}
+      :billing-address-city       {:data-test "billing-city"
+                                   :errors    (get field-errors ["billing-address" "city"])
+                                   :id        "billing-city"
+                                   :keypath   k/checkout-billing-address-city
+                                   :focused   focused
+                                   :label     "City"
+                                   :name      "billing-city"
+                                   :required  true
+                                   :type      "text"
+                                   :value     (:city billing-address)}
+      :billing-address-state      {:data-test   "billing-state"
+                                   :errors      (get field-errors ["billing-address" "state"])
+                                   :id          "billing-state"
+                                   :keypath     k/checkout-billing-address-state
+                                   :focused     focused
+                                   :label       "State"
+                                   :options     states
+                                   :placeholder "State"
+                                   :required    true
+                                   :value       (:state billing-address)}})
 
     google-maps-loaded?
     (merge
@@ -273,17 +260,18 @@
                                   :max-length      100}})
     (and google-maps-loaded? (not bill-to-shipping-address?))
     (merge
-     {:billing-address-address1  {:label           "Address"
-                                  :id              "billing-address1"
-                                  :data-test       "billing-address1"
-                                  :address-keypath k/checkout-billing-address
-                                  :keypath         k/checkout-billing-address-address1
-                                  :focused         focused
-                                  :errors          (get field-errors ["billing-address" "address1"])
-                                  :auto-complete   "billing address-line1"
-                                  :value           (:address1 billing-address)}})))
+     {:billing-address-address1 {:label           "Address"
+                                 :id              "billing-address1"
+                                 :data-test       "billing-address1"
+                                 :address-keypath k/checkout-billing-address
+                                 :keypath         k/checkout-billing-address-address1
+                                 :focused         focused
+                                 :errors          (get field-errors ["billing-address" "address1"])
+                                 :auto-complete   "billing address-line1"
+                                 :value           (:address1 billing-address)}})))
 
-(defn query [app-state]
+(defn query
+  [app-state]
   (let [current-nav-event                (get-in app-state k/navigation-event)
         shipping-address                 (get-in app-state k/checkout-shipping-address)
         billing-address                  (get-in app-state k/checkout-billing-address)
@@ -311,7 +299,7 @@
                                                          show-phone-marketing-opt-in?
                                                          phone-transactional-opt-in-value
                                                          phone-marketing-opt-in-value)
-     :phone-consult-cta    (merge (get-in app-state k/cms-phone-consult-cta)
-                                  (api.orders/current app-state)
-                                  {:place-id :checkout-address
-                                   :in-omni? (:experience/omni (:experiences (accounts/<- app-state)))})}))
+     :phone-consult-cta     (merge (get-in app-state k/cms-phone-consult-cta)
+                                   (api.orders/current app-state)
+                                   {:place-id :checkout-address
+                                    :in-omni? (:experience/omni (:experiences (accounts/<- app-state)))})}))

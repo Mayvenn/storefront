@@ -1,20 +1,17 @@
 (ns storefront.components.checkout-address
   (:require api.orders
-            [checkout.ui.molecules :as molecules]
-            [ui.legal :refer [opt-in-section]]
             [mayvenn.concept.account :as accounts]
             [storefront.accessors.auth :as auth]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.component :as component :refer [defcomponent defdynamic-component]]
+            [storefront.component :as component :refer [defcomponent
+                                                        defdynamic-component]]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.phone-consult :as phone-consult]
             [storefront.components.ui :as ui]
-            [ui.promo-banner :as promo-banner]
-            [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.messages :refer [handle-message]]
-            [storefront.request-keys :as request-keys]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.request-keys :as request-keys]
+            [ui.legal :refer [opt-in-section]]))
 
 (defdynamic-component ^:private places-component
   (did-mount [this]
@@ -155,7 +152,7 @@
                       :value       (:state shipping-address)})]])
 
 (defcomponent billing-address-component
-  [{:keys [focused billing-address states bill-to-shipping-address? google-maps-loaded? field-errors]} owner _]
+  [{:keys [focused billing-address states bill-to-shipping-address? google-maps-loaded? field-errors]} _ _]
   [:.flex.flex-column.items-center.col-12
    [:h2.col-12.my1.proxima.title-3.shout.bold "Billing Address"]
    [:.col-12.my1
@@ -292,31 +289,33 @@
        (ui/submit-button "Continue to Payment" {:spinning? saving?
                                                 :data-test "address-form-submit"})]]]]])
 
-(defn opt-in-query [prompt-marketing-opt-in? phone-transactional-opt-in-value phone-marketing-opt-in-value]
+(defn opt-in-query
+  [prompt-marketing-opt-in? phone-transactional-opt-in-value phone-marketing-opt-in-value]
   (merge
    (when prompt-marketing-opt-in?
-     {:marketing-opt-in/id              "phone-marketing-opt-in"
-      :marketing-opt-in/label           "… text me marketing messages."
-      :marketing-opt-in/legal           (str "By selecting “Yes”, I’m signing an agreement to"
-                                             " permit Mayvenn to text me recurring automated marketing promotions, surveys and"
-                                             " personalized messages using the number I entered above.  I understand these texts may"
-                                             " be sent using an automatic telephone dialing system or other automated system for the"
-                                             " selection and dialing of numbers and that I am not required to consent to receive these"
-                                             " texts or sign this agreement as a condition of any purchase.")
-      :marketing-opt-in/value           phone-marketing-opt-in-value
-      :marketing-opt-in/keypath         keypaths/checkout-phone-marketing-opt-in})
-   {:transactional-opt-in/id          "phone-transactional-opt-in"
-    :transactional-opt-in/label       "… text me updates about my order."
-    :transactional-opt-in/legal       (str "By selecting “Yes”,"
-                                           " I agree that Mayvenn can text me automated messages about my order"
-                                           " (e.g. delivery updates and feedback requests)"
-                                           " using the number I entered above.")
-    :transactional-opt-in/value       phone-transactional-opt-in-value
-    :transactional-opt-in/keypath     keypaths/checkout-phone-transactional-opt-in
-    :opt-in-legalese/terms-nav        [events/navigate-content-sms]
-    :opt-in-legalese/privacy-nav      [events/navigate-content-privacy]}))
+     {:marketing-opt-in/id      "phone-marketing-opt-in"
+      :marketing-opt-in/label   "… text me marketing messages."
+      :marketing-opt-in/legal   (str "By selecting “Yes”, I’m signing an agreement to"
+                                     " permit Mayvenn to text me recurring automated marketing promotions, surveys and"
+                                     " personalized messages using the number I entered above.  I understand these texts may"
+                                     " be sent using an automatic telephone dialing system or other automated system for the"
+                                     " selection and dialing of numbers and that I am not required to consent to receive these"
+                                     " texts or sign this agreement as a condition of any purchase.")
+      :marketing-opt-in/value   phone-marketing-opt-in-value
+      :marketing-opt-in/keypath keypaths/checkout-phone-marketing-opt-in})
+   {:transactional-opt-in/id      "phone-transactional-opt-in"
+    :transactional-opt-in/label   "… text me updates about my order."
+    :transactional-opt-in/legal   (str "By selecting “Yes”,"
+                                       " I agree that Mayvenn can text me automated messages about my order"
+                                       " (e.g. delivery updates and feedback requests)"
+                                       " using the number I entered above.")
+    :transactional-opt-in/value   phone-transactional-opt-in-value
+    :transactional-opt-in/keypath keypaths/checkout-phone-transactional-opt-in
+    :opt-in-legalese/terms-nav    [events/navigate-content-sms]
+    :opt-in-legalese/privacy-nav  [events/navigate-content-privacy]}))
 
-(defn query [data]
+(defn query
+  [data]
   (let [google-maps-loaded? (get-in data keypaths/loaded-google-maps)
         states              (map (juxt :name :abbr) (get-in data keypaths/states))
         field-errors        (get-in data keypaths/field-errors)]
@@ -347,5 +346,5 @@
                    (get-in data keypaths/checkout-phone-transactional-opt-in)
                    (get-in data keypaths/checkout-phone-marketing-opt-in)))))
 
-(defn ^:export built-component [data opts]
+(defn ^:export built-component [data _]
   (component/build component (query data)))

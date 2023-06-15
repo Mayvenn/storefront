@@ -1,9 +1,6 @@
 (ns checkout.ui.molecules
-  (:require [storefront.components.ui :as ui]
+  (:require [storefront.component :as component]
             [storefront.components.svg :as svg]
-            [storefront.component :as component]
-            [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]))
 
 (defn cart-summary-line-molecule
