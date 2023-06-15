@@ -1,7 +1,7 @@
 (ns storefront.components.landing-page
   (:require [storefront.component :as component]
             [storefront.components.money-formatters :as mf]
-            [api.catalog :refer [select ?discountable ?physical]]
+            [api.catalog :refer [select ?physical]]
             [storefront.components.svg :as svg]
             [storefront.accessors.contentful :as contentful]
             [adventure.components.layered :as layered]
@@ -73,10 +73,6 @@
                                         vec
                                         (remove (fn [sku] (and remove-free-install?
                                                                ((:catalog/department sku) "service")))))
-          ;; NOTE: assumes only one discountable service item for the look
-          discountable-service-sku (->> all-skus
-                                        (select ?discountable)
-                                        first)
           product-items            (->> all-skus
                                         (select ?physical)
                                         (mapv (fn [{:as sku :keys [catalog/sku-id]}]
@@ -90,29 +86,17 @@
           origin-name  (get-in facets-db [:hair/origin :facet/options (first (:hair/origin tex-ori-col)) :sku/name])
           texture-name (get-in facets-db [:hair/texture :facet/options (first (:hair/texture tex-ori-col)) :option/name])
 
-          discountable-service-title-component (when-let [discountable-service-category
-                                                          (some->> discountable-service-sku
-                                                                   :service/category
-                                                                   first)]
-                                                 (case discountable-service-category
-                                                   "install"      "+ FREE Install Service"
-                                                   "construction" "+ FREE Custom Wig"
-                                                   nil))
           total-price                          (some->> all-skus
                                                         (mapv (fn [{:keys [catalog/sku-id sku/price]}]
                                                                 (* (get sku-id->quantity sku-id 0) price)))
                                                         (reduce + 0))
-          discounted-price                     (let [discountable-service-price (:product/essential-price discountable-service-sku)]
-                                                 (cond-> total-price
-                                                   discountable-service-price (- discountable-service-price)))
           look-id                              (:content/id look)
           any-sold-out-skus?                   (some false? (map :inventory/in-stock? all-skus))]
       (when-not any-sold-out-skus?
         (merge tex-ori-col ;; TODO(corey) apply merge-with into
                {:look/title      (clojure.string/join " " [origin-name
                                                            texture-name
-                                                           "Hair"
-                                                           discountable-service-title-component])
+                                                           "Hair"])
                 :tags/event      (set (:tags-event look))
                 :tags/face-shape (set (:tags-face-shape look))
                 :tags/style      (set (:tags-style look))
@@ -122,9 +106,8 @@
                 ;; #176485395 is completed
                 :look/cart-number      shared-cart-id
                 :look/total-price      (some-> total-price mf/as-money)
-                :look/discounted?      (not= discounted-price total-price)
-                :look/discounted-price (or (some-> discounted-price mf/as-money)
-                                           (some-> total-price mf/as-money))
+                :look/discounted?      false
+                :look/discounted-price (some-> total-price mf/as-money)
                 :look/id               look-id
 
                 ;; Look
@@ -138,9 +121,9 @@
                                     (icon {:class "fill-white"
                                            :style {:opacity 0.7}}))}]
                 :look/target    [events/shop-by-look|look-selected {:album-keyword album-keyword
-                                                               :look-id       look-id
-                                                               :card-index    index
-                                                               :variant-ids   (map :legacy/variant-id all-skus)}]
+                                                                    :look-id       look-id
+                                                                    :card-index    index
+                                                                    :variant-ids   (map :legacy/variant-id all-skus)}]
                 :look/items     product-items})))))
 
 (defn determine-mobile-and-desktop-class
