@@ -65,6 +65,10 @@
 (def ^:private order-complete-events
   #{events/navigate-order-complete})
 
+(def ^:private quiz-events
+  #{events/navigate-quiz-crm-persona-questions
+    events/navigate-quiz-crm-persona-results})
+
 (def ^:private design-system
   #{events/navigate-design-system
     events/navigate-design-system-component-library})
@@ -90,6 +94,7 @@
   (set/union cart-events
              checkout-events
              payout-events
+             quiz-events
              design-system))
 
 (def gallery-page-events

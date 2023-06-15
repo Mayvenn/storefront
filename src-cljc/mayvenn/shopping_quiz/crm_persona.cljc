@@ -146,8 +146,8 @@
   [data _ _]
   [:div.bg-refresh-gray
    [:div.col-12.bg-white
-    (c/build header/nav-header-component (with :header data))]
-   [:div.p4
+    (c/build header/component (with :header data))]
+   [:div.p4.flex.flex-column.col-4-on-dt.mx-auto
     (c/build results-profile-content (with :results.content data))
     [:div.grid.grid-cols-2.gap-5
      {:style {:align-items "stretch"}}
@@ -160,10 +160,10 @@
 (c/defcomponent questioning-template
   [{:keys [header progress questions see-results]} _ _]
   [:div.col-12
-   [:div.top-0.fixed.col-12.bg-white
-    (c/build header/nav-header-component header)
+   [:div.top-0.left-0.fixed.col-12.bg-white
+    (header/built-component header nil)
     (c/build progress-bar/variation-1 progress)]
-   [:div.flex.flex-column.mbj3.pbj3
+   [:div.flex.flex-column.mbj3.pbj3.col-4-on-dt.mx-auto
     (c/elements question/variation-1
                 questions
                 :questions)
@@ -292,12 +292,9 @@
 
 (defn ^:export page
   [state]
-  (let [{:order.items/keys [quantity]} (api.orders/current state)
-        questioning                    (questioning/<- state shopping-quiz-id)
-        persona                        (persona/<- state)
-
-        header-data {:forced-mobile-layout? true
-                     :quantity              (or quantity 0)}]
+  (let [questioning (questioning/<- state shopping-quiz-id)
+        persona     (persona/<- state)
+        header-data state]
     (cond
       persona
       (c/build results-template
