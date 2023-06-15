@@ -777,14 +777,15 @@
        :exhibits             exhibits})))
 
 (defn reviews<
-  [skus-db detailed-product]
+  [skus-db detailed-product selected-sku]
   (when (and (seq detailed-product)
              (products/eligible-for-reviews? detailed-product)) ;; FIXME(corey) our product model is too anemic
-    (let [;; HACK use the first variant's id as the product id for yotpo
-          {:keys [legacy/variant-id]} (some->> detailed-product
-                                               :selector/skus
-                                               first
-                                               (get skus-db))
+    (let [{:keys [legacy/variant-id]} (if (= "seamless-clip-ins" (:hair/family detailed-product))
+                                        selected-sku
+                                        (some->> detailed-product
+                                                 :selector/skus
+                                                 first
+                                                 (get skus-db)))
           yotpo-data-attributes       {:data-name       (:copy/title detailed-product)
                                        :data-product-id variant-id
                                        :data-url        (routes/path-for events/navigate-product-details
@@ -974,7 +975,7 @@
                                   pdp-details-accordion
                                   detailed-product
                                   selected-sku)
-                    (reviews< skus-db detailed-product)
+                    (reviews< skus-db detailed-product selected-sku)
                     opts))))
 
 (defn url-points-to-invalid-sku? [selected-sku query-params]
