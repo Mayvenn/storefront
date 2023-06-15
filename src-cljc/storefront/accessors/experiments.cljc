@@ -175,3 +175,7 @@
 (defn crm-personal-quiz?
   [data]
   (display-feature? data "crm-personal-quiz-release"))
+
+(defn yotpo-reviews-by-variant-id?
+  [data]
+  (display-feature? data "yotpo-reviews-by-variant-id"))

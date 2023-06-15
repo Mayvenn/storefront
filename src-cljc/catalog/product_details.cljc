@@ -777,10 +777,11 @@
        :exhibits             exhibits})))
 
 (defn reviews<
-  [skus-db detailed-product selected-sku]
+  [skus-db detailed-product selected-sku reviews-by-variant-id?]
   (when (and (seq detailed-product)
              (products/eligible-for-reviews? detailed-product)) ;; FIXME(corey) our product model is too anemic
-    (let [{:keys [legacy/variant-id]} (if (= "seamless-clip-ins" (:hair/family detailed-product))
+    (let [{:keys [legacy/variant-id]} (if (or (= "seamless-clip-ins" (:hair/family detailed-product))
+                                              reviews-by-variant-id?)
                                         selected-sku
                                         (some->> detailed-product
                                                  :selector/skus
@@ -944,21 +945,22 @@
 (defn ^:export page
   [state opts]
   (let [;; Databases
-        facets-db             (facets/by-slug state)
-        images-db             (get-in state keypaths/v2-images)
-        skus-db               (get-in state keypaths/v2-skus)
-        product-carousel      (carousel-neue/<- state :product-carousel)
-        options-accordion     (accordion-neue/<- state :pdp-picker)
-        pdp-details-accordion (accordion-neue/<- state :pdp-details-accordion)
+        facets-db              (facets/by-slug state)
+        images-db              (get-in state keypaths/v2-images)
+        skus-db                (get-in state keypaths/v2-skus)
+        product-carousel       (carousel-neue/<- state :product-carousel)
+        options-accordion      (accordion-neue/<- state :pdp-picker)
+        pdp-details-accordion  (accordion-neue/<- state :pdp-details-accordion)
         ;; external loads
-        loaded-quadpay?       (get-in state keypaths/loaded-quadpay)
+        loaded-quadpay?        (get-in state keypaths/loaded-quadpay)
         ;; Focus
-        detailed-product      (products/current-product state)
-        selected-sku          (get-in state catalog.keypaths/detailed-product-selected-sku)
+        detailed-product       (products/current-product state)
+        selected-sku           (get-in state catalog.keypaths/detailed-product-selected-sku)
         ;; Flags
-        carousel-redesign?    (and (experiments/carousel-redesign? state)
-                                (or (select ?wig [detailed-product])
-                                    (select {:hair/family #{"seamless-clip-ins"}} [detailed-product])))]
+        reviews-by-variant-id? (experiments/yotpo-reviews-by-sku? state)
+        carousel-redesign?     (and (experiments/carousel-redesign? state)
+                                   (or (select ?wig [detailed-product])
+                                       (select {:hair/family #{"seamless-clip-ins"}} [detailed-product])))]
     (c/build (if detailed-product template loading-template)
              (merge (query state)
                     {:phone-consult-cta (merge (get-in state keypaths/cms-phone-consult-cta)
@@ -975,7 +977,7 @@
                                   pdp-details-accordion
                                   detailed-product
                                   selected-sku)
-                    (reviews< skus-db detailed-product selected-sku)
+                    (reviews< skus-db detailed-product selected-sku reviews-by-variant-id?)
                     opts))))
 
 (defn url-points-to-invalid-sku? [selected-sku query-params]
