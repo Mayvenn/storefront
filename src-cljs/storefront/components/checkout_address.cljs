@@ -269,11 +269,10 @@
                          :value       (:state billing-address)})]])])
 
 (defcomponent component
-  [{:keys [logged-in? saving? phone-consult-cta step-bar billing-address-data shipping-address-data free-install-added] :as data} _ _]
+  [{:keys [logged-in? saving? phone-consult-cta step-bar billing-address-data shipping-address-data] :as data} _ _]
   [:div.container
    (when (and logged-in? (:checkout-address phone-consult-cta))
      (component/build phone-consult/component phone-consult-cta))
-  (molecules/free-install-added-atom free-install-added)
    (component/build checkout-steps/component step-bar)
 
    [:div.m-auto.col-8-on-tb-dt
@@ -317,16 +316,10 @@
     :opt-in-legalese/terms-nav        [events/navigate-content-sms]
     :opt-in-legalese/privacy-nav      [events/navigate-content-privacy]}))
 
-(defn ^:private free-install-added-query
-  [free-install-added?]
-  (when free-install-added?
-    {:free-install-added/primary "Free Install Added to Order"}))
-
 (defn query [data]
   (let [google-maps-loaded? (get-in data keypaths/loaded-google-maps)
         states              (map (juxt :name :abbr) (get-in data keypaths/states))
-        field-errors        (get-in data keypaths/field-errors)
-        free-install-added? (:free-install-added (get-in data keypaths/navigation-query-params))]
+        field-errors        (get-in data keypaths/field-errors)]
     (merge
      {:saving?               (utils/requesting? data request-keys/update-addresses)
       :phone-consult-cta     (merge (get-in data keypaths/cms-phone-consult-cta)
@@ -349,7 +342,6 @@
                               :google-maps-loaded? google-maps-loaded?
                               :field-errors        field-errors
                               :focused             (get-in data keypaths/ui-focus)}
-      :free-install-added (free-install-added-query free-install-added?)
       :logged-in? (get-in data keypaths/user-id)}
      (opt-in-query true
                    (get-in data keypaths/checkout-phone-transactional-opt-in)

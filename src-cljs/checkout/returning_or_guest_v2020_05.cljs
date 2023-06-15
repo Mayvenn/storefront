@@ -25,22 +25,15 @@
   [{:keys [secure-checkout
            checkout-steps
            checkout-address-form
-           free-install-added
            phone-consult-cta]}
    _ _]
   [:div.container
    (when (:checkout-address phone-consult-cta)
      (c/build phone-consult/component phone-consult-cta))
-   (molecules/free-install-added-atom free-install-added)
    (c/build secure-checkout/organism secure-checkout)
    or-separator
    (c/build checkout-steps/component checkout-steps nil)
    (c/build checkout-address-form/organism checkout-address-form)])
-
-(defn ^:private free-install-added-query
-  [free-install-added?]
-  (when free-install-added?
-    {:free-install-added/primary "Free Install Added to Order"}))
 
 (defn ^:private secure-checkout-query []
   {:secure-checkout.title/primary        "Secure Checkout"
@@ -303,10 +296,8 @@
         saving?                          (utils/requesting? app-state request-keys/update-addresses)
         phone-transactional-opt-in-value (get-in app-state k/checkout-phone-transactional-opt-in)
         phone-marketing-opt-in-value     (get-in app-state k/checkout-phone-marketing-opt-in)
-        show-phone-marketing-opt-in?     (not= "retail-location" (get-in app-state k/store-experience))
-        free-install-added?              (:free-install-added (get-in app-state k/navigation-query-params))]
-    {:free-install-added    (free-install-added-query free-install-added?)
-     :secure-checkout       (secure-checkout-query)
+        show-phone-marketing-opt-in?     (not= "retail-location" (get-in app-state k/store-experience))]
+    {:secure-checkout       (secure-checkout-query)
      :checkout-steps        (checkout-steps-query current-nav-event)
      :checkout-address-form (checkout-address-form-query shipping-address
                                                          billing-address

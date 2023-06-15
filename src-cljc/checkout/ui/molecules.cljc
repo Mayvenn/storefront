@@ -51,9 +51,3 @@
           "You've saved "
           [:span.bold.p-color {:data-test "total-savings"}
            savings]])]])))
-
-(defn free-install-added-atom
-  [{:free-install-added/keys [primary]}]
-  (when primary
-    [:div.bg-warm-gray.proxima.content-2.shout.bold.center.py1
-     primary]))
