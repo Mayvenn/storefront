@@ -3,10 +3,10 @@
   (:require #?@(:cljs [[storefront.hooks.stringer :as stringer]
                        [storefront.history :as history]
                        [storefront.trackings :as trackings]])
-            [api.catalog :refer [select ?discountable ?physical]]
+            [api.catalog :refer [select ?physical]]
             catalog.facets
             [catalog.images :as catalog-images]
-            catalog.keypaths 
+            catalog.keypaths
             [catalog.ui.facet-filters :as facet-filters]
             clojure.set
             clojure.string
@@ -173,10 +173,6 @@
                                         vec
                                         (remove (fn [sku] (and remove-free-install?
                                                                ((:catalog/department sku) "service")))))
-          ;; NOTE: assumes only one discountable service item for the look
-          discountable-service-sku (->> all-skus
-                                        (select ?discountable)
-                                        first)
           product-items            (->> all-skus
                                         (select ?physical)
                                         (mapv (fn [{:as sku :keys [catalog/sku-id]}]
@@ -190,29 +186,17 @@
           origin-name  (get-in facets-db [:hair/origin :facet/options (first (:hair/origin tex-ori-col)) :sku/name])
           texture-name (get-in facets-db [:hair/texture :facet/options (first (:hair/texture tex-ori-col)) :option/name])
 
-          discountable-service-title-component (when-let [discountable-service-category
-                                                          (some->> discountable-service-sku
-                                                                   :service/category
-                                                                   first)]
-                                                 (case discountable-service-category
-                                                   "install"      "+ FREE Install Service"
-                                                   "construction" "+ FREE Custom Wig"
-                                                   nil))
           total-price                          (some->> all-skus
                                                         (mapv (fn [{:keys [catalog/sku-id sku/price]}]
                                                                 (* (get sku-id->quantity sku-id 0) price)))
                                                         (reduce + 0))
-          discounted-price                     (let [discountable-service-price (:product/essential-price discountable-service-sku)]
-                                                 (cond-> total-price
-                                                   discountable-service-price (- discountable-service-price)))
           look-id                              (:content/id look)
           any-sold-out-skus?                   (some false? (map :inventory/in-stock? all-skus))]
       (when-not any-sold-out-skus?
         (merge tex-ori-col ;; TODO(corey) apply merge-with into
                {:look/title      (clojure.string/join " " [origin-name
                                                            texture-name
-                                                           "Hair"
-                                                           discountable-service-title-component])
+                                                           "Hair"])
                 :tags/event      (set (:tags-event look))
                 :tags/face-shape (set (:tags-face-shape look))
                 :tags/style      (set (:tags-style look))
@@ -222,9 +206,8 @@
                 ;; #176485395 is completed
                 :look/cart-number      shared-cart-id
                 :look/total-price      (some-> total-price mf/as-money)
-                :look/discounted?      (not= discounted-price total-price)
-                :look/discounted-price (or (some-> discounted-price mf/as-money)
-                                           (some-> total-price mf/as-money))
+                :look/discounted?      false
+                :look/discounted-price (some-> total-price mf/as-money)
                 :look/id               look-id
 
                 ;; Look
@@ -374,7 +357,7 @@
                                                              :filter/order 4}
                                                             {:option/slug  "party/event",
                                                              :option/name  "Party/Event",
-                                                             :filter/order 5}}}]) 
+                                                             :filter/order 5}}}])
         experiment-color-shorthand?    (experiments/color-shorthand? state)]
     (if
       ;; Spinning
@@ -401,7 +384,7 @@
               :navigation-args                {:album-keyword :look}
               :child-component-data           (looks-cards<- images-db looks (if experiment-color-shorthand?
                                                                                facet-filtering-expanded-state
-                                                                               facet-filtering-state))})) 
+                                                                               facet-filtering-state))}))
            (component/build looks-template)
            (template/wrap-standard state e/navigate-shop-by-look)))))
 
@@ -424,7 +407,8 @@
                            :key                (str (:id look))}))
        looks)]]))
 
-(defn query [data]
+(defn query
+  [data]
   (let [selected-album-kw     (get-in data storefront.keypaths/selected-album-keyword)
         actual-album-kw       (ugc/determine-look-album data selected-album-kw)
         looks                 (-> data (get-in storefront.keypaths/cms-ugc-collection) actual-album-kw :looks)
@@ -435,32 +419,25 @@
                                    first
                                    :facet/options
                                    (maps/index-by :option/slug))
-        promotions            (get-in data storefront.keypaths/promotions)
         looks-with-prices     (map (fn [look]
-                                     (let [shared-cart-id           (contentful/shared-cart-id look)
-                                           sku-id->quantity         (->> (get looks-shared-carts-db shared-cart-id)
-                                                                         :line-items
-                                                                         (maps/index-by :catalog/sku-id)
-                                                                         (maps/map-values :item/quantity))
-                                           skus-in-look             (->> (select-keys skus-db (keys sku-id->quantity))
-                                                                         vals
-                                                                         vec)
-                                           price                    (some->> skus-in-look
-                                                                             (mapv (fn [{:keys [catalog/sku-id sku/price]}]
-                                                                                     (* (get sku-id->quantity sku-id 0) price)))
-                                                                             (reduce + 0))
-                                           discountable-service-sku (->> skus-in-look
-                                                                         (select ?discountable)
-                                                                         first)
-                                           discounted-price         (let [discountable-service-price (:product/essential-price discountable-service-sku)]
-                                                                      (cond-> price
-                                                                        discountable-service-price (- discountable-service-price)))
-                                           price-money              (when price (mf/as-money price))
-                                           discounted-money         (when discounted-price (mf/as-money discounted-price))]
-                                       (assoc look :price price-money :discounted-price (when (not= price-money discounted-money) discounted-money))))
+                                     (let [shared-cart-id   (contentful/shared-cart-id look)
+                                           sku-id->quantity (->> (get looks-shared-carts-db shared-cart-id)
+                                                                 :line-items
+                                                                 (maps/index-by :catalog/sku-id)
+                                                                 (maps/map-values :item/quantity))
+                                           skus-in-look     (->> (select-keys skus-db (keys sku-id->quantity))
+                                                                 vals
+                                                                 vec)
+                                           price            (some->> skus-in-look
+                                                                     (mapv (fn [{:keys [catalog/sku-id sku/price]}]
+                                                                             (* (get sku-id->quantity sku-id 0) price)))
+                                                                     (reduce + 0))
+                                           price-money      (when price (mf/as-money price))]
+                                       (assoc look :price price-money)))
                                    looks)
         looks-query           (map (partial contentful/look->social-card
                                             selected-album-kw
+
                                             color-details)
                                    looks-with-prices)]
     {:looks     looks-query
