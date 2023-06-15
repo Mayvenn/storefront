@@ -203,6 +203,6 @@
    (defmethod trk/perform-track e/biz|questioning|submitted
      [_ _ {:questioning/keys [id]
            :keys             [answers]} state]
-     (stringer/track-event "quiz_question_submitted" (merge
-                                                      (<- state id)
-                                                      {:answers answers}))))
+     (stringer/track-event "quiz_submitted" (merge
+                                             (<- state id)
+                                             {:answers answers}))))
