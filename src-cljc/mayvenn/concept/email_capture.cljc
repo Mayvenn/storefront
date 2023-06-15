@@ -162,19 +162,19 @@
                                   (when id
                                     {:persona id
                                      :results (->> results
-                                                   (map-indexed (fn [idx result]
+                                                   (map-indexed (fn [idx {:keys [content/id catalog/product-id] :as result}]
                                                                   (cond
-                                                                    (seq (:catalog/product-id result))
+                                                                    (seq product-id)
                                                                     (let [{:keys [catalog/product-id copy/title catalog/sku-id page/slug url]} result]
                                                                       {:title     title
                                                                        :url       (str "https://www.mayvenn.com" "/products/" product-id "-" slug
                                                                                        (when sku-id (str "?SKU=" sku-id)))
                                                                        :image_url (str url "-/format/auto/-/quality/lightest/-/crop/1:1/-/resize/350x350/")})
 
-                                                                    (seq (:look/id result))
+                                                                    (seq id)
                                                                     (let [{:keys [title photo-url]} result]
                                                                       {:title         title
-                                                                       :url           (str "https://www.mayvenn.com" "/shop/look/" (:look/id result))
+                                                                       :url           (str "https://www.mayvenn.com" "/shop/look/" id)
                                                                        :image_url     (str photo-url "-/format/auto/-/quality/lightest/-/crop/1:1/-/resize/350x350/")
                                                                        :album-keyword :look})))))}))
                                 {:email-capture-id      trigger-id
