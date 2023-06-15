@@ -957,7 +957,7 @@
         detailed-product       (products/current-product state)
         selected-sku           (get-in state catalog.keypaths/detailed-product-selected-sku)
         ;; Flags
-        reviews-by-variant-id? (experiments/yotpo-reviews-by-sku? state)
+        reviews-by-variant-id? (experiments/yotpo-reviews-by-variant-id? state)
         carousel-redesign?     (and (experiments/carousel-redesign? state)
                                    (or (select ?wig [detailed-product])
                                        (select {:hair/family #{"seamless-clip-ins"}} [detailed-product])))]
