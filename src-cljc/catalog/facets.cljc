@@ -162,7 +162,7 @@
     color-shorthand (update :hair/color intersection-ignoring-empties (set (mapcat shorthand-slug>color-slugs color-shorthand)))))
 
 (defn colors-facet->color-features-facet [colors]
- {:facet/name    "Hair Features"
+  {:facet/name    "Hair Features"
    :facet/slug    :style.color/features
    :filter/order  7
    :facet/options (let [{:strs [balayage
@@ -179,7 +179,8 @@
                                      :option/name  "Balayage"
                                      :option/slug  "balayage"
                                      :sku/name     "Balayage"
-                                     :selectors    balayage}
+                                     :selectors    balayage
+                                     :copy/tooltip "Balayage is a technique where color is painted onto the hair in a sweeping motion, creating a gradual transition from dark to light. Balayage is typically more subtle than ombre, with a more natural-looking blend of colors."}
                      "highlights"   {:filter/order 2
                                      :option/name  "Highlights"
                                      :option/slug  "highlights"
@@ -199,7 +200,8 @@
                                      :option/name  "Money Pieces"
                                      :option/slug  "money-pieces"
                                      :sku/name     "Money Pieces"
-                                     :selectors    money-pieces}})})
+                                     :selectors    money-pieces
+                                     :copy/tooltip "Money pieces are face-framing highlights."}})})
 
 (defn expand-color-features
   [colors-facet {:as                          args

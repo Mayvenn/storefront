@@ -304,6 +304,11 @@
    [:svg opts
     ^:inline (svg-xlink "info-outlined")]))
 
+(defn info-circle [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "info-circle")]))
+
 (defn info-filled [opts]
   (component/html
    [:svg opts

@@ -83,25 +83,32 @@
       primary))])
 
 (c/defcomponent section-filter-molecule
-  [{:facet-filtering.section.filter/keys [primary target value icon-url]
+  [{:facet-filtering.section.filter/keys [primary target value icon-url tooltip]
     :as                                  data} _ {:keys [id]}]
-  [:a.col-12.mb2.flex.inherit-color
-   {:on-click  (apply utils/send-event-callback target)
-    :href      "#"
-    :data-test (:facet-filtering.section.filter/id data)
-    :key       id}
-   [:div (ui/check-box {:value value
-                        :id (str "filter-"
-                                 (string/escape primary {\" "\\\""})
-                                 "-mobile")})]
-   (when icon-url
-     [:img.block.pr2
-      {:style {:width  "50px"
-               :height "30px"}
-       :alt   (str "Color swatch of " primary "-colored hair")
-       :src   icon-url}])
-   [:div
-    primary]])
+  [:div.flex
+   [:a.mb2.flex.inherit-color
+    {:on-click  (apply utils/send-event-callback target)
+     :href      "#"
+     :data-test (:facet-filtering.section.filter/id data)
+     :key       id}
+    [:div (ui/check-box {:value value
+                         :id    (str "filter-"
+                                     (string/escape primary {\" "\\\""})
+                                     "-mobile")})]
+    (when icon-url
+      [:img.block.pr2
+       {:style {:width  "50px"
+                :height "30px"}
+        :alt   (str "Color swatch of " primary "-colored hair")
+        :src   icon-url}])
+    [:div
+     primary]]
+   (when tooltip
+     [:div.tooltip.ml2 (svg/info-circle {:height "12px"
+                                         :width  "11px"})
+      [:div.tooltip-right
+       [:p.text-xs tooltip]
+       [:i]]])])
 
 (defn section-title-molecule
   [{:facet-filtering.section.title/keys [primary target id rotated?]}]
@@ -325,7 +332,8 @@
                                                            (keep
                                                             (fn option->filter [{option-slug   :option/slug
                                                                                  option-name   :option/name
-                                                                                 option-swatch :option/rectangle-swatch}]
+                                                                                 option-swatch :option/rectangle-swatch
+                                                                                 tooltip       :copy/tooltip}]
                                                               (when (contains? represented-options option-slug)
                                                                 (let [filter-toggled? (contains?
                                                                                        (get filters facet-slug)
@@ -334,6 +342,7 @@
                                                                    #:facet-filtering.section.filter
                                                                     {:primary option-name
                                                                      :id      (str "filter-option-" (facets/hacky-fix-of-bad-slugs-on-facets option-slug))
+                                                                     :tooltip tooltip
                                                                      :target  [e/flow|facet-filtering|filter-toggled
                                                                                {:facet-key        facet-slug
                                                                                 :navigation-event navigation-event
@@ -342,7 +351,7 @@
                                                                                 :toggled?         (not filter-toggled?)}]
                                                                      :value   filter-toggled?
                                                                      :url     option-name}
-                                                                  
+
                                                                     option-swatch
                                                                     (assoc :facet-filtering.section.filter/icon-url
                                                                            (str "https://ucarecdn.com/"

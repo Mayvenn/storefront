@@ -146,3 +146,50 @@ video.hide-chromecast-icon::-internal-media-controls-overlay-cast-button {
         transform: rotateY(180deg);
     }
 }
+
+.tooltip {
+    display:inline-block;
+    position:relative;
+    text-align:left;
+}
+
+.tooltip .tooltip-right {
+    min-width:140px;
+    top:50%;
+    left:100%;
+    margin-left:20px;
+    transform:translate(0, -60%);
+    padding:14px;
+    color: black;
+    background-color: white;
+    font-weight:normal;
+    position:absolute;
+    z-index:99;
+    box-sizing:border-box;
+    box-shadow:0 1px 6px rgba(0,0,0,0.5);
+    display:none;
+}
+
+.tooltip:hover .tooltip-right {
+    display:block;
+}
+
+.tooltip .right i {
+    position:absolute;
+    top:50%;
+    right:100%;
+    margin-top:-12px;
+    overflow:hidden;
+}
+
+.tooltip .tooltip-right i::after {
+    content:'';
+    position:absolute;
+    width:12px;
+    height:12px;
+    left:-6%;
+    top:50%;
+    transform:translate(50%,-50%) rotate(-45deg);
+    background-color: white;
+    z-index:90;
+}
