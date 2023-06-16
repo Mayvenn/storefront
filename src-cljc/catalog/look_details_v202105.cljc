@@ -18,12 +18,14 @@
             [clojure.string :as string]
             clojure.set
             [adventure.faq :as adv-faq]
+            [mayvenn.concept.account :as accounts]
             [spice.maps :as maps]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.images :as images]
             [storefront.accessors.shared-cart :as shared-cart]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
+            [storefront.components.phone-consult :as phone-consult]
             [storefront.components.picker.picker-two :as picker]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -433,11 +435,14 @@
 (defn ^:private look-details-body
   [{:keys       [spinning?
                  picker-modal
+                 phone-consult-cta
                  color-picker
                  length-pickers
                  how-it-works
                  faq] :as queried-data}]
   [:div.bg-refresh-gray
+   (when (:shopping-looks phone-consult-cta)
+     (component/build phone-consult/component phone-consult-cta))
    [:div
     (component/build picker/modal picker-modal)
     [:div.bg-white-on-mb.p2 (ui.molecules/return-link queried-data)]
@@ -642,6 +647,11 @@
         items                 (:order/items raw-order)
         {:keys [adjustments line-items-total total]} (:waiter/order raw-order)]
     (merge #?(:cljs (reviews/query-look-detail shared-cart data))
+
+           {:phone-consult-cta (merge (get-in data storefront.keypaths/cms-phone-consult-cta)
+                                      (api.orders/current data)
+                                      {:place-id :shopping-looks
+                                       :in-omni? (:experience/omni (:experiences (accounts/<- data)))})}
            {:spinning? (or (not contentful-look)
                            (nil? skus-db)
                            (utils/requesting? data request-keys/fetch-shared-cart))}

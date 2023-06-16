@@ -3,6 +3,7 @@
   (:require #?@(:cljs [[storefront.hooks.stringer :as stringer]
                        [storefront.history :as history]
                        [storefront.trackings :as trackings]])
+            api.orders
             [api.catalog :refer [select ?physical]]
             catalog.facets
             [catalog.images :as catalog-images]
@@ -12,12 +13,14 @@
             clojure.string
             [storefront.effects :as effects]
             [spice.maps :as maps]
+            [mayvenn.concept.account :as accounts]
             [mayvenn.visual.tools :refer [with within]]
             [mayvenn.visual.lib.image-grid :as image-grid]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.sites :as sites]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
+            [storefront.components.phone-consult :as phone-consult]
             [storefront.components.svg :as svg]
             [storefront.components.template :as template]
             [storefront.components.ugc :as component-ugc]
@@ -87,9 +90,11 @@
      (component/elements looks-card-organism data :looks-cards/cards)]))
 
 (defcomponent looks-template
-  [{:keys [hero]
+  [{:keys [hero phone-consult-cta]
     :as queried-data} _ _]
   [:div
+   (when (:shopping-looks phone-consult-cta)
+     (component/build phone-consult/component phone-consult-cta))
    (component/build looks-hero-title-organism hero)
    (component/build facet-filters/organism queried-data
                     {:opts {:child-component looks-cards-organism}})])
@@ -371,6 +376,10 @@
             {:hero (if remove-free-install?
                      looks-hero-no-free-install<-
                      looks-hero<-)}
+            {:phone-consult-cta (merge (get-in state storefront.keypaths/cms-phone-consult-cta)
+                                       (api.orders/current state)
+                                       {:place-id :shopping-looks
+                                        :in-omni? (:experience/omni (:experiences (accounts/<- state)))})}
             (facet-filters/filters<-
              {:facets-db                      (concat (get-in state storefront.keypaths/v2-facets) tag-facets)
               :faceted-models                 looks
@@ -390,10 +399,12 @@
 
 ;; -- Original Views
 
-(defcomponent original-component [{:keys [looks copy spinning?]} owner opts]
+(defcomponent original-component [{:keys [looks copy spinning? phone-consult-cta]} owner opts]
   (if spinning?
     (ui/large-spinner {:style {:height "4em"}})
     [:div.bg-warm-gray
+     (when (:shopping-looks phone-consult-cta)
+       (component/build phone-consult/component phone-consult-cta))
      [:div.center.py6
       [:h1.title-1.canela.py3 (:title copy)]
       [:p.col-10.col-6-on-tb-dt.mx-auto.proxima.content-2 (:description copy)]]
@@ -441,6 +452,10 @@
                                             color-details)
                                    looks-with-prices)]
     {:looks     looks-query
+     :phone-consult-cta (merge (get-in data storefront.keypaths/cms-phone-consult-cta)
+                               (api.orders/current data)
+                               {:place-id :shopping-looks
+                                :in-omni? (:experience/omni (:experiences (accounts/<- data)))})
      :copy      (actual-album-kw ugc/album-copy)
      :spinning? (empty? looks)}))
 
