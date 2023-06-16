@@ -1,5 +1,6 @@
 (ns storefront.components.landing-page
-  (:require [storefront.component :as component]
+  (:require api.orders
+            [storefront.component :as component]
             [storefront.components.money-formatters :as mf]
             [api.catalog :refer [select ?physical]]
             [storefront.components.svg :as svg]
@@ -181,8 +182,10 @@
   (let [skus-db               (get-in data storefront.keypaths/v2-skus)
         images-db             (get-in data storefront.keypaths/v2-images)
         promotions            (get-in data storefront.keypaths/promotions)
+        order                 (api.orders/current data)
         remove-free-install?  (:remove-free-install (get-in data storefront.keypaths/features))
         in-omni?              (:experience/omni (:experiences (accounts/<- data)))
+        phone-consult-cta     (get-in data storefront.keypaths/cms-phone-consult-cta)
         facets-db             (->> (get-in data storefront.keypaths/v2-facets)
                                    (maps/index-by (comp keyword :facet/slug))
                                    (maps/map-values (fn [facet]
@@ -359,17 +362,23 @@
       "retailLocation"                           (-> body-layer
                                                      retail-location-query
                                                      (assoc :layer/type :retail-location))
-      "staticContent"                            {:layer/type (case (:module body-layer)
-                                                                "contact-us"           :lp-contact-us
-                                                                "divider-green-gray"   :lp-divider-green-gray
-                                                                "divider-purple-pink"  :lp-divider-purple-pink
-                                                                "service-list"         :service-list
-                                                                "promises-omni"        :promises-omni
-                                                                "customize-wig"        :customize-wig
-                                                                "why-mayvenn"          :why-mayvenn
-                                                                "animated-value-props" :animated-value-props
-                                                                nil)
-                                                  :in-omni? in-omni?}
+      "staticContent"                            (merge {:layer/type (case (:module body-layer)
+                                                                       "contact-us"           :lp-contact-us
+                                                                       "divider-green-gray"   :lp-divider-green-gray
+                                                                       "divider-purple-pink"  :lp-divider-purple-pink
+                                                                       "service-list"         :service-list
+                                                                       "promises-omni"        :promises-omni
+                                                                       "customize-wig"        :customize-wig
+                                                                       "why-mayvenn"          :why-mayvenn
+                                                                       "animated-value-props" :animated-value-props
+                                                                       "phone-consult-cta"    :phone-consult-cta
+                                                                       nil)
+                                                         :in-omni? in-omni?}
+                                                        (when (and (= "phone-consult-cta" (:module body-layer))
+                                                                   (:shopping-section phone-consult-cta))
+                                                          (merge {:place-id :section}
+                                                                 phone-consult-cta
+                                                                 order)))
       "section"                                  (-> body-layer
                                                      (select-keys [:contents :mobile-layout :desktop-layout :title
                                                                    :desktop-reverse-order :background-color :url

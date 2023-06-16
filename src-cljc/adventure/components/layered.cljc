@@ -1,8 +1,9 @@
 (ns adventure.components.layered
   (:require [mayvenn.visual.tools :refer [within with]]
             [clojure.string]
-            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.accordion :as accordion]
+            [storefront.components.phone-consult :as phone-consult]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.components.video :as video]
@@ -28,7 +29,8 @@
             [markdown-to-hiccup.core :as markdown]
             [ui.wig-services-menu :as wig-services-menu]
             [ui.wig-customization-spotlights :as wig-customization-spotlights]
-            [storefront.components.animated-value-props :as animated-value-props]))
+            [storefront.components.animated-value-props :as animated-value-props]
+            [storefront.component :as c]))
 
 (defn ^:private vertical-squiggle
   [top]
@@ -1066,6 +1068,34 @@
     "reversed" (title-reversed data)
     (title-standard data)))
 
+(defdynamic-component phone-consult-cta
+  (did-mount
+   [this]
+   (let [{:keys [released shop-or-omni in-omni? place-id] :as data} (component/get-props this)]
+     (when (and released
+                ;; shop-or-omni (shop = true, omni = false)
+                (= shop-or-omni (not in-omni?)))
+       (publish events/phone-consult-cta-impression {:number   phone-consult/support-phone-number
+                                                     :place-id place-id}))))
+  (render
+   [this]
+   (component/html
+    (let [{:keys [released shop-or-omni in-omni?] :as data} (component/get-props this)]
+      (when (and released
+                 ;; shop-or-omni (shop = true, omni = false
+                 (= shop-or-omni (not in-omni?)))
+        [:div
+         [:div.block.black
+          (utils/fake-href events/phone-consult-cta-click
+                           {:number   phone-consult/support-phone-number
+                            :place-id :section})
+          [:div.m2.flex.justify-center
+           (ui/button-small-primary {} "Call Now")]]
+         [:div.content-3.center
+          (str "Phone: " phone-consult/support-phone-number " ")
+          (when (seq (:order/items data))
+            (str "Ref: " (->> data :waiter/order :number)))]])))))
+
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (when type
     (component/build
@@ -1085,6 +1115,7 @@
        :lp-divider-green-gray              lp-divider-green-gray
        :lp-divider-purple-pink             lp-divider-purple-pink
        :animated-value-props               animated-value-props/component
+       :phone-consult-cta                  phone-consult-cta
 
        ;; REBRAND
        :shop-text-block         shop-text-block
