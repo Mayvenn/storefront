@@ -154,7 +154,6 @@
     [:div
      [:div.bg-refresh-gray.px3.pb3.col-on-tb-dt.col-6-on-tb-dt.bg-white-on-tb-dt.p3-on-mb
       (shipping-delay-hack data)
-      (service-items-component service-items)
       (physical-items-component physical-items suggestions)]]
 
     [:div.col-on-tb-dt.col-6-on-tb-dt.bg-refresh-gray.bg-white-on-mb.mbj1
@@ -501,7 +500,6 @@
                                         mf/as-money-or-free)})))
 
 (defn regular-cart-summary-query
-  "This is for carts that haven't entered an upsell (free install, wig customization, etc)"
   [{:as order :keys [adjustments tax-total total]}]
   (let [subtotal (orders/products-and-services-subtotal order)]
     {:cart-summary-total-line/id    "total"
@@ -534,76 +532,6 @@
                                    [{:cart-summary-line/id      "tax"
                                      :cart-summary-line/primary "Tax"
                                      :cart-summary-line/value   (mf/as-money tax-total)}]))}))
-
-(defn upsold-cart-summary-query
-  "The cart has an upsell 'entered' because the customer has requested a service discount"
-  [{:as order :keys [adjustments]} free-mayvenn-service]
-  (let [wig-customization?  (orders/wig-customization? order)
-        service-item-price  (- (* (:item/quantity free-mayvenn-service)
-                                  (or
-                                   (:product/essential-price free-mayvenn-service)
-                                   (:item/unit-price free-mayvenn-service))))
-        total               (:total order)
-        tax                 (:tax-total order)
-        subtotal            (orders/products-and-services-subtotal order)
-        order-adjustment    (->> order :adjustments (map :price) (reduce + 0))
-        total-savings       (- order-adjustment)
-        service-discounted? (= (->> free-mayvenn-service :item/applied-promotions (map :amount) (reduce + 0))
-                               service-item-price)]
-    (cond->
-        {:cart-summary/id               "cart-summary"
-         :cart-summary-total-line/id    "total"
-         :cart-summary-total-line/label (if (and free-mayvenn-service (not wig-customization?))
-                                          "Hair + Install Total"
-                                          "Total")
-         :cart-summary-total-line/value (some-> total mf/as-money)
-         :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
-                                       :cart-summary-line/label "Subtotal"
-                                       :cart-summary-line/value (mf/as-money subtotal)}]
-
-                                     (when-let [shipping-method-summary-line
-                                                (shipping-method-summary-line-query
-                                                 (orders/shipping-item order)
-                                                 (orders/product-and-service-items order))]
-                                       [shipping-method-summary-line])
-
-                                     (for [{:keys [name price coupon-code] :as adjustment}
-                                           (filter adjustments/non-zero-adjustment? adjustments)
-                                           :let [install-summary-line? (orders/service-line-item-promotion? adjustment)]]
-                                       (cond-> {:cart-summary-line/id    (str (text->data-test-name name) "-adjustment")
-                                                :cart-summary-line/icon  [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
-                                                                                             :height "2em" :width "2em"}]
-                                                :cart-summary-line/label (adjustments/display-adjustment-name adjustment)
-                                                :cart-summary-line/value (mf/as-money-or-free price)}
-
-                                         install-summary-line?
-                                         (merge
-                                          {:cart-summary-line/id    "free-service-adjustment"
-                                           :cart-summary-line/value (mf/as-money-or-free price)
-                                           :cart-summary-line/label (str "Free " (or (:product/essential-title free-mayvenn-service)
-                                                                                     (:item/variant-name free-mayvenn-service)))
-
-                                           :cart-summary-line/action-id     "cart-remove-promo"
-                                           :cart-summary-line/action-icon   [:svg/close-x {:class "stroke-white fill-gray"}]
-                                           :cart-summary-line/action-target [events/order-remove-freeinstall-line-item]})
-
-                                         coupon-code
-                                         (merge (coupon-code->remove-promo-action coupon-code))))
-
-                                     (when (pos? tax)
-                                       [{:cart-summary-line/id    "tax"
-                                         :cart-summary-line/label "Tax"
-                                         :cart-summary-line/value (mf/as-money tax)}]))}
-
-      service-discounted?
-      (merge {:cart-summary-total-incentive/id    "mayvenn-install"
-              :cart-summary-total-incentive/label "Includes Mayvenn Install"
-              :cart-summary-total-incentive/savings (when (pos? total-savings)
-                                                      (mf/as-money total-savings))})
-
-      (and service-discounted? wig-customization?)
-      (merge {:cart-summary-total-incentive/id    "wig-customization"
-              :cart-summary-total-incentive/label "Includes Wig Customization"}))))
 
 (defn promo-input<-
   [data order pending-requests?]
@@ -651,10 +579,8 @@
                                   "Add promo code")}))})))
 
 (defn cart-summary<-
-  [order items]
-  (if-let [free-service (first (select ?discountable items))]
-    (upsold-cart-summary-query order free-service)
-    (regular-cart-summary-query order)))
+  [order _]
+  (regular-cart-summary-query order))
 
 (defn cta<-
   [no-items? hair-missing-quantity pending-requests?]
