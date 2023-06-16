@@ -17,7 +17,7 @@
 (defdynamic-component ^:private places-component
   (did-mount [this]
              (let [{:keys [address-keypath id]} (component/get-props this)]
-               (handle-message events/checkout-address-component-mounted {:address-elem    id
+               (messages/handle-message events/checkout-address-component-mounted {:address-elem    id
                                                                           :address-keypath address-keypath})))
   (render [this]
           (let [{:keys [focused id keypath value data-test errors max-length]} (component/get-props this)]
