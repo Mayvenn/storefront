@@ -446,7 +446,6 @@
      faceted-models
      facet-filtering-state
      facet-filtering-expanded-state
-     experiment-color-shorthand?
      facets-to-filter-on
      ;; For the page the filters are rendered on
      navigation-event
@@ -502,17 +501,13 @@
                                         (let [facet-slug->option-slugs (->> faceted-models
                                                                             (mapv #(select-keys % facets-to-filter-on))
                                                                             (apply merge-with clojure.set/union))]
-                                          (cond-> facet-slug->option-slugs
-                                            :always
-                                            (assoc :style.color/features #{"balayage" "highlights" "money-pieces" "dark-roots" "two-toned"})
-
-                                            experiment-color-shorthand?
-                                            (assoc :hair/color.shorthand (->> facet-slug->option-slugs
-                                                                              :hair/color
-                                                                              (map facets/color-slug>shorthand-slug)
-                                                                              (into (hash-set))) )
-                                            experiment-color-shorthand?
-                                            (dissoc :hair/color)))
+                                          (-> facet-slug->option-slugs
+                                              (assoc :style.color/features #{"balayage" "highlights" "money-pieces" "dark-roots" "two-toned"})
+                                              (assoc :hair/color.shorthand (->> facet-slug->option-slugs
+                                                                                :hair/color
+                                                                                (map facets/color-slug>shorthand-slug)
+                                                                                (into (hash-set))) )
+                                              (dissoc :hair/color)))
                                         navigation-event
                                         navigation-args
                                         facet-filtering-state)

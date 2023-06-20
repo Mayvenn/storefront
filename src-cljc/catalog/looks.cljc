@@ -362,8 +362,7 @@
                                                              :filter/order 4}
                                                             {:option/slug  "party/event",
                                                              :option/name  "Party/Event",
-                                                             :filter/order 5}}}])
-        experiment-color-shorthand?    (experiments/color-shorthand? state)]
+                                                             :filter/order 5}}}])]
     (if
       ;; Spinning
      (or (utils/requesting? state request-keys/fetch-shared-carts)
@@ -384,16 +383,11 @@
              {:facets-db                      (concat (get-in state storefront.keypaths/v2-facets) tag-facets)
               :faceted-models                 looks
               :facet-filtering-state          facet-filtering-state
-              :experiment-color-shorthand?    experiment-color-shorthand?
-              :facet-filtering-expanded-state (if experiment-color-shorthand?
-                                                facet-filtering-expanded-state
-                                                facet-filtering-state)
+              :facet-filtering-expanded-state facet-filtering-expanded-state
               :facets-to-filter-on            [:hair/origin :hair/color :hair/texture :tags/event :tags/face-shape :tags/style]
               :navigation-event               e/navigate-shop-by-look
               :navigation-args                {:album-keyword :look}
-              :child-component-data           (looks-cards<- images-db looks (if experiment-color-shorthand?
-                                                                               facet-filtering-expanded-state
-                                                                               facet-filtering-state))}))
+              :child-component-data           (looks-cards<- images-db looks facet-filtering-expanded-state)}))
            (component/build looks-template)
            (template/wrap-standard state e/navigate-shop-by-look)))))
 

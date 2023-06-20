@@ -152,10 +152,6 @@
   [data]
   (display-feature? data "tooling--debug-template-slots"))
 
-(defn color-shorthand?
-  [data]
-  (display-feature? data "color-shorthand"))
-
 (defn good-to-know?
   [data]
   (display-feature? data "good-to-know"))

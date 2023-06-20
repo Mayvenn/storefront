@@ -202,11 +202,10 @@
   [state _]
   (let [interstitial-category          (accessors.categories/current-category state)
         color-facet                    (:hair/color (catalog.facets/by-slug state))
-        experiment-color-shorthand?    (experiments/color-shorthand? state)
         facet-filtering-state          (assoc (get-in state catalog.keypaths/k-models-facet-filtering)
                                                    :facet-filtering/item-label "item")
         facet-filtering-expanded-state (cond-> facet-filtering-state
-                                         experiment-color-shorthand?
+                                         true
                                          (update :facet-filtering/filters catalog.facets/expand-shorthand-colors)
 
                                          (->> interstitial-category :selector/electives (filter (partial = :style.color/features)) seq)
@@ -239,8 +238,7 @@
         shop?                               (or (= "shop" (get-in state keypaths/store-slug))
                                                 (= "retail-location" (get-in state keypaths/store-experience)))
         faq                                 (get-in state (conj keypaths/cms-faq (:contentful/faq-id interstitial-category)))
-        splay?                              (-> dimensions seq boolean)
-        experiment-color-shorthand?         (experiments/color-shorthand? state)]
+        splay?                              (-> dimensions seq boolean)]
     (component/build template
                      (merge
                       (when-let [filter-title (:product-list/title interstitial-category)]
@@ -269,10 +267,7 @@
                        {:facets-db                      (get-in state storefront.keypaths/v2-facets)
                         :faceted-models                 (if splay? category-skuers loaded-category-products)
                         :facet-filtering-state          facet-filtering-state
-                        :experiment-color-shorthand?    experiment-color-shorthand?
-                        :facet-filtering-expanded-state (if experiment-color-shorthand?
-                                                          facet-filtering-expanded-state
-                                                          facet-filtering-state)
+                        :facet-filtering-expanded-state facet-filtering-expanded-state
                         :facets-to-filter-on            (:selector/electives interstitial-category)
                         :navigation-event               events/navigate-category
                         :navigation-args                (select-keys interstitial-category [:catalog/category-id :page/slug])

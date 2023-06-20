@@ -104,11 +104,10 @@
   [app-state _]
   (let [category                            (accessors.categories/current-category app-state)
         color-facet                         (:hair/color (catalog.facets/by-slug app-state))
-        experiment-color-shorthand?         (experiments/color-shorthand? app-state)
         facet-filtering-state               (merge (get-in app-state catalog.keypaths/k-models-facet-filtering)
                                                    {:facet-filtering/item-label "item"})
         facet-filtering-expanded-state      (cond-> facet-filtering-state
-                                              experiment-color-shorthand?
+                                              true
                                               (update :facet-filtering/filters catalog.facets/expand-shorthand-colors)
 
                                               (->> category :selector/electives (filter (partial = :style.color/features)) seq)
@@ -164,7 +163,6 @@
                 :faceted-models                 (if splay? category-skuers loaded-category-products)
                 :facet-filtering-state          facet-filtering-state
                 :facet-filtering-expanded-state facet-filtering-expanded-state
-                :experiment-color-shorthand?    experiment-color-shorthand?
                 :facets-to-filter-on            (:selector/electives category)
                 :navigation-event               e/navigate-category
                 :navigation-args                (select-keys category [:catalog/category-id :page/slug])
