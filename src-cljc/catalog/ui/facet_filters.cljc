@@ -325,7 +325,11 @@
                                                                               (str " (" checked-count ")")))
               :facet-filtering.section.title/target   [e/flow|facet-filtering|section-toggled {:facet-key facet-slug
                                                                                                :toggled?  (not section-toggled?)}]
-              :facet-filtering.section.title/id       (some->> facet-slug name (str "filter-"))
+              :facet-filtering.section.title/id       (string/replace (some->> facet-slug
+                                                                               name
+                                                                               (str "filter-"))
+                                                                      #"\."
+                                                                      "-")
               :facet-filtering.section.title/rotated? section-toggled?
               :facet-filtering.section/filters        (->> (vals facet-options)
                                                            (sort-by :filter/order)
