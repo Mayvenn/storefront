@@ -934,25 +934,26 @@
    "medium" ["gap-4"]
    "large" ["gap-8"]})
 
-(defcomponent section [{:keys [contents mobile-class desktop-class url
+(defcomponent section [{:keys [show-section? contents mobile-class desktop-class url
                                navigation-message background-color padding gap]} _ opts]
-  [(if url :a :div)
-   (merge {:class (cond->> [mobile-class
-                            desktop-class]
-                    background-color (cons (str "bg-" background-color))
-                    padding          (concat (get padding-classes padding))
-                    gap              (concat (get gap-classes gap))
-                    :always          (clojure.string/join " "))
-           :style {:height "fit-content"}}
+  (when show-section?
+    [(if url :a :div)
+     (merge {:class (cond->> [mobile-class
+                              desktop-class]
+                      background-color (cons (str "bg-" background-color))
+                      padding          (concat (get padding-classes padding))
+                      gap              (concat (get gap-classes gap))
+                      :always          (clojure.string/join " "))
+             :style {:height "fit-content"}}
 
-          (when url
-            {:href url})
-          (when navigation-message
-            (apply utils/route-to navigation-message)))
-   (map-indexed
-    (fn [idx content]
-      (layer-view content opts))
-    contents)])
+            (when url
+              {:href url})
+            (when navigation-message
+              (apply utils/route-to navigation-message)))
+     (map-indexed
+      (fn [idx content]
+        (layer-view content opts))
+      contents)]))
 
 (defcomponent retail-location [{:keys [name slug img-url address1-2 city-state-zip phone mon-sat-hours sun-hours
                                        directions instagram facebook tiktok email show-page-target]} _ opts]

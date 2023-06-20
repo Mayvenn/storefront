@@ -383,6 +383,8 @@
                                                      (select-keys [:contents :mobile-layout :desktop-layout :title
                                                                    :desktop-reverse-order :background-color :url
                                                                    :padding :gap])
+                                                     (assoc :show-section? (or (not (:phone-cta-toggled body-layer)) ;; Show if it's not phone cta related
+                                                                               (:shopping-section phone-consult-cta))) ;; Show if it is phone cta related and shopping-section is toggled
                                                      (update :contents (partial map #(determine-and-shape-layer data %)))
 
                                                      (assoc :navigation-message (url->navigation-message (:url body-layer)))
