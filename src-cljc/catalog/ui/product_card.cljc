@@ -62,7 +62,7 @@
                                        ((juxt first last))
                                        (mapv :option/name))
         [lightest heaviest]       (->> (product-options facets skus :hair/weight)
-                                       ((juxt first last)) 
+                                       ((juxt first last))
                                        (mapv :option/name))
         cheapest-sku              (skus/determine-cheapest color-order-map skus-to-search)
         epitome                   (skus/determine-epitome color-order-map skus-to-search)
@@ -76,13 +76,16 @@
      :card/type                             :product
      :react/key                             (str "product-" product-slug "-" (:catalog/sku-id cheapest-sku))
      :product-card-title/id                 (some->> product-slug (str "product-card-title-")) ;; TODO: better display-decision id
-     :product-card-title/primary            (str (:copy/title product) 
-                                                 (when (= 1 (count product-colors)) 
+     :product-card-title/primary            (str (:copy/title product)
+                                                 (when (= 1 (count product-colors))
                                                    (->> product-colors
                                                         first
                                                         :option/name
                                                         (str " - "))))
-     :product-card/id                       (str "product-" product-slug)
+     :product-card/id                       (str "product-" product-slug (->> product-colors
+                                                                              first
+                                                                              :option/slug
+                                                                              (str "-")))
      :product-card/target                   [events/navigate-product-details
                                              {:catalog/product-id (:catalog/product-id product)
                                               :page/slug          product-slug
@@ -91,16 +94,16 @@
                                                                           (merge product-detail-selections category-selections)
                                                                           skus
                                                                           color-order-map))}}]
-     :product-card-details/id               (str "product-card-details-" product-slug) 
+     :product-card-details/id               (str "product-card-details-" product-slug)
      :product-card-details/specs            (str (if (= shortest longest)
                                                    shortest
                                                    (str shortest " - " longest))
-                                                 (when lightest 
+                                                 (when lightest
                                                    (str " | "
                                                         (if (= lightest heaviest)
                                                           lightest
                                                           (str lightest " - " heaviest)))))
-     :product-card-details/colors           (when (< 1 (count product-colors)) 
+     :product-card-details/colors           (when (< 1 (count product-colors))
                                               product-colors)
      :product-card-details/price            (:sku/price cheapest-sku)
      :product-card-details/discounted-price (when (->> cheapest-sku (and (seq in-stock-skus)) :promo.clearance/eligible first)
@@ -299,6 +302,6 @@
 
 (defn organism
   [{:as data :keys [new?]}]
-  (if new? 
+  (if new?
     (organism-new data) 
     (organism-old data)))
