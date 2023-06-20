@@ -606,7 +606,6 @@
       (assoc _ :plp-header (feature-flags/retrieve-flag ld "plp-header" :bool false))
       (assoc _ :show-shipping-delay (feature-flags/retrieve-flag ld "show-shipping-delay" :bool false))
       (assoc _ :show-date-specified-shipping-delay (feature-flags/retrieve-flag ld "show-date-specified-shipping-delay" :bool false)) ;; Not currently implemented
-      (assoc _ :product-card-update (feature-flags/retrieve-flag ld "product-card-update" :bool false))
       (assoc _ :hide-old-classic-homepage (feature-flags/retrieve-flag ld "hide-old-classic-homepage" :bool false))
       (assoc _ :hide-old-static-homepage-content (feature-flags/retrieve-flag ld "hide-old-static-homepage-content" :bool false))
       (assoc _ :show-return-and-shipping-modals (feature-flags/retrieve-flag ld "show-return-and-shipping-modals" :bool false))

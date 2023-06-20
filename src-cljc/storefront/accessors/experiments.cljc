@@ -164,10 +164,6 @@
   [data]
   (display-feature? data "plp-header"))
 
-(defn product-card-update?
-  [data]
-  (display-feature? data "product-card-update"))
-
 (defn crm-personal-quiz?
   [data]
   (display-feature? data "crm-personal-quiz-release"))
