@@ -869,3 +869,6 @@
 (defpath phone-consult-cta-impression)
 (defpath phone-consult-cta-click)
 (defpath phone-consult-cta-poll)
+
+(defpath phone-reserve-cta-impression)
+(defpath phone-reserve-cta-click)

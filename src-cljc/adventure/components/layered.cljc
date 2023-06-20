@@ -4,6 +4,7 @@
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.accordion :as accordion]
             [storefront.components.phone-consult :as phone-consult]
+            [storefront.components.phone-reserve :as phone-reserve]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.components.video :as video]
@@ -1097,6 +1098,24 @@
           (when (seq (:order/items data))
             (str "Ref: " (->> data :waiter/order :number)))]])))))
 
+(defdynamic-component call-to-reserve-monfort-cta
+  (did-mount
+   [this]
+   (publish events/phone-reserve-cta-impression {:number          phone-reserve/monfort
+                                                 :retail-location :monfort}))
+  (render
+   [this]
+   (component/html
+    [:div
+     [:div.block.black
+      (utils/fake-href events/phone-reserve-cta-click
+                       {:number          phone-reserve/monfort
+                        :retail-location :monfort})
+      [:div.m2.flex.justify-center
+       (ui/button-small-primary {} "CALL TO RESERVE")]]
+     [:div.content-3.center
+      (str "Phone: " phone-reserve/monfort " ")]])))
+
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (when type
     (component/build
@@ -1117,6 +1136,7 @@
        :lp-divider-purple-pink             lp-divider-purple-pink
        :animated-value-props               animated-value-props/component
        :phone-consult-cta                  phone-consult-cta
+       :call-to-reserve-monfort-cta        call-to-reserve-monfort-cta
 
        ;; REBRAND
        :shop-text-block         shop-text-block

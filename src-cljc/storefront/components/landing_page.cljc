@@ -363,15 +363,16 @@
                                                      retail-location-query
                                                      (assoc :layer/type :retail-location))
       "staticContent"                            (merge {:layer/type (case (:module body-layer)
-                                                                       "contact-us"           :lp-contact-us
-                                                                       "divider-green-gray"   :lp-divider-green-gray
-                                                                       "divider-purple-pink"  :lp-divider-purple-pink
-                                                                       "service-list"         :service-list
-                                                                       "promises-omni"        :promises-omni
-                                                                       "customize-wig"        :customize-wig
-                                                                       "why-mayvenn"          :why-mayvenn
-                                                                       "animated-value-props" :animated-value-props
-                                                                       "phone-consult-cta"    :phone-consult-cta
+                                                                       "contact-us"                  :lp-contact-us
+                                                                       "divider-green-gray"          :lp-divider-green-gray
+                                                                       "divider-purple-pink"         :lp-divider-purple-pink
+                                                                       "service-list"                :service-list
+                                                                       "promises-omni"               :promises-omni
+                                                                       "customize-wig"               :customize-wig
+                                                                       "why-mayvenn"                 :why-mayvenn
+                                                                       "animated-value-props"        :animated-value-props
+                                                                       "phone-consult-cta"           :phone-consult-cta
+                                                                       "call-to-reserve-monfort-cta" :call-to-reserve-monfort-cta
                                                                        nil)
                                                          :in-omni?   in-omni?}
                                                         (when (and (= "phone-consult-cta" (:module body-layer))
@@ -395,22 +396,22 @@
                                                      (assoc :navigation-message (url->navigation-message (:url body-layer)))
                                                      determine-mobile-and-desktop-class
                                                      (assoc :layer/type :section))
-      "tiles"  (-> body-layer
-                   (select-keys [:contents :mobile-columns :desktop-columns
-                                 :desktop-reverse-order :background-color :url
-                                 :padding :gap])
-                   (update :contents (partial map #(determine-and-shape-layer data %)))
-                   (assoc :navigation-message (url->navigation-message (:url body-layer)))
-                   (assoc :layer/type :tiles))
-      "button" (-> body-layer
-                   (select-keys [:copy :alignment-to-container :color :size :url])
-                   determine-alignment
-                   (assoc :navigation-message (button-navigation-message body-layer))
-                   (assoc :target (button-target body-layer))
-                   (assoc :layer/type :button))
-      "title"  (-> body-layer
-                   (select-keys [:primary :secondary :tertiary :template])
-                   (assoc :layer/type :title))
+      "tiles"                                    (-> body-layer
+                                                     (select-keys [:contents :mobile-columns :desktop-columns
+                                                                   :desktop-reverse-order :background-color :url
+                                                                   :padding :gap])
+                                                     (update :contents (partial map #(determine-and-shape-layer data %)))
+                                                     (assoc :navigation-message (url->navigation-message (:url body-layer)))
+                                                     (assoc :layer/type :tiles))
+      "button"                                   (-> body-layer
+                                                     (select-keys [:copy :alignment-to-container :color :size :url])
+                                                     determine-alignment
+                                                     (assoc :navigation-message (button-navigation-message body-layer))
+                                                     (assoc :target (button-target body-layer))
+                                                     (assoc :layer/type :button))
+      "title"                                    (-> body-layer
+                                                     (select-keys [:primary :secondary :tertiary :template])
+                                                     (assoc :layer/type :title))
       {})))
 
 (defn landing-page-body [data]
