@@ -372,11 +372,13 @@
                                                                        "why-mayvenn"                 :why-mayvenn
                                                                        "animated-value-props"        :animated-value-props
                                                                        "phone-consult-cta"           :phone-consult-cta
+                                                                       "phone-consult-message"       :phone-consult-message
                                                                        "call-to-reserve-monfort-cta" :call-to-reserve-monfort-cta
                                                                        nil)
                                                          :in-omni?   in-omni?}
-                                                        (when (and (= "phone-consult-cta" (:module body-layer))
-                                                                   (:shopping-section phone-consult-cta))
+                                                        (when (= "phone-consult-message" (:module body-layer))
+                                                          phone-consult-cta)
+                                                        (when (= "phone-consult-cta" (:module body-layer))
                                                           (merge {:place-id :section}
                                                                  phone-consult-cta
                                                                  order)))

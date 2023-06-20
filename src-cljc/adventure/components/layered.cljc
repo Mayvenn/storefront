@@ -1,5 +1,6 @@
 (ns adventure.components.layered
   (:require [mayvenn.visual.tools :refer [within with]]
+            [catalog.cms-dynamic-content :as cms-dynamic-content]
             [clojure.string]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.accordion :as accordion]
@@ -1073,19 +1074,17 @@
 (defdynamic-component phone-consult-cta
   (did-mount
    [this]
-   (let [{:keys [released shop-or-omni in-omni? place-id] :as data} (component/get-props this)]
-     (when (and released
-                ;; shop-or-omni (shop = true, omni = false)
-                (= shop-or-omni (not in-omni?)))
+   (let [{:keys [shop-or-omni in-omni? place-id] :as data} (component/get-props this)]
+     (when (= shop-or-omni (not in-omni?))
+       ;; shop-or-omni (shop = true, omni = false)
        (publish events/phone-consult-cta-impression {:number   phone-consult/support-phone-number
                                                      :place-id place-id}))))
   (render
    [this]
    (component/html
-    (let [{:keys [released shop-or-omni in-omni?] :as data} (component/get-props this)]
-      (when (and released
-                 ;; shop-or-omni (shop = true, omni = false
-                 (= shop-or-omni (not in-omni?)))
+    (let [{:keys [shop-or-omni in-omni?] :as data} (component/get-props this)]
+      (when (= shop-or-omni (not in-omni?))
+        ;; shop-or-omni (shop = true, omni = false
         [:div
          [:div.block.black
           (utils/fake-href events/phone-consult-cta-click
@@ -1097,6 +1096,11 @@
           (str "Phone: " phone-consult/support-phone-number " ")
           (when (seq (:order/items data))
             (str "Ref: " (->> data :waiter/order :number)))]])))))
+
+(defcomponent phone-consult-message [{:keys [message-rich-text] :as data} _ _]
+  (component/html
+   [:div.my-auto.center
+    (map cms-dynamic-content/build-hiccup-tag (:content message-rich-text))]))
 
 (defdynamic-component call-to-reserve-monfort-cta
   (did-mount
@@ -1136,6 +1140,7 @@
        :lp-divider-purple-pink             lp-divider-purple-pink
        :animated-value-props               animated-value-props/component
        :phone-consult-cta                  phone-consult-cta
+       :phone-consult-message              phone-consult-message
        :call-to-reserve-monfort-cta        call-to-reserve-monfort-cta
 
        ;; REBRAND
