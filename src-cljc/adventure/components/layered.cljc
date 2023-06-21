@@ -1075,7 +1075,9 @@
   (did-mount
    [this]
    (let [{:keys [shop-or-omni in-omni? place-id] :as data} (component/get-props this)]
-     (when (= shop-or-omni (not in-omni?))
+     (publish events/phone-consult-cta-impression {:number   phone-consult/support-phone-number
+                                                   :place-id place-id})
+     #_(when (= shop-or-omni (not in-omni?))
        ;; shop-or-omni (shop = true, omni = false)
        (publish events/phone-consult-cta-impression {:number   phone-consult/support-phone-number
                                                      :place-id place-id}))))
@@ -1083,19 +1085,20 @@
    [this]
    (component/html
     (let [{:keys [shop-or-omni in-omni?] :as data} (component/get-props this)]
-      (when (= shop-or-omni (not in-omni?))
+      [:div
+       [:div.block.black
+        (utils/fake-href events/phone-consult-cta-click
+                         {:number   phone-consult/support-phone-number
+                          :place-id :section})
+        [:div.m2.flex.justify-center
+         (ui/button-large-primary {} "Call Now")]]
+       [:div.content-3.center
+        (str "Phone: " phone-consult/support-phone-number " ")
+        (when (seq (:order/items data))
+          (str "Ref: " (->> data :waiter/order :number)))]]
+      #_(when (= shop-or-omni (not in-omni?))
         ;; shop-or-omni (shop = true, omni = false
-        [:div
-         [:div.block.black
-          (utils/fake-href events/phone-consult-cta-click
-                           {:number   phone-consult/support-phone-number
-                            :place-id :section})
-          [:div.m2.flex.justify-center
-           (ui/button-large-primary {} "Call Now")]]
-         [:div.content-3.center
-          (str "Phone: " phone-consult/support-phone-number " ")
-          (when (seq (:order/items data))
-            (str "Ref: " (->> data :waiter/order :number)))]])))))
+        )))))
 
 (defcomponent phone-consult-message [{:keys [message-rich-text] :as data} _ _]
   (component/html
