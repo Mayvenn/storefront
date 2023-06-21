@@ -633,7 +633,7 @@
                 (if (string? content)
                   (markdown/component (markdown/md->hiccup content))
                   content)]})
-   (when (and (= slot-id :pdp.details.hair-info/model-wearing)
+   (when (and (= slot-id :pdp.details.overview/model-wearing)
               length-guide-image)
      {:link/content "Length Guide"
       :link/target  [events/popup-show-length-guide
