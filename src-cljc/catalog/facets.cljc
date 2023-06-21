@@ -15,7 +15,7 @@
    :texture          :hair/texture
    :base-material    :hair/base-material
    :color            :hair/color
-   :color-shorthand  :hair/color-shorthand
+   :color-shorthand  :hair/color.shorthand
    :color-feature    :style.color/features
    :length           :hair/length
    :color.process    :hair/color.process
