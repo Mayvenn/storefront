@@ -64,7 +64,7 @@
          {:content/id "1VxWKFdouTl7jRCzTktnLs" :title "Indian Straight 26\", 26\", 26\" + 18\" HD Lace Frontal " :photo-url "https://ucarecdn.com/48cbbc4a-9caf-4c54-a8fb-a16b4db932d8/-/scale_crop/1000x1000/smart/"}]
     :p4 [{:copy/title "180g Straight Seamless Clip-Ins", :catalog/product-id "354", :page/slug "180g-straight-seamless-clip-ins", :catalog/sku-id "CLIP-S-B-4-7-20-180", :url "https://ucarecdn.com/333ac32a-0cb8-4405-a287-c8369365a66a/"}
          {:copy/title "Straight Top Lace With Bangs Wig", :catalog/product-id "128", :page/slug "notorious-naomi-straight-top-lace-with-bangs-wig", :catalog/sku-id "WIG-STL-20-1B", :url "https://ucarecdn.com/3fb27662-3730-4170-a9a3-ec7c53e7fd24/"}
-         {:copy/title "HD Lace Brazilian Deep Wave 4x4 Closure Wig", :catalog/product-id "252", :page/slug "hd-lace-brazilian-deep-wave-4x4-closure-wigs", :catalog/sku-id "MBWHDLFW20", :url "https://ucarecdn.com/f48ead11-9482-43f4-ae9a-2f7715a9243e/"}
+         {:copy/title "HD Lace Front Malaysian Body Wave Wig", :catalog/product-id "251", :page/slug "hd-lace-malaysian-body-wave-lace-front-wigs", :catalog/sku-id "MBWHDLFW16", :url "https://ucarecdn.com/1ff0e630-33ff-46da-987b-263c84d5392b/"}
          {:content/id "5s26Upsk2tEWYQFNaw1PBe" :title "Virgin Peruvian Body Wave 20\", 20\", 20\" Bundles " :photo-url "https://ucarecdn.com/e71bb365-9137-459a-9690-456548afa467/-/scale_crop/1000x1000/smart/"}]
     ;; default is p1
     [{:copy/title "Straight Center Part Lace Short Bob Wig", :catalog/product-id "120", :page/slug "timeless-toni-straight-center-part-lace-short-bob-wig", :catalog/sku-id "WIG-BOB-SCP-10-1B", :url "https://ucarecdn.com/dc278222-67a0-4b19-bcf8-cde86a80d8eb/"}

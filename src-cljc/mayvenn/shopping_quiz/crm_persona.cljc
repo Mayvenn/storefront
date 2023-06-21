@@ -245,7 +245,7 @@
   (within :results.content
           (case (:persona/id persona)
             :p1 {:primary    "Your Personalized Hair Profile"
-                 :secondary  "Serving Signature Styles"
+                 :secondary  "Signature Style Maven"
                  :tertiary   "You know what you want, and why you want it - and your hairstyle is no different. You’re looking for your everyday, go-to look. You need something that is functional, super cute, and serves a look without breaking the bank. Your signature style awaits."
                  :quaternary "We think you'll love these looks:"}
             :p2 {:primary    "Your Personalized Hair Profile"
@@ -257,12 +257,12 @@
                  :tertiary   "You’re her, and her…and her, too. The bottom line is this - you can do it all! You’re ready for a switch-up at any given moment, and your look needs to understand the assignment. Whether it’s the latest color trend or a brand-new product moment, you’re ready for the spotlight."
                  :quaternary "We think you'll love these looks:"}
             :p4 {:primary    "Your Personalized Hair Profile"
-                 :secondary  "I Need All The Inspo"
+                 :secondary  "Give Me Inspiration"
                  :tertiary   "No matter the occasion, you deserve to feel like your best self. Whether you’re planning a vacay, date night, or saying “I do”, we’ve got a look for you. Need a little extra inspiration? Never fear - we’ll show you all the best ways to wear your next favorite style IRL."
                  :quaternary "We think you'll love these looks:"}
             ;; default is p1
             {:primary    "Your Personalized Hair Profile"
-             :secondary  "Serving Signature Styles"
+             :secondary  "Signature Style Maven"
              :tertiary   "You know what you want, and why you want it - and your hairstyle is no different. You're looking for your everyday, go-to look. You need something that is functional, super cute, and serves a look without breaking the bank. Your signature style awaits."
              :quaternary "We think you'll love these looks:"})))
 
