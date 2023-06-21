@@ -1091,7 +1091,7 @@
                            {:number   phone-consult/support-phone-number
                             :place-id :section})
           [:div.m2.flex.justify-center
-           (ui/button-small-primary {} "Call Now")]]
+           (ui/button-large-primary {} "Call Now")]]
          [:div.content-3.center
           (str "Phone: " phone-consult/support-phone-number " ")
           (when (seq (:order/items data))
