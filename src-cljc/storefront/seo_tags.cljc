@@ -146,17 +146,20 @@
   ;; #169613608
   [facets [facet-slug option-slug :as selection]]
   (let [name-key (if (#{:hair/color :hair/origin} facet-slug) :sku/name :option/name)]
-    (get-in facets [facet-slug :facet/options option-slug name-key])))
+  (if (= facet-slug :hair/color.shorthand)
+    (string/capitalize option-slug)
+    (get-in facets [facet-slug :facet/options option-slug name-key]))))
 
 (defn ^:private category->allowed-query-params
   [{:keys [selector/electives]}]
-  (->> electives
-       (select-keys facets/slug>query-param)
-       vals
-       (map name)
-       set))
-
-
+  (let [allowed-query-params (->> electives
+                                  (select-keys facets/slug>query-param)
+                                  vals
+                                  (map name)
+                                  set)]
+  (if (some #(= :hair/color %) electives)
+    (conj allowed-query-params "color-shorthand")
+    allowed-query-params)))
 
 (defn category-tags [data]
   (let [shop?                 (= "shop" (get-in data keypaths/store-slug))
