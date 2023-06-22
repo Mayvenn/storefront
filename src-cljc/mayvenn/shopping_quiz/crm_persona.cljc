@@ -282,7 +282,8 @@
                                                                                    :query-params       {:SKU sku-id}}]
                                      :tracking-target [e/control-quiz-shop-now-product {:catalog/product-id product-id
                                                                                         :page/slug          slug
-                                                                                        :query-params       {:SKU sku-id}}]
+                                                                                        :query-params       {:SKU sku-id}
+                                                                                        :persona            persona}]
                                      :image/src       url
                                      :action/id       (str "result-" (inc idx))
                                      :action/label    "Shop Now"})
@@ -292,7 +293,8 @@
                                      :nav-target      [e/navigate-shop-by-look-details {:look-id       id
                                                                                         :album-keyword :look}]
                                      :tracking-target [e/control-quiz-shop-now-look {:look-id       id
-                                                                                     :album-keyword :look}]
+                                                                                     :album-keyword :look
+                                                                                     :persona       persona}]
                                      :image/src       photo-url
                                      :action/id       (str "result-" (inc idx))
                                      :action/label    "Shop Now"})))))})
@@ -350,10 +352,25 @@
   [_ _ args _ state]
   #?(:cljs (history/enqueue-navigate e/navigate-product-details args)))
 
+(defmethod tr/perform-track e/control-quiz-shop-now-product
+  [_ event {:keys [catalog/product-id page/slug query-params persona]} app-state]
+  (->> {:product_id   product-id
+        :slug         slug
+        :query_params query-params
+        :persona      persona}
+       #?(:cljs (stringer/track-event "quiz_result_selection"))))
 
 (defmethod fx/perform-effects e/control-quiz-shop-now-look
   [_ _ args _ state]
   #?(:cljs (history/enqueue-navigate e/navigate-shop-by-look-details args)))
+
+
+(defmethod tr/perform-track e/control-quiz-shop-now-look
+  [_ event {:keys [look-id album-keyword persona]} app-state]
+  (->> {:look-id       look-id
+        :album-keyword album-keyword
+        :persona       persona}
+       #?(:cljs (stringer/track-event "quiz_result_selection"))))
 
 (defmethod t/transition-state e/control-quiz-results-feedback
   [_ _event {:keys [explanation] :as _args} state]
