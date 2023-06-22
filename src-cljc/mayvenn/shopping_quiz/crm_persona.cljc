@@ -27,7 +27,8 @@
              :rename {handle-message publish}]
             [storefront.ugc :as ugc]
             [storefront.trackings :as tr]
-            [storefront.transitions :as t]))
+            [storefront.transitions :as t]
+            [storefront.routes :as routes]))
 
 (def ^:private shopping-quiz-id :crm/persona)
 (def ^:private answer-keypath [:models :quiz-feedback :answer])
@@ -47,10 +48,11 @@
        label])))
 
 (c/defcomponent result-card
-  [{:keys [target] :as data} _ _]
-  (if target
-    [:a.bg-white.block.pointer
-     {:on-click (apply utils/send-event-callback target)}
+  [{:keys [nav-target tracking-target] :as data} _ _]
+  (if nav-target
+    [:a.bg-white.block.pointer.black
+     {:href (apply routes/path-for nav-target)
+      :on-click (apply utils/send-event-callback tracking-target)}
      [:div
       {:style {:aspect-ratio "3 / 4"
                :overflow "hidden"}}
@@ -275,16 +277,21 @@
                                   (seq product-id)
                                   (let [{:keys [copy/title catalog/sku-id page/slug url]} result]
                                     {:title/secondary title
-                                    :target          [e/control-quiz-shop-now-product {:catalog/product-id product-id
-                                                                                       :page/slug          slug
-                                                                                       :query-params       {:SKU sku-id}}]
-                                    :image/src       url
-                                    :action/id       (str "result-" (inc idx))
-                                    :action/label    "Shop Now"})
+                                     :nav-target      [e/navigate-product-details {:catalog/product-id product-id
+                                                                                   :page/slug          slug
+                                                                                   :query-params       {:SKU sku-id}}]
+                                     :tracking-target [e/control-quiz-shop-now-product {:catalog/product-id product-id
+                                                                                        :page/slug          slug
+                                                                                        :query-params       {:SKU sku-id}}]
+                                     :image/src       url
+                                     :action/id       (str "result-" (inc idx))
+                                     :action/label    "Shop Now"})
                                   (seq id)
                                   (let [{:keys [title photo-url]} result]
                                     {:title/secondary title
-                                     :target          [e/control-quiz-shop-now-look {:look-id       id
+                                     :nav-target      [e/navigate-shop-by-look-details {:look-id       id
+                                                                                        :album-keyword :look}]
+                                     :tracking-target [e/control-quiz-shop-now-look {:look-id       id
                                                                                      :album-keyword :look}]
                                      :image/src       photo-url
                                      :action/id       (str "result-" (inc idx))
