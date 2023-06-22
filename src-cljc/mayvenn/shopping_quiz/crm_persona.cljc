@@ -327,9 +327,17 @@
 (defmethod fx/perform-effects e/navigate-quiz-crm-persona-results
   [_ _ {{persona :p} :query-params} _ state]
   ;; Set persona
-  (let [persona-id (keyword persona)]
+  (let [persona-id      (keyword persona)
+        cache           (get-in state k/api-cache)]
     (when (contains? #{:p1 :p2 :p3 :p4} persona-id)
-      (publish e/persona|selected {:persona/id persona-id}))))
+      (let [handler (fn [result]
+                      (when-let [cart-ids (->> (get-in result [:ugc-collection :aladdin-free-install :looks])
+                                               (take 99)
+                                               (mapv contentful/shared-cart-id)
+                                               not-empty)]
+                        #?(:cljs (api/fetch-shared-carts cache cart-ids))))]
+        (fx/fetch-cms-keypath state [:ugc-collection :aladdin-free-install] handler)
+        (publish e/persona|selected {:persona/id persona-id})))))
 
 (defmethod fx/perform-effects e/control-quiz-shop-now-product
   [_ _ args _ state]

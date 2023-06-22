@@ -376,9 +376,10 @@
                                 (api/fetch-shared-carts cache cart-ids))))]
         (effects/fetch-cms-keypath app-state [:ugc-collection actual-album-kw] handler)))))
 
-(defmethod effects/perform-effects events/navigate-shop-by-look-details [_ event {:keys [album-keyword]} _ app-state]
+(defmethod effects/perform-effects events/navigate-shop-by-look-details [_ event {:keys [album-keyword look-id]} _ app-state]
   (let [actual-album-kw (ugc/determine-look-album app-state album-keyword)]
-    (if-let [shared-cart-id (contentful/shared-cart-id (contentful/selected-look app-state))]
+    (if-let [shared-cart-id (or (contentful/shared-cart-id (contentful/selected-look app-state))
+                                look-id)]
       (do
         (effects/fetch-cms-keypath app-state [:ugc-collection actual-album-kw])
         (effects/fetch-cms-keypath app-state [:faq :shop-by-look])
