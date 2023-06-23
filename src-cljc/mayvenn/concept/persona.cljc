@@ -137,7 +137,8 @@
 
 #?(:cljs
    (defmethod trk/perform-track e/persona|selected
-     [_ _ {:persona/keys [id]} state]
+     [_ _ {:persona/keys [id tracking-results]} state]
      (stringer/track-event "persona_assigned" {:persona id
+                                               :results tracking-results
                                                ;; Hardcoded for now
                                                :quiz_id "crm-persona"})))

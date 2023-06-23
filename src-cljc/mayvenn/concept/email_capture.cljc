@@ -158,7 +158,7 @@
          (stringer/identify {:email captured-email})
          (stringer/track-event "email_capture-capture"
                                (merge
-                                (let [{:keys [persona/id tracking-results]} (persona/<- app-state)]
+                                (let [{:persona/keys [id tracking-results]} (persona/<- app-state)]
                                   (when id
                                     {:persona id
                                      :results tracking-results}))
