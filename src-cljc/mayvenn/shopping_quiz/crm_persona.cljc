@@ -346,7 +346,8 @@
                                                not-empty)]
                         #?(:cljs (api/fetch-shared-carts cache cart-ids))))]
         (fx/fetch-cms-keypath state [:ugc-collection :aladdin-free-install] handler)
-        (publish e/persona|selected {:persona/id persona-id})))))
+        (publish e/persona|selected {:persona/id persona-id
+                                     :results (persona/tracking-results persona-id)})))))
 
 (defmethod fx/perform-effects e/control-quiz-shop-now-product
   [_ _ args _ state]

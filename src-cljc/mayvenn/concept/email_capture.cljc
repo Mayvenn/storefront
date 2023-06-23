@@ -158,25 +158,10 @@
          (stringer/identify {:email captured-email})
          (stringer/track-event "email_capture-capture"
                                (merge
-                                (let [{:keys [persona/id results]} (persona/<- app-state)]
+                                (let [{:keys [persona/id tracking-results]} (persona/<- app-state)]
                                   (when id
                                     {:persona id
-                                     :results (->> results
-                                                   (map-indexed (fn [idx {:keys [content/id catalog/product-id] :as result}]
-                                                                  (cond
-                                                                    (seq product-id)
-                                                                    (let [{:keys [catalog/product-id copy/title catalog/sku-id page/slug url]} result]
-                                                                      {:title     title
-                                                                       :url       (str "https://www.mayvenn.com" "/products/" product-id "-" slug
-                                                                                       (when sku-id (str "?SKU=" sku-id)))
-                                                                       :image_url (str url "-/format/auto/-/quality/lightest/-/crop/1:1/-/resize/350x350/")})
-
-                                                                    (seq id)
-                                                                    (let [{:keys [title photo-url]} result]
-                                                                      {:title         title
-                                                                       :url           (str "https://www.mayvenn.com" "/shop/look/" id)
-                                                                       :image_url     (str photo-url "-/format/auto/-/quality/lightest/-/crop/1:1/-/resize/350x350/")
-                                                                       :album-keyword :look})))))}))
+                                     :results tracking-results}))
                                 {:email-capture-id      trigger-id
                                  :variation-description variation-description
                                  :template-content-id   template-content-id

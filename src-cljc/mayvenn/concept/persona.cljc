@@ -72,12 +72,32 @@
      {:title "Virgin Brazilian Straight 18\", 20\", 22\" + 18\" 4x4 HD Lace Closure", :content/id "5bg4Gcijd9AEI1lUp6PPOd", :photo-url "https://ucarecdn.com/6bac33f3-4a30-4b27-bf9c-6a04fa01e983/-/resize/550x/"}
      {:copy/title "Curly Top Lace Bob with Bangs Wig", :catalog/product-id "353", :page/slug "curly-top-lace-bob-bangs-wig", :catalog/sku-id "WIG-BOB-CTL-12-1B", :url "https://ucarecdn.com/d4275a4f-db01-441a-a3d5-68c183b09c44/"}]))
 
+(defn tracking-results
+  [persona]
+  (->> (results persona)
+       (map-indexed (fn [idx {:keys [content/id catalog/product-id] :as result}]
+                      (cond
+                        (seq product-id)
+                        (let [{:keys [catalog/product-id copy/title catalog/sku-id page/slug url]} result]
+                          {:title     title
+                           :url       (str "https://www.mayvenn.com" "/products/" product-id "-" slug
+                                           (when sku-id (str "?SKU=" sku-id)))
+                           :image_url (str url "-/format/auto/-/quality/lightest/-/crop/1:1/-/resize/350x350/")})
+
+                        (seq id)
+                        (let [{:keys [title photo-url]} result]
+                          {:title         title
+                           :url           (str "https://www.mayvenn.com" "/shop/look/" id)
+                           :image_url     (str photo-url "-/format/auto/-/quality/lightest/-/crop/1:1/-/resize/350x350/")
+                           :album-keyword :look}))))))
+
 (defn <-
   "Get the results model of a look suggestion"
   [state]
   (when-let [persona-id (get-in state k/models-persona)]
-    {:persona/id  persona-id
-     :results     (results persona-id)}))
+    {:persona/id       persona-id
+     :results          (results persona-id)
+     :tracking-results (tracking-results persona-id)}))
 
 ;;;; Behavior
 
