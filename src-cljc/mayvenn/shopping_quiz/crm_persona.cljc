@@ -339,18 +339,21 @@
 (defmethod fx/perform-effects e/navigate-quiz-crm-persona-results
   [_ _ {{persona :p} :query-params} _ state]
   ;; Set persona
-  (let [persona-id      (keyword persona)
-        cache           (get-in state k/api-cache)]
+  (let [persona-id (keyword persona)
+        cache      (get-in state k/api-cache)]
     (when (contains? #{:p1 :p2 :p3 :p4} persona-id)
-      (let [handler (fn [result]
-                      (when-let [cart-ids (->> (get-in result [:ugc-collection :aladdin-free-install :looks])
-                                               (take 99)
-                                               (mapv contentful/shared-cart-id)
-                                               not-empty)]
-                        #?(:cljs (api/fetch-shared-carts cache cart-ids))))]
+      (let [handler      (fn [result]
+                           (when-let [cart-ids (->> (get-in result [:ugc-collection :aladdin-free-install :looks])
+                                                    (take 99)
+                                                    (mapv contentful/shared-cart-id)
+                                                    not-empty)]
+                             #?(:cljs (api/fetch-shared-carts cache cart-ids))))
+            undo-history (get-in state storefront.keypaths/navigation-undo-stack)]
         (fx/fetch-cms-keypath state [:ugc-collection :aladdin-free-install] handler)
-        (publish e/persona|selected {:persona/id persona-id
-                                     :persona/tracking-results (persona/tracking-results persona-id)})))))
+        (when (or (= (first (:navigation-message (first undo-history))) e/navigate-quiz-crm-persona-results)
+                  (nil? (first undo-history)))
+          (publish e/persona|selected {:persona/id               persona-id
+                                       :persona/tracking-results (persona/tracking-results persona-id)}))))))
 
 (defmethod fx/perform-effects e/control-quiz-shop-now-product
   [_ _ args _ state]
