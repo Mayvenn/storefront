@@ -135,10 +135,11 @@
     (when-let [persona-id (name (get-in state k/models-persona))]
       (success-fn persona-id))))
 
-#?(:cljs
-   (defmethod trk/perform-track e/persona|selected
-     [_ _ {:persona/keys [id tracking-results]} state]
-     (stringer/track-event "persona_assigned" {:persona id
-                                               :results tracking-results
-                                               ;; Hardcoded for now
-                                               :quiz_id "crm-persona"})))
+(defmethod trk/perform-track e/persona|selected
+  [_ _ {:persona/keys [id] results :persona/tracking-results} state]
+  (let [persona-id (or id (calculate-persona-from-quiz state))]
+    (->> {:persona persona-id
+          :results (or results (tracking-results persona-id))
+          ;; Hardcoded for now
+          :quiz_id "crm-persona"}
+         #?(:cljs (stringer/track-event "persona_assigned")))))

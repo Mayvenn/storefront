@@ -218,9 +218,7 @@
                         {:questioning/id shopping-quiz-id
                          :answers        answers
                          :on/success     [e/persona|selected
-                                          {:persona/id               id
-                                           :persona/tracking-results tracking-results
-                                           :on/success-fn
+                                          {:on/success-fn
                                            #?(:clj identity
                                               :cljs
                                               #(history/enqueue-navigate
