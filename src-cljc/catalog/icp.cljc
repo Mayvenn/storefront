@@ -172,6 +172,7 @@
 
    (when-let [data (:spotlights queried-data)]
      [:div.pt5
+      [:h2.proxima.text-2xl.px2.mb2 "Shop by Category"]
       (component/build spotlighting/organism {:spotlights data} {})])
 
    [:div.mx-auto
