@@ -106,7 +106,7 @@
    (when tooltip
      [:div.tooltip.ml2 (svg/info-circle {:height "12px"
                                          :width  "11px"})
-      [:div.tooltip-right
+      [:a.tooltip-right
        [:p.text-xs tooltip]
        [:i]]])])
 

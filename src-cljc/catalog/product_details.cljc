@@ -199,7 +199,7 @@
                   (apply utils/fake-href target)))
          copy]))]
    (when-let [{:keys [target id content]} (not-empty (with :link picker-contents))]
-     [:div.right-align
+     [:div.right-align.my4
       (ui/button-small-underline-primary
        (assoc (apply utils/fake-href target) :data-test id)
        content)])])
@@ -852,7 +852,7 @@
                                                                                                                  {:navigation-event events/navigate-product-details
                                                                                                                   :selection        :hair/color
                                                                                                                   :value            slug}]}]})))))}
-                                                  (when (-> selected-sku :hair/family first (= "seamless-clip-ins") (and (experiments/help-me-find-my-shade? state)))
+                                                  (when (-> selected-sku :hair/family first (= "seamless-clip-ins"))
                                                     {:link/content "Help me find my shade"
                                                      :link/target  [events/popup-show-shade-finder]
                                                      :link/id      "help-find-shade"}))})

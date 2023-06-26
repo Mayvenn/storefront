@@ -601,7 +601,6 @@
       (assoc _ :ww-upcp (feature-flags/retrieve-flag ld "ww-upcp" :bool false))
       (assoc _ :homepage-cms-update (feature-flags/retrieve-flag ld "homepage-cms-update" :bool false))
       (assoc _ :good-to-know (feature-flags/retrieve-flag ld "good-to-know" :bool false))
-      (assoc _ :help-me-find-my-shade (feature-flags/retrieve-flag ld "help-me-find-my-shade" :bool false))
       (assoc _ :plp-header (feature-flags/retrieve-flag ld "plp-header" :bool false))
       (assoc _ :show-shipping-delay (feature-flags/retrieve-flag ld "show-shipping-delay" :bool false))
       (assoc _ :show-date-specified-shipping-delay (feature-flags/retrieve-flag ld "show-date-specified-shipping-delay" :bool false)) ;; Not currently implemented

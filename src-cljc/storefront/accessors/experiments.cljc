@@ -156,10 +156,6 @@
   [data]
   (display-feature? data "good-to-know"))
 
-(defn help-me-find-my-shade?
-  [data]
-  (display-feature? data "help-me-find-my-shade"))
-
 (defn plp-header?
   [data]
   (display-feature? data "plp-header"))
