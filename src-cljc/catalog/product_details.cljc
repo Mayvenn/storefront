@@ -140,10 +140,8 @@
             (when target
               (apply utils/fake-href target)))
      [:div.flex.items-center.justify-center
-      {:style {:width     (str size "px")
-               :height    (str size "px")
-               :padding   "2"}
-       :class (when selected? "border border-width-4 border-s-color")}
+      {:style {:padding   "1"}
+       :class (when selected? "border border-width-3 border-s-color")}
       [:img
        {:key   (str "product-details-" option-name "-" option-slug)
         :style {:width     (str (inc container-width) "px")
