@@ -223,6 +223,19 @@
                                :promo-code     pending-promo-code
                                :allow-dormant? true}))))
 
+;; Fragments are used as selectors to determine where we should scroll to
+;; but since users can put whatever they would like as a fragment, we need to
+;; verify that it is a valid CSS selector.
+(defn ^:private fragment->selector [fragment]
+  (try
+    (when-let [non-empty-fragment (not-empty fragment)]
+      ;; Creates a lightweight doc which isn't part of the main document
+      ;; Should be very quick and tell us if the fragment isn't valid
+      (.querySelector (.createDocumentFragment js/document) non-empty-fragment)
+      (str "#" non-empty-fragment))
+    (catch js/Error _
+      nil)))
+
 (defmethod effects/perform-effects events/navigate
   [_ event {:keys [navigate/caused-by query-params nav-stack-item]} prev-app-state app-state]
   (let [[previous-nav-event previous-nav-args] (get-in prev-app-state keypaths/navigation-message)
@@ -304,7 +317,7 @@
       (effects/redirect events/navigate-force-set-password))
 
     ;; NOTE(le): This is a very hacky way of ensuring that the fragment gets scrolled to when possible
-    (when-let [fragment (not-empty (:fragment (history/current-uri)))]
+    (when-let [fragment (fragment->selector (:fragment (history/current-uri)))]
       (messages/handle-later events/control-scroll-selector-to-top
                              {:selector (str "#" fragment)
                               ;; :y here is an offset. Passing this makes it so we scroll directly to the selector intead of a bit off
