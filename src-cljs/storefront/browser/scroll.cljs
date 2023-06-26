@@ -76,16 +76,24 @@
          scroll-top     (.. (scroll-target) -scrollTop)]
      (scroll-to (+ scroll-top el-top (- scroll-padding) y)))))
 
+(defn ^:private query-document [selector]
+  (try
+    (.querySelector js/document selector)
+    (catch js/Error e
+      (throw (ex-info (str "Error while querying the document by selector - " (.message e))
+                      {:selector selector}
+                      e)))))
+
 (defn scroll-selector-to-top
   ([selector]
    (scroll-selector-to-top selector 0))
   ([selector y]
-   (when-let [el (.querySelector js/document selector)]
+   (when-let [el (query-document selector)]
      (scroll-elem-to-top el y))))
 
 (defn scroll-to-selector
   [selector]
-  (when-let [el (.querySelector js/document selector)]
+  (when-let [el (query-document selector)]
     (scroll-to-elem el)))
 
 ;; END ATTN:
