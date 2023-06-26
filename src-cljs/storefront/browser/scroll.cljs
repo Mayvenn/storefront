@@ -76,25 +76,25 @@
          scroll-top     (.. (scroll-target) -scrollTop)]
      (scroll-to (+ scroll-top el-top (- scroll-padding) y)))))
 
-(defn ^:private query-document [selector]
-  (try
-    (.querySelector js/document selector)
-    (catch js/Error e
-      (throw (ex-info (str "Error while querying the document by selector - " (.message e))
-                      {:selector selector}
-                      e)))))
-
 (defn scroll-selector-to-top
   ([selector]
    (scroll-selector-to-top selector 0))
   ([selector y]
-   (when-let [el (query-document selector)]
-     (scroll-elem-to-top el y))))
+   (try
+     (when-let [el (.querySelector js/document selector)]
+       (scroll-elem-to-top el y))
+     (catch js/Error e
+       (js/console.error "Unable to scroll HTML element selected by " selector " to the top of the view port. "
+                         "This is a non-blocking error. Cause:" e)))))
 
 (defn scroll-to-selector
   [selector]
-  (when-let [el (query-document selector)]
-    (scroll-to-elem el)))
+  (try
+    (when-let [el (.querySelector js/document selector)]
+      (scroll-to-elem el))
+    (catch js/Error e
+      (js/console.error "Unable to scroll to HTML element defined by " selector ". "
+                        "This is a non-blocking error. Cause:" e))))
 
 ;; END ATTN:
 
