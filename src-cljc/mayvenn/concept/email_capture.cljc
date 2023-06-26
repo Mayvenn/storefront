@@ -166,6 +166,7 @@
                                  :variation-description variation-description
                                  :template-content-id   template-content-id
                                  :email                 captured-email
+                                 :phone                 captured-phone
                                  :details               details
                                  :test-variations       (get-in app-state k/features)
                                  :store-slug            (get-in app-state k/store-slug)
