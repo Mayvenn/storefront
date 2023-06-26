@@ -139,7 +139,7 @@
                    :facet-filtering.section/filters))]))
 
 (c/defcomponent desktop-section-filter-molecule
-  [{:facet-filtering.section.filter/keys [primary target value icon-url]} _ {:keys [id]}]
+  [{:facet-filtering.section.filter/keys [primary target value icon-url tooltip]} _ {:keys [id]}]
   [:a.col-12.mb2.flex.inherit-color
    {:on-click (apply utils/send-event-callback target)
     :href     "#"
@@ -153,7 +153,13 @@
                :height "30px"}
        :alt   (str "Color swatch of " primary "-colored hair")
        :src   icon-url}])
-   [:div primary]])
+   [:div primary]
+   (when tooltip
+     [:div.tooltip.ml2 (svg/info-circle {:height "12px"
+                                         :width  "11px"})
+      [:div.tooltip-right
+       [:p.text-xs tooltip]
+       [:i]]])])
 
 (c/defcomponent desktop-section-title-molecule
   [{:facet-filtering.section.title/keys [primary target id]} _ _]
