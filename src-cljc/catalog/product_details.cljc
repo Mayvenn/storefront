@@ -128,7 +128,7 @@
       (c/build zip/pdp-component data _))])
 
 (defn color-swatch [ucare-id facet-slug option-slug option-name selected? target size]
-  (let [container-width 50]
+  (let [container-width size]
     [(if target :a :div)
      (merge {:style {:width (str container-width "px")
                      :height (str container-width "px")}
@@ -153,26 +153,26 @@
 
 (c/defcomponent picker-accordion-face-open
   [{:keys [facet-name facet-slug swatch option-slug option-name]} _ _]
-  [:div.grid.ml2.py3.items-center
+  [:div.grid.ml2.py3.items-center.text-base
    {:data-test (str "picker-" facet-slug "-open")
     :style {:grid-template-columns "4rem auto"}}
-   [:div.shout.content-3.bold facet-name]
+   [:div.bold facet-name]
    [:div.flex.items-center.gap-2
     {:data-test (str "picker-selected-" facet-slug "-" option-slug)}
     (when swatch
-      (color-swatch swatch facet-slug option-slug option-name false nil 55))
+      (color-swatch swatch facet-slug option-slug option-name false nil 40))
     option-name]])
 
 (c/defcomponent picker-accordion-face-closed
   [{:keys [facet-name facet-slug swatch option-slug option-name]} _ _]
-  [:div.grid.ml2.py3.items-center
+  [:div.grid.ml2.py3.items-center.text-base
    {:data-test (str "picker-" facet-slug "-closed")
     :style {:grid-template-columns "4rem auto"}}
-   [:div.text-base.bold facet-name]
+   [:div.bold facet-name]
    [:div.flex.items-center.gap-2
     {:data-test (str "picker-selected-" facet-slug "-" option-slug)}
     (when swatch
-      (color-swatch swatch facet-slug option-slug option-name false nil 55))
+      (color-swatch swatch facet-slug option-slug option-name false nil 40))
     option-name]])
 
 (c/defcomponent picker-accordion-contents
