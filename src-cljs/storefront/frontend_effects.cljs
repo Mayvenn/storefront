@@ -304,11 +304,11 @@
       (effects/redirect events/navigate-force-set-password))
 
     ;; NOTE(le): This is a very hacky way of ensuring that the fragment gets scrolled to when possible
-    (when-let [fragment (:fragment (history/current-uri))]
+    (when-let [fragment (not-empty (:fragment (history/current-uri)))]
       (messages/handle-later events/control-scroll-selector-to-top
                              {:selector (str "#" fragment)
                               ;; :y here is an offset. Passing this makes it so we scroll directly to the selector intead of a bit off
-                              :y scroll/scroll-padding} 100))
+                              :y        scroll/scroll-padding} 100))
 
     (exception-handler/refresh)))
 
