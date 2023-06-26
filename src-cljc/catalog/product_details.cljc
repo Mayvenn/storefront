@@ -168,7 +168,7 @@
   [:div.grid.ml2.py3.items-center
    {:data-test (str "picker-" facet-slug "-closed")
     :style {:grid-template-columns "4rem auto"}}
-   [:div.shout.content-3 facet-name]
+   [:div.text-base.bold facet-name]
    [:div.flex.items-center.gap-2
     {:data-test (str "picker-selected-" facet-slug "-" option-slug)}
     (when swatch
