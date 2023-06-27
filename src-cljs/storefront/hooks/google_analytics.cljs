@@ -26,6 +26,10 @@
     :quantity  (or (:item/quantity item) 1)
     :price     (:sku/price item)}))
 
+(defn track-page
+  [user-ecd] 
+  (track "page_view" {} user-ecd))
+
 (defn track-add-to-cart
   "Track an add-to-cart event in GA4 schema."
   ;; When things settle down we might want to consider the following or more:
@@ -96,19 +100,9 @@
       (->> message string/lower-case string/trim goog.crypt/stringToByteArray (.update sha256))
       (goog.crypt/byteArrayToHex (.digest sha256)))))
 
-;; Trying to figure out why Meta is complaining about country codes
-(defn assert-country-is-us [user-ecd]
-  (let [country-root (-> user-ecd :country)
-        country-addr (-> user-ecd :address :country)]
-    (when (or (not= "us" country-root)
-              (not= "us" country-addr))
-      (throw (ex-info (str "Country codes: " country-root " " country-addr) {:country-root country-root
-                                                                             :country-addr country-addr})))))
-
 (defn retrieve-user-ecd
   [app-state]
   (when-let [user-ecd (get-in app-state k/user-ecd)]
-    (assert-country-is-us user-ecd)
     ;; Explicitly making country "us" while we debug Meta's insistence that we are sending an unknown country
     (let [country "us" #_(if (= (get-in app-state k/environment) "development") "bad" "us")]
       (-> user-ecd

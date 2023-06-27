@@ -71,6 +71,8 @@
   (when (not (#{:module-load} caused-by))
     (let [path (routes/current-path app-state)]
       (when (not (nav-was-selecting-bundle-option? app-state))
+        (when (experiments/natural-page-view? app-state)
+          (google-analytics/track-page (google-analytics/retrieve-user-ecd app-state)))
         (riskified/track-page path)
         (stringer/track-page (get-in app-state keypaths/store-experience))))))
 

@@ -608,6 +608,7 @@
       (assoc _ :hide-old-static-homepage-content (feature-flags/retrieve-flag ld "hide-old-static-homepage-content" :bool false))
       (assoc _ :show-return-and-shipping-modals (feature-flags/retrieve-flag ld "show-return-and-shipping-modals" :bool false))
       (assoc _ :yotpo-reviews-by-variant-id? (feature-flags/retrieve-flag ld "yotpo-reviews-by-variant-id" :bool false))
+      (assoc _ :natural-page-view (feature-flags/retrieve-flag ld "natural-page-view" :bool false))
       (assoc-in-req-state req keypaths/features _)
       (h _))))
 

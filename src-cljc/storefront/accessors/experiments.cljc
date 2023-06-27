@@ -167,3 +167,7 @@
 (defn yotpo-reviews-by-variant-id?
   [data]
   (display-feature? data "yotpo-reviews-by-variant-id"))
+
+(defn natural-page-view?
+  [data]
+  (display-feature? data "natural-page-view"))
