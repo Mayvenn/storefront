@@ -39,6 +39,34 @@
                           :og-title    (str "Shop Straight Looks - "
                                             "Find and Buy your favorite Mayvenn bundles!")}})
 
+(def redirect-to-look-filter
+  {:straight [[:texture "straight"]]
+   :loose-wave [[:texture "loose-wave"]]
+   :body-wave [[:texture "body-wave"]]
+   :deep-wave [[:texture "deep-wave"]]
+   :curly [[:texture "curly"]]
+   :closures [[:texture "closures"]]
+   :frontals [[:texture "frontals"]]
+   :kinky-straight [[:texture "kinky-straight"]]
+   :water-wave [[:texture "water-wave"]]
+   :yaki-straight [[:texture "yaki-straight"]]
+   :dyed [[:color "brown"] [:color "blonde"]]
+   :wigs []
+
+   ;; shop product detail page
+   :straight-shop [[:texture "straight"]]
+   :loose-wave-shop [[:texture "loose-wave"]]
+   :body-wave-shop [[:texture "body-wave"]]
+   :deep-wave-shop [[:texture "deep-wave"]]
+   :curly-shop [[:texture "curly"]]
+   :closures-shop [[:texture "closures"]]
+   :frontals-shop [[:texture "frontals"]]
+   :kinky-straight-shop [[:texture "kinky-straight"]]
+   :water-wave-shop [[:texture "water-wave"]]
+   :yaki-straight-shop [[:texture "yaki-straight"]]
+   :dyed-shop [[:color "brown"] [:color "blonde"]]
+   :wigs-shop []})
+
 ;; TODO audit this, looks out of date - April 2020, ditto Sept 2020
 ;; These 'aladdin' albums might be shop or around services
 (def albums
@@ -111,3 +139,6 @@
     (when-let [album (or (album-key-fn product)
                          (:legacy/named-search-slug product))]
       (keyword album))))
+
+(defn redirect-album-to-look-with-filter [album-keyword]
+  (get redirect-to-look-filter album-keyword))

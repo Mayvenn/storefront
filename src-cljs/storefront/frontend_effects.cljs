@@ -354,8 +354,14 @@
 
 (defmethod effects/perform-effects events/navigate-shop-by-look
   [dispatch event {:keys [album-keyword]} previous-app-state app-state]
-  (let [actual-album-kw (ugc/determine-look-album app-state album-keyword)]
+  (let [actual-album-kw (ugc/determine-look-album app-state album-keyword)
+        redirected-to-look-query-params (ugc/redirect-album-to-look-with-filter actual-album-kw)]
     (cond
+      redirected-to-look-query-params
+      (effects/redirect events/navigate-shop-by-look {:album-keyword :look
+                                                      :query-params redirected-to-look-query-params})
+
+
       (and (#{:wavy-curly-looks :straight-looks} album-keyword)
            (= :classic (sites/determine-site app-state)))
       (effects/redirect events/navigate-shop-by-look {:album-keyword :look})
@@ -390,14 +396,24 @@
         (effects/fetch-cms-keypath app-state [:ugc-collection actual-album-kw] handler)))))
 
 (defmethod effects/perform-effects events/navigate-shop-by-look-details [_ event {:keys [album-keyword look-id]} _ app-state]
-  (let [actual-album-kw (ugc/determine-look-album app-state album-keyword)]
-    (if-let [shared-cart-id (or (contentful/shared-cart-id (contentful/selected-look app-state))
-                                look-id)]
+  (let [actual-album-kw (ugc/determine-look-album app-state album-keyword)
+        redirected-to-look-query-params (ugc/redirect-album-to-look-with-filter actual-album-kw)
+        shared-cart-id (or (contentful/shared-cart-id (contentful/selected-look app-state))
+                           look-id)]
+    (cond
+      redirected-to-look-query-params
+      (effects/redirect events/navigate-shop-by-look {:album-keyword :look
+                                                      :query-params redirected-to-look-query-params})
+
+      shared-cart-id
       (do
         (effects/fetch-cms-keypath app-state [:ugc-collection actual-album-kw])
         (effects/fetch-cms-keypath app-state [:faq :shop-by-look])
         (reviews/insert-reviews)
         (api/fetch-shared-cart shared-cart-id))
+
+
+      :else
       (effects/redirect events/navigate-shop-by-look {:album-keyword album-keyword}))))
 
 (defmethod effects/perform-effects events/navigate-account [_ event args _ app-state]
