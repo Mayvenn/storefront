@@ -648,6 +648,12 @@
    [:svg opts
     ^:inline (svg-xlink "box-open")]))
 
+(defn diagonal-line
+  [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "diagonal-line")]))
+
 (defn symbolic->html
   "Converts a data from query that describes an svg to the appropriate html.
 
@@ -659,6 +665,7 @@
      (case kind
        :svg/blow-dryer                     ^:inline (blow-dryer attrs)
        :svg/box-open                       ^:inline (box-open attrs)
+       :svg/diagonal-line                  ^:inline (diagonal-line attrs)
        :svg/calendar                        ^:inline (calendar attrs)
        :svg/certified                       ^:inline (certified attrs)
        :svg/chat-bubble-diamonds            ^:inline (chat-bubble-diamonds attrs)

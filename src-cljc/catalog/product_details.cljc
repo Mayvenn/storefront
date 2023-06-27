@@ -53,7 +53,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages
              :as messages
-             :refer [handle-message] :rename {handle-message publish}] 
+             :refer [handle-message] :rename {handle-message publish}]
             [storefront.routes :as routes]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
@@ -127,10 +127,10 @@
    #?(:cljs
       (c/build zip/pdp-component data _))])
 
-(defn color-swatch [ucare-id facet-slug option-slug option-name selected? target size]
+(defn color-swatch [ucare-id facet-slug option-slug option-name selected? target size stocked?]
   (let [container-width size]
     [(if target :a :div)
-     (merge {:style {:width (str container-width "px")
+     (merge {:style {:width  (str container-width "px")
                      :height (str container-width "px")}
              :class (str "flex items-center justify-center"
                          (when target " inherit-color pointer"))
@@ -140,18 +140,26 @@
             (when target
               (apply utils/fake-href target)))
      [:div.flex.items-center.justify-center
-      {:style {:padding   "1"}
+      {:style {:padding "1"}
        :class (when selected? "border border-width-2 border-white outline-selector")}
-      (let [image-width (if selected? (- container-width 5) (inc container-width))]
-        [:img
-         {:key   (str "product-details-" option-name "-" option-slug)
-          :style {:width     (str image-width "px")
-                  :height    (str image-width "px")}
-          :alt   option-name
-          :src   (str "https://ucarecdn.com/" (ui/ucare-img-id ucare-id) "/-/format/auto/")}])]]))
+      (let [image-width (if selected? (- container-width 5) (inc container-width))
+            width-str   (str image-width "px")]
+        [:div.relative.inline-block
+         [:img.block
+          {:key   (str "product-details-" option-name "-" option-slug)
+           :style (merge {:width  width-str
+                          :height width-str}
+                         (when-not stocked? {:opacity 0.5}))
+           :alt   option-name
+           :src   (str "https://ucarecdn.com/" (ui/ucare-img-id ucare-id) "/-/format/auto/")}]
+         #?(:cljs
+            (when-not stocked?
+              (svg/diagonal-line {:height width-str
+                                  :width  width-str
+                                  :class  "absolute top-0 left-0"})))])]]))
 
 (c/defcomponent picker-accordion-face-open
-  [{:keys [facet-name facet-slug swatch option-slug option-name]} _ _]
+  [{:keys [facet-name facet-slug swatch option-slug option-name stocked?]} _ _]
   [:div.grid.ml2.py3.items-center.text-base
    {:data-test (str "picker-" facet-slug "-open")
     :style {:grid-template-columns "4rem auto"}}
@@ -159,11 +167,11 @@
    [:div.flex.items-center.gap-2
     {:data-test (str "picker-selected-" facet-slug "-" option-slug)}
     (when swatch
-      (color-swatch swatch facet-slug option-slug option-name false nil 40))
+      (color-swatch swatch facet-slug option-slug option-name false nil 40 stocked?))
     option-name]])
 
 (c/defcomponent picker-accordion-face-closed
-  [{:keys [facet-name facet-slug swatch option-slug option-name]} _ _]
+  [{:keys [facet-name facet-slug swatch option-slug option-name stocked?]} _ _]
   [:div.grid.ml2.py3.items-center.text-base
    {:data-test (str "picker-" facet-slug "-closed")
     :style {:grid-template-columns "4rem auto"}}
@@ -171,7 +179,7 @@
    [:div.flex.items-center.gap-2
     {:data-test (str "picker-selected-" facet-slug "-" option-slug)}
     (when swatch
-      (color-swatch swatch facet-slug option-slug option-name false nil 40))
+      (color-swatch swatch facet-slug option-slug option-name false nil 40 stocked?))
     option-name]])
 
 (c/defcomponent picker-accordion-contents
@@ -181,8 +189,8 @@
     :data-test (str "picker-contents-" facet)}
    [:div.flex.flex-wrap.gap-2
     (if swatches?
-      (for [{:keys [option-slug selected? option-name rectangle-swatch target]} options]
-        (color-swatch rectangle-swatch facet option-slug option-name selected? target 55))
+      (for [{:keys [option-slug selected? option-name rectangle-swatch target stocked?]} options]
+        (color-swatch rectangle-swatch facet option-slug option-name selected? target 55 stocked?))
       (for [{:keys [option-slug copy selected? target]} options]
         [(if target :a :div)
          (merge {:key   option-slug
@@ -833,15 +841,18 @@
                                             :facet-slug  "color"
                                             :option-name (:option/name selected-color)
                                             :option-slug (facets/hacky-fix-of-bad-slugs-on-facets (:option/slug selected-color))
-                                            :swatch      (:option/rectangle-swatch selected-color)}
+                                            :swatch      (:option/rectangle-swatch selected-color)
+                                            :stocked?    (and (seq selected-sku)
+                                                              (:inventory/in-stock? selected-sku))}
                              :open-message [events/pdp|picker-options|viewed {:facet   "color"
                                                                               :options (map :option/slug color-options)}]
                              :contents     (merge {:swatches? true
-                                                   :facet     "color" 
+                                                   :facet     "color"
                                                    :options   (->> color-options
-                                                                   (map (fn [{:keys [option/slug option/name option/rectangle-swatch]}]
+                                                                   (map (fn [{:keys [option/slug option/name option/rectangle-swatch stocked?]}]
                                                                           (merge {:option-slug      (facets/hacky-fix-of-bad-slugs-on-facets slug)
                                                                                   :option-name      name
+                                                                                  :stocked?         stocked?
                                                                                   :rectangle-swatch rectangle-swatch
                                                                                   :selected?        (= (:option/slug selected-color) slug)}
                                                                                  (when (-> selected-color :option/slug (not= slug))

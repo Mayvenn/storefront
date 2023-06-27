@@ -468,4 +468,7 @@
       <rect width="47" height="203.28" x="234.51" y="18.59" fill="#4427C1" rx="11.73"/>
     </g>
   </symbol>
+  <symbol id="diagonal-line" viewBox="0 0 53 53">
+    <path fill="#none" stroke="#000" d="m.354.646 52 52"/>
+  </symbol>
 </svg>
