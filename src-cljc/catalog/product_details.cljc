@@ -141,13 +141,14 @@
               (apply utils/fake-href target)))
      [:div.flex.items-center.justify-center
       {:style {:padding   "1"}
-       :class (when selected? "border border-width-3 border-s-color")}
-      [:img
-       {:key   (str "product-details-" option-name "-" option-slug)
-        :style {:width     (str (inc container-width) "px")
-                :height    (str (inc container-width) "px")}
-        :alt   option-name
-        :src   (str "https://ucarecdn.com/" (ui/ucare-img-id ucare-id) "/-/format/auto/")}]]]))
+       :class (when selected? "border border-width-2 border-white outline-selector")}
+      (let [image-width (if selected? (- container-width 5) (inc container-width))]
+        [:img
+         {:key   (str "product-details-" option-name "-" option-slug)
+          :style {:width     (str image-width "px")
+                  :height    (str image-width "px")}
+          :alt   option-name
+          :src   (str "https://ucarecdn.com/" (ui/ucare-img-id ucare-id) "/-/format/auto/")}])]]))
 
 (c/defcomponent picker-accordion-face-open
   [{:keys [facet-name facet-slug swatch option-slug option-name]} _ _]
@@ -189,7 +190,7 @@
                          :height "2.5rem"}
                  :class (str "border flex items-center justify-center"
                              (if selected?
-                               " border-s-color border-width-2 bg-refresh-gray"
+                               " border-selector border-width-2 bg-refresh-gray"
                                " border-gray")
                              (when target
                                " inherit-color pointer"))}

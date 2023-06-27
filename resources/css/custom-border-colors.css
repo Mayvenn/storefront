@@ -11,20 +11,24 @@
 .border-refresh-gray   { border-color: var(--refresh-gray); }
 .border-pale-purple    { border-color: var(--pale-purple); }
 .border-warning-yellow { border-color: var(--warning-yellow); }
+.border-selector       { border-color: var(--selector-purple); }
 
 .debug * { outline: 1px solid gold; }
 
+.outline-selector { outline: 3px solid var(--selector-purple); }
+
 :root {
-    --white:          #FFFFFF;
-    --gray:           #CCCCCC;
-    --black:          #000000;
-    --p-color:        #4427C1;
-    --s-color:        #6BC8AD;
-    --cool-gray:      #EEEFEF;
-    --warm-gray:      #ece6e2;
-    --refresh-gray:   #F5F5F5;
-    --pale-purple:    #DEDBE5;
-    --warning-yellow: #EDC203;
-    --quadpay:        #140ca3;
-    --red:            #f94941;
+    --white:           #FFFFFF;
+    --gray:            #CCCCCC;
+    --black:           #000000;
+    --p-color:         #4427C1;
+    --s-color:         #6BC8AD;
+    --cool-gray:       #EEEFEF;
+    --warm-gray:       #ece6e2;
+    --refresh-gray:    #F5F5F5;
+    --pale-purple:     #DEDBE5;
+    --warning-yellow:  #EDC203;
+    --quadpay:         #140ca3;
+    --red:             #f94941;
+    --selector-purple: #7657FF;
 }
