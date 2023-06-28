@@ -10,9 +10,9 @@
       (when primary
         [:span.proxima.text-base.bold primary])
       (when primary-struck
-        [:div.bold
+        [:div.bold.text-base
          [:span.proxima.text-base.strike primary-struck]
-         [:div.warning-red.right new-primary]])
+         [:div.warning-red.right.ml1 new-primary]])
       [:div.ml1.proxima.text-base {:class secondary-classes}
        secondary]])])
 
