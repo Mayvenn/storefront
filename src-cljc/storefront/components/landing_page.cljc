@@ -387,10 +387,6 @@
                                                                    :desktop-reverse-order :background-color :url
                                                                    :padding :gap])
                                                      (assoc :show-section? (or
-
-                                                                            ;; Default
-                                                                            (not (:hidden body-layer))
-
                                                                             ;; Happy Path: Not designed to be used with the Phone Consult CTA (phone-consult-cta)
                                                                             (not (:phone-cta-toggled body-layer))
                                                                             ;; Designed to be used with Phone Consult CTA
