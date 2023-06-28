@@ -256,7 +256,10 @@
                                                                                       {:landing-page-slug "new-arrivals"}]
                                                                              :copy   "New Arrivals"}
                                                                             {:target [e/navigate-shop-by-look {:album-keyword :look}]
-                                                                             :copy   "Shop by Look"}]}}
+                                                                             :copy   "Shop by Look"}
+                                                                            (when (experiments/crm-personal-quiz? app-state)
+                                                                              {:target [e/navigate-quiz-crm-persona-questions]
+                                                                               :copy   "Quiz!"})]}}
                                  {:id       "about"
                                   :face     {:copy "About us"}
                                   :contents {:info-accordion.contents/type :links-list
