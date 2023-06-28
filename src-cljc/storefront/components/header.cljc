@@ -447,11 +447,6 @@
                                        :slide-out-nav-menu-item/nested? false
                                        :slide-out-nav-menu-item/id      "menu-new-arrivals"
                                        :slide-out-nav-menu-item/primary "New Arrivals!"}
-                                      (when (experiments/crm-personal-quiz? data)
-                                        {:slide-out-nav-menu-item/target  [events/navigate-quiz-crm-persona-questions]
-                                         :slide-out-nav-menu-item/nested? false
-                                         :slide-out-nav-menu-item/id      "menu-quiz-crm-persona"
-                                         :slide-out-nav-menu-item/primary "Quiz!"})
                                       {:slide-out-nav-menu-item/target  [events/navigate-shop-by-look {:album-keyword :look}]
                                        :slide-out-nav-menu-item/nested? false
                                        :slide-out-nav-menu-item/id      "menu-shop-by-look"
@@ -460,6 +455,11 @@
                                        :slide-out-nav-menu-item/nested? false
                                        :slide-out-nav-menu-item/id      "menu-stores"
                                        :slide-out-nav-menu-item/primary "Stores"}
+                                      (when (experiments/crm-personal-quiz? data)
+                                        {:slide-out-nav-menu-item/target  [events/navigate-quiz-crm-persona-questions]
+                                         :slide-out-nav-menu-item/nested? false
+                                         :slide-out-nav-menu-item/id      "menu-quiz-crm-persona"
+                                         :slide-out-nav-menu-item/primary "Quiz!"})
                                       {:slide-out-nav-menu-item/target  {:href blog-url}
                                        :slide-out-nav-menu-item/nested? false
                                        :slide-out-nav-menu-item/id      "menu-blog"
@@ -492,9 +492,13 @@
                                            {:header-menu-item/navigation-target [events/navigate-retail-walmart]
                                             :header-menu-item/id                "menu-stores"
                                             :header-menu-item/content           "Stores"}
-                                           {:header-menu-item/href    blog-url
-                                            :header-menu-item/id      "desktop-blog"
-                                            :header-menu-item/content "Blog"}])}))
+                                           (if (experiments/crm-personal-quiz? data)
+                                             {:header-menu-item/target  [events/navigate-quiz-crm-persona-questions]
+                                              :header-menu-item/id      "destop-quiz-crm-persona"
+                                              :header-menu-item/content "Quiz!"}
+                                             {:header-menu-item/href    blog-url
+                                              :header-menu-item/id      "desktop-blog"
+                                              :header-menu-item/content "Blog"})])}))
 
 (defn query [data]
   (-> (basic-query data)
