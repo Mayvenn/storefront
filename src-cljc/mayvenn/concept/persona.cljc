@@ -73,8 +73,8 @@
      {:copy/title "Curly Top Lace Bob with Bangs Wig", :catalog/product-id "353", :page/slug "curly-top-lace-bob-bangs-wig", :catalog/sku-id "WIG-BOB-CTL-12-1B", :url "https://ucarecdn.com/d4275a4f-db01-441a-a3d5-68c183b09c44/"}]))
 
 (defn tracking-results
-  [persona]
-  (->> (results persona)
+  [persona-id]
+  (->> (results persona-id)
        (map-indexed (fn [idx {:keys [content/id catalog/product-id] :as result}]
                       (cond
                         (seq product-id)
@@ -95,9 +95,9 @@
   "Get the results model of a look suggestion"
   [state]
   (when-let [persona-id (get-in state k/models-persona)]
-    {:persona/id       persona-id
-     :results          (results persona-id)
-     :tracking-results (tracking-results persona-id)}))
+    {:persona/id               persona-id
+     :persona/results          (results persona-id)
+     :persona/tracking-results (tracking-results persona-id)}))
 
 ;;;; Behavior
 

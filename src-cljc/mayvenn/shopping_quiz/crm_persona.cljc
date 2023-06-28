@@ -272,7 +272,7 @@
 (defn quiz-results<
   [persona]
   {:results (->> persona
-                 :results
+                 :persona/results
                  (map-indexed (fn [idx {:keys [content/id catalog/product-id] :as result}]
                                 (cond
                                   (seq product-id)
