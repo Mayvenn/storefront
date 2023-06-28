@@ -539,25 +539,18 @@
                                            (select {:warehouse/slug #{"factory-cn"}})
                                            boolean
                                            not))
-      :sub-cta/promises          (if (:show-return-and-shipping-modals (get-in app-state keypaths/features))
-                                   [{:icon :svg/shield
-                                     :copy "Not the perfect match? We'll exchange it within 30 days."
-                                     :promise-target [events/popup-show-return-policy {:product (products/current-product app-state)
-                                                                                       :location "pdp"}]
-                                     :promise-target-copy "Return & Exchange Policy"}
-                                    {:icon :svg/ship-truck
-                                     :copy "Free standard shipping on all orders."
-                                     :promise-target [events/popup-show-shipping-options {:product (products/current-product app-state)
-                                                                                          :location "pdp"}]
-                                     :promise-target-copy "Shipping Options"}
-                                    {:icon :svg/market
-                                     :copy "Try it on at one of our Texas locations."}]
-                                   [{:icon :svg/shield
-                                     :copy "30 day guarantee"}
-                                    {:icon :svg/ship-truck
-                                     :copy "Free standard shipping"}
-                                    {:icon :svg/market
-                                     :copy "Come visit our Texas locations"}])
+      :sub-cta/promises          [{:icon :svg/shield
+                                   :copy "Not the perfect match? We'll exchange it within 30 days."
+                                   :promise-target [events/popup-show-return-policy {:product (products/current-product app-state)
+                                                                                     :location "pdp"}]
+                                   :promise-target-copy "Return & Exchange Policy"}
+                                  {:icon :svg/ship-truck
+                                   :copy "Free standard shipping on all orders."
+                                   :promise-target [events/popup-show-shipping-options {:product (products/current-product app-state)
+                                                                                        :location "pdp"}]
+                                   :promise-target-copy "Shipping Options"}
+                                  {:icon :svg/market
+                                   :copy "Try it on at one of our Texas locations."}]
       :sub-cta/learn-more-copy   "Find my store"
       :sub-cta/learn-more-target [events/navigate-retail-walmart {}]})))
 
