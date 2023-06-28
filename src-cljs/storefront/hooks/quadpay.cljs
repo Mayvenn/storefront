@@ -83,7 +83,7 @@
 (defcomponent pdp-component [{:zip-payments/keys [loaded? sku-price]} owner opts]
   (when loaded?
     (let [qp-logo ^:inline (svg/quadpay-logo)]
-      [:div.content-3
+      [:div.text-sm.mb2
        (when sku-price
          [:span.mb2
           "or 4 interest-free payments of $" [:span {:data-test "zip-payment-amount"}

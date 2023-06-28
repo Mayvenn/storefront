@@ -27,7 +27,7 @@
    :align/right         {:align/class "right-align"}
    :icon/myj1           {:icon/padding "myj1"}
    :primary/title-1     {:primary/size "title-1"}
-   :primary/title-2     {:primary/size "title-2"}
+   :primary/title-2     {:primary/size "text-xl bold"}
    :primary/title-3     {:primary/size "title-3"}
    :primary/content-1   {:primary/size "content-1"}
    :primary/content-2   {:primary/size "content-2"}
@@ -170,7 +170,6 @@
   (title [:align/left
           :primary/title-2
           :primary/proxima
-          :primary/shout
           :secondary/content-2
           :secondary/mt2]
          text))

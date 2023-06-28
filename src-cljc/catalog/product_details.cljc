@@ -121,9 +121,9 @@
   [:div.mt3.mx3
    [:h1.flex-auto
     (titles/proxima-left (with :title data))]
-   [:div.flex.justify-between.my2
+   [:div.my2
     (c/build reviews/summary (with :reviews.summary data))
-    [:div.col-3 (catalog.M/price-block data)]]
+    (catalog.M/price-block data)]
    #?(:cljs
       (c/build zip/pdp-component data _))])
 
@@ -897,7 +897,7 @@
                                                  (take 10)
                                                  (map inc))]
                             {:id           "quantity"
-                             :face         {:facet-name  "Qty"
+                             :face         {:facet-name  "Quantity"
                                             :facet-slug  "quantity"
                                             :option-name sku-quantity
                                             :option-slug sku-quantity}
@@ -1238,4 +1238,3 @@
    (defmethod trackings/perform-track events/pdp|picker-options|selected
      [_ _ {:keys [data]} _]
      (stringer/track-event "pdp.picker-options/selected" data)))
-

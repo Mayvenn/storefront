@@ -4,16 +4,16 @@
 
 (defn price-block
   [{:price-block/keys [primary primary-struck secondary secondary-classes new-primary]}]
-  [:div.right-align
+  [:div.pt1
    (when (or primary primary-struck)
      [:div.flex
       (when primary
-        [:span.proxima.content-2 primary])
+        [:span.proxima.text-base.bold primary])
       (when primary-struck
-        [:div
-         [:span.proxima.content-2.strike primary-struck]
+        [:div.bold
+         [:span.proxima.text-base.strike primary-struck]
          [:div.warning-red.right new-primary]])
-      [:div.proxima.content-3 {:class secondary-classes}
+      [:div.ml1.proxima.text-base {:class secondary-classes}
        secondary]])])
 
 ;; FIXME(corey) The product details page uses a fork of this component
