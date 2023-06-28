@@ -1,5 +1,6 @@
 (ns catalog.ui.category-hero
   (:require [storefront.component :as c]
+            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]))
 
@@ -34,7 +35,13 @@
    (if-let [banner (category-hero-banner-molecule data)]
      banner
      [:div.px2.pt10 
-      [:h1.proxima.text-3xl (:category-hero.title/primary data)]
+      [:h1.proxima.text-3xl (:category-hero.title/primary data)
+       (when-let [tooltip (spice.core/spy (:category-hero.title/tooltip data))]
+         [:div.tooltip.ml2 (svg/info-circle {:height "15px"
+                                             :width  "15px"})
+          [:a.tooltip-bottom
+           [:p.text-xs tooltip]
+           [:i]]] )]
       (category-hero-icon-molecule data) ; Is this still used?
       (let [{:category-hero.action/keys [label target aria]} data] 
         (when (and label target)

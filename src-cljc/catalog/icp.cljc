@@ -34,6 +34,7 @@
   [category]
   ;; TODO(corey) icp heroes use #:category not #:copy for :description
   {:category-hero.title/primary (:copy/title category)
+   :category-hero.title/tooltip (:copy/tooltip category)
    :category-hero.body/primary  (:category/description category)})
 
 (defn drill-category-image [image-id]

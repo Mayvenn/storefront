@@ -1099,6 +1099,8 @@
      :selector/dimensions [:hair/texture :hair/color]
      :subcategory/image-id "d255ccf8-75af-4729-86da-af6e15783fc2"
      :copy/title           "Clip-In Hair Extensions"
+     :copy/tooltip         (copy "Seamless clip-in hair extensions have a thin, silicone base that blends in with your natural hair,"
+                                 " making them harder to see than classic clip-in hair extensions.")
      :category/description (copy "Get the hair of your dreams in an instant with our seamless clip-in extensions."
                                  "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair."
                                  "Ditch the tracks for a clip-in experience that is truly seamless.")

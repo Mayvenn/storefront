@@ -162,7 +162,21 @@ video.hide-chromecast-icon::-internal-media-controls-overlay-cast-button {
     padding:14px;
     color: black;
     background-color: white;
-    font-weight:normal;
+    position:absolute;
+    z-index:99;
+    box-sizing:border-box;
+    box-shadow:0 1px 6px rgba(0,0,0,0.5);
+    display:none;
+}
+
+.tooltip .tooltip-bottom {
+    min-width:140px;
+    top:100%;
+    left:50%;
+    margin-left:-70px;
+    padding:14px;
+    color: black;
+    background-color: white;
     position:absolute;
     z-index:99;
     box-sizing:border-box;
@@ -174,12 +188,8 @@ video.hide-chromecast-icon::-internal-media-controls-overlay-cast-button {
     display:block;
 }
 
-.tooltip .right i {
-    position:absolute;
-    top:50%;
-    right:100%;
-    margin-top:-12px;
-    overflow:hidden;
+.tooltip:hover .tooltip-bottom {
+    display:block;
 }
 
 .tooltip .tooltip-right i::after {
@@ -192,4 +202,15 @@ video.hide-chromecast-icon::-internal-media-controls-overlay-cast-button {
     transform:translate(50%,-50%) rotate(-45deg);
     background-color: white;
     z-index:90;
+}
+
+.tooltip .tooltip-bottom i::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent white transparent;
 }

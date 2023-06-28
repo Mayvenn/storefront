@@ -76,11 +76,12 @@
      (c/build faq/organism faq-section))])
 
 (defn category-hero-query
-  [{:copy/keys     [title banner-img-dsk-id banner-img-mob-id banner-alt]
+  [{:copy/keys     [title banner-img-dsk-id banner-img-mob-id banner-alt tooltip]
     :category/keys [description new? guide-page]
     icon-uri       :icon}
    experiment-plp-header?]
   (cond-> {:category-hero.title/primary title
+           :category-hero.title/tooltip tooltip
            :category-hero.body/primary  description}
 
     (and experiment-plp-header? guide-page)
