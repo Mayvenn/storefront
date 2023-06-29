@@ -162,7 +162,7 @@
                                 (let [{:persona/keys [id tracking-results]} (persona/<- app-state)]
                                   (when persona
                                     {:persona id
-                                     :quizResults tracking-results}))
+                                     :results tracking-results}))
                                 {:email-capture-id      trigger-id
                                  :variation-description variation-description
                                  :template-content-id   template-content-id
