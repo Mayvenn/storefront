@@ -174,7 +174,7 @@
                                  :store-experience      (get-in app-state k/store-experience)
                                  :account-profile       (get-in app-state k/account-profile)}))
          (when persona
-           (publish e/persona|selected (assoc persona :persona/occurs :post-quiz)))
+           (publish e/persona|selected (assoc persona :persona/origin :post-quiz-email-capture)))
          (google-analytics/track-generate-lead (google-analytics/retrieve-user-ecd app-state))))))
 
 #?(:cljs

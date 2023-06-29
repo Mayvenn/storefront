@@ -218,7 +218,8 @@
                         {:questioning/id shopping-quiz-id
                          :answers        answers
                          :on/success     [e/persona|selected
-                                          {:on/success-fn
+                                          {:person/origin :on-quiz-submitted
+                                           :on/success-fn
                                            #?(:clj identity
                                               :cljs
                                               #(history/enqueue-navigate
@@ -350,7 +351,8 @@
         (fx/fetch-cms-keypath state [:ugc-collection :aladdin-free-install] handler)
         (when (or (= (first (:navigation-message (first undo-history))) e/navigate-quiz-crm-persona-results)
                   (nil? (first undo-history)))
-          (publish e/persona|selected {:persona/id               persona-id
+          (publish e/persona|selected {:persona/origin           :quiz-results-direct-load
+                                       :persona/id               persona-id
                                        :persona/tracking-results (persona/tracking-results persona-id)}))))))
 
 (defmethod fx/perform-effects e/control-quiz-shop-now-product

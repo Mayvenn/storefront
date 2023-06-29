@@ -136,11 +136,11 @@
       (success-fn persona-id))))
 
 (defmethod trk/perform-track e/persona|selected
-  [_ _ {:persona/keys [id occurs] results :persona/tracking-results} state]
+  [_ _ {:persona/keys [id origin] results :persona/tracking-results} state]
   (let [persona-id (or id (calculate-persona-from-quiz state))]
     (->> {:persona persona-id
           :results (or results (tracking-results persona-id))
+          :origin  origin
           ;; Hardcoded for now
-          :occurs occurs
           :quiz_id "crm-persona"}
          #?(:cljs (stringer/track-event "persona_assigned")))))
