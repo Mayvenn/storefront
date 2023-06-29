@@ -250,6 +250,10 @@
         align-items: center;
         grid-template-columns: 1fr 1fr 1fr;
     }
+
+    .sections-hidden-on-tb-dt {
+        display: none !important;
+    }
 }
 
 @media (--on-mobile) {
