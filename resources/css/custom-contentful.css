@@ -223,3 +223,116 @@
         grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     }
 }
+
+.sections-slider-1 {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1fr;
+}
+.sections-slider-3 {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.sections-hidden {
+    visibility: invisible
+}
+
+@media (--on-tablet-and-desktop) {
+    .sections-slider-1-on-tb-dt {
+        display: grid;
+        align-items: center;
+        grid-template-columns: 1fr;
+    }
+    .sections-slider-3-on-tb-dt {
+        display: grid;
+        align-items: center;
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+@media (--on-mobile) {
+    .sections-slider-1 {
+        display: flex;
+        gap: 0.5rem;
+        scroll-snap-type: x mandatory;
+        overflow-x: auto;
+    }
+
+    .sections-slider-1 > div {
+        width: calc(90% - 0.5rem);
+        scroll-snap-align: center;
+        flex-shrink: 0;
+    }
+
+    .sections-slider-1 > div .contents {
+        object-fit: cover;
+    }
+
+.sections-slider-1 > a {
+        width: calc(90% - 0.5rem);
+        scroll-snap-align: center;
+        flex-shrink: 0;
+    }
+
+    .sections-slider-1 > a .contents {
+        object-fit: cover;
+    }
+
+    .sections-slider-1 > .spacer {
+        min-width: calc(5% - 0.25rem);
+    }
+}
+
+@media (--on-tablet-and-desktop) {
+    .sections-slider-1 {
+        display: flex;
+        gap: 0.5rem;
+        scroll-snap-type: x mandatory;
+        overflow-x: auto;
+    }
+
+    .sections-slider-1 > div {
+        width: calc(30% - 0.5rem);
+        scroll-snap-align: center;
+        flex-shrink: 0;
+    }
+
+    .sections-slider-1 > div .contents {
+        object-fit: cover;
+    }
+
+    .sections-slider-1 > a {
+        width: calc(30% - 0.5rem);
+        scroll-snap-align: center;
+        flex-shrink: 0;
+    }
+
+    .sections-slider-1 > a .contents {
+        object-fit: cover;
+    }
+
+    .sections-slider-1 > .spacer {
+        min-width: calc(5% - 0.25rem);
+    }
+}
+
+
+/* .carousel-2022-with-sidebar { */
+/*     display: grid; */
+/*     grid-template-columns: 7fr 1fr; */
+/*     column-gap: 0.5rem; */
+/* } */
+
+/* .carousel-2022-with-sidebar > .exhibits { */
+/*     row-gap: 0.5rem; */
+/* } */
+
+/* .carousel-2022-with-sidebar .exhibits .exhibit { */
+/*     scroll-snap-align: start; */
+/* } */
+
+/* .carousel-2022-with-sidebar > .exhibits > .exhibit .contents { */
+/*     object-fit: cover; */
+/* } */
