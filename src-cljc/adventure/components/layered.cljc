@@ -1,5 +1,6 @@
 (ns adventure.components.layered
   (:require [mayvenn.visual.tools :refer [within with]]
+            #?(:cljs [storefront.hooks.calendly :as calendly])
             [catalog.cms-dynamic-content :as cms-dynamic-content]
             [clojure.string]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
@@ -1105,6 +1106,26 @@
    [:div.my-auto.center
     (map cms-dynamic-content/build-hiccup-tag (:content message-rich-text))]))
 
+(defmethod fx/perform-effects events/show-calendly
+  [dispatch event args prev-app-state app-state]
+  (prn "SHOW CALENDLY")
+  #?(:cljs (spice.core/spy (js/window.Calendly.initPopupWidget (clj->js {:url "https://calendly.com/andres-8qw"}))) ))
+
+(defdynamic-component phone-consult-calendly
+  (did-mount
+   [this]
+   #?(:cljs
+      (calendly/insert)))
+  (render
+   [this]
+   (prn "GETS HERE")
+   (let [{:keys [show-calendly]} (component/get-props this)]
+     (component/html
+      (if show-calendly
+        (ui/button-large-primary (apply utils/fake-href [events/show-calendly])
+                                 "Schedule with a consultant")
+        ui/spinner)))))
+
 (defdynamic-component call-to-reserve-monfort-cta
   (did-mount
    [this]
@@ -1144,6 +1165,7 @@
        :animated-value-props               animated-value-props/component
        :phone-consult-cta                  phone-consult-cta
        :phone-consult-message              phone-consult-message
+       :phone-consult-calendly             phone-consult-calendly
        :call-to-reserve-monfort-cta        call-to-reserve-monfort-cta
 
        ;; REBRAND

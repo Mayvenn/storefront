@@ -63,6 +63,7 @@
                     "externs/stringer.js"
                     "externs/stripe.js"
                     "externs/uploadcare.js"
+                    "externs/calendly.js"
                     "externs/wistia.js"
                     "externs/yotpo.js"]
  :preloads         [devtools.preload]}

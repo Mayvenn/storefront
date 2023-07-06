@@ -307,6 +307,7 @@
 (def loaded-quadpay (conj loaded :quadpay))
 (def loaded-uploadcare (conj loaded :uploadcare))
 (def loaded-wirewheel-upcp (conj loaded :wwupcp))
+(def loaded-calendly (conj loaded :calendly))
 
 (def loaded-kustomer (conj loaded :kustomer))
 ;; Kustomer integration requires to be called and completed after tag insertion

@@ -373,9 +373,12 @@
                                                                        "animated-value-props"        :animated-value-props
                                                                        "phone-consult-cta"           :phone-consult-cta
                                                                        "phone-consult-message"       :phone-consult-message
+                                                                       "phone-consult-calendly"      :phone-consult-calendly
                                                                        "call-to-reserve-monfort-cta" :call-to-reserve-monfort-cta
                                                                        nil)
                                                          :in-omni?   in-omni?}
+                                                        (when (get-in data keypaths/loaded-calendly)
+                                                          {:show-calendly true})
                                                         (when (= "phone-consult-message" (:module body-layer))
                                                           phone-consult-cta)
                                                         (when (= "phone-consult-cta" (:module body-layer))

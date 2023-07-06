@@ -153,6 +153,7 @@
                                            "externs/stripe.js"
                                            "externs/uploadcare.js"
                                            "externs/wirewheel_upcp.js"
+                                           "externs/calendly.js"
                                            "externs/wistia.js"
                                            "externs/yotpo.js"]
                         :optimizations    :advanced}}}}

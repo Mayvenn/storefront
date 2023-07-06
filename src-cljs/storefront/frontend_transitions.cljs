@@ -587,6 +587,9 @@
 (defmethod transition-state events/inserted-wirewheel-upcp [_ _ _ app-state]
   (assoc-in app-state keypaths/loaded-wirewheel-upcp true))
 
+(defmethod transition-state events/inserted-calendly [_ _ _ app-state]
+  (assoc-in app-state keypaths/loaded-calendly true))
+
 (defmethod transition-state events/stripe-component-mounted [_ event {:keys [card-element]} app-state]
   (assoc-in app-state keypaths/stripe-card-element card-element))
 

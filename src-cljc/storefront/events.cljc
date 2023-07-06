@@ -439,6 +439,9 @@
 (defpath inserted-uploadcare)
 (defpath inserted-kustomer)
 (defpath inserted-wirewheel-upcp)
+(defpath inserted-calendly)
+
+(defpath show-calendly)
 
 (defpath initialized-wirewheel-upcp)
 (defpath wirewheel-upcp-iframe-loaded)
