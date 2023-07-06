@@ -1108,7 +1108,9 @@
 
 (defmethod fx/perform-effects events/show-calendly
   [dispatch event args prev-app-state app-state]
-  #?(:cljs (js/window.Calendly.initPopupWidget (clj->js {:url "https://calendly.com/d/z7y-4h9-7jg/consultation-call"})) ))
+  #?(:cljs (-> {:url "https://calendly.com/mayvenn-consultations/phone-appointment"}
+               clj->js
+               js/window.Calendly.initPopupWidget)))
 
 (defdynamic-component phone-consult-calendly
   (did-mount
