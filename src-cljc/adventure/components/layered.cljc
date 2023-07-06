@@ -1108,8 +1108,7 @@
 
 (defmethod fx/perform-effects events/show-calendly
   [dispatch event args prev-app-state app-state]
-  (prn "SHOW CALENDLY")
-  #?(:cljs (spice.core/spy (js/window.Calendly.initPopupWidget (clj->js {:url "https://calendly.com/andres-8qw"}))) ))
+  #?(:cljs (js/window.Calendly.initPopupWidget (clj->js {:url "https://calendly.com/d/z7y-4h9-7jg/consultation-call"})) ))
 
 (defdynamic-component phone-consult-calendly
   (did-mount
@@ -1118,7 +1117,6 @@
       (calendly/insert)))
   (render
    [this]
-   (prn "GETS HERE")
    (let [{:keys [show-calendly]} (component/get-props this)]
      (component/html
       (if show-calendly

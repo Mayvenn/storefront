@@ -6,7 +6,6 @@
 
 
 (defn insert []
-  "https://assets.calendly.com/assets/external/widget.css"
   (tags/insert-tag-with-callback
    (tags/src-tag "https://assets.calendly.com/assets/external/widget.js"
                  "calendly")
