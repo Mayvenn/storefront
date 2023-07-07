@@ -36,7 +36,7 @@
      banner
      [:div.px2.pt10 
       [:h1.proxima.text-3xl (:category-hero.title/primary data)
-       (when-let [tooltip (spice.core/spy (:category-hero.title/tooltip data))]
+       (when-let [tooltip (:category-hero.title/tooltip data)]
          [:div.tooltip.ml2 (svg/info-circle {:height "15px"
                                              :width  "15px"})
           [:a.tooltip-bottom
