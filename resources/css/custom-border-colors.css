@@ -12,6 +12,7 @@
 .border-pale-purple    { border-color: var(--pale-purple); }
 .border-warning-yellow { border-color: var(--warning-yellow); }
 .border-selector       { border-color: var(--selector-purple); }
+.border-gray-700       { border-color: var(--gray-700); }
 
 .debug * { outline: 1px solid gold; }
 
@@ -30,5 +31,7 @@
     --warning-yellow:  #EDC203;
     --quadpay:         #140ca3;
     --red:             #f94941;
+
     --selector-purple: #7657FF;
+    --gray-700:        #767377;
 }

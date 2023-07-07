@@ -1,27 +1,28 @@
-.bg-fb-blue                 { background-color: var(--facebook-blue); }
-.bg-quadpay-blue            { background-color: var(--quadpay-blue); }
-.bg-paypal                  { background-color: var(--paypal); }
-.bg-twitter-blue            { background-color: var(--twitter-blue); }
-.bg-sms-green               { background-color: var(--sms-green); }
-.bg-error                   { background-color: var(--light-red); }
+.bg-fb-blue        { background-color: var(--facebook-blue); }
+.bg-quadpay-blue   { background-color: var(--quadpay-blue); }
+.bg-paypal         { background-color: var(--paypal); }
+.bg-twitter-blue   { background-color: var(--twitter-blue); }
+.bg-sms-green      { background-color: var(--sms-green); }
+.bg-error          { background-color: var(--light-red); }
 
-.bg-white                  { background-color: var(--white); }
-.bg-gray                   { background-color: var(--gray); }
-.bg-dark-gray              { background-color: var(--dark-gray); }
-.bg-black                  { background-color: var(--black); }
-.bg-clear                  { background-color: var(--clear); }
-.bg-lighten-5              { background-color: var(--lighten-5); }
-.bg-gray-mask              { background-color: var(--gray-mask); }
+.bg-white          { background-color: var(--white); }
+.bg-gray           { background-color: var(--gray); }
+.bg-dark-gray      { background-color: var(--dark-gray); }
+.bg-black          { background-color: var(--black); }
+.bg-clear          { background-color: var(--clear); }
+.bg-lighten-5      { background-color: var(--lighten-5); }
+.bg-gray-mask      { background-color: var(--gray-mask); }
 
-.bg-p-color      { background-color: var(--p-color); }
-.bg-s-color      { background-color: var(--s-color); }
-.bg-refresh-gray { background-color: var(--refresh-gray); }
-.bg-cool-gray    { background-color: var(--cool-gray); }
-.bg-warm-gray    { background-color: var(--warm-gray); }
-.bg-pale-purple  { background-color: var(--pale-purple); }
-.bg-deep-purple  { background-color: var(--deep-purple); }
-.bg-pink         { background-color: var(--pink); }
-.bg-warning-yellow         { background-color: var(--warning-yellow); }
+.bg-p-color        { background-color: var(--p-color); }
+.bg-s-color        { background-color: var(--s-color); }
+.bg-refresh-gray   { background-color: var(--refresh-gray); }
+.bg-cool-gray      { background-color: var(--cool-gray); }
+.bg-warm-gray      { background-color: var(--warm-gray); }
+.bg-pale-purple    { background-color: var(--pale-purple); }
+.bg-deep-purple    { background-color: var(--deep-purple); }
+.bg-pink           { background-color: var(--pink); }
+.bg-warning-yellow { background-color: var(--warning-yellow); }
+.bg-purple-100     { background-color: var(--purple-100); }
 
 .bg-alternate-refresh-gray-white:nth-child(odd) { background-color: var(--refresh-gray); }
 .bg-alternate-refresh-gray-white:nth-child(even) { background-color: var(--white); }
@@ -49,21 +50,22 @@
     --clear: rgba(0, 0, 0, 0);
 
     /* THESE ARE OUR NEW COLORS */
-    --p-color:      #4427c1;
-    --s-color:      #6bc8ad;
-    --red:          #f94941;
-    --pink:         #f4c3d6;
-    --light-red:    #fef7fa;
-    --paypal:       #00297c;
-    --pale-purple:  #dedbe5;
-    --deep-purple:  #4e4899;
-    --white:        #ffffff;
-    --gray-mask:    rgba(204, 204, 204, 0.1);
-    --gray:         #cccccc;
-    --dark-gray:    #8B8B8B;
-    --refresh-gray: #f5f5f5;
-    --cool-gray:    #eeefef;
-    --warm-gray:    #ece6e2;
-    --black:        #000000;
+    --p-color:        #4427c1;
+    --s-color:        #6bc8ad;
+    --red:            #f94941;
+    --pink:           #f4c3d6;
+    --light-red:      #fef7fa;
+    --paypal:         #00297c;
+    --pale-purple:    #dedbe5;
+    --deep-purple:    #4e4899;
+    --white:          #ffffff;
+    --gray-mask:      rgba(204, 204, 204, 0.1);
+    --gray:           #cccccc;
+    --dark-gray:      #8B8B8B;
+    --refresh-gray:   #f5f5f5;
+    --cool-gray:      #eeefef;
+    --warm-gray:      #ece6e2;
+    --black:          #000000;
     --warning-yellow: #EDC203;
+    --purple-100:     #EEECF9;
 }

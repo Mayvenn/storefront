@@ -184,7 +184,7 @@
                                                                                   :width  "16px"
                                                                                   :height "16px"
                                                                                   :style  {:transform "rotate(-90deg)"}})])]
-      [:div.col.col-6.p1
+      [:div.col.col-4.p1
        (ui/input-group
         {:type          "text"
          :wrapper-class "col-7 pl3 flex items-center bg-white"
@@ -194,9 +194,18 @@
          :content    "Button"
          :args       (merge button-attrs
                             {:class "flex justify-center items-center"})})]
-      [:div.col.col-6.p1
+      [:div.col.col-4.p1
        [:div.col.col-3
-        (ui/button-pill {:class "p1"} "Pill Button")]]]]))
+        (ui/button-pill {:class "p1"} "Pill Button")]]
+
+      [:div.col.col-4.p1
+       [:div.col.col-3
+        (ui/toggle-pill (let [keypath [:design-system :buttons :toggle-pill]
+                              value   (get-in data keypath)]
+                          {:label-left  "Toggle"
+                           :label-right "Tuggle"
+                           :toggled     (or value :left)
+                           :data-test   "toggle-pill"}) )]]]]))
 
 (def ^:private increment->size
   {1 "5px"

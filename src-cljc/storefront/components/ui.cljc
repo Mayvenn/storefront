@@ -526,6 +526,32 @@
            {:style {:height "10px" :width "10px"}}])]]
       (into [:div.clearfix.col-12] content)])))
 
+(defn toggle-pill
+  [{:keys [label-left label-right toggled data-test] :as toggle-attrs}]
+  (component/html
+   [:div.text-xs.border.border-gray-700.justify-center.items-center.pp3
+    {:style {:width "196px"}}
+    (case toggled
+      :left
+      [:div.flex
+       {:on-click #(handle-message events/control-change-state
+                                   {:keypath [:design-system :buttons :toggle-pill]
+                                    :value   :right})}
+       [:a.border.border-p-color.bold.p-color.p1.items-center.bg-purple-100.pl2
+        {:style {:width "103px" :height "30px"}}
+        label-left]
+       [:a.p1 label-right]]
+
+      :right
+      [:a.flex.justify-between
+       {:on-click #(handle-message events/control-change-state
+                                   {:keypath [:design-system :buttons :toggle-pill]
+                                    :value   :left})}
+       [:div.p1 label-left]
+       [:div.border.border-p-color.bold.p-color.p1.items-center.bg-purple-100.pl2
+        {:style {:width "103px" :height "30px"}}
+        label-right]])]))
+
 (defn drop-down
   ;; NOTE: for performance, callers are now responsible for attaching the following to the drop-down link-element:
   ;;       (utils/fake-href events/control-menu-expand {:keypath <menu-keypath>})]
