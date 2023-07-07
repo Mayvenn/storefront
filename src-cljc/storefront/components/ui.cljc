@@ -529,25 +529,25 @@
 (defn toggle-pill
   [{:keys [label-left label-right toggled data-test] :as toggle-attrs}]
   (component/html
-   [:div.text-xs.border.border-gray-700.justify-center.items-center.pp3
+   [:div.text-xs.border.border-gray-700.items-center.pp3
     {:style {:width "196px"}}
     (case toggled
       :left
-      [:div.flex
+      [:a.flex.center
        {:on-click #(handle-message events/control-change-state
                                    {:keypath [:design-system :buttons :toggle-pill]
                                     :value   :right})}
-       [:a.border.border-p-color.bold.p-color.p1.items-center.bg-purple-100.pl2
+       [:div.border.border-p-color.bold.p-color.p1.items-center.bg-purple-100.pl2
         {:style {:width "103px" :height "30px"}}
         label-left]
-       [:a.p1 label-right]]
+       [:div.p1 {:style {:width "93px"}} label-right]]
 
       :right
-      [:a.flex.justify-between
+      [:a.flex.center
        {:on-click #(handle-message events/control-change-state
                                    {:keypath [:design-system :buttons :toggle-pill]
                                     :value   :left})}
-       [:div.p1 label-left]
+       [:div.p1 {:style {:width "93px"}} label-left]
        [:div.border.border-p-color.bold.p-color.p1.items-center.bg-purple-100.pl2
         {:style {:width "103px" :height "30px"}}
         label-right]])]))
