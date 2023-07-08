@@ -441,7 +441,14 @@
 (defpath inserted-wirewheel-upcp)
 (defpath inserted-calendly)
 
+(defpath instrumented-calendly)
 (defpath show-calendly)
+(defpath phone-consult-calendly-impression)
+(defpath calendly-profile-page-viewed)
+(defpath calendly-event-type-viewed)
+(defpath calendly-date-and-time-selected)
+(defpath calendly-event-scheduled)
+(defpath calendly-unknown-event)
 
 (defpath initialized-wirewheel-upcp)
 (defpath wirewheel-upcp-iframe-loaded)

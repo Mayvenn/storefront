@@ -26,14 +26,12 @@
             [ui.molecules :as ui.M]
             [storefront.config :as config]
             [storefront.effects :as fx]
-            [storefront.keypaths :as keypaths]
             [homepage.ui.promises :as promises]
             [homepage.ui.contact-us :as contact-us]
             [markdown-to-hiccup.core :as markdown]
             [ui.wig-services-menu :as wig-services-menu]
             [ui.wig-customization-spotlights :as wig-customization-spotlights]
-            [storefront.components.animated-value-props :as animated-value-props]
-            [storefront.component :as c]))
+            [storefront.components.animated-value-props :as animated-value-props]))
 
 (defn ^:private vertical-squiggle
   [top]
@@ -1106,15 +1104,10 @@
    [:div.my-auto.center
     (map cms-dynamic-content/build-hiccup-tag (:content message-rich-text))]))
 
-(defmethod fx/perform-effects events/show-calendly
-  [dispatch event args prev-app-state app-state]
-  #?(:cljs (-> {:url "https://calendly.com/mayvenn-consultations/phone-appointment"}
-               clj->js
-               js/window.Calendly.initPopupWidget)))
-
 (defdynamic-component phone-consult-calendly
   (did-mount
    [this]
+   (publish events/phone-consult-calendly-impression {})
    #?(:cljs
       (calendly/insert)))
   (render
