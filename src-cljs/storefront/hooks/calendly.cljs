@@ -29,7 +29,7 @@
   [_ event _ prev-state state]
   (.addEventListener js/window "message"
                      (fn [e]
-                       (when (spice.core/spy "EVENT?" (calendly-event? e))
+                       (when (calendly-event? e)
                          (let [event (js->clj e.data :keywordize-keys true)]
                            (prn event)
                            (case (->> event :event)
