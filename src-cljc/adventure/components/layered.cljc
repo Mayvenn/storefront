@@ -1116,7 +1116,7 @@
      (component/html
       (if show-calendly
         (ui/button-large-primary (apply utils/fake-href [events/show-calendly])
-                                 "Schedule with a consultant")
+                                 "Schedule Now")
         ui/spinner)))))
 
 (defdynamic-component call-to-reserve-monfort-cta
