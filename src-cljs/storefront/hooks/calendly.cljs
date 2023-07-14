@@ -20,38 +20,34 @@
   [_ event _ prev-state state]
   (publish e/instrumented-calendly {}))
 
-(defn calendly-event?
-  [e]
-  (and e.data.event
-       (= (.indexOf e.data.event "calendly") 0)))
+(defn from-calendly?
+  [event]
+  (and event (= (.indexOf event "calendly") 0)))
 
 (defmethod fx/perform-effects e/instrumented-calendly
-  [_ event _ prev-state state]
+  [_ _ _ _ _]
   (.addEventListener js/window "message"
                      (fn [e]
-                       (when (calendly-event? e)
-                         (let [event (js->clj e.data :keywordize-keys true)]
-                           (prn event)
-                           (case (->> event :event)
-                            "calendly.profile_page_viewed"
-                            (publish e/calendly-profile-page-viewed event)
-                            "calendly.event_type_viewed"
-                            (publish e/calendly-event-type-viewed event)
-                            "calendly.date_and_time_selected"
-                            (publish e/calendly-date-and-time-selected event)
-                            "calendly.event_scheduled"
-                            (publish e/calendly-event-scheduled event)
-                            (publish e/calendly-unknown-event event)))))))
+                       (let [{:keys [event]} (js->clj e.data :keywordize-keys true)]
+                         (when (from-calendly? event)
+                           (publish
+                            (case event
+                              "calendly.profile_page_viewed"    e/calendly-profile-page-viewed
+                              "calendly.event_type_viewed"      e/calendly-event-type-viewed
+                              "calendly.date_and_time_selected" e/calendly-date-and-time-selected
+                              "calendly.event_scheduled"        e/calendly-event-scheduled
+                              e/calendly-unknown-event)
+                            event))))))
 
 (defmethod fx/perform-effects e/show-calendly
   [dispatch event args prev-app-state app-state]
-  (->> {:url "https://calendly.com/d/z7y-4h9-7jg/consultation-call"}
+  (->> {:url "https://calendly.com/mayvenn-consultations/call"}
        clj->js
        js/window.Calendly.initPopupWidget))
 
 (defmethod trk/perform-track e/show-calendly
   [_ _ _ _]
-  (stringer/track-event "phone_consult_calendly_pressed" {}))
+  (stringer/track-event "phone_consult_calendly_cta_clicked" {}))
 
 (defmethod trk/perform-track e/phone-consult-calendly-impression
   [_ _ _ _]
