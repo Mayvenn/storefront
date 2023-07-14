@@ -1,5 +1,6 @@
 (ns storefront.hooks.calendly
-  (:require [storefront.browser.tags :as tags]
+  (:require [clojure.string :refer [starts-with?]]
+            [storefront.browser.tags :as tags]
             [storefront.events :as e]
             [storefront.effects :as fx]
             [storefront.hooks.stringer :as stringer]
@@ -7,8 +8,7 @@
              :as messages
              :refer [handle-message] :rename {handle-message publish}]
             [storefront.trackings :as trk]
-            cljs.core))
-
+            [storefront.hooks.google-analytics :as google-analytics]))
 
 (defn insert []
   (tags/insert-tag-with-callback
@@ -20,55 +20,70 @@
   [_ _ _ _ _]
   (publish e/instrumented-calendly {}))
 
-(defn from-calendly?
-  [event]
-  (and event (= (.indexOf event "calendly") 0)))
+(defn- from-calendly?
+  [event-name]
+  (and (string? event-name)
+       (starts-with? event-name "calendly")))
+
+(defn- handle-post-message
+  [message]
+  (let [{:as event-data event-name :event}
+        (-> message.data
+            (js->clj :keywordize-keys true))]
+    (when (from-calendly? event-name)
+      (publish
+       (case event-name
+         "calendly.profile_page_viewed"    e/calendly-profile-page-viewed
+         "calendly.event_type_viewed"      e/calendly-event-type-viewed
+         "calendly.date_and_time_selected" e/calendly-date-and-time-selected
+         "calendly.event_scheduled"        e/calendly-event-scheduled
+         e/calendly-unknown-event)
+       event-data))))
 
 (defmethod fx/perform-effects e/instrumented-calendly
   [_ _ _ _ _]
-  (.addEventListener js/window "message"
-                     (fn [e]
-                       (let [{:keys [event]} (js->clj e.data :keywordize-keys true)]
-                         (when (from-calendly? event)
-                           (publish
-                            (case event
-                              "calendly.profile_page_viewed"    e/calendly-profile-page-viewed
-                              "calendly.event_type_viewed"      e/calendly-event-type-viewed
-                              "calendly.date_and_time_selected" e/calendly-date-and-time-selected
-                              "calendly.event_scheduled"        e/calendly-event-scheduled
-                              e/calendly-unknown-event)
-                            event))))))
+  (.addEventListener js/window "message" handle-post-message)
 
-(defmethod fx/perform-effects e/show-calendly
-  [_ _ _ _ _]
-  (->> {:url "https://calendly.com/mayvenn-consultations/call"}
-       clj->js
-       js/window.Calendly.initPopupWidget))
+  (defmethod fx/perform-effects e/show-calendly
+    [_ _ _ _ _]
+    (->> {:url "https://calendly.com/mayvenn-consultations/call"}
+         clj->js
+         js/window.Calendly.initPopupWidget)))
 
 (defmethod trk/perform-track e/show-calendly
   [_ _ _ _]
-  (stringer/track-event "phone_consult_calendly_cta_clicked" {}))
+  (stringer/track-event "phone_consult_calendly_cta_clicked"
+                        {}))
 
 (defmethod trk/perform-track e/phone-consult-calendly-impression
   [_ _ _ _]
-  (stringer/track-event "phone_consult_calendly_impression" {}))
+  (stringer/track-event "phone_consult_calendly_impression"
+                        {}))
 
 (defmethod trk/perform-track e/calendly-profile-page-viewed
-  [_ _ event _]
-  (stringer/track-event "calendly-profile-page-viewed" {:event-data event}))
+  [_ _ event-data _]
+  (->> {:event-data event-data}
+       (stringer/track-event "calendly-profile-page-viewed"))
 
 (defmethod trk/perform-track e/calendly-event-type-viewed
-  [_ _ event _]
-  (stringer/track-event "calendly-event-type-viewed" {:event-data event}))
+  [_ _ event-data _]
+  (->> {:event-data event-data}
+       (stringer/track-event "calendly-event-type-viewed")))
 
 (defmethod trk/perform-track e/calendly-date-and-time-selected
-  [_ _ event _]
-  (stringer/track-event "calendly-date-and-time-selected" {:event-data event}))
+  [_ _ event-data _]
+  (->> {:event-data event-data}
+       (stringer/track-event "calendly-date-and-time-selected")))
 
 (defmethod trk/perform-track e/calendly-event-scheduled
-  [_ _ event _]
-  (stringer/track-event "calendly-event-scheduled" {:event-data event}))
+  [_ _ event-data state]
+  (->> {:event-data event-data}
+       (stringer/track-event "calendly-event-scheduled"))
+  (-> state
+      google-analytics/retrieve-user-ecd
+      google-analytics/track-schedule-consultation))
 
 (defmethod trk/perform-track e/calendly-unknown-event
-  [_ _ event _]
-  (stringer/track-event "calendly-unknown-event" {:event-data event}))
+  [_ _ event-data _]
+  (->> {:event-data event-data}
+       (stringer/track-event "calendly-unknown-event"))))

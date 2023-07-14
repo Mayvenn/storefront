@@ -94,6 +94,13 @@
                           :value    0}
          user-ecd))
 
+(defn track-schedule-consultation
+  [user-ecd]
+  (track "schedule_consultation"
+         {:currency "USD"
+          :value    1}
+         user-ecd))
+
 (defn sha256< [message]
   (when (seq message)
     (let [sha256 (js/goog.crypt.Sha256.)]
