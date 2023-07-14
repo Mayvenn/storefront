@@ -17,7 +17,7 @@
    #(publish e/inserted-calendly)))
 
 (defmethod fx/perform-effects e/inserted-calendly
-  [_ event _ prev-state state]
+  [_ _ _ _ _]
   (publish e/instrumented-calendly {}))
 
 (defn from-calendly?
@@ -40,7 +40,7 @@
                             event))))))
 
 (defmethod fx/perform-effects e/show-calendly
-  [dispatch event args prev-app-state app-state]
+  [_ _ _ _ _]
   (->> {:url "https://calendly.com/mayvenn-consultations/call"}
        clj->js
        js/window.Calendly.initPopupWidget))
