@@ -30,25 +30,26 @@
   (let [{:as event-data event-name :event}
         (-> message.data
             (js->clj :keywordize-keys true))]
+    (prn "here" event-name)
     (when (from-calendly? event-name)
-      (publish
-       (case event-name
-         "calendly.profile_page_viewed"    e/calendly-profile-page-viewed
-         "calendly.event_type_viewed"      e/calendly-event-type-viewed
-         "calendly.date_and_time_selected" e/calendly-date-and-time-selected
-         "calendly.event_scheduled"        e/calendly-event-scheduled
-         e/calendly-unknown-event)
-       event-data))))
+      (prn "there" event-name)
+      (publish (case event-name
+                 "calendly.profile_page_viewed"    e/calendly-profile-page-viewed
+                 "calendly.event_type_viewed"      e/calendly-event-type-viewed
+                 "calendly.date_and_time_selected" e/calendly-date-and-time-selected
+                 "calendly.event_scheduled"        e/calendly-event-scheduled
+                 e/calendly-unknown-event)
+               event-data))))
 
 (defmethod fx/perform-effects e/instrumented-calendly
   [_ _ _ _ _]
-  (.addEventListener js/window "message" handle-post-message)
+  (.addEventListener js/window "message" handle-post-message))
 
-  (defmethod fx/perform-effects e/show-calendly
-    [_ _ _ _ _]
-    (->> {:url "https://calendly.com/mayvenn-consultations/call"}
-         clj->js
-         js/window.Calendly.initPopupWidget)))
+(defmethod fx/perform-effects e/show-calendly
+  [_ _ _ _ _]
+  (->> {:url "https://calendly.com/mayvenn-consultations/call"}
+       clj->js
+       js/window.Calendly.initPopupWidget))
 
 (defmethod trk/perform-track e/show-calendly
   [_ _ _ _]
@@ -63,7 +64,7 @@
 (defmethod trk/perform-track e/calendly-profile-page-viewed
   [_ _ event-data _]
   (->> {:event-data event-data}
-       (stringer/track-event "calendly-profile-page-viewed"))
+       (stringer/track-event "calendly-profile-page-viewed")))
 
 (defmethod trk/perform-track e/calendly-event-type-viewed
   [_ _ event-data _]
@@ -86,4 +87,4 @@
 (defmethod trk/perform-track e/calendly-unknown-event
   [_ _ event-data _]
   (->> {:event-data event-data}
-       (stringer/track-event "calendly-unknown-event"))))
+       (stringer/track-event "calendly-unknown-event")))
