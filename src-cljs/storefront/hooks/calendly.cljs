@@ -18,6 +18,7 @@
 
 (defmethod fx/perform-effects e/inserted-calendly
   [_ _ _ _ _]
+  ;; TODO: This should be idempotent
   (publish e/instrumented-calendly {}))
 
 (defn- from-calendly?
