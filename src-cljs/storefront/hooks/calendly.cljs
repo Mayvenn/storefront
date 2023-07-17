@@ -30,9 +30,7 @@
   (let [{:as event-data event-name :event}
         (-> message.data
             (js->clj :keywordize-keys true))]
-    (prn "here" event-name)
     (when (from-calendly? event-name)
-      (prn "there" event-name)
       (publish (case event-name
                  "calendly.profile_page_viewed"    e/calendly-profile-page-viewed
                  "calendly.event_type_viewed"      e/calendly-event-type-viewed
