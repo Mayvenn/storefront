@@ -44,10 +44,23 @@
   [{:keys [product-card-listing]} _ _]
   (c/build product-card-listing/organism product-card-listing))
 
+(c/defcomponent ^:private description-block
+  [_ _ _]
+  [:div.col-12.mx-auto.bg-pale-purple.px6.pt8.pb4
+   {:data-test "faq"}
+   [:div.col-8-on-dt.mx-auto
+    [:h2.canela.title-1.center.my7 "Clip-ins"]
+    (str "Mayvenn provides a range of natural hair clip-ins colors. "
+         "Whether you're looking for black or blonde clip-ins, you will find your color on our website. "
+         "All the clip-ins we provide are seamless, full, thick, and made with real human hair. "
+         "Normally one box is enough to cover a full head. "
+         "Clip-in hair extensions are the most preferred choice for the person who wants to add some extra length and fullness to their hair within a trip to the salon.")]])
+
 (c/defcomponent ^:private template
   [{:keys [category-hero
            phone-consult-cta
            content-box
+           description
            faq-section
            video] :as queried-data} _ _]
   [:div
@@ -72,6 +85,8 @@
    (when content-box
      [:div green-divider-atom
       (c/build content-box/organism content-box)])
+   (when description
+     (c/build description-block description))
    (when faq-section
      (c/build faq/organism faq-section))])
 
@@ -159,6 +174,8 @@
                                    :list/sections      (for [{:keys [question answer]} question-answers]
                                                          {:faq/title   (:text question)
                                                           :faq/content answer})}))}
+              (when (contains? (:hair/family category) "seamless-clip-ins")
+               {:description true})
               (facet-filters/filters<-
                {:facets-db                      (get-in app-state storefront.keypaths/v2-facets)
                 :faceted-models                 (if splay? category-skuers loaded-category-products)
@@ -226,4 +243,3 @@
                                  (get-in previous-app-state k/navigation-event))]
          (when just-arrived?
            (messages/handle-message e/flow|facet-filtering|initialized))))))
-
