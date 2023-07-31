@@ -182,7 +182,16 @@
    [:div.py5
     (when title [:h2.proxima.text-2xl.px2.mb2 title])
     (component/build facet-filters/organism queried-data {:opts {:child-component product-list}})]
-
+   [:div.my1
+    [:div.mx-auto.hide-on-mb.col-4
+     [:a
+      (utils/route-to events/navigate-landing-page {:landing-page-slug "video-consultation"})
+      (ui/img {:width  "100%"
+               :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
+    [:a.hide-on-tb-dt
+     (utils/route-to events/navigate-landing-page {:landing-page-slug "video-consultation"})
+     (ui/img {:width  "100%"
+              :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
    (when content-box
      [:div dividers/green
       (component/build content-box/organism content-box)])

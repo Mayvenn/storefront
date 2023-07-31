@@ -292,6 +292,11 @@
                     {:opts {:accordion.drawer.open/face-component   accordions.product-info/face-open
                             :accordion.drawer.closed/face-component accordions.product-info/face-closed
                             :accordion.drawer/contents-component    accordions.product-info/contents}})
+           [:div.my1
+            [:a
+             (utils/route-to events/navigate-landing-page {:landing-page-slug "video-consultation"})
+             (ui/img {:width  "100%"
+                      :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
            [:div.hide-on-tb-dt.m3
             [:div.mxn2.mb3 (c/build ugc/component (assoc ugc :id "ugc-mb") opts)]]]))]]
       (when (seq (with :reviews.browser data))

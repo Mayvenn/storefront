@@ -97,7 +97,17 @@
      (component/build phone-consult/component phone-consult-cta))
    (component/build looks-hero-title-organism hero)
    (component/build facet-filters/organism queried-data
-                    {:opts {:child-component looks-cards-organism}})])
+                    {:opts {:child-component looks-cards-organism}})
+   [:div.my1
+    [:div.mx-auto.hide-on-mb.col-4
+     [:a
+      (utils/route-to e/navigate-landing-page {:landing-page-slug "video-consultation"})
+      (ui/img {:width  "100%"
+               :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
+    [:a.hide-on-tb-dt
+     (utils/route-to e/navigate-landing-page {:landing-page-slug "video-consultation"})
+     (ui/img {:width  "100%"
+              :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]])
 
 ;; Visual: Spinning
 

@@ -29,6 +29,7 @@
    [storefront.keypaths :as k]
    [storefront.platform.component-utils :as utils]
    [storefront.trackings :as trackings]
+   [storefront.components.ui :as ui]
    [storefront.transitions :as transitions]
    [catalog.ui.facet-filters :as facet-filters]))
 
@@ -82,6 +83,16 @@
 
    [:div.py5
     (c/build facet-filters/organism queried-data {:opts {:child-component product-list}})]
+   [:div.my1
+    [:div.mx-auto.hide-on-mb.col-4
+     [:a
+      (utils/route-to e/navigate-landing-page {:landing-page-slug "video-consultation"})
+      (ui/img {:width  "100%"
+               :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
+    [:a.hide-on-tb-dt
+     (utils/route-to e/navigate-landing-page {:landing-page-slug "video-consultation"})
+     (ui/img {:width  "100%"
+              :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
    (when content-box
      [:div green-divider-atom
       (c/build content-box/organism content-box)])

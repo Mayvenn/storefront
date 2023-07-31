@@ -280,7 +280,17 @@
           [:div.px2.my2 (ui-molecules/return-link (:return-link cart))]
           (clear-cart-link (:clear-cart-link cart))]]]
        [:div.col-7-on-dt.mx-auto
-        (component/build full-component cart)]]]
+        (component/build full-component cart)]
+       [:div.my1
+        [:div.mx-auto.hide-on-mb.col-4
+         [:a
+          (utils/route-to events/navigate-landing-page {:landing-page-slug "video-consultation"})
+          (ui/img {:width  "100%"
+                   :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
+        [:a.hide-on-tb-dt
+         (utils/route-to events/navigate-landing-page {:landing-page-slug "video-consultation"})
+         (ui/img {:width  "100%"
+                  :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]]]
      [:footer
       (storefront.footer/built-component footer nil)]]]
    (live-help/bug-component live-help-bug)])

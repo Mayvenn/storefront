@@ -468,6 +468,16 @@
           #?(:cljs (component/build quadpay/component queried-data nil))]]])
      (when how-it-works
        (component/build layered/shop-bulleted-explainer how-it-works))]]
+   [:div.my1
+    [:div.mx-auto.hide-on-mb.col-4
+     [:a
+      (utils/route-to events/navigate-landing-page {:landing-page-slug "video-consultation"})
+      (ui/img {:width  "100%"
+               :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
+    [:a.hide-on-tb-dt
+     (utils/route-to events/navigate-landing-page {:landing-page-slug "video-consultation"})
+     (ui/img {:width  "100%"
+              :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
    (when faq
      [:div.bg-pale-purple.col-12.col (adv-faq/component faq)])
    [:div
