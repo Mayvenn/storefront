@@ -3,7 +3,7 @@
    #?@(:cljs [[storefront.components.payment-request-button :as payment-request-button]
               [storefront.components.popup :as popup]
               [storefront.hooks.quadpay :as quadpay]])
-   [api.catalog :refer [select ?a-la-carte ?discountable ?physical ?recent ?service ?wig]]
+   [api.catalog :refer [select ?a-la-carte ?discountable ?physical ?recent ?service ?wig ?bundle-deal]]
    api.current
    api.orders
    catalog.keypaths
@@ -500,38 +500,52 @@
                                         mf/as-money-or-free)})))
 
 (defn regular-cart-summary-query
-  [{:as order :keys [adjustments tax-total total]}]
-  (let [subtotal (orders/products-and-services-subtotal order)]
+  [{:as   order
+    :keys [adjustments tax-total total]} items]
+  (let [subtotal            (orders/products-and-services-subtotal order)
+        bundle-deal-items   (select ?bundle-deal items)
+        bundle-deal-missing (->> bundle-deal-items (map :item/quantity) (reduce + 0) (- 3) (max 0))]
     {:cart-summary-total-line/id    "total"
      :cart-summary-total-line/label "Total"
      :cart-summary-total-line/value (some-> total mf/as-money)
 
-     :cart-summary/id    "cart-summary"
-     :cart-summary/lines (concat [{:cart-summary-line/id      "subtotal"
-                                   :cart-summary-line/primary "Subtotal"
-                                   :cart-summary-line/value   (mf/as-money subtotal)}]
+     :cart-summary/id               "cart-summary"
+     :cart-summary/lines            (concat [{:cart-summary-line/id      "subtotal"
+                                              :cart-summary-line/primary "Subtotal"
+                                              :cart-summary-line/value   (mf/as-money subtotal)}]
 
-                                 (when-let [shipping-method-summary-line
-                                            (shipping-method-summary-line-query
-                                             (orders/shipping-item order)
-                                             (orders/product-and-service-items order))]
-                                   [shipping-method-summary-line])
+                                            (when-let [shipping-method-summary-line
+                                                       (shipping-method-summary-line-query
+                                                        (orders/shipping-item order)
+                                                        (orders/product-and-service-items order))]
+                                              [shipping-method-summary-line])
 
-                                 (for [{:keys [name price coupon-code] :as adjustment}
-                                       (filter adjustments/non-zero-adjustment? adjustments)]
-                                   (cond-> {:cart-summary-line/id      (text->data-test-name name)
-                                            :cart-summary-line/icon    [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
-                                                                                           :height "2em" :width "2em"} ]
-                                            :cart-summary-line/primary (adjustments/display-adjustment-name adjustment)
-                                            :cart-summary-line/value   (mf/as-money-or-free price)}
+                                            (for [{:keys [name price coupon-code]
+                                                   :as   adjustment}
+                                                  (filter adjustments/non-zero-adjustment? adjustments)]
+                                              (cond-> {:cart-summary-line/id      (text->data-test-name name)
+                                                       :cart-summary-line/icon    [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
+                                                                                                      :height "2em"
+                                                                                                      :width  "2em"}]
+                                                       :cart-summary-line/primary (adjustments/display-adjustment-name adjustment)
+                                                       :cart-summary-line/value   (mf/as-money-or-free price)}
 
-                                     coupon-code
-                                     (merge (coupon-code->remove-promo-action coupon-code))))
+                                                coupon-code
+                                                (merge (coupon-code->remove-promo-action coupon-code))))
 
-                                 (when (pos? tax-total)
-                                   [{:cart-summary-line/id      "tax"
-                                     :cart-summary-line/primary "Tax"
-                                     :cart-summary-line/value   (mf/as-money tax-total)}]))}))
+                                            (when (and bundle-deal-items (pos? bundle-deal-missing))
+                                              [{:cart-summary-line/id      "bundle-deal-promo"
+                                                :cart-summary-line/icon    [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
+                                                                                               :height "2em"
+                                                                                               :width  "2em"}]
+                                                :cart-summary-line/primary "Bundle Discount"
+                                                :cart-summary-line/value   (str "Add " bundle-deal-missing
+                                                                                (if (= bundle-deal-missing 1) " bundle" " bundles"))}])
+
+                                            (when (pos? tax-total)
+                                              [{:cart-summary-line/id      "tax"
+                                                :cart-summary-line/primary "Tax"
+                                                :cart-summary-line/value   (mf/as-money tax-total)}]))}))
 
 (defn promo-input<-
   [data order pending-requests?]
@@ -579,8 +593,8 @@
                                   "Add promo code")}))})))
 
 (defn cart-summary<-
-  [order _]
-  (regular-cart-summary-query order))
+  [order items]
+  (regular-cart-summary-query order items))
 
 (defn cta<-
   [no-items? hair-missing-quantity pending-requests?]

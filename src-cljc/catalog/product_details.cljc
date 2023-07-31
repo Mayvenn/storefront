@@ -13,7 +13,7 @@
                        [storefront.hooks.stringer :as stringer]
                        [storefront.hooks.seo :as seo]
                        [storefront.trackings :as trackings]])
-            [api.catalog :refer [select ?wig]]
+            [api.catalog :refer [select ?wig ?bundle-deal]]
             api.current
             api.orders
             api.products
@@ -219,6 +219,21 @@
    {:style {:height "25em"}}
    (ui/large-spinner {:style {:height "4em"}})])
 
+(defn incentive-block
+  [{:keys [id callout message link-id link-label link-target footnote]}]
+  (when id
+    [:div.py2.mb2.bg-refresh-gray.px3
+     [:div.proxima.content-2.line-height-1.bold callout]
+     [:div
+      [:div.proxima.content-3.mb1
+       message
+       (when link-id
+         (ui/button-small-underline-primary
+          {:data-test "freeinstall-add-to-cart-info-link"
+           :on-click  (apply utils/send-event-callback link-target)}
+          link-label))]
+      [:div.content-4.black footnote]]]))
+
 (c/defcomponent template
   [{:keys [carousel-images
            phone-consult-cta
@@ -263,6 +278,7 @@
                     {:opts {:accordion.drawer.open/face-component   picker-accordion-face-open
                             :accordion.drawer.closed/face-component picker-accordion-face-closed
                             :accordion.drawer/contents-component    picker-accordion-contents}})
+           (incentive-block (with :incentive-block data))
            [:div.mt4
             (cond
               unavailable? unavailable-button
@@ -724,6 +740,10 @@
                                                            :faq/content answer})}))
             :carousel-images   carousel-images
             :selected-picker   selected-picker}
+           (when (select ?bundle-deal [product])
+             #:incentive-block{:id      "3-bundle-deal-callout"
+                               :callout "10% Bundle Deal"
+                               :message "Save when you purchase 3 bundles, closures, or frontals"})
            (when show-good-to-know?
              #:pre-accordion{:primary      "Good to Know:"
                              :blocks-left  [{:primary "10 pieces (wefts) included"
@@ -1120,7 +1140,7 @@
 
 #?(:cljs
    (defmethod trackings/perform-track events/pdp|viewed
-     [_ _ {:keys [catalog/product-id query-params]} app-state] 
+     [_ _ {:keys [catalog/product-id query-params]} app-state]
      (when-let [sku (or (->> (:SKU query-params)
                              (conj keypaths/v2-skus)
                              (get-in app-state))
