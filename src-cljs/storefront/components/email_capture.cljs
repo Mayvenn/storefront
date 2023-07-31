@@ -151,12 +151,13 @@
         [:div.px3
          (email-field data)
          (phone-field data)
-         sms-fine-print
+
          (cta data)
          (ui/button-small-underline-black
           {:on-click   (apply utils/send-event-callback (:email-capture.dismiss/target data))
            :aria-label "no thanks"}
-          "No Thanks")]]
+          "No Thanks")
+         sms-fine-print]]
        hr-divider
        (fine-print-template-2 fine-print-lead-in)])]))
 
