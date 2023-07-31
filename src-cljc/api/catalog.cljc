@@ -54,6 +54,10 @@
 (def ?physical
   {:catalog/department #{"hair" "stylist-exclusives"}})
 
+(def ?bundle-deal
+  (merge ?hair
+         {:hair/family #{"bundles" "frontals" "closures" "360-frontals"}}))
+
 ;; ------ Images
 
 (def ?model-image
