@@ -113,7 +113,7 @@
 (defcomponent card-image-molecule
   [{:keys [card-image/src card-image/alt]} _ _]
   ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
-  (ui/aspect-ratio 
+  (ui/aspect-ratio
    17 20
    (ui/defer-ucare-img
     {:class    "block col-12 container-height"
@@ -128,7 +128,7 @@
   [{:product-card-title/keys [id primary]}]
   (when id
     (component/html
-     [:div.proxima.text-sm.pb2 primary])))
+     [:h2.proxima.text-sm.pb2 primary])))
 
 (defcomponent product-card-details-molecule
   [{:product-card-details/keys [id specs colors discounted-price price]} _ _]
@@ -150,7 +150,7 @@
 (defn organism
   [{:as                data
     react-key          :react/key
-    :product-card/keys [id target]}] 
+    :product-card/keys [id target]}]
   (component/html
    [:a.inherit-color.col.col-6.col-4-on-tb-dt.p1
     (merge (apply utils/route-to target)
