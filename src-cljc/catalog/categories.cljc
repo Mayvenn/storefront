@@ -1106,10 +1106,10 @@
                                  "Ditch the tracks for a clip-in experience that is truly seamless.")
 
      :contentful/faq-id     :category-seamless-clip-ins
-     :page/title            "Clip-In Hair Extensions: Human Hair Clip-In Extensions | Mayvenn"
+     :page/title            "Clip In Hair Extensions with 100% Remy Human Hair | Mayvenn"
      :page/slug             "seamless-clip-ins"
-     :page.meta/description (copy "Get the hair of your dreams with our seamless clip-in hair extensions."
-                                  "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair.")
+     :page.meta/description (copy "Get longer, fuller hair with Mayvenn clip in hair extensions. "
+                                  "Made with 100% human hair and a thin weft to seamlessly blend with your natural hair.")
      :seo/title             "Clip-In Hair Extensions"
      :category/guide-page   [events/navigate-guide-clipin-extensions]
 
