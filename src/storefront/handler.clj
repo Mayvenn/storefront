@@ -931,6 +931,10 @@
                      "Disallow: /policy/privacy"
                      "Disallow: /policy/tos"
                      "Disallow: /your-looks/"
+                     "Disallow: /lp/bundles-paid"
+                     "Disallow: /lp/clip-ins-paid"
+                     "Disallow: /lp/wigs-paid"
+                     "Disallow: /lp/video-consultation"
                      "Sitemap: https://shop.mayvenn.com/sitemap.xml"])
 
 (def server-render-pages
