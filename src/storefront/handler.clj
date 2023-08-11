@@ -679,7 +679,7 @@
 (defn wrap-logging [handler logger]
   (-> handler
       ring-logging/wrap-request-timing
-      (ring-logging/wrap-logging logger 
+      (ring-logging/wrap-logging logger
                                  ring-logging/structured-inbound-config)
       ring-logging/wrap-trace-request))
 
@@ -934,7 +934,6 @@
                      "Disallow: /lp/bundles-paid"
                      "Disallow: /lp/clip-ins-paid"
                      "Disallow: /lp/wigs-paid"
-                     "Disallow: /lp/video-consultation"
                      "Sitemap: https://shop.mayvenn.com/sitemap.xml"])
 
 (def server-render-pages
