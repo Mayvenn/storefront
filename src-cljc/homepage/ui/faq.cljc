@@ -1,35 +1,7 @@
 (ns homepage.ui.faq
-  (:require [clojure.string :refer [join replace]]
-            [storefront.component :as c]
+  (:require  [storefront.component :as c]
             [storefront.components.accordion :as accordion]
             [storefront.events :as e]))
-
-(defn ld+json
-  [sections]
-  (let [entries (->> sections
-                     (map (fn [{:faq/keys [title content]}]
-                            (let [ps (replace (->> content
-                                                   first
-                                                   :paragraph
-                                                   (map :text)
-                                                   (apply str))
-                                              #"\"" "\\\"")]
-                              (str "{"
-                                   "\"@type\": \"Question\","
-                                   "\"name\": \"" title "\","
-                                   "\"acceptedAnswer\": {"
-                                   "\"@type\": \"Answer\","
-                                   "\"text\": \"" ps "\""
-                                   "}"
-                                   "}"))))
-                     (join ","))]
-    (str "{"
-         "\"@context\": \"https://schema.org\","
-         "\"@type\": \"FAQPage\","
-         "\"mainEntity\": ["
-         entries
-         "]"
-         "}")))
 
 (c/defcomponent organism
   [{:as        data
@@ -41,8 +13,6 @@
      [:div.col-8-on-dt.mx-auto
       [:h2.canela.title-1.center.my7
        "Frequently Asked Questions"]
-      [:script {:type                    "application/ld+json"
-                :dangerouslySetInnerHTML {:__html (ld+json sections)}}]
       (c/build accordion/component
                {:expanded-indices #{expanded-index}
                 :sections         (mapv
