@@ -1,5 +1,5 @@
 (ns homepage.ui.faq
-  (:require [clojure.string :refer [join]]
+  (:require [clojure.string :refer [join replace]]
             [storefront.component :as c]
             [storefront.components.accordion :as accordion]
             [storefront.events :as e]))
@@ -8,11 +8,12 @@
   [sections]
   (let [entries (->> sections
                      (map (fn [{:faq/keys [title content]}]
-                            (let [ps (->> content
-                                          first
-                                          :paragraph
-                                          (map :text)
-                                          (apply str))]
+                            (let [ps (replace (->> content
+                                                   first
+                                                   :paragraph
+                                                   (map :text)
+                                                   (apply str))
+                                              #"\"" "\\\"")]
                               (str "{"
                                    "\"@type\": \"Question\","
                                    "\"name\": \"" title "\","
