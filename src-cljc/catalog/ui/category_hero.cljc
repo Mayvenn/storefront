@@ -34,7 +34,7 @@
   [:div
    (if-let [banner (category-hero-banner-molecule data)]
      banner
-     [:div.px2.pt10 
+     [:div.px2.pt4
       [:h1.proxima.text-3xl (:category-hero.title/primary data)
        (when-let [tooltip (:category-hero.title/tooltip data)]
          [:div.tooltip.ml2 (svg/info-circle {:height "15px"
@@ -43,7 +43,7 @@
            [:p.text-xs tooltip]
            [:i]]] )]
       (category-hero-icon-molecule data) ; Is this still used?
-      (let [{:category-hero.action/keys [label target aria]} data] 
+      (let [{:category-hero.action/keys [label target aria]} data]
         (when (and label target)
           (ui/button-medium-underline-primary
            (merge (apply utils/route-to target)
