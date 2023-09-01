@@ -81,16 +81,34 @@
                                  :page/slug           "mayvenn-install"
                                  :catalog/category-id 23})}}))
 
-   [:div.py5
-    (c/build facet-filters/organism queried-data {:opts {:child-component product-list}})]
-   [:div.my1
+   [:div.my2
     [:div.mx-auto.hide-on-mb.col-4
      [:a
-      (utils/route-to e/navigate-landing-page {:landing-page-slug "video-consultation"})
+      (utils/route-to e/navigate-landing-page {:landing-page-slug "video-consultation"
+                                               :query-params {:utm_campaign "plp"
+                                                              :utm_content "free-video-consult-1"}})
       (ui/img {:width  "100%"
-               :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
+               :src     "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
     [:a.hide-on-tb-dt
-     (utils/route-to e/navigate-landing-page {:landing-page-slug "video-consultation"})
+     (utils/route-to e/navigate-landing-page {:landing-page-slug "video-consultation"
+                                              :query-params {:utm_campaign "plp"
+                                                             :utm_content "free-video-consult-1"}})
+     (ui/img {:width  "100%"
+              :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
+   [:div.py5
+    (c/build facet-filters/organism queried-data {:opts {:child-component product-list}})]
+   [:div.my2
+    [:div.mx-auto.hide-on-mb.col-4
+     [:a
+      (utils/route-to e/navigate-landing-page {:landing-page-slug "video-consultation"
+                                               :query-params {:utm_campaign "plp"
+                                                              :utm_content "free-video-consult-1"}})
+      (ui/img {:width  "100%"
+               :src     "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
+    [:a.hide-on-tb-dt
+     (utils/route-to e/navigate-landing-page {:landing-page-slug "video-consultation"
+                                              :query-params {:utm_campaign "plp"
+                                                             :utm_content "free-video-consult-1"}})
      (ui/img {:width  "100%"
               :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
    (when content-box
