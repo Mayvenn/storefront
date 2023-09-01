@@ -8,5 +8,5 @@
 (defn display-adjustment-name
   [{:keys [name]}]
   (if (= name "Bundle Discount")
-    "10% Bundle Discount"
+    "5% Bundle Discount"
     name))
