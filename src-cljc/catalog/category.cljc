@@ -82,7 +82,7 @@
                                  :catalog/category-id 23})}}))
 
    [:div.my2
-    [:div.mx-auto.hide-on-mb.col-4
+    [:div.hide-on-mb.col-4
      [:a
       (utils/route-to e/navigate-landing-page {:landing-page-slug "video-consultation"
                                                :query-params {:utm_campaign "plp"
@@ -98,7 +98,7 @@
    [:div.py5
     (c/build facet-filters/organism queried-data {:opts {:child-component product-list}})]
    [:div.my2
-    [:div.mx-auto.hide-on-mb.col-4
+    [:div.hide-on-mb.col-4
      [:a
       (utils/route-to e/navigate-landing-page {:landing-page-slug "video-consultation"
                                                :query-params {:utm_campaign "plp"

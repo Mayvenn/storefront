@@ -185,7 +185,7 @@
        [:span.bold " with a Mayvenn hair expert to find the perfect wig for you."]]])
 
    [:div.my2
-    [:div.mx-auto.hide-on-mb.col-4
+    [:div.hide-on-mb.col-4
      [:a
       (utils/route-to events/navigate-landing-page {:landing-page-slug "video-consultation"
                                                     :query-params {:utm_campaign "icp"
@@ -206,7 +206,7 @@
     (when title [:h2.proxima.text-2xl.px2.mb2 title])
     (component/build facet-filters/organism queried-data {:opts {:child-component product-list}})]
    [:div.my2
-    [:div.mx-auto.hide-on-mb.col-4
+    [:div.hide-on-mb.col-4
      [:a
       (utils/route-to events/navigate-landing-page {:landing-page-slug "video-consultation"
                                                     :query-params {:utm_campaign "icp"
