@@ -747,7 +747,7 @@
             :selected-picker   selected-picker}
            (when (select ?bundle-deal [product])
              #:incentive-block{:id      "3-bundle-deal-callout"
-                               :callout "10% Bundle Deal"
+                               :callout "5% Bundle Deal"
                                :message "Save when you purchase 3 bundles, closures, or frontals"})
            (when show-good-to-know?
              #:pre-accordion{:primary      "Good to Know:"
