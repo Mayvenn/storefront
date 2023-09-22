@@ -2,7 +2,6 @@
   (:require adventure.keypaths
             [storefront.accessors.experiments :as experiments]
             [storefront.keypaths :as k]
-            [storefront.components.phone-consult :as phone-consult]
             [adventure.components.layered :as layered]
             [homepage.ui.atoms :as A]
             [homepage.ui.contact-us :as contact-us]
@@ -31,8 +30,6 @@
            shopping-categories
            zip-explanation]} _ _]
   [:div
-   (when (:shopping-homepage phone-consult-cta)
-     (c/build phone-consult/component phone-consult-cta))
    (c/build layered/component lp-data nil)
    (when hero (c/build hero/organism hero))
 

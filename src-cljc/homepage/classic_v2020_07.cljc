@@ -13,10 +13,6 @@
         categories           (get-in app-state k/categories)
         ugc                  (get-in app-state k/cms-ugc-collection)]
     (c/build ui/template (merge
-                          {:phone-consult-cta  (merge (get-in app-state k/cms-phone-consult-cta)
-                                                      (api.orders/current app-state)
-                                                      {:place-id :shopping-homepage
-                                                       :in-omni? (:experience/omni (:experiences (accounts/<- app-state)))})}
                           {:lp-data              {:layers
                                                   (mapv (partial landing-page/determine-and-shape-layer app-state)
                                                         (->> :classic

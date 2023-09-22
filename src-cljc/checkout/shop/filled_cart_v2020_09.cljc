@@ -24,7 +24,6 @@
    [storefront.components.flash :as flash]
    [storefront.components.footer :as storefront.footer]
    [storefront.components.money-formatters :as mf]
-   [storefront.components.phone-consult :as phone-consult]
    [storefront.components.svg :as svg]
    [storefront.components.ui :as ui]
    [storefront.events :as events]
@@ -267,8 +266,6 @@
      [:main.bg-white.flex-auto
       {:data-test (keypaths/->component-str nav-event)}
       [:div
-       (when (:checkout-cart (:phone-consult-cta cart))
-         (component/build phone-consult/component (:phone-consult-cta cart)))
        [:div.hide-on-tb-dt
         [:div.border-bottom.border-gray.border-width-1.m-auto.col-7-on-dt
          [:div.flex.justify-between
@@ -280,17 +277,7 @@
           [:div.px2.my2 (ui-molecules/return-link (:return-link cart))]
           (clear-cart-link (:clear-cart-link cart))]]]
        [:div.col-7-on-dt.mx-auto
-        (component/build full-component cart)]
-       [:div.my1
-        [:div.mx-auto.hide-on-mb.col-4
-         [:a
-          (utils/route-to events/navigate-landing-page {:landing-page-slug "video-consultation"})
-          (ui/img {:width  "100%"
-                   :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
-        [:a.hide-on-tb-dt
-         (utils/route-to events/navigate-landing-page {:landing-page-slug "video-consultation"})
-         (ui/img {:width  "100%"
-                  :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]]]
+        (component/build full-component cart)]]]
      [:footer
       (storefront.footer/built-component footer nil)]]]
    (live-help/bug-component live-help-bug)])
@@ -717,10 +704,6 @@
         no-items?   (empty? items)]
     (component/build template
                      {:cart {:return-link          (return-link<- items)
-                             :phone-consult-cta    (merge (get-in app-state keypaths/cms-phone-consult-cta)
-                                                          (api.orders/current app-state)
-                                                          {:place-id :checkout-cart
-                                                           :in-omni? (:experience/omni (:experiences (accounts/<- app-state)))})
                              :clear-cart-link      (clear-cart-link<- app-state)
                              :promo-banner         (when (zero? (orders/product-quantity waiter-order))
                                                      (promo-banner/query app-state))

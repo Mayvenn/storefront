@@ -45,7 +45,6 @@
             [storefront.components.money-formatters :as mf]
             [storefront.components.accordion-v2022-10 :as accordion-neue]
             [storefront.components.ui :as ui]
-            [storefront.components.phone-consult :as phone-consult]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -236,7 +235,6 @@
 
 (c/defcomponent template
   [{:keys [carousel-images
-           phone-consult-cta
            product
            selected-sku
            ugc
@@ -256,8 +254,6 @@
           (c/build ugc/popup-component (assoc ugc :id "popup-ugc") opts)])
        [:div
         {:key "page"}
-        (when (:shopping-pdp phone-consult-cta)
-          (c/build phone-consult/component phone-consult-cta))
         (two-column-layout
          (c/html
           (if (seq (with :product-carousel data))
@@ -292,11 +288,6 @@
                     {:opts {:accordion.drawer.open/face-component   accordions.product-info/face-open
                             :accordion.drawer.closed/face-component accordions.product-info/face-closed
                             :accordion.drawer/contents-component    accordions.product-info/contents}})
-           [:div.my1
-            [:a
-             (utils/route-to events/navigate-landing-page {:landing-page-slug "video-consultation"})
-             (ui/img {:width  "100%"
-                      :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
            [:div.hide-on-tb-dt.m3
             [:div.mxn2.mb3 (c/build ugc/component (assoc ugc :id "ugc-mb") opts)]]]))]]
       (when (seq (with :reviews.browser data))
@@ -991,10 +982,6 @@
                                        (select {:hair/family #{"seamless-clip-ins"}} [detailed-product])))]
     (c/build (if detailed-product template loading-template)
              (merge (query state)
-                    {:phone-consult-cta (merge (get-in state keypaths/cms-phone-consult-cta)
-                                               (api.orders/current state)
-                                               {:place-id :shopping-pdp
-                                                :in-omni? (:experience/omni (:experiences (accounts/<- state)))})}
                     (options-picker< state facets-db options-accordion)
                     {:add-to-cart (add-to-cart-query state)}
                     (product-carousel<- images-db product-carousel selected-sku carousel-redesign?)

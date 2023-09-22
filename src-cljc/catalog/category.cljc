@@ -22,7 +22,6 @@
    [storefront.accessors.experiments :as experiments]
    [storefront.assets :as assets]
    [storefront.component :as c]
-   [storefront.components.phone-consult :as phone-consult]
    [storefront.components.video :as video]
    [storefront.effects :as effects]
    [storefront.events :as e]
@@ -59,14 +58,11 @@
 
 (c/defcomponent ^:private template
   [{:keys [category-hero
-           phone-consult-cta
            content-box
            description
            faq-section
            video] :as queried-data} _ _]
   [:div
-   (when (:shopping-plp phone-consult-cta)
-     (c/build phone-consult/component phone-consult-cta))
    (c/build category-hero/organism category-hero)
    (when video
      (c/build video/component
@@ -80,37 +76,8 @@
                                 {:query-params        {:video "0"}
                                  :page/slug           "mayvenn-install"
                                  :catalog/category-id 23})}}))
-
-   [:div.my2
-    [:div.hide-on-mb.col-4
-     [:a
-      (utils/route-to e/navigate-landing-page {:landing-page-slug "video-consultation"
-                                               :query-params {:utm_campaign "plp"
-                                                              :utm_content "free-video-consult-1"}})
-      (ui/img {:width  "100%"
-               :src     "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
-    [:a.hide-on-tb-dt
-     (utils/route-to e/navigate-landing-page {:landing-page-slug "video-consultation"
-                                              :query-params {:utm_campaign "plp"
-                                                             :utm_content "free-video-consult-1"}})
-     (ui/img {:width  "100%"
-              :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
    [:div.py5
     (c/build facet-filters/organism queried-data {:opts {:child-component product-list}})]
-   [:div.my2
-    [:div.hide-on-mb.col-4
-     [:a
-      (utils/route-to e/navigate-landing-page {:landing-page-slug "video-consultation"
-                                               :query-params {:utm_campaign "plp"
-                                                              :utm_content "free-video-consult-1"}})
-      (ui/img {:width  "100%"
-               :src     "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
-    [:a.hide-on-tb-dt
-     (utils/route-to e/navigate-landing-page {:landing-page-slug "video-consultation"
-                                              :query-params {:utm_campaign "plp"
-                                                             :utm_content "free-video-consult-1"}})
-     (ui/img {:width  "100%"
-              :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
    (when content-box
      [:div green-divider-atom
       (c/build content-box/organism content-box)])
@@ -185,10 +152,6 @@
              (merge
               (when-let [filter-title (:product-list/title category)]
                 {:title filter-title})
-              {:phone-consult-cta  (merge (get-in app-state storefront.keypaths/cms-phone-consult-cta)
-                                          (api.orders/current app-state)
-                                          {:place-id :shopping-plp
-                                           :in-omni? (:experience/omni (:experiences (accounts/<- app-state)))})}
               {:category-hero (category-hero-query category (experiments/plp-header? app-state))
                :video         (when-let [video (get-in app-state adventure.keypaths/adventure-home-video)] video)
                :content-box   (when (and shop? (:content-block/type category))

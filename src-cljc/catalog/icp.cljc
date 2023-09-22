@@ -20,7 +20,6 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.assets :as assets]
             [storefront.component :as component :refer [defcomponent]]
-            [storefront.components.phone-consult :as phone-consult]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -159,16 +158,13 @@
 
 (defcomponent ^:private template
   "This lays out different ux pieces to form a cohesive ux experience"
-  [{:keys [phone-consult-cta
-           category-hero
+  [{:keys [category-hero
            title
            content-box
            expanding-content-box
            drill-category-grid
            drill-category-list] :as queried-data} _ _]
   [:div
-   (when (:shopping-plp phone-consult-cta)
-     (component/build phone-consult/component phone-consult-cta))
    (component/build category-hero/organism category-hero)
 
    (when-let [data (:spotlights queried-data)]
@@ -176,49 +172,13 @@
       [:h2.proxima.text-2xl.px2.mb2 "Shop by Category"]
       (component/build spotlighting/organism
                        {:spotlights data}
-                       {})
-      #_[:div.px2.py2
-       (ui/button-medium-underline-black
-        (merge {:data-test "id"}
-               (apply utils/fake-href [:a :b]))
-        "Get a free consultation")
-       [:span.bold " with a Mayvenn hair expert to find the perfect wig for you."]]])
-
-   [:div.my2
-    [:div.hide-on-mb.col-4
-     [:a
-      (utils/route-to events/navigate-landing-page {:landing-page-slug "video-consultation"
-                                                    :query-params {:utm_campaign "icp"
-                                                                   :utm_content "free-video-consult-1"}})
-      (ui/img {:width  "100%"
-               :src     "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
-    [:a.hide-on-tb-dt
-     (utils/route-to events/navigate-landing-page {:landing-page-slug "video-consultation"
-                                                   :query-params {:utm_campaign "icp"
-                                                                  :utm_content "free-video-consult-1"}})
-     (ui/img {:width  "100%"
-              :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
-
+                       {})])
    [:div.mx-auto
     (component/build drill-category-list-organism drill-category-list)
     (component/build drill-category-grid-organism drill-category-grid)]
    [:div.py5
     (when title [:h2.proxima.text-2xl.px2.mb2 title])
     (component/build facet-filters/organism queried-data {:opts {:child-component product-list}})]
-   [:div.my2
-    [:div.hide-on-mb.col-4
-     [:a
-      (utils/route-to events/navigate-landing-page {:landing-page-slug "video-consultation"
-                                                    :query-params {:utm_campaign "icp"
-                                                                   :utm_content "free-video-consult-1"}})
-      (ui/img {:width  "100%"
-               :src     "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
-    [:a.hide-on-tb-dt
-     (utils/route-to events/navigate-landing-page {:landing-page-slug "video-consultation"
-                                                   :query-params {:utm_campaign "icp"
-                                                                  :utm_content "free-video-consult-1"}})
-     (ui/img {:width  "100%"
-              :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
    (when content-box
      [:div dividers/green
       (component/build content-box/organism content-box)])
@@ -281,10 +241,6 @@
                      (merge
                       (when-let [filter-title (:product-list/title interstitial-category)]
                         {:title filter-title})
-                      {:phone-consult-cta (merge (get-in state keypaths/cms-phone-consult-cta)
-                                                  (api.orders/current state)
-                                                  {:place-id :shopping-plp
-                                                   :in-omni? (:experience/omni (:experiences (accounts/<- state)))})}
                       {:category-hero         (category-hero-query interstitial-category)
                        :content-box           (when (and shop? (:content-block/type interstitial-category))
                                                 {:title    (:content-block/title interstitial-category)

@@ -25,7 +25,6 @@
             [storefront.accessors.shared-cart :as shared-cart]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
-            [storefront.components.phone-consult :as phone-consult]
             [storefront.components.picker.picker-two :as picker]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -435,14 +434,11 @@
 (defn ^:private look-details-body
   [{:keys       [spinning?
                  picker-modal
-                 phone-consult-cta
                  color-picker
                  length-pickers
                  how-it-works
                  faq] :as queried-data}]
   [:div.bg-refresh-gray
-   (when (:shopping-looks phone-consult-cta)
-     (component/build phone-consult/component phone-consult-cta))
    [:div
     (component/build picker/modal picker-modal)
     [:div.bg-white-on-mb.p2 (ui.molecules/return-link queried-data)]
@@ -468,16 +464,6 @@
           #?(:cljs (component/build quadpay/component queried-data nil))]]])
      (when how-it-works
        (component/build layered/shop-bulleted-explainer how-it-works))]]
-   [:div.my1
-    [:div.mx-auto.hide-on-mb.col-4
-     [:a
-      (utils/route-to events/navigate-landing-page {:landing-page-slug "video-consultation"})
-      (ui/img {:width  "100%"
-               :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
-    [:a.hide-on-tb-dt
-     (utils/route-to events/navigate-landing-page {:landing-page-slug "video-consultation"})
-     (ui/img {:width  "100%"
-              :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
    (when faq
      [:div.bg-pale-purple.col-12.col (adv-faq/component faq)])
    [:div
@@ -657,11 +643,6 @@
         items                 (:order/items raw-order)
         {:keys [adjustments line-items-total total]} (:waiter/order raw-order)]
     (merge #?(:cljs (reviews/query-look-detail shared-cart data))
-
-           {:phone-consult-cta (merge (get-in data storefront.keypaths/cms-phone-consult-cta)
-                                      (api.orders/current data)
-                                      {:place-id :shopping-looks
-                                       :in-omni? (:experience/omni (:experiences (accounts/<- data)))})}
            {:spinning? (or (not contentful-look)
                            (nil? skus-db)
                            (utils/requesting? data request-keys/fetch-shared-cart))}

@@ -58,18 +58,7 @@
          [:div.center {:data-test "empty-cart"}
           (empty-cart-body-molecule cart)
           [:div.col-9.mx-auto
-           (empty-cta-molecule cart)]]
-         ])]
-      [:div.my1
-       [:div.mx-auto.hide-on-mb.col-4
-        [:a
-         (utils/route-to events/navigate-landing-page {:landing-page-slug "video-consultation"})
-         (ui/img {:width  "100%"
-                  :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]
-       [:a.hide-on-tb-dt
-        (utils/route-to events/navigate-landing-page {:landing-page-slug "video-consultation"})
-        (ui/img {:width  "100%"
-                 :src       "//ucarecdn.com/cbf838de-6511-4ed8-b3d7-c1c0c7a3d355/"})]]]]
+           (empty-cta-molecule cart)]]])]]]
 
     [:footer
      (storefront.footer/built-component footer nil)]]])

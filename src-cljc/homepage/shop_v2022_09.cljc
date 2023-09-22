@@ -20,14 +20,9 @@
                                :omni
                                :unified)]
     (c/build ui/template
-             (merge
-              {:layers
-               (mapv (partial landing-page/determine-and-shape-layer app-state)
-                     (->> cms-slug
-                          (conj storefront.keypaths/cms-homepage)
-                          (get-in app-state)
-                          :body))}
-              {:phone-consult-cta  (merge (get-in app-state k/cms-phone-consult-cta)
-                                          (api.orders/current app-state)
-                                          {:place-id :shopping-homepage
-                                           :in-omni? (:experience/omni (:experiences (accounts/<- app-state)))})}))))
+             {:layers
+              (mapv (partial landing-page/determine-and-shape-layer app-state)
+                    (->> cms-slug
+                         (conj storefront.keypaths/cms-homepage)
+                         (get-in app-state)
+                         :body))})))

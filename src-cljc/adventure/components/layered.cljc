@@ -5,7 +5,6 @@
             [clojure.string]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.accordion :as accordion]
-            [storefront.components.phone-consult :as phone-consult]
             [storefront.components.phone-reserve :as phone-reserve]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -1071,53 +1070,18 @@
     (title-standard data)))
 
 (defdynamic-component phone-consult-cta
-  (did-mount
-   [this]
-   (let [{:keys [shop-or-omni in-omni? place-id] :as data} (component/get-props this)]
-     (publish events/phone-consult-cta-impression {:number   phone-consult/support-phone-number
-                                                   :place-id place-id})
-     #_(when (= shop-or-omni (not in-omni?))
-       ;; shop-or-omni (shop = true, omni = false)
-       (publish events/phone-consult-cta-impression {:number   phone-consult/support-phone-number
-                                                     :place-id place-id}))))
   (render
    [this]
    (component/html
-    (let [{:keys [shop-or-omni in-omni?] :as data} (component/get-props this)]
-      [:div
-       [:div.block.black
-        (utils/fake-href events/phone-consult-cta-click
-                         {:number   phone-consult/support-phone-number
-                          :place-id :section})
-        [:div.m2.flex.justify-center
-         (ui/button-large-primary {} "Call Now")]]
-       [:div.content-3.center
-        (str "Phone: " phone-consult/support-phone-number " ")
-        (when (seq (:order/items data))
-          (str "Ref: " (->> data :waiter/order :number)))]]
-      #_(when (= shop-or-omni (not in-omni?))
-        ;; shop-or-omni (shop = true, omni = false
-        )))))
+    [:div.hidden])))
 
-(defcomponent phone-consult-message [{:keys [message-rich-text] :as data} _ _]
+(defcomponent phone-consult-message [_ _ _]
   (component/html
-   [:div.my-auto.center
-    (map cms-dynamic-content/build-hiccup-tag (:content message-rich-text))]))
+   [:div.hidden]))
 
-(defdynamic-component phone-consult-calendly
-  (did-mount
-   [this]
-   (publish events/phone-consult-calendly-impression {})
-   #?(:cljs
-      (calendly/insert)))
-  (render
-   [this]
-   (let [{:keys [show-calendly]} (component/get-props this)]
-     (component/html
-      (if show-calendly
-        (ui/button-large-primary (apply utils/fake-href [events/show-calendly])
-                                 "Schedule Now")
-        ui/spinner)))))
+(defcomponent phone-consult-calendly [_ _ _]
+  (component/html
+   [:div.hidden]))
 
 (defdynamic-component call-to-reserve-monfort-cta
   (did-mount

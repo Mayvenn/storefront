@@ -6,7 +6,6 @@
             [storefront.component :as c :refer [defcomponent]]
             [storefront.components.checkout-address :as checkout-address]
             [storefront.components.checkout-steps :as checkout-steps]
-            [storefront.components.phone-consult :as phone-consult]
             [storefront.events :as e]
             [storefront.keypaths :as k]
             [storefront.platform.component-utils :as utils]
@@ -21,12 +20,9 @@
 (defcomponent template
   [{:keys [secure-checkout
            checkout-steps
-           checkout-address-form
-           phone-consult-cta]}
+           checkout-address-form]}
    _ _]
   [:div.container
-   (when (:checkout-address phone-consult-cta)
-     (c/build phone-consult/component phone-consult-cta))
    (c/build secure-checkout/organism secure-checkout)
    or-separator
    (c/build checkout-steps/component checkout-steps nil)
@@ -298,8 +294,4 @@
                                                          saving?
                                                          show-phone-marketing-opt-in?
                                                          phone-transactional-opt-in-value
-                                                         phone-marketing-opt-in-value)
-     :phone-consult-cta     (merge (get-in app-state k/cms-phone-consult-cta)
-                                   (api.orders/current app-state)
-                                   {:place-id :checkout-address
-                                    :in-omni? (:experience/omni (:experiences (accounts/<- app-state)))})}))
+                                                         phone-marketing-opt-in-value)}))

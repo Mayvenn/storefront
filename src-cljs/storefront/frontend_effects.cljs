@@ -296,9 +296,6 @@
         (messages/handle-message events/popup-hide))
       (quadpay/hide-modal))
 
-    (when-not (get-in app-state [:polling-consult])
-      (messages/handle-message events/phone-consult-cta-poll {}))
-
     (live-help/maybe-start app-state)
 
     (let [utm-params (some-> query-params
@@ -833,7 +830,7 @@
                         (get-in app-state keypaths/user))
   (redirect-to-return-navigation app-state))
 
-(defmethod effects/perform-effects events/api-success-account 
+(defmethod effects/perform-effects events/api-success-account
   [_ _event {:keys [shipping-address email]} _prev-app-state _app-state]
   ;; NOTE(ellie+andres, 2022-02-09): In the future this could actually get a whole new session token from diva
   (messages/handle-later events/biz|hard-session|refresh)
@@ -994,14 +991,14 @@
                                       (scroll/snap-to-top))
     (scroll/snap-to-top)))
 
-(defmethod effects/perform-effects events/api-success-decrease-quantity 
+(defmethod effects/perform-effects events/api-success-decrease-quantity
   [_dispatch _event {:as args :keys [order]} _ app-state]
   (messages/handle-message events/save-order {:order order})
   (apply-pending-promo-code app-state order)
   (messages/handle-later events/control-scroll-to-selector {:selector "[data-ref=start-checkout-button]"})
   (messages/handle-message events/order-line-item-removed args))
 
-(defmethod effects/perform-effects events/api-success-remove-from-bag 
+(defmethod effects/perform-effects events/api-success-remove-from-bag
   [_dispatch _event {:as args :keys [order]} _ _app-state]
   (messages/handle-message events/save-order {:order order})
   (messages/handle-message events/order-line-item-removed args))
@@ -1026,7 +1023,7 @@
                              {:message "The coupon code was successfully removed from your order."
                               :scroll? false})))
 
-(defmethod effects/perform-effects events/api-success-update-order-add-promotion-code 
+(defmethod effects/perform-effects events/api-success-update-order-add-promotion-code
   [_ _ {:keys [allow-dormant? order promo-code]} _ app-state]
   (when-not allow-dormant?
     (messages/handle-message events/flash-show-success
@@ -1034,7 +1031,7 @@
                               :scroll? false}))
   (api/get-promotions (get-in app-state keypaths/api-cache)
                       (first (get-in app-state keypaths/order-promotion-codes)))
-  (messages/handle-message events/order-promo-code-added {:order-number (:number order) 
+  (messages/handle-message events/order-promo-code-added {:order-number (:number order)
                                                           :promo-code   promo-code}))
 
 (defmethod effects/perform-effects events/sign-out [_ event args app-state-before app-state]
@@ -1082,9 +1079,9 @@
 
 (defmethod effects/perform-effects events/api-success-update-order-update-guest-address
   [_ _ {:keys [order]} _ _]
-  (messages/handle-message events/set-user-ecd 
-                           (assoc (:shipping-address order) 
-                                  :email 
+  (messages/handle-message events/set-user-ecd
+                           (assoc (:shipping-address order)
+                                  :email
                                   (-> order :user :email)))
   (messages/handle-message events/user-identified {:user (:user order)}))
 
@@ -1094,7 +1091,7 @@
 
 (defmethod effects/perform-effects events/api-success-update-order-update-address
   [_ event {:keys [order]} _ app-state]
-  (messages/handle-message events/set-user-ecd 
-                           (assoc (:shipping-address order) 
+  (messages/handle-message events/set-user-ecd
+                           (assoc (:shipping-address order)
                                   :email
                                   (-> order :user :email))))

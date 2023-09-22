@@ -5,7 +5,6 @@
             [storefront.component :as component :refer [defcomponent
                                                         defdynamic-component]]
             [storefront.components.checkout-steps :as checkout-steps]
-            [storefront.components.phone-consult :as phone-consult]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -267,10 +266,8 @@
                          :value       (:state billing-address)})]])])
 
 (defcomponent component
-  [{:keys [logged-in? saving? phone-consult-cta step-bar billing-address-data shipping-address-data] :as data} _ _]
+  [{:keys [logged-in? saving? step-bar billing-address-data shipping-address-data] :as data} _ _]
   [:div.container
-   (when (and logged-in? (:checkout-address phone-consult-cta))
-     (component/build phone-consult/component phone-consult-cta))
    (component/build checkout-steps/component step-bar)
 
    [:div.m-auto.col-8-on-tb-dt
@@ -322,10 +319,6 @@
         field-errors        (get-in data keypaths/field-errors)]
     (merge
      {:saving?               (utils/requesting? data request-keys/update-addresses)
-      :phone-consult-cta     (merge (get-in data keypaths/cms-phone-consult-cta)
-                                    (api.orders/current data)
-                                    {:place-id :checkout-address
-                                     :in-omni? (:experience/omni (:experiences (accounts/<- data)))})
       :step-bar              (cond-> (checkout-steps/query data)
                                (= :guest (::auth/as (auth/signed-in data)))
                                (assoc :checkout-title "Guest Checkout"))

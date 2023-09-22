@@ -26,7 +26,6 @@
             [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.money-formatters :as mf]
-            [storefront.components.phone-consult :as phone-consult]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.trackings :as trackings]
@@ -125,8 +124,7 @@
 
 (defcomponent component
   [{:as   queried-data
-    :keys [phone-consult-cta
-           checkout-button-data
+    :keys [checkout-button-data
            checkout-steps
            cart-summary
            delivery
@@ -143,9 +141,6 @@
            service-line-items]}
    _ _]
   [:div.container.p2
-   (when (:checkout-confirmation phone-consult-cta)
-       (component/build phone-consult/component phone-consult-cta))
-
    (component/build checkout-steps/component checkout-steps nil)
    (if order
      [:form
@@ -484,16 +479,8 @@
         addon-service-line-items              (->> order
                                                    orders/service-line-items
                                                    (filter (comp boolean #{"addon"} :service/type :variant-attrs)))
-        addon-service-skus                    (map (fn [addon-service] (get skus (:sku addon-service))) addon-service-line-items)
-        phone-consult-cta                     (get-in data keypaths/cms-phone-consult-cta)]
+        addon-service-skus                    (map (fn [addon-service] (get skus (:sku addon-service))) addon-service-line-items)]
     (merge
-     (when (:checkout-confirmation phone-consult-cta)
-       ;;TODO omni flag
-       ;;TODO order number
-       {:phone-consult-cta (merge phone-consult-cta
-                                  (api.orders/current data)
-                                  {:place-id :checkout-confirmation
-                                   :in-omni? (:experience/omni (:experiences (accounts/<- data)))})})
      {:order                        order
       :easy-booking?                (experiments/easy-booking? data)
       :booking                      (booking/<- data)

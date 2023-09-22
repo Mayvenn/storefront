@@ -7,7 +7,6 @@
             [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.money-formatters :refer [as-money]]
-            [storefront.components.phone-consult :as phone-consult]
             [mayvenn.concept.account :as accounts]
             [ui.promo-banner :as promo-banner]
             [storefront.effects :as effects]
@@ -149,12 +148,10 @@
                               :data-test id})]) )
 
 (defcomponent component
-  [{:keys                [step-bar phone-consult-cta]
+  [{:keys                [step-bar]
     :store-credit/keys   [fully-covered? can-use-store-credit?]
     :as                  data} _ _]
   [:div.container.p2
-   (when (:checkout-payment phone-consult-cta)
-     (component/build phone-consult/component phone-consult-cta))
    (component/build checkout-steps/component step-bar)
 
    (ui/narrow-container
@@ -207,10 +204,6 @@
                                " in store credit will be applied to this order."
                                (when-not fully-covered?
                                  " Please enter an additional payment method below for the remaining total on your order."))}))
-     {:phone-consult-cta  (merge (get-in data keypaths/cms-phone-consult-cta)
-                                 (api.orders/current data)
-                                 {:place-id :checkout-payment
-                                  :in-omni? (:experience/omni (:experiences (accounts/<- data)))})}
 
      {:credit-card-entry/credit-card  (:credit-card (cc/query data))
       :credit-card-entry/id           (when loaded-stripe?
