@@ -217,7 +217,7 @@
             [:link {:rel "preconnect" :href "https://s.pinimg.com"}]
             [:link {:rel "preconnect" :href "https://googleads.g.doubleclick.net"}]
             [:link {:rel "preconnect" :href "https://d10lpsik1i8c69.cloudfront.net"}] ;; luckyorange
-            
+
             [:script {:defer true
                       :type  "text/javascript"
                       :src   "https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.2/min/tiny-slider.js"}]
@@ -236,6 +236,10 @@
             #_[:script {:type  "text/javascript"
                         :src   "https://widgets.quadpay.com/mayvenn/quadpay-widget-2.2.1.js"
                         :defer true}]
+
+            [:script {:type  "text/javascript"
+                      :async true
+                      :src   "https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=WbkmAm"}]
 
             ;; Storefront server-side data
             [:script {:type "text/javascript"}
@@ -282,7 +286,7 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     })(window,document,'script','dataLayer','" gtm-container-id "');"))])
 
           ;;;;;;;;;;;;
-            
+
             ;; inline styles in production because our css file is so small and it avoids another round
             ;; trip request. At time of writing this greatly includes our pagespeed score
             (if (#{"development" "test"} environment)
