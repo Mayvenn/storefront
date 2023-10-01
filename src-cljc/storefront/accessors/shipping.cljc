@@ -27,7 +27,7 @@
 
 (defn shipping-note [rate-sku-id drop-shipping?]
   (if drop-shipping?
-    "(No P.O. Box)" 
+    "(No P.O. Box)"
     (case rate-sku-id
       "WAITER-SHIPPING-2" "(No P.O. Box)"
       "WAITER-SHIPPING-4" "(No P.O. Box)"
@@ -48,8 +48,12 @@
   [rate-sku drop-shipping?]
   (case rate-sku
     "WAITER-SHIPPING-1" (if drop-shipping?
-                          {:min-delivery 7 :max-delivery 10 :saturday-delivery? true}
-                          {:min-delivery 4 :max-delivery 6 :saturday-delivery? true})
+                          {:min-delivery       10#_7
+                           :max-delivery       14#_10
+                           :saturday-delivery? true}
+                          {:min-delivery       4
+                           :max-delivery       6
+                           :saturday-delivery? true})
     "WAITER-SHIPPING-7" {:min-delivery 2 :max-delivery 4 :saturday-delivery? true}
     "WAITER-SHIPPING-2" {:min-delivery 1 :max-delivery 2 :saturday-delivery? false}
     "WAITER-SHIPPING-4" {:min-delivery 1 :max-delivery 1 :saturday-delivery? false}))
