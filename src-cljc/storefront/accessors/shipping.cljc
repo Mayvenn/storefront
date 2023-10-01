@@ -48,8 +48,8 @@
   [rate-sku drop-shipping?]
   (case rate-sku
     "WAITER-SHIPPING-1" (if drop-shipping?
-                          {:min-delivery       10#_7
-                           :max-delivery       14#_10
+                          {:min-delivery       7
+                           :max-delivery       10
                            :saturday-delivery? true}
                           {:min-delivery       4
                            :max-delivery       6
